@@ -10,7 +10,7 @@ iluminada en un cuarto a oscuras. Por qué así y de dónde sale cada idea: `ANA
 | Fichero | Qué es |
 |---|---|
 | `luz_por_defecto.tscn` | La luz de todos los niveles que no tengan una propia |
-| `menu.tscn` | La luz del cofre del título (y del menú) |
+| `menu.tscn` | La luz del cerdito del título (y del menú) |
 | `desvan.tscn` | La luz del desván: empieza más oscura ("el desván a oscuras") y se calienta al montarlo |
 | `probar_luz.tscn` | Para mirarla en el editor: la luz por defecto + la habitación + la cámara del juego |
 | `rig_luz.gd` | El script de la raíz de cada escena de luz (lo que la hace "en tiempo real") |
@@ -77,7 +77,7 @@ Medido el 16-oct-2026 con recortes ampliados del borde de una sombra:
    python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png
    ```
    `quemado` tiene que salir por debajo del 2 %. Medido el 16-oct-2026: 0,0 % en la habitación
-   (sin montar, a medias y completa) y en el cofre del título.
+   (sin montar, a medias y completa) y en el cerdito del título.
 
 ## Luz propia para un nivel
 

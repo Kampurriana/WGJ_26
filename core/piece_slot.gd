@@ -3,11 +3,12 @@ extends RefCounted
 ## Un hueco del diorama: el nodo P_ del modelo, pintado como silueta blanca hasta que se coloca.
 ## Lo que cuelga de la pieza y no es malla (luces, textos) está apagado hasta colocarla; las luces
 ## se encienden entonces con un fundido ("colocar enciende las luces", como en Woodo).
-## Mientras la pieza no está disponible (sección cerrada, o le falta una anterior) ni siquiera se
-## ve su silueta: aparece con un fundido cuando se desbloquea (set_available).
+## Todas las siluetas se ven desde el principio. Mientras la pieza no está disponible (sección
+## cerrada, o le falta una anterior) su silueta va tenue y del color de su acto (tint); al
+## desbloquearse se aclara con un fundido (set_available).
 
 const LIGHT_FADE := 0.8
-const APPEAR_TIME := 0.7
+const UNLOCK_TIME := 0.7
 
 var id: StringName
 var node: Node3D
@@ -16,7 +17,10 @@ var prereqs: Array[StringName] = []
 var section: Section             # la sección S_ que la contiene (null = ninguna: siempre abierta)
 var is_key := false              # token clave: va la última de su sección
 var flash := false               # token flash: destello blanco al colocarla
-var available := true            # se ve su silueta y está en la bandeja
+var reflejo := false             # token reflejo: su momento es de frente, todo a negro, con un reflejo (el espejo)
+var offered := false             # token ofrecida: no va a la bandeja; aparece flotando junto a su hueco (la moneda)
+var available := true            # ya toca: silueta clara y se puede poner (si no, tenue y bloqueada)
+var tint := Color.WHITE          # color del acto al que pertenece (lo lleva la silueta)
 var filled := false
 var prototype: Node3D            # copia limpia: vista previa del inventario y pieza en mano
 
@@ -24,6 +28,7 @@ var _ghost: ShaderMaterial
 var _meshes: Array[MeshInstance3D] = []
 var _extras: Array[VisualInstance3D] = []   ## lo visible que no es malla (luces, Label3D...): oculto hasta colocar
 var _light_energy: Dictionary = {}          ## Light3D -> energía con la que vino del modelo
+var _tween: Tween
 
 
 func setup(p_id: StringName, p_node: Node3D, p_scope: Interactable) -> void:
@@ -51,19 +56,34 @@ func center() -> Vector3:
 	return Visuals.global_aabb(node).get_center()
 
 
-## Silueta visible o no. animate = aparece con un fundido (al desbloquearse durante la partida).
+## Color del acto (lo pone el Diorama según la sección).
+func set_tint(c: Color) -> void:
+	tint = c
+	_ghost.set_shader_parameter("tint", c)
+
+
+## Disponible o no. La silueta se ve siempre: bloqueada va tenue y del color de su acto.
+## animate = al desbloquearse durante la partida, se aclara poco a poco.
 func set_available(on: bool, animate := false) -> void:
 	if filled or on == available:
 		return
 	available = on
-	for m in _meshes:
-		m.visible = on
+	if _tween != null:
+		_tween.kill()
 	if on and animate and node.is_inside_tree():
-		_ghost.set_shader_parameter("aparicion", 0.0)
-		var tw := node.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		tw.tween_method(func(a: float) -> void: _ghost.set_shader_parameter("aparicion", a), 0.0, 1.0, APPEAR_TIME)
+		_tween = node.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_tween.tween_method(func(a: float) -> void: _ghost.set_shader_parameter("bloqueada", a), 1.0, 0.0, UNLOCK_TIME)
 	else:
-		_ghost.set_shader_parameter("aparicion", 1.0)
+		_ghost.set_shader_parameter("bloqueada", 0.0 if on else 1.0)
+
+
+## (Tests) ¿Se ve la silueta, y con aspecto de bloqueada?
+func ghost_visible() -> bool:
+	return is_ghost() and _meshes.all(func(m: MeshInstance3D) -> bool: return m.is_visible_in_tree())
+
+
+func looks_locked() -> bool:
+	return float(_ghost.get_shader_parameter("bloqueada")) > 0.5
 
 
 func set_pulse(on: bool) -> void:
@@ -78,6 +98,8 @@ func is_ghost() -> bool:
 func fill(fade := true) -> void:
 	filled = true
 	available = true
+	if _tween != null:
+		_tween.kill()
 	for m in _meshes:
 		m.material_override = null
 		m.visible = true

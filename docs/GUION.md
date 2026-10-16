@@ -23,11 +23,51 @@ y tejado, pero **se montan por secciones, en orden**:
 | 5 · Epílogo | **La moneda**, en la hucha | Rótulo «Epílogo»; primero se dicen sus frases, luego aparece la moneda | Fundido a negro y créditos |
 
 Reglas (las hace el código, no hay que pensarlas al montar el arte):
-- **Una pieza solo aparece cuando le toca**: ni su silueta ni su ficha se ven antes. Las de la
-  historia van **de una en una** (cada frase continúa la anterior); el dressing de la zona, en
-  cualquier orden.
+- **Todo se ve desde el principio en modo fantasma**: las siluetas de todas las piezas y los
+  muebles de las zonas cerradas, cada acto de su color (infancia rosa, adolescencia azul, adultez
+  verde) y con un letrero flotante con su nombre. Lo que ya se puede poner se ve más claro.
+- **La bandeja enseña todas las piezas**, agrupadas por acto. Las que aún no van llevan candado y
+  dicen por qué al pasar el ratón o tocarlas ("Es de «II · Adolescencia». Se abre al terminar
+  «I · Infancia».", "Antes tiene que estar la cómoda.", "Va la última de «I · Infancia»...").
+  Así el jugador sabe siempre hacia dónde va: el juego orienta sin prisas.
+- Las piezas de la historia se pueden poner **de una en una** (cada frase continúa la anterior); el
+  dressing de la zona, en cualquier orden.
 - **La clave va la última** de su sección y la cierra.
 - **Las frases nunca se pisan**: si se coloca otro objeto mientras uno habla, su frase espera.
+
+## Momentos (las secuencias)
+
+Cada objeto con frase tiene su **momento** al colocarlo: la cámara se le acerca despacio, entran
+dos bandas negras de cine y un foco que oscurece alrededor, la bandeja y los botones se apartan,
+el objeto hace **su gesto** y suena su frase. Un clic pasa a la siguiente frase; al callarse, todo
+vuelve a como estaba. Los gestos (personalidad de cada objeto, `core/momentos.gd`):
+
+| Objeto | Gesto |
+|---|---|
+| Hucha, llaves | Tintinea (se sacude a golpecitos) |
+| Caja de música | La bailarina gira |
+| Dibujo, inscripción | El papel aletea |
+| Nutria | Se achucha (se aplasta y se estira) |
+| MP3 | Late al ritmo |
+| Cámara | Dispara: retrocede un poco (y el flash) |
+| Caballete | Se balancea |
+| El resto | Flota un poco |
+
+Dos momentos especiales:
+- **El espejo**: la cámara se pone **delante**, a su altura; **todo lo demás se va a negro**; en la
+  luna aparece un vaho y, con la primera frase, **la silueta de ella**. Las tres frases salen de una
+  en una, y con la última ("¿Y yo? ¿Dónde estoy yo?") la silueta se desvanece: el espejo se queda
+  vacío.
+- **El epílogo**: **primer plano de la hucha** mientras se dicen sus frases; a la vez aparece **la
+  moneda flotando** a su lado, brillando. Cuando acaban las frases, un clic en la moneda la hace
+  volar hasta la ranura y entrar; suena "Para unas pinturas de verdad." y **fundido a negro**.
+
+## El título: la hucha de cerdito
+
+El puzle que desbloquea el menú es **la hucha de ella**, sobre un cojín (la misma que luego cierra
+la historia): 21 piezas. Primero el cuerpo; luego patas, hocico, orejas, cola, ranura, ojos,
+coloretes y lazo; y sobre todo **pegatinas**: una estrella que brilla en la oscuridad, corazón,
+flor, luna, rayo, arcoíris y la del nombre del juego, en el cartel de delante.
 
 ## Objetos escondidos en muebles
 
@@ -61,7 +101,7 @@ cámara (así no se adelanta la historia).
 | Inscripción (clave) | «La inscripción a Bellas Artes. La matrícula la iba a pagar con la hucha. Pero la tienda de papá necesitaba una furgoneta. Ahí acabó mi dinero. Y yo dije “vale”.» |
 | Llaves | «Ahora soy yo quien abre la tienda cada mañana. Papá dice que algún día será mía. Nunca le he dicho que no la quiero.» |
 | Caballete | «Lo compré con mi primer sueldo, para pintar los domingos. Pero los domingos también abre la tienda.» |
-| Espejo (clave) | «Y aquí está la que siempre dijo “vale”. La bailarina de la abuela, la nutria de mi hermano, la tienda de papá… ¿Y yo? ¿Dónde estoy yo?» |
+| Espejo (clave) | «Y aquí está la que siempre dijo “vale”.» / «La bailarina de la abuela, la nutria de mi hermano, la tienda de papá…» / «¿Y yo? ¿Dónde estoy yo?» (tres frases, para el momento del espejo) |
 | Epílogo | «Nadie me enseñó a decir que no.» (silencio) «No.» «…Qué fácil suena cuando lo dices en voz alta.» |
 | Moneda | «Para unas pinturas de verdad.» → fundido a negro |
 
@@ -78,6 +118,9 @@ cámara (así no se adelanta la historia).
 4. **Se empieza montando las paredes y el tejado**; la hucha cierra esa fase y abre la historia.
 5. Rótulos de capítulo (I · Infancia, II · Adolescencia, III · Adultez, Epílogo) para que se note
    que se va por secciones.
+6. **La moneda no se arrastra desde la bandeja**: aparece flotando junto a la hucha y se toca
+   (segunda nota: "close up de ese asset y que se vea la secuencia de diálogos y la moneda").
+7. La frase del espejo se parte en tres, para que el momento respire.
 
 Pendiente de decidir (no bloquea): el oficio familiar sigue siendo «la tienda»; la música de la
 caja (sonido `caja_musica` y que se apague al cerrar la infancia) está por hacer cuando haya audio.

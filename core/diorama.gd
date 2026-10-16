@@ -5,11 +5,13 @@ extends Node3D
 ## Un nivel = una escena con este script en la raíz y el .glb de las artistas dentro, o con la
 ## ruta del .glb en `modelo` (se carga al empezar: cambiar el arte = dejar el fichero en su sitio).
 ##
-## Secciones (S_<orden>_<nombre>): el diorama se monta por zonas. Solo la sección abierta enseña
-## sus piezas; al completarla se pinta entera, se dice su frase si la tiene, y tras una pausa se
-## abre la siguiente (se encienden sus luces, sale su rótulo, la cámara la encuadra).
-## Desbloqueo: una pieza solo aparece (silueta y bandeja) cuando su sección está abierta, sus
-## __after-x están puestas y, si es __clave, todas las demás de su sección también.
+## Secciones (S_<orden>_<nombre>): el diorama se monta por zonas. Todo se ve desde el principio en
+## modo fantasma, cada zona del color de su acto; solo la sección abierta deja poner sus piezas. Al
+## completarla se pinta entera, se dice su frase si la tiene, y tras una pausa se abre la siguiente
+## (su decorado se vuelve de verdad, se encienden sus luces, sale su rótulo, la cámara la encuadra).
+## Desbloqueo: una pieza se puede poner (silueta clara, ficha activa en la bandeja) cuando su
+## sección está abierta, sus __after-x están puestas y, si es __clave, todas las demás de su sección
+## también. Mientras no, su silueta va tenue y su ficha, con candado y el porqué (lock_reason).
 ## Objetos escondidos (H_): solo aparecen cuando toca encontrarlos; entonces su mueble brilla y se
 ## mueve (Interactable.set_attention) y la primera vez sale un consejo.
 
@@ -18,6 +20,7 @@ const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al comple
 const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
 const LIGHT_FADE := 1.6                     ## lo que tardan en encenderse las luces de una sección
+const POP_TIME := 0.35                      ## el saltito de una pieza al encajar (crece y vuelve)
 
 @export var level_title := "Diorama"
 ## Modelo del diorama: un .glb (o escena) con la convención de nombres. Si el fichero existe, se
@@ -49,6 +52,9 @@ const LIGHT_FADE := 1.6                     ## lo que tardan en encenderse las l
 @export_file("*.tscn") var iluminacion := ""
 ## Al completarlo: fundido a negro y créditos, sin el aviso de "completado" (final de la historia).
 @export var fundido_final := false
+## Momentos de la historia (core/momentos.gd): al colocar un objeto con frase, la cámara se le acerca
+## y la pantalla se enmarca mientras habla.
+@export var momentos := false
 
 var slots: Array[PieceSlot] = []
 var interactables: Array[Interactable] = []
@@ -82,6 +88,8 @@ func _ready() -> void:
 	_link_containers()
 	_refresh(false)
 	Events.world_clicked.connect(_on_world_clicked)
+	Events.piece_drag_started.connect(_pulse_slots_for)
+	Events.piece_drag_ended.connect(func(_id: StringName, _placed: bool) -> void: _pulse_slots_for(&""))
 	GameState.diorama = self
 	Narrator.clear()
 	Events.level_started.emit(self)
@@ -147,6 +155,8 @@ func _scan(n: Node, scope: Interactable, section: Section) -> void:
 				s.prereqs = NameRules.values(info.tokens, "after")
 				s.is_key = NameRules.has_token(info.tokens, "clave")
 				s.flash = NameRules.has_token(info.tokens, "flash")
+				s.reflejo = NameRules.has_token(info.tokens, "reflejo")
+				s.offered = NameRules.has_token(info.tokens, "ofrecida")
 				s.section = section
 				if section != null:
 					section.slots.append(s)
@@ -165,18 +175,55 @@ func _scan(n: Node, scope: Interactable, section: Section) -> void:
 		_scan(c, next_scope, next_section)
 
 
-## La primera sección empieza abierta (sin rótulo ni frases); las demás, cerradas y a oscuras.
+## La primera sección empieza abierta (sin rótulo ni frases); las demás, cerradas: a oscuras y en
+## modo fantasma del color de su acto, con un letrero con su nombre.
 func _setup_sections() -> void:
 	sections.sort_custom(func(a: Section, b: Section) -> bool: return a.order < b.order)
+	var skip: Dictionary = {}                   # no es decorado: lo escondido y las piezas
+	for it in interactables:
+		if it.kind == NameRules.PICKUP:
+			for m in Visuals.meshes_under(it.target):
+				skip[m] = true
+	for s in slots:
+		for m in s.meshes():
+			skip[m] = true
 	for i in sections.size():
 		var sec := sections[i]
+		sec.tint = Section.tint_for(i)
+		for s in sec.slots:
+			s.set_tint(sec.tint)
 		sec.collect_lights()
 		sec.opened = i == 0
+		if not sec.opened and not sec.decor.is_empty():
+			_make_section_label(sec)
 		sec.set_lights(sec.opened)
-		sec.set_decor(sec.opened)
+		sec.set_decor(sec.opened, false, skip)
 		for it in sec.interactables:
 			if it.kind != NameRules.PICKUP:
 				it.set_clickable(sec.opened)
+
+
+## Letrero flotante con el nombre del acto sobre su zona mientras está cerrada.
+func _make_section_label(sec: Section) -> void:
+	var text := Narrator.text("titulo_" + sec.name)
+	if text == "":
+		return
+	var l := Label3D.new()
+	l.name = "Letrero_" + sec.name
+	l.text = text
+	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	l.no_depth_test = true
+	l.pixel_size = 0.0032
+	l.font_size = 64
+	l.outline_size = 16
+	l.modulate = Color(sec.tint, 0.92)
+	l.outline_modulate = Color(0.12, 0.08, 0.05, 0.85)
+	l.render_priority = Visuals.GHOST_RENDER_PRIORITY + 2
+	l.outline_render_priority = Visuals.GHOST_RENDER_PRIORITY + 1
+	add_child(l)
+	var box := sec.box()
+	l.global_position = Vector3(box.get_center().x, box.position.y + box.size.y * 0.78, box.get_center().z)
+	sec.label = l
 
 
 ## Cada H_ sabe en qué mueble (OD_/OR_) está guardado:
@@ -297,6 +344,83 @@ func visible_inventory() -> Array[StringName]:
 				out.append(id)
 				break
 	return out
+
+
+## Lo que enseña la bandeja: TODAS las piezas que faltan en el ámbito actual (una entrada por id),
+## por orden de sección y, dentro de cada una, primero las que ya se pueden poner.
+## {id, count, locked, reason, section}: locked = aún no se puede poner; reason = por qué.
+func tray_entries() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var seen: Dictionary = {}
+	for s in slots:
+		if s.filled or s.scope != focus or seen.has(s.id) or s.offered:
+			continue                             # lo ofrecido no va a la bandeja: aparece en la escena
+		seen[s.id] = true
+		var reason := lock_reason(s.id)
+		var missing := slots.filter(func(o: PieceSlot) -> bool: return o.id == s.id and not o.filled and o.scope == focus).size()
+		out.append({"id": s.id, "count": count_of(s.id) if reason == "" else missing, "locked": reason != "",
+			"reason": reason, "section": s.section, "_i": out.size()})
+	out.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var sa := sections.find(a.section)
+		var sb := sections.find(b.section)
+		if sa != sb:
+			return sa < sb
+		if a.locked != b.locked:
+			return not a.locked
+		return a._i < b._i)
+	return out
+
+
+## Por qué no se puede poner todavía esa pieza ("" = sí se puede). Es lo que lee el jugador al
+## tocar una ficha con candado: le orienta hacia lo que va antes.
+func lock_reason(id: StringName) -> String:
+	var first: PieceSlot = null
+	for s in slots:
+		if s.filled or s.id != id or s.scope != focus:
+			continue
+		if is_unlocked(s):
+			return "" if inventory.has(id) else _hidden_reason(id)
+		if first == null:
+			first = s
+	if first == null:
+		return "Ya está puesta."
+	var sec := first.section
+	if sec != null and not sec.opened:
+		if sec == _pending:
+			return "Ya casi: se está abriendo «%s»." % section_title(sec)
+		var i := sections.find(sec)
+		return "Es de «%s». Se abre al terminar «%s»." % [section_title(sec), section_title(sections[i - 1])] if i > 0 \
+			else "Es de «%s»." % section_title(sec)
+	var before: PackedStringArray = []
+	for p in first.prereqs:
+		for o in slots:
+			if o.id == p and not o.filled:
+				before.append(Narrator.piece_name(p))
+				break
+	if not before.is_empty():
+		return "Antes tiene que estar %s." % " y ".join(before)
+	if first.is_key and sec != null:
+		var left := sec.slots.filter(func(o: PieceSlot) -> bool: return o != first and not o.filled).size()
+		return "Va la última de «%s»: antes, %s." % [section_title(sec), "la que falta" if left == 1 else "las %d que faltan" % left]
+	return "Todavía no."
+
+
+## Una pieza que ya toca pero no está en la bandeja: está guardada (H_) o se gana en un rincón (Z_).
+func _hidden_reason(id: StringName) -> String:
+	for it in interactables:
+		if it.kind == NameRules.PICKUP and it.id == id and not it.collected:
+			if it.container != null and not it.container.is_open:
+				return "Está guardada en un mueble: toca el que brilla."
+			return "Está a la vista: tócala para cogerla."
+		if it.kind == NameRules.ZOOM and it.reward == id and not it.completed:
+			return "Se consigue al completar un rincón."
+	return "Todavía no."
+
+
+## Nombre de una sección para la interfaz ("I · Infancia"); si no tiene rótulo, su nombre.
+func section_title(sec: Section) -> String:
+	var t := Narrator.text("titulo_" + sec.name)
+	return t if t != "" else sec.name.capitalize()
 
 
 func prereqs_met(slot: PieceSlot) -> bool:
@@ -441,6 +565,13 @@ func exit_focus() -> void:
 	Sfx.play("zoom_out")
 	Events.focus_changed.emit(focus)
 	Events.inventory_changed.emit()
+
+
+## Mientras se arrastra una pieza, laten las siluetas donde puede ir ("aquí"). &"" = ninguna.
+func _pulse_slots_for(id: StringName) -> void:
+	for s in slots:
+		if not s.filled:
+			s.set_pulse(id != &"" and s.id == id and s.scope == focus and is_unlocked(s))
 
 
 func _on_world_clicked(screen_pos: Vector2) -> void:
@@ -732,7 +863,7 @@ func _pop(n: Node3D) -> void:
 	var base: Vector3 = _base_scale[n]
 	n.scale = base * 1.2
 	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(n, "scale", base, 0.35)
+	tw.tween_property(n, "scale", base, POP_TIME)
 
 
 func _play_animation(anim: String) -> void:

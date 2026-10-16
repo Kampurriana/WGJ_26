@@ -9,10 +9,11 @@ extends Node
 const SAMPLE_LEVEL := "res://levels/level_00_muestra.tscn"
 const TEST_SETTINGS := "user://test_ajustes.cfg"     ## nunca los ficheros de verdad del jugador
 const TEST_PROGRESS := "user://test_progreso.cfg"
+const TITLE_LIGHT := &"pegatina_estrella"            ## la pieza del título que lleva luz (brilla en la oscuridad)
 
 var _fails := 0
 var _completed := false
-var _farol_energy := 0.0                             ## la luz de un farol del título, tal como viene del modelo
+var _farol_energy := 0.0                             ## la luz de la estrella del título, tal como viene del modelo
 
 
 func _ready() -> void:
@@ -80,7 +81,7 @@ func _run() -> void:
 	check(not d.inventory.has(&"cuchara"), "lo escondido (H_) no empieza en el inventario")
 	check(not d.inventory.has(&"cuadro"), "la recompensa de un Z_ no empieza en el inventario")
 	check(d.slots[0].is_ghost(), "los huecos empiezan como silueta blanca")
-	check(GameState.hud._list.get_child_count() > 0, "el panel muestra piezas")
+	check(GameState.hud.cards(true).size() > 0, "el panel muestra piezas")
 
 	# Encaje por posición en pantalla: lejos falla, encima acierta.
 	var id := d.inventory[0]
@@ -213,8 +214,14 @@ func _test_story(main: Node) -> void:
 	check(not shown.is_empty() and shown.all(func(id: StringName) -> bool: return _slot(d, id).section == s1)
 		and not shown.has(&"tejado") and not shown.has(&"hucha"),
 		"al empezar, la bandeja solo trae paredes: ni el tejado (va después) ni la hucha (la clave) ni nada de otra zona")
-	check(not _slot(d, &"peluche").available and not s2.decor[0].visible and not (s2.lights()[0] as Light3D).visible,
-		"las zonas cerradas no enseñan nada: ni siluetas, ni muebles, ni su luz")
+	var otter_slot := _slot(d, &"peluche")
+	check(otter_slot.ghost_visible() and otter_slot.looks_locked() and not otter_slot.available and s2.decor_is_ghost()
+		and s2.decor[0].visible and not (s2.lights()[0] as Light3D).visible,
+		"las zonas cerradas se ven en modo fantasma (siluetas y muebles), tenues y con su luz apagada")
+	check(s2.tint != s3.tint and s3.tint != s4.tint and s2.tint != s4.tint and otter_slot._ghost.get_shader_parameter("tint") == s2.tint
+		and s2.label != null and s2.label.visible and s2.label.text == Narrator.text("titulo_infancia"),
+		"cada acto tiene su color y su letrero: infancia, adolescencia y adultez se distinguen")
+	await _test_tray(d, shown)
 	var solid := 0
 	for dec in s2.decor:
 		for body in dec.find_children("Superficie", "StaticBody3D", true, false):
@@ -233,6 +240,11 @@ func _test_story(main: Node) -> void:
 		steps += 1
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
 		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
+	var cam_ctl := GameState.camera
+	var m: Momentos = main.momentos
+	check(m.active and m.target == _slot(d, &"hucha").node and cam_ctl.in_moment and GameState.hud.in_moment()
+		and cam_ctl.distance < d.camera_distance * 0.6 + 0.01,
+		"al poner la hucha (tiene frase), momento: la cámara se le acerca, la pantalla se enmarca y la bandeja se aparta")
 	await get_tree().process_frame
 	check(d.is_opening() and not GameState.hud.says_nothing_left(),
 		"entre una sección y la siguiente, la bandeja espera: no dice que aquí no queda nada")
@@ -241,6 +253,8 @@ func _test_story(main: Node) -> void:
 		await get_tree().create_timer(0.25).timeout
 		waited += 0.25
 	check(s2.opened and waited >= Diorama.SECTION_PAUSE - 0.3, "al completarla, la infancia se abre sola tras una pausa (%.1f s)" % waited)
+	check(not m.active and not cam_ctl.in_moment and not GameState.hud.in_moment(),
+		"al callarse, el momento acaba: la cámara vuelve al jugador y la bandeja vuelve")
 	await get_tree().create_timer(0.3).timeout
 	check(GameState.hud.chapter_text() == Narrator.text("titulo_infancia") and s2.decor[0].visible and (s2.lights()[0] as Light3D).visible,
 		"al abrirse la infancia: su rótulo, sus muebles y su luz")
@@ -307,21 +321,77 @@ func _test_story(main: Node) -> void:
 		steps += 1
 	check(s4.completed and placed.find(&"llaves") < placed.find(&"caballete") and placed.find(&"caballete") < placed.find(&"espejo"),
 		"adultez en el orden del guion: llaves, caballete y el espejo (clave) el último")
+	var mirror := _slot(d, &"espejo")
+	var front := mirror.node.global_basis.z
+	var want_yaw := rad_to_deg(atan2(front.x, front.z))
+	await get_tree().create_timer(1.6).timeout
+	check(m.kind == "reflejo" and absf(cam_ctl.yaw - want_yaw) < 1.0 and cam_ctl.pitch < 8.0,
+		"al poner el espejo, la cámara se pone delante de él (giro %.0f, quiere %.0f)" % [cam_ctl.yaw, want_yaw])
+	check(m.is_isolated() and cam_ctl.cam.cull_mask != 0xFFFFF and m.iris_strength() > 0.95 and is_instance_valid(m.reflection),
+		"espejo: todo lo demás a negro y en la luna aparece su reflejo")
+	Narrator.clear()
+	await get_tree().create_timer(Momentos.MIN_TIME * 0.5).timeout     # un momento dura al menos MIN_TIME
+	check(not m.active and not m.is_isolated() and cam_ctl.cam.cull_mask == 0xFFFFF and not is_instance_valid(m.reflection),
+		"al acabar el espejo, todo vuelve a verse")
 	Narrator.clear()
 	d._open_pending(s5)
 	check(not s5.opened and Narrator.remaining() > 3.0 and not _slot(d, &"moneda").available,
 		"el epílogo habla antes de enseñar la moneda")
+	check(m.kind == "ofrecida" and cam_ctl.in_moment and cam_ctl.center.distance_to(_slot(d, &"hucha").center()) < 0.2
+		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"moneda"),
+		"el epílogo es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja")
+	await get_tree().create_timer(1.4).timeout
+	check(is_instance_valid(m.coin), "mientras habla, la moneda aparece flotando junto a la hucha")
 	d.debug_solve_step()
 	check(s5.opened and _slot(d, &"moneda").available, "después aparece la moneda, sobre la hucha")
 	Narrator.clear()
-	d.place(_slot(d, &"moneda"))
-	check(d.completed, "la moneda en la hucha completa el desván")
+	await get_tree().process_frame
+	_click(m.coin_screen_position())
+	await get_tree().create_timer(1.0).timeout
+	check(d.completed and _slot(d, &"moneda").filled, "un clic en la moneda la mete sola en la hucha y completa el desván")
 	Events.piece_placed.disconnect(record)
 	Events.flash_requested.disconnect(count_flash)
 	await get_tree().create_timer(2.0).timeout
 	check(not GameState.hud._done.visible, "el final de la historia no enseña el aviso de «completado»")
 	await get_tree().create_timer(3.0).timeout
 	check(main._fade.color.a > 0.05, "el final funde a negro (hacia los créditos) (%.2f)" % main._fade.color.a)
+
+
+## La bandeja enseña todas las piezas (las que aún no van, con candado y el porqué), se aparta al
+## coger una pieza para poder soltar detrás de ella, y vuelve al soltar.
+func _test_tray(d: Diorama, shown: Array[StringName]) -> void:
+	for i in 2:                                    # el panel se maqueta un fotograma después
+		await get_tree().process_frame
+	var hud: Hud = GameState.hud
+	var all_ids: Dictionary = {}
+	for sl in d.slots:
+		if not sl.offered:
+			all_ids[sl.id] = true
+	check(hud.cards().size() == all_ids.size() and hud.cards(true).size() == shown.size(),
+		"la bandeja enseña todas las piezas del juego (%d), las que aún no van con candado (%d se pueden poner)" % [hud.cards().size(), hud.cards(true).size()])
+	var otter := hud.item_for(&"peluche")
+	check(otter != null and otter.locked and otter.reason.contains(Narrator.text("titulo_infancia")),
+		"la nutria va con candado y dice de qué acto es (%s)" % (otter.reason if otter != null else ""))
+	check(d.lock_reason(&"tejado").contains(Narrator.piece_name(&"cumbrera")) and d.lock_reason(&"hucha").contains("última"),
+		"cada candado dice qué va antes: tejado (%s), hucha (%s)" % [d.lock_reason(&"tejado"), d.lock_reason(&"hucha")])
+	if otter != null:
+		_click(otter.get_global_rect().get_center())
+		await get_tree().process_frame
+		check(not GameState.is_dragging and hud.info_text().contains(otter.reason),
+			"tocar una ficha con candado no la coge: tiembla y dice por qué")
+		GameState.drag.begin(&"peluche", otter)
+		check(not GameState.is_dragging, "ni a la fuerza: una pieza bloqueada no se puede arrastrar")
+	var wall := hud.item_for(&"pared_fondo")
+	var tray_spot := hud._panel.get_global_rect().get_center()
+	GameState.drag.begin(&"pared_fondo", wall)
+	await get_tree().create_timer(Hud.SLIDE_TIME + 0.15).timeout
+	check(GameState.is_dragging and hud.tray_is_away() and not hud.is_over_panel(tray_spot)
+		and float(_slot(d, &"pared_fondo")._ghost.get_shader_parameter("pulse")) == 1.0,
+		"al coger una pieza la bandeja se aparta (se puede soltar donde estaba) y late su silueta")
+	_mouse_button(hud._panel.get_global_rect().get_center(), false)     # soltar en el borde que asoma = nada
+	await get_tree().create_timer(Hud.SLIDE_TIME + 0.15).timeout
+	check(not GameState.is_dragging and not hud.tray_is_away() and not _slot(d, &"pared_fondo").filled,
+		"al soltar en el borde de la bandeja no se pone nada, y la bandeja vuelve")
 
 
 func _pickup(d: Diorama, id: StringName) -> Interactable:
@@ -337,7 +407,7 @@ func _test_light_scale() -> void:
 	var probe := (load(GameState.MENU_LEVEL) as PackedScene).instantiate() as Diorama
 	probe.escala_luces = 2.0
 	add_child(probe)
-	var farol := _slot(probe, &"farol")
+	var farol := _slot(probe, TITLE_LIGHT)
 	var lights: Array = farol.lights() if farol != null else []
 	var got := float(lights[0][1]) if not lights.is_empty() else -1.0
 	check(_farol_energy > 0.0 and is_equal_approx(got, _farol_energy * 2.0),
@@ -375,15 +445,17 @@ func _test_title_menu(main: Node) -> bool:
 	check(GameState.mode == GameState.Mode.MENU and not main.menu.is_open(), "el menú empieza cerrado: hay que resolver el puzle")
 	check(t.model_path.get_extension() == "glb" and t.get_node_or_null("Modelo") != null,
 		"el diorama del título es un asset: se carga de un .glb (%s)" % t.model_path.get_file())
-	check(t.slots.size() >= 10 and t.interactables.is_empty(), "el título son muchas piezas pequeñas, sin cajones ni escondidos (%d)" % t.slots.size())
-	var letters := _title_letters(t)
-	check(letters == GameState.game_title().to_upper().replace(" ", ""), "las letras del título forman el nombre del juego (%s)" % letters)
-	check(t.count_of(&"letra_o") == 3 and _slots_with(t, &"letra_o") == 3, "las letras repetidas son la misma pieza: tres O que valen en cualquier hueco de O")
-	var farol := _slot(t, &"farol")
+	check(t.slots.size() >= 18 and t.interactables.is_empty(), "el título son muchas piezas pequeñas, sin cajones ni escondidos (%d)" % t.slots.size())
+	var stickers := t.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("pegatina_")).size()
+	check(_slot(t, &"cuerpo") != null and _slot(t, &"hocico") != null and stickers >= 6,
+		"el título es la hucha de cerdito, con pegatinas para decorarla (%d pegatinas)" % stickers)
+	check(_title_name(t) == GameState.game_title().to_upper().replace(" ", "_"), "la pegatina del cartel lleva el nombre del juego (%s)" % _title_name(t))
+	check(t.count_of(&"pata") == 4 and _slots_with(t, &"pata") == 4, "las patas repetidas son la misma pieza: cuatro que valen en cualquier hueco de pata")
+	var farol := _slot(t, TITLE_LIGHT)
 	var lights: Array = farol.lights() if farol != null else []
-	check(not lights.is_empty() and not (lights[0][0] as Light3D).visible, "la luz de un farol del título está apagada mientras es silueta")
+	check(not lights.is_empty() and not (lights[0][0] as Light3D).visible, "la luz de una pieza del título (la estrella que brilla) está apagada mientras es silueta")
 	_farol_energy = float(lights[0][1]) if not lights.is_empty() else 0.0
-	check(GameState.hud._panel.visible and GameState.hud._list.get_child_count() > 0, "durante el puzle del título se ve la bandeja de piezas")
+	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	_check_lighting(main, "res://iluminacion/menu.tscn", "el título")
 	var steps := 0
 	while not t.completed and steps < 40:
@@ -396,7 +468,7 @@ func _test_title_menu(main: Node) -> bool:
 	if not lights.is_empty():
 		var lamp: Light3D = lights[0][0]
 		check(lamp.visible and is_equal_approx(lamp.light_energy, float(lights[0][1])),
-			"al colocar el farol, su luz se enciende con un fundido (%.2f de %.2f)" % [lamp.light_energy, float(lights[0][1])])
+			"al colocar la estrella, su luz se enciende con un fundido (%.2f de %.2f)" % [lamp.light_energy, float(lights[0][1])])
 	check(main.menu.is_open() and main.menu.page == "principal", "tras la onda de color se abre el menú")
 	if not main.menu.is_open():
 		return false
@@ -520,7 +592,7 @@ func _test_real_levels(main: Node) -> void:
 			"%s: las siluetas se pintan después de la arcilla (si no, una pared grande las borra)" % path.get_file())
 		await get_tree().process_frame
 		# La pieza más grande y la más pequeña del panel: las pequeñas son las que se colarían.
-		var cards: Array = GameState.hud._list.get_children().filter(func(n: Node) -> bool: return n is InventoryItem)
+		var cards: Array = GameState.hud.cards(true)
 		cards.sort_custom(func(a: InventoryItem, b: InventoryItem) -> bool:
 			return Visuals.local_aabb(d.prototype_for(a.piece_id)).size.length() > Visuals.local_aabb(d.prototype_for(b.piece_id)).size.length())
 		for card: InventoryItem in ([cards.front(), cards.back()] if not cards.is_empty() else []):
@@ -537,7 +609,7 @@ func _test_real_levels(main: Node) -> void:
 			all_filled = all_filled and sl.filled
 		check(d.completed and all_filled and d.inventory.is_empty(), "%s se completa entero (%d pasos)" % [path.get_file(), steps])
 		await get_tree().process_frame
-		check(GameState.hud._list.get_child_count() == 0 and not GameState.hud.says_nothing_left(),
+		check(GameState.hud.cards().is_empty() and not GameState.hud.says_nothing_left(),
 			"%s completo: el panel no dice que busques más piezas" % path.get_file())
 
 
@@ -732,14 +804,14 @@ func _mouse_move(pos: Vector2) -> void:
 	get_viewport().push_input(e, true)
 
 
-## Las letras del título, de izquierda a derecha (vistas de frente): "WOODOJAM".
-func _title_letters(d: Diorama) -> String:
-	var letters := d.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("letra_"))
-	letters.sort_custom(func(a: PieceSlot, b: PieceSlot) -> bool: return a.center().x < b.center().x)
-	var out := ""
-	for sl: PieceSlot in letters:
-		out += String(sl.id).trim_prefix("letra_").to_upper()
-	return out
+## El nombre que lleva la pegatina del cartel del título (su malla se llama "Nombre-WOODO_JAM").
+func _title_name(d: Diorama) -> String:
+	var sticker := _slot(d, &"pegatina_nombre")
+	if sticker == null:
+		return ""
+	for n in sticker.node.find_children("Nombre-*", "", true, false):
+		return String(n.name).trim_prefix("Nombre-")
+	return ""
 
 
 func _slots_with(d: Diorama, id: StringName) -> int:

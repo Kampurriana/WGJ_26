@@ -5,8 +5,9 @@ extends "res://tools/build_room_level.gd"
 ##   S_2_infancia      zona izquierda: caja de música -> dibujo -> nutria (clave) + su dressing
 ##   S_3_adolescencia  zona central: MP3 -> cámara (escondida en el armario, flash) -> inscripción
 ##                     a Bellas Artes (escondida en el cajón, clave) + su dressing
-##   S_4_adultez       zona derecha: llaves -> caballete -> espejo (clave) + su dressing
-##   S_5_epilogo       la moneda, en la hucha
+##   S_4_adultez       zona derecha: llaves -> caballete -> espejo (clave, __reflejo: su momento
+##                     es de frente y con todo a negro) + su dressing
+##   S_5_epilogo       la moneda (__ofrecida: aparece flotando junto a la hucha y un clic la mete)
 ## Las tres zonas comparten suelo y tejado (integradas); cada una tiene su alfombra, su bombilla
 ## (se enciende al abrirse) y muebles que se abren con algo dentro (baúl, armario, cajones).
 ## Ejecutar:
@@ -54,7 +55,7 @@ func _initialize() -> void:
 	_build_teen(_node(model, "S_3_adolescencia", Vector3.ZERO))
 	_build_adult(_node(model, "S_4_adultez", Vector3.ZERO))
 	var epilogue := _node(model, "S_5_epilogo", Vector3.ZERO)
-	var coin := _node(epilogue, "P_moneda", Vector3(0.0, 0.62, 1.12))
+	var coin := _node(epilogue, "P_moneda__ofrecida", Vector3(0.0, 0.62, 1.12))
 	var c := _cyl(coin, "Moneda", Vector3.ZERO, 0.045, 0.012, Color(0.95, 0.76, 0.3))
 	c.rotation_degrees = Vector3(90, 0, 0)
 	_shiny(c, 0.85, 0.3)
@@ -79,6 +80,7 @@ func _initialize() -> void:
 	level.set("intro_key", "intro_desvan")
 	level.set("outro_key", "")
 	level.set("fundido_final", true)
+	level.set("momentos", true)
 	level.set("color_radius", 0.7)
 	level.set("camera_distance", 8.2)
 	level.set("camera_min_distance", 2.0)
@@ -437,7 +439,7 @@ func _build_adult(sec: Node3D) -> void:
 	canvas.rotation_degrees = Vector3(-6, -15, 0)
 	_box(canvas, "Lienzo", Vector3.ZERO, Vector3(0.46, 0.58, 0.025), Color(0.97, 0.96, 0.93))
 	_brushes(_node(sec, "P_pinceles__after-caballete", Vector3(1.98, 0.0, 0.32)), false)
-	var mirror := _node(sec, "P_espejo__clave", Vector3(2.35, 0, -1.12))
+	var mirror := _node(sec, "P_espejo__clave__reflejo", Vector3(2.35, 0, -1.12))
 	mirror.rotation_degrees.y = -38.0
 	var frame := _cyl(mirror, "Marco", Vector3(0, 0.78, 0), 0.3, 0.04, Color(0.72, 0.58, 0.3))
 	frame.rotation_degrees.x = 90.0

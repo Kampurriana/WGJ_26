@@ -11,8 +11,8 @@ Puzle de dioramas en 3D para una game jam de 48 h (Godot 4.7.2).
 
 Jugar: instalar Godot 4.7.2, abrir el proyecto (`project.godot`) y pulsar F5.
 
-Al empezar, monta el cofre del título (las letras del nombre y las piezas de encima, desde la
-bandeja de la derecha) y se abre el menú. **Jugar** lleva al desván: primero sus paredes y su
+Al empezar, monta la hucha de cerdito del título (cuerpo, cara y pegatinas, desde la bandeja de
+la derecha) y se abre el menú. **Jugar** lleva al desván: primero sus paredes y su
 tejado, y luego la historia por zonas (infancia, adolescencia, adultez). Historia: [`docs/GUION.md`](docs/GUION.md).
 
 Controles: arrastrar en vacío o WASD/flechas = girar · rueda o Q/E = zoom (hacia el cursor, con tope) ·

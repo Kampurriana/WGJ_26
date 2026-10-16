@@ -39,6 +39,10 @@ El **aspecto** (luz, fondo, materiales, partículas, cámara, bandeja) está en 
 | 25 | **Los objetos de la historia aparecen de uno en uno**, la clave la última; cada objeto dice su frase | pedido (guion) | `__after-`, `__clave`, frases `pieza_<id>`, cola del narrador |
 | 26 | **Los muebles que guardan algo brillan (contorno dorado que late) y se mueven** para enseñar que se abren; consejo la primera vez; la pista señala el mueble | pedido del equipo | `Interactable.set_attention`, `Diorama._refresh`, `hint_target` |
 | 27 | Flash de la cámara de fotos; fundido a negro al final | pedido (guion) | tokens `__flash`, `Diorama.fundido_final` |
+| 28 | **Todo en modo fantasma desde el principio**, cada acto de su color y con su letrero | pedido del equipo (2ª nota) | `PieceSlot.set_available`, `Section.set_decor`, `shaders/ghost.gdshader` |
+| 29 | **La bandeja enseña todas las piezas**; las bloqueadas, con candado y el porqué (dibujo y texto); tapa menos y **se aparta al coger una pieza** | pedido del equipo (2ª nota) | `ui/hud.gd`, `ui/inventory_item.gd`, `Diorama.lock_reason` |
+| 30 | **Momentos de la historia**: primer plano, bandas de cine, foco, gesto del objeto, clic para seguir; el espejo de frente con todo a negro y su reflejo; el epílogo en primer plano de la hucha con la moneda | pedido del equipo (2ª nota) | `core/momentos.gd`, `DioramaCamera.close_up`, tokens `__reflejo`, `__ofrecida` |
+| 31 | El puzle del título es **la hucha de cerdito**, con pegatinas | pedido del equipo (2ª nota) | `tools/build_title_level.gd` |
 | 21 | Menú completo: Jugar/Continuar, Elegir diorama, Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso), Créditos, Salir; pausa con Esc | pedido del equipo | `ui/main_menu.gd`, `ui/pause_menu.gd`, `ui/options_panel.gd`, `autoload/settings.gd` |
 
 ## Bucle de un nivel

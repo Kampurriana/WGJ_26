@@ -10,10 +10,14 @@ extends RefCounted
 ##   OR_  puerta (gira 90º alrededor de su origen = la bisagra; token n = al otro lado;
 ##        token x = bisagra horizontal: una tapa que se levanta, como la de un baúl)
 ##   Z_   sub-diorama con zoom (token reward-<id>: al completarlo da esa pieza)
-##   S_   sección: S_<orden>_<nombre> (S_2_infancia). Lo que cuelga de ella se abre cuando se
-##        completa la sección anterior: sus piezas aparecen, sus luces se encienden
-##   Tokens en P_: after-<id> = esta pieza solo aparece cuando las <id> ya están puestas;
-##        clave = va la última de su sección (y la cierra); flash = destello blanco al colocarla.
+##   S_   sección: S_<orden>_<nombre> (S_2_infancia). Se ve desde el principio en modo fantasma,
+##        del color de su acto; se abre cuando se completa la anterior: sus piezas se pueden
+##        poner, su decorado se vuelve de verdad, sus luces se encienden
+##   Tokens en P_: after-<id> = esta pieza solo se puede poner cuando las <id> ya están puestas;
+##        clave = va la última de su sección (y la cierra); flash = destello blanco al colocarla;
+##        reflejo = su momento es de frente y con todo a negro, con un reflejo en ella (el espejo:
+##        su cara es la +Z local); ofrecida = no va a la bandeja: cuando toca, aparece flotando
+##        junto a su hueco y un clic la mete (la moneda en la hucha).
 ##
 ## Blender añade ".001" a las copias y Godot lo convierte en "_001": se ignora,
 ## así dos sillas iguales comparten id y cualquiera vale en cualquier hueco de silla.

@@ -32,8 +32,8 @@ func _ready() -> void:
 
 func begin(id: StringName, source: InventoryItem) -> void:
 	var d := GameState.diorama
-	if d == null or piece_id != &"":
-		return
+	if d == null or piece_id != &"" or d.lock_reason(id) != "":
+		return                                   # una pieza con candado no se coge (la ficha dice por qué)
 	piece_id = id
 	_source = source
 	GameState.is_dragging = true

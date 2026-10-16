@@ -27,16 +27,18 @@ El **nombre del objeto** en Blender (no el de la malla) empieza por un prefijo:
 | `OD_` | Cajón: se desliza hacia fuera al pulsarlo | `OD_cajon_arriba` |
 | `OR_` | Puerta o tapa: gira 90º sobre su **origen** (poned el origen en la bisagra) | `OR_armario` |
 | `Z_` | Rincón con zoom (una escena dentro de la escena). Sus `P_` se hacen dentro | `Z_ratonera` |
-| `S_` | **Sección**: una zona que se monta entera antes de pasar a la siguiente. `S_<orden>_<nombre>`. Todo lo de la zona (piezas, muebles, su bombilla) cuelga de ella. Mientras está cerrada no se ve nada suyo | `S_2_infancia` |
+| `S_` | **Sección**: una zona que se monta entera antes de pasar a la siguiente. `S_<orden>_<nombre>`. Todo lo de la zona (piezas, muebles, su bombilla) cuelga de ella. Mientras está cerrada se ve en modo fantasma, del color de su acto, con un letrero con su nombre | `S_2_infancia` |
 | (otro) | Decorado: se queda en la escena, empieza en madera sin pintar y se pinta al completar piezas cerca | `Arbol`, `Pared` |
 
 Detrás del nombre, opciones con **doble guion bajo**:
 
 | Opción | Dónde | Qué hace |
 |---|---|---|
-| `__after-mesa` | en un `P_` | no aparece hasta que todas las `P_mesa` están puestas (así se cuenta la historia de uno en uno) |
+| `__after-mesa` | en un `P_` | no se puede poner hasta que todas las `P_mesa` están puestas (así se cuenta la historia de uno en uno; mientras, su ficha lleva candado) |
 | `__clave` | en un `P_` | va **la última** de su sección y la cierra (la nutria, el espejo...) |
 | `__flash` | en un `P_` | destello blanco al colocarla (la cámara de fotos) |
+| `__reflejo` | en un `P_` | su momento es de frente y con todo lo demás a negro, con una silueta en la luna (el espejo). **La cara del espejo mira hacia su +Z local** (hacia delante en Blender, -Y; el exportador lo convierte) y la malla del cristal se llama `Luna`, `Cristal` o `Espejo` |
+| `__ofrecida` | en un `P_` | no va a la bandeja: cuando toca, aparece flotando junto a su hueco y un clic la mete (la moneda en la hucha). La sección que la tiene se abre con un primer plano de lo que la sostiene |
 | `__reward-cuadro` | en un `Z_` | al completar el rincón, el jugador recibe la pieza `cuadro` (hace falta un `P_cuadro`) |
 | `__x` `__nx` `__z` `__nz` `__y` `__ny` | en un `OD_` | eje por el que sale el cajón si no sale bien por defecto |
 | `__n` | en un `OR_` | la puerta abre hacia el otro lado |
@@ -53,7 +55,8 @@ Reglas de los nombres:
 - Lo que va **dentro de un armario o un baúl** (con puerta o tapa `OR_`) NO es hijo de la puerta
   (giraría con ella): es **hermano** de la puerta, dentro del mismo grupo del mueble
   (`Armario` → `OR_puerta`, `Balda`, `H_camara`).
-- Mientras no toca encontrarlo, un `H_` no se ve; cuando toca, su mueble brilla y se mueve un poco.
+- Mientras no toca encontrarlo, un `H_` no se ve (su silueta, donde va, sí); cuando toca, su mueble
+  brilla con un contorno dorado y se mueve un poco.
 - Las piezas de un `Z_` son hijas del `Z_`.
 - **Cajones:** con el diorama visto en vista frontal de Blender (tecla 1 del teclado numérico), el
   frente del cajón mira hacia vosotras. Si al probar sale hacia otro lado, añadid `__x`, `__nx`…
@@ -74,9 +77,27 @@ Desvan
 │                    P_caja_musica__after-comoda_infantil, P_dibujo__after-caja_musica, P_peluche__clave
 ├─ S_3_adolescencia  Bombilla, Armario (OR_puerta_armario__n + H_camara), Cajonera (OD_cajon_cajonera > H_solicitud), ...,
 │                    P_mp3__after-escritorio, P_camara__after-mp3__flash, P_solicitud__clave
-├─ S_4_adultez       Bombilla, Mesita (OD_cajon_mesita__nx > H_pinceles), ..., P_llaves, P_caballete__after-llaves, P_espejo__clave
-└─ S_5_epilogo       P_moneda (encima de la hucha)
+├─ S_4_adultez       Bombilla, Mesita (OD_cajon_mesita__nx > H_pinceles), ..., P_llaves, P_caballete__after-llaves,
+│                    P_espejo__clave__reflejo (con su malla Luna)
+└─ S_5_epilogo       P_moneda__ofrecida (encima de la hucha)
 ```
+
+### El título: la hucha de cerdito
+
+Va en **`assets/modelos/menu/menu.glb`** (provisional: `levels/provisional/menu_provisional.glb`).
+Sin secciones; el orden lo dan los `__after`:
+```
+Cerdito
+├─ Peana, Cojin, monedas sueltas (decorado)
+├─ Hucha (grupo)   P_cuerpo; P_pata__after-cuerpo (x4), P_hocico__after-cuerpo, P_oreja__after-cuerpo (x2),
+│                  P_cola__after-cuerpo, P_ranura__after-cuerpo, P_ojo__after-hocico (x2), P_mejillas__after-ojo,
+│                  P_lazo__after-oreja, P_pegatina_estrella__after-cuerpo (con una luz: brilla en la oscuridad),
+│                  P_pegatina_corazon / _flor / _luna / _rayo / _arcoiris (__after-cuerpo)
+└─ Cartel          P_pegatina_nombre__after-cuerpo (el texto del nombre del juego, en una malla "Nombre-WOODO_JAM")
+```
+Las pegatinas son formas planas con un poco de grosor, pegadas al cuerpo. Se pueden cambiar,
+quitar o añadir más (`P_pegatina_<lo que sea>__after-cuerpo`); la del nombre tiene que seguir
+llamándose así (el test comprueba que lleva el nombre del juego).
 Podéis cambiar formas, tamaños, posiciones y añadir o quitar dressing: el puzle se monta con lo
 que haya. Lo único que no se puede tocar sin avisar son los nombres de las piezas de la historia
 (sus frases van por nombre).
@@ -116,7 +137,7 @@ diorama y texturas de 1024 px como mucho (2048 solo si es imprescindible).
 
 ```
 assets/modelos/nivel_01/nivel_01.glb     ← un .glb por nivel
-assets/modelos/menu/menu.glb             ← el cofre del título: si existe, el juego usa ESTE (ver abajo)
+assets/modelos/menu/menu.glb             ← el cerdito del título: si existe, el juego usa ESTE (ver abajo)
 assets/texturas/                         ← solo si una textura va suelta
 assets/texturas/particulas/<nombre>.png  ← (opcional) polvo, chispa, hoja, viruta: blanco sobre
                                             transparente, 64-128 px; si no están, se dibujan solas
@@ -127,16 +148,15 @@ assets/audio/musica/musica.ogg           ← música en bucle
 assets/audio/voz/<clave>.ogg             ← voz del narrador; <clave> = la de data/narracion_es.json
 ```
 
-**El cofre del título.** El juego arranca con un diorama que hay que montar para que salga el
-menú, como en Woodo: un cofre de madera; delante, **las letras del nombre del juego, una pieza por
-letra**; encima, un paisaje pequeño (casita, dos árboles, dos faroles que se encienden, un banco).
-Ahora es provisional: `levels/provisional/menu_provisional.glb`.
+**El cerdito del título.** El juego arranca con un diorama que hay que montar para que salga el
+menú: **la hucha de cerdito** de la protagonista sobre un cojín, con sus **pegatinas** (estructura
+en §2). Ahora es provisional: `levels/provisional/menu_provisional.glb`.
 - **Para hacer el vuestro:** en Blender, *File → Import → glTF 2.0* de ese fichero. Trae los nombres,
   los tamaños y las posiciones: sustituid las mallas por las vuestras manteniendo los nombres de los
   objetos, y exportad como `assets/modelos/menu/menu.glb`. El juego lo usará solo, sin tocar nada más.
-- Las letras se llaman `P_letra_w`, `P_letra_o`, `P_letra_d`... Las repetidas, igual (Blender pondrá
-  `P_letra_o.001`): valen en cualquier hueco de esa letra. Podéis cambiar la disposición, añadir o
-  quitar piezas del paisaje: el puzle se monta con lo que haya.
+- Las piezas repetidas (patas, orejas, ojos) se llaman igual (Blender pondrá `P_pata.001`): valen
+  en cualquier hueco de su tipo. Podéis cambiar formas y posiciones, y añadir o quitar pegatinas:
+  el puzle se monta con lo que haya.
 - Sin `OD_`, `H_` ni `Z_` (es el tutorial).
 
 Los `.blend` de trabajo **no van al repositorio** (pesan mucho y no se pueden fusionar): guardadlos

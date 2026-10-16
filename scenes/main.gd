@@ -9,7 +9,7 @@ extends Node3D
 ##   --level=menu         empieza en el menú de inicio (igual que sin --level)
 ##   --menu-page=P        al abrirse el menú, en la página P (elegir, opciones, creditos);
 ##                        "pausa" abre la pausa nada más cargar
-##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s
+##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s; solo dice la frase de la última
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
@@ -26,6 +26,7 @@ var start_in_menu := true                    ## los tests lo ponen a false para 
 var menu: MainMenu
 var pause: PauseMenu
 var effects: Efectos
+var momentos: Momentos
 var _level: Node
 var _lighting: Node
 var _fade: ColorRect
@@ -68,6 +69,10 @@ func _ready() -> void:
 	hud.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(hud)
 	GameState.hud = hud
+	momentos = Momentos.new()
+	momentos.name = "Momentos"
+	momentos.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(momentos)
 	add_child(GamepadCursor.new())
 	menu = MainMenu.new()
 	menu.name = "MainMenu"
@@ -79,7 +84,7 @@ func _ready() -> void:
 	hud.next_requested.connect(next_level)
 	Events.flash_requested.connect(flash)
 	Events.section_opened.connect(func(sec: RefCounted) -> void:
-		if GameState.mode == GameState.Mode.PLAYING:
+		if GameState.mode == GameState.Mode.PLAYING and not GameState.camera.in_moment:   # el epílogo es un momento
 			GameState.camera.frame_box((sec as Section).box()))
 	hud.pause_requested.connect(open_pause)
 	menu.play_requested.connect(play_level)
@@ -282,6 +287,8 @@ func _process(delta: float) -> void:
 			_solve_timer = 0.3
 			_solve_left -= 1
 			GameState.diorama.debug_solve_step()
+			if _solve_left > 0:
+				Narrator.clear()                 # en la captura se oye (y se ve) solo la última frase
 	if _press_f9 and _elapsed > 1.0:
 		_press_f9 = false
 		var key := InputEventKey.new()
@@ -292,7 +299,7 @@ func _process(delta: float) -> void:
 		_zoom_steps -= 1
 		GameState.camera.zoom_at(1.0 - GameState.camera.zoom_step, _zoom_at)
 	if _hold.x >= 0.0 and _elapsed > 1.0 and _solve_left == 0 and not GameState.is_dragging:
-		var cards := GameState.hud._list.get_children().filter(func(n: Node) -> bool: return n is InventoryItem)
+		var cards := GameState.hud.cards(true)
 		if not cards.is_empty():
 			var card: InventoryItem = cards[0]
 			GameState.drag.begin(card.piece_id, card)

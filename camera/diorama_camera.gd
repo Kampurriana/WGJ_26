@@ -8,7 +8,9 @@ extends Node3D
 ##   clic corto = tocar el objeto (Events.world_clicked)
 ## Movimientos "de cine" (docs/ANALISIS-WOODO.md): entrada al nivel desde lejos (intro), inercia
 ## al soltar el giro, la pista gira y acerca (look_at_point), encuadre de cada sección (frame_box),
-## acercamiento suave al colocar (nudge) y vaivén de exhibición al completar (showcase).
+## acercamiento suave al colocar (nudge), vaivén de exhibición al completar (showcase) y el primer
+## plano de los momentos de la historia (close_up / end_close_up: sin límites de giro y sin que el
+## jugador la mueva; al acabar vuelve a donde estaba).
 ## Todo se mueve con MUELLES amortiguados (_spring): la velocidad nunca salta, así nada arranca ni
 ## frena de golpe (lo que pidió el equipo: "movimientos más suaves y agradecidos").
 
@@ -34,6 +36,8 @@ const NUDGE_SMOOTH := 0.7                    ## muy blando: ni empuja ni marea
 const NUDGE_HOLD := 1.1                      ## lo que se queda ahí antes de volver solo
 const HINT_ZOOM := 0.5                       ## la pista acerca hasta medio camino del zoom máximo
 const SHOWCASE_DEG := 18.0                   ## al completar, se mece así de un lado a otro
+const CLOSE_UP_TIME := 2.4                   ## lo que tarda en llegar al primer plano (muy blando)
+const CLOSE_UP_SMOOTH := 0.95
 
 var cam: Camera3D
 var yaw := 25.0
@@ -77,6 +81,8 @@ var _v_nudge := Vector3.ZERO
 var _v_nudge_zoom := 0.0
 var _nudge_left := 0.0
 var showcasing := false                      ## vaivén de diorama completado
+var in_moment := false                       ## primer plano de un momento de la historia
+var _saved_view := {}                        ## a dónde vuelve al acabar el momento
 var hovered: Interactable                    ## lo que se puede tocar bajo el ratón (null = nada)
 var _showcase_base := 0.0
 var _showcase_amp := 0.0
@@ -90,7 +96,7 @@ func _ready() -> void:
 	Events.focus_changed.connect(_on_focus_changed)
 	Events.piece_placed.connect(func(_id: StringName, n: Node3D) -> void: nudge(Visuals.global_aabb(n).get_center()))
 	Events.level_completed.connect(func(_d: Node) -> void:
-		if GameState.mode == GameState.Mode.PLAYING:
+		if GameState.mode == GameState.Mode.PLAYING and not in_moment:   # en un momento, lo decide él
 			showcase())
 
 
@@ -108,6 +114,9 @@ func configure(d: Diorama) -> void:
 	_spin = Vector2.ZERO
 	_cine_left = 0.0
 	showcasing = false
+	in_moment = false
+	_input_enabled = not _menu_view
+	cam.cull_mask = 0xFFFFF
 	snap()
 
 
@@ -152,7 +161,7 @@ func showcase() -> void:
 ## y no hace caso al jugador (las flechas y el ratón son para el menú).
 func set_menu_view(on: bool) -> void:
 	_menu_view = on
-	_input_enabled = not on
+	_input_enabled = not on and not in_moment
 	_sway_t = 0.0
 	if on:
 		yaw = _home.get("yaw", yaw)
@@ -247,6 +256,52 @@ func frame_box(box: AABB) -> void:
 	pitch = clampf(float(_home.get("pitch", pitch)) + 8.0, pitch_min, pitch_max)   # un poco más desde arriba
 	center = home_center().lerp(box.get_center(), 0.6)
 	_cine(2.0, 0.8)
+
+
+## Primer plano de un momento de la historia: se acerca despacio a `box` y se queda ahí; el jugador
+## no la mueve. frontal = hacia dónde mira el objeto: la cámara se pone delante, a su altura (el
+## espejo); si no, gira un poco hacia él sin salirse de los límites y baja un poco.
+func close_up(box: AABB, frontal := Vector3.ZERO) -> void:
+	if not in_moment:
+		_saved_view = {"yaw": yaw, "pitch": pitch, "distance": distance, "center": center}
+	in_moment = true
+	_input_enabled = false
+	showcasing = false
+	_spin = Vector2.ZERO
+	_press_button = 0
+	center = box.get_center()
+	var fit := tan(deg_to_rad(cam.fov * 0.5)) * 2.0             # alto que se ve a 1 m
+	var flat := frontal
+	flat.y = 0.0
+	if flat.length() > 0.01:
+		yaw = rad_to_deg(atan2(flat.x, flat.z))
+		pitch = 3.0
+		distance = maxf(box.size.y, box.size.x * 0.6) / fit * 1.5
+	else:
+		var from_yaw: float = _saved_view.get("yaw", yaw)            # la vista del jugador, no la del momento anterior
+		var from_pitch: float = _saved_view.get("pitch", pitch)
+		var to := box.get_center() - home_center()
+		to.y = 0.0
+		yaw = from_yaw
+		if to.length() > 0.05:
+			yaw = clampf(lerpf(from_yaw, rad_to_deg(atan2(to.x, to.z)), 0.35), yaw_min, yaw_max)
+		pitch = clampf(from_pitch - 6.0, 10.0, 60.0)
+		distance = clampf(box.size.length() / fit * 2.2, 0.7, float(_home.get("distance", distance)) * 0.6)
+	_cine(CLOSE_UP_TIME, CLOSE_UP_SMOOTH)
+
+
+## Fin del momento: vuelve a donde estaba y el jugador recupera la cámara.
+func end_close_up() -> void:
+	if not in_moment:
+		return
+	in_moment = false
+	_input_enabled = not _menu_view
+	cam.cull_mask = 0xFFFFF
+	yaw = _saved_view.get("yaw", yaw)
+	pitch = _saved_view.get("pitch", pitch)
+	distance = _saved_view.get("distance", distance)
+	center = _saved_view.get("center", center)
+	_cine(1.8, 0.85)
 
 
 func _process(delta: float) -> void:

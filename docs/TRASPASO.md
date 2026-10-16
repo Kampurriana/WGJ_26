@@ -20,8 +20,8 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (142 comprobaciones, 9 avisos)`** (~70 s).
-   Los 9 avisos son sonidos que aún no existen (`assets/audio/...`): normal.
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (158 comprobaciones, 12 avisos)`** (~80 s).
+   Los 12 avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
    y abrir el PNG con la herramienta de leer ficheros. En Windows, sin `xvfb-run`.
@@ -29,27 +29,37 @@ donde pone **sin probar**.
 
 Si el paso 2 o 3 no sale así, **no sigas**: diagnostica con `build/check.log` / `build/capture.log`.
 
-## 2. Estado del juego (16-oct-2026, junta "El desván por secciones" en `main` y en las 3 ramas)
+## 2. Estado del juego (16-oct-2026, junta "Cerdito, bandeja y momentos" en `main` y en las 3 ramas)
 
 - **El diorama principal es el desván de la historia** (`docs/GUION.md`, a partir del guion de
   Manu con sus cambios): `levels/level_01_desvan.tscn`. Se monta por **secciones** (`S_`): primero
   paredes y tejado (la hucha cierra esa fase), luego **infancia, adolescencia y adultez** (tres
-  zonas integradas en el mismo desván: cada una aparece con su rótulo, su bombilla y sus muebles)
-  y el epílogo (la moneda en la hucha, fundido a negro, créditos). Los objetos de la historia
-  aparecen de uno en uno y dicen su frase; los muebles que guardan algo **brillan y se mueven**
-  (baúl, armario, cajones) y la primera vez sale un consejo. Provisional (figuras + props del
-  pack); el de las artistas irá en `assets/modelos/desvan/desvan.glb`.
+  zonas integradas en el mismo desván) y el epílogo. **Todo se ve desde el principio en modo
+  fantasma**, cada acto de su color (rosa, azul, verde) y con un letrero flotante con su nombre;
+  al abrirse un acto, su decorado se vuelve de verdad y se enciende su bombilla. Los muebles que
+  guardan algo **brillan (contorno dorado) y se mueven**. Provisional (figuras + props del pack);
+  el de las artistas irá en `assets/modelos/desvan/desvan.glb`.
+- **Momentos de la historia** (`core/momentos.gd`): al colocar un objeto con frase, la cámara se le
+  acerca despacio, entran bandas de cine y un foco, el objeto hace su gesto (la bailarina gira, la
+  nutria se achucha...) y suena su frase; clic = siguiente frase. **El espejo**: cámara de frente,
+  todo a negro menos él, y en la luna aparece la silueta de ella, que se va con "¿Dónde estoy yo?".
+  **El epílogo**: primer plano de la hucha mientras se dicen sus frases; la moneda aparece
+  flotando y un clic la mete; después, fundido a negro.
+- **Bandeja** (derecha, flotante, más estrecha): enseña **todas** las piezas que faltan, agrupadas
+  por acto; las que aún no van, grises y con candado, y al pasar el ratón o tocarlas dice por qué
+  ("Es de «II · Adolescencia»…", "Antes tiene que estar la cumbrera."). Al coger una pieza **se
+  aparta** (queda su borde: soltar ahí = no poner nada) y se puede colocar lo que tapaba.
 - **Aspecto (`docs/ANALISIS-WOODO.md`):** fondo oscuro con halo y viñeta; luz en tiempo real que
   gira con la cámara y va de fría a cálida al montar; **sombras nítidas** (alcance ajustado a lo
   que se ve, mapa ortogonal, 8192 en PC); el diorama empieza en **madera cruda** y la **pintura se
   extiende** desde cada pieza; partículas (polvo, serrín, chispas, anillo, **luces cálidas** al
   completar, ya sin hojas); cámara con **muelles** (nada brusco), entrada, inercia, pista que
-  acerca, **acercamiento suave al colocar**, encuadre de cada sección y vaivén al completar;
-  **bandeja** oscura de dos columnas que se recoge al completar.
-- **Arranque:** el **cofre del título**, como en Woodo: las letras del nombre del juego (una pieza
-  por letra) y un paisaje pequeño encima (casita, 2 árboles, 2 faroles que se encienden, banco):
-  14 piezas. Es **un `.glb`** (`levels/provisional/menu_provisional.glb`, generado por
-  `tools/build_title_level.gd`); si existe `assets/modelos/menu/menu.glb`, se usa ese. Al
+  acerca, **acercamiento suave al colocar**, encuadre de cada sección y vaivén al completar.
+- **Arranque:** el puzle del título es **la hucha de cerdito** de la protagonista, sobre un cojín:
+  21 piezas (cuerpo, 4 patas, hocico, orejas, ojos, cola, ranura, coloretes, lazo y 7
+  **pegatinas**: estrella que brilla en la oscuridad, corazón, flor, luna, rayo, arcoíris y la del
+  nombre del juego en un cartel). Es **un `.glb`** (`levels/provisional/menu_provisional.glb`,
+  generado por `tools/build_title_level.gd`); si existe `assets/modelos/menu/menu.glb`, se usa ese. Al
   resolverlo sale el **menú** a la izquierda: Jugar/Continuar, Elegir diorama, Opciones, Créditos,
   Salir (no en Web). **Pausa** con Esc o el botón Menú.
 - `levels/level_01_habitacion.tscn` ("La habitación de estudio", con el pack *Modern Japanese Home
@@ -109,15 +119,21 @@ carpeta. Si no, parar y preguntar.
   mismo con el ballet); en la adolescencia, **primero la cámara y luego la inscripción** (la
   inscripción cierra el acto; el flash sale al colocar la cámara). "Ventana abierta con luz entrando"
   estaba tachado: no se hizo.
+- **Feedback del 16-oct, segunda nota:** bandeja que tape menos y que se aparte al coger una pieza
+  ("déjame ponerlo detrás"); todas las siluetas en modo fantasma desde el principio, con los actos
+  diferenciados; la bandeja enseña todas las piezas, las bloqueadas marcadas (dibujo y texto); el
+  puzle del título es **el cerdito**, de unas 20 piezas, sobre todo pegatinas; primer plano de la
+  hucha con los diálogos y la moneda (y el fade out); el espejo de frente, fondo negro y su
+  diálogo; secuencias con personalidad; jugabilidad orientativa y pausada.
 - Ramas fijas por área (§3).
 - El juego se llama **"Woodo Jam"** (confirmado el 16-oct; la persona lo escribió "woodoo jam" al
   confirmar que no cambia).
 - **Luz en tiempo real y fondo oscuro** (pedido). Que la luz **gire con la cámara** y que vaya de
   fría a cálida con el progreso fue decisión mía: se cambia en el Inspector (`seguir_camara`,
   colores/energías de inicio y final), sin código.
-- El título es **un cofre con las letras del nombre**, como el de Woodo (pedido: "un asset de piezas
-  pequeñas que se montan en la bandeja de la derecha"). El arte se cambia **dejando el `.glb` en
-  su sitio** (`Diorama.modelo`), nunca editando escenas.
+- El título es **la hucha de cerdito** (pedido en la segunda nota; antes era un cofre con las letras
+  del nombre, como el de Woodo). El nombre del juego va en una pegatina, en el cartel. El arte se
+  cambia **dejando el `.glb` en su sitio** (`Diorama.modelo`), nunca editando escenas.
 - La escena empieza en **madera sin pintar** (Woodo), ya no en arcilla blanca.
 
 ## 6. Pendiente (por orden de prioridad)
@@ -135,9 +151,11 @@ carpeta. Si no, parar y preguntar.
    `docs/ANALISIS-WOODO.md` §4 (fondo, partículas, cámara al completar...). Cada respuesta es
    ajustar valores, no un sistema nuevo.
 4. Créditos con nombres reales (`data/creditos_es.txt`).
-5. Sonidos y música: no hay ninguno (`assets/audio/...`; nombres en `autoload/sfx.gd`). La caja de
-   música debería sonar y apagarse al cerrar la infancia (guion).
-6. El cofre del título y el desván son provisionales: cuando lleguen los `.glb` de las artistas,
+5. Sonidos y música: no hay ninguno (`assets/audio/...`; nombres en `autoload/sfx.gd`; los que
+   pide el juego salen como avisos en `build/check.log`: `snap`, `reject`, `momento`, `brillo`...).
+   La caja de música debería sonar durante su momento y apagarse al cerrar la infancia (guion).
+   Los momentos ganarían mucho con un sonido por objeto (`momento_<id>`, sin hacer).
+6. El cerdito del título y el desván son provisionales: cuando lleguen los `.glb` de las artistas,
    dejarlos en su sitio (`docs/ARTE-PIPELINE.md`) y mirar capturas (sobre todo con 0 piezas
    puestas: toda pieza tiene que verse como silueta). Si piden una plantilla `.glb` del desván para
    Blender, generarla desde el provisional.
@@ -169,8 +187,8 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 
 | Qué | Cómo |
 |---|---|
-| Todo el test | `bash tools/check.sh` → `CHECK OK (142 …)` |
-| Ver los tests en rojo | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 51 × `ROJO BIEN` (~1 h: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
-| Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`) |
+| Todo el test | `bash tools/check.sh` → `CHECK OK (158 …)` |
+| Ver los tests en rojo | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 67 × `ROJO BIEN` (~1 h: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
+| Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`). Momentos del desván: `--solve=11` (hucha), `--solve=57 --capture-after=27` (espejo), `--solve=58 --capture-after=30` (epílogo) |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

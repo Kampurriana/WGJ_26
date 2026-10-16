@@ -1,9 +1,14 @@
 class_name Hud
 extends CanvasLayer
-## Interfaz construida en código: bandeja de piezas a la derecha (dos columnas de fichas pequeñas,
-## con scroll; al completar el diorama se recoge, como en Woodo), pista con recarga, botón Volver
+## Interfaz construida en código: bandeja de piezas a la derecha, pista con recarga, botón Volver
 ## (sub-dioramas), botón Menú (pausa), subtítulos del narrador y aviso de diorama completado.
 ## Aspecto: UiTheme (o res://ui/theme.tres si existe).
+##
+## La bandeja flota a la derecha (dos columnas de fichas pequeñas, con scroll) y enseña TODAS las
+## piezas que faltan, agrupadas por acto: las que aún no se pueden poner van grises, con candado, y
+## al pasar el ratón o tocarlas dice por qué (Diorama.lock_reason). Al coger una pieza se aparta
+## hacia la derecha (queda solo su borde, para soltar ahí y no poner nada) y deja colocar lo que
+## tapaba; al soltar, vuelve. Al completar el diorama se recoge, como en Woodo.
 
 signal next_requested
 signal pause_requested
@@ -12,14 +17,27 @@ signal pause_requested
 @export var assist_after := 45.0             ## sin progreso tanto tiempo => la pista se recarga sola
 
 const COLUMNS := 2
-const GAP := 8.0
-const PANEL_WIDTH := COLUMNS * InventoryItem.SIZE.x + (COLUMNS - 1) * GAP + 2 * 12.0 + 14.0
+const GAP := 6.0
+const PANEL_WIDTH := COLUMNS * InventoryItem.SIZE.x + (COLUMNS - 1) * GAP + 2 * 10.0 + 14.0
+const MARGIN := 10.0                         ## la bandeja flota: separada del borde de la pantalla
+const LIP := 26.0                            ## lo que se ve de ella mientras se arrastra una pieza
+const SLIDE_TIME := 0.22
 
 var _root: Control
 var _panel: PanelContainer
-var _list: GridContainer
+var _list: VBoxContainer                     ## un grupo por acto: rótulo + rejilla de fichas
+var _groups: Dictionary = {}                 ## índice de sección (-1 = sin sección) -> {box, header, grid}
+var _cards: Dictionary = {}                  ## id de pieza -> InventoryItem
 var _empty: Label
 var _tray_tween: Tween
+var _slide := 0.0                            ## 0 = en su sitio, 1 = apartada (al arrastrar)
+var _slide_tween: Tween
+var _info: PanelContainer                    ## bocadillo junto a la bandeja: qué es la pieza y si no se puede poner, por qué
+var _info_label: Label
+var _info_left := 0.0
+var _moment := false                         ## momento de la historia: bandeja y botones apartados
+var _moment_tween: Tween
+var _moment_hidden: Array[Control] = []
 var _hint_button: Button
 var _hint_bar: ProgressBar
 var _back_button: Button
@@ -63,24 +81,27 @@ func _ready() -> void:
 	Narrator.subtitle.connect(_show_subtitle)
 	Events.section_opened.connect(func(sec: RefCounted) -> void: show_chapter(Narrator.text("titulo_" + (sec as Section).name)))
 	Events.tip_requested.connect(func(key: String) -> void: show_tip(Narrator.text(key)))
+	Events.piece_drag_started.connect(func(_id: StringName) -> void:
+		_hide_info()
+		_slide_to(1.0))
+	Events.piece_drag_ended.connect(func(_id: StringName, _placed: bool) -> void: _slide_to(0.0))
+	Narrator.skipped.connect(func() -> void: _subtitle_box.hide())
 
 
 func _build_panel() -> void:
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
-	_panel.offset_left = -PANEL_WIDTH
 	_panel.theme_type_variation = &"Bandeja"
 	_root.add_child(_panel)
+	_set_slide(0.0)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_panel.add_child(scroll)
 	var column := VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(column)
-	_list = GridContainer.new()
-	_list.columns = COLUMNS
-	_list.add_theme_constant_override("h_separation", int(GAP))
-	_list.add_theme_constant_override("v_separation", int(GAP))
+	_list = VBoxContainer.new()
+	_list.add_theme_constant_override("separation", 10)
 	column.add_child(_list)
 	_empty = Label.new()
 	_empty.text = "Aquí no queda nada.\nBusca piezas escondidas\no acércate a otro rincón."
@@ -90,6 +111,86 @@ func _build_panel() -> void:
 	_empty.add_theme_color_override("font_color", UiTheme.CREAM)
 	_empty.hide()
 	column.add_child(_empty)
+	column.move_child(_empty, 0)                 # arriba: se lee antes que las fichas con candado
+	_info = PanelContainer.new()
+	_info.theme_type_variation = &"Subtitulo"
+	_info.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_info.hide()
+	_root.add_child(_info)
+	_info_label = Label.new()
+	_info_label.theme_type_variation = &"SubtituloTexto"
+	_info_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_info_label.custom_minimum_size = Vector2(230, 0)
+	_info_label.add_theme_font_size_override("font_size", 17)
+	_info.add_child(_info_label)
+
+
+## Posición de la bandeja: 0 = en su sitio, 1 = apartada a la derecha (solo asoma su borde).
+func _set_slide(v: float) -> void:
+	_slide = v
+	var shift := v * (PANEL_WIDTH - LIP + MARGIN)
+	_panel.offset_left = -PANEL_WIDTH - MARGIN + shift
+	_panel.offset_right = -MARGIN + shift
+	_panel.offset_top = MARGIN
+	_panel.offset_bottom = -MARGIN
+
+
+func _slide_to(v: float) -> void:
+	if _slide_tween != null:
+		_slide_tween.kill()
+	_slide_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_slide_tween.tween_method(_set_slide, _slide, v, SLIDE_TIME * absf(v - _slide) + 0.01)
+
+
+## (Tests) ¿Está la bandeja apartada (arrastrando una pieza)?
+func tray_is_away() -> bool:
+	return _slide > 0.5
+
+
+## Todas las fichas de la bandeja, en orden. available_only = solo las que se pueden poner ya.
+func cards(available_only := false) -> Array[InventoryItem]:
+	var out: Array[InventoryItem] = []
+	for g in _list.get_children():
+		for c in g.find_children("*", "InventoryItem", true, false):
+			if not (c as InventoryItem).is_queued_for_deletion() and (not available_only or not (c as InventoryItem).locked):
+				out.append(c)
+	return out
+
+
+func _show_info(card: InventoryItem, text: String, seconds := 0.0) -> void:
+	_info_label.text = text
+	_info.show()
+	_info.reset_size()
+	var r := card.get_global_rect()
+	var y := clampf(r.get_center().y - _info.size.y * 0.5, 8.0, _root.size.y - _info.size.y - 8.0)
+	_info.position = Vector2(_panel.get_global_rect().position.x - _info.size.x - 8.0, y)
+	_info_left = seconds
+
+
+func _hide_info() -> void:
+	_info.hide()
+	_info_left = 0.0
+
+
+## (Tests) Lo que dice ahora el bocadillo de la bandeja ("" = no se ve).
+func info_text() -> String:
+	return _info_label.text if _info.visible else ""
+
+
+func _on_card_hovered(card: InventoryItem, on: bool) -> void:
+	if not on:
+		if _info_left <= 0.0:
+			_hide_info()
+		return
+	var what := Narrator.piece_name(card.piece_id, true)
+	_show_info(card, what + ("\n" + card.reason if card.locked else ""))
+
+
+## Tocar una ficha con candado: tiembla, suena "no" y la bandeja dice por qué (y qué va antes).
+func _on_locked_pressed(card: InventoryItem) -> void:
+	Sfx.play("reject")
+	_show_info(card, "Todavía no se puede poner.\n" + card.reason, 3.5)
+	Events.piece_rejected.emit(card.piece_id, "bloqueada")
 
 
 func _build_controls() -> void:
@@ -251,8 +352,44 @@ func set_game_ui_visible(on: bool) -> void:
 		_done.hide()
 
 
-## Bandeja vacía = diorama hecho: se recoge con un fundido.
+## Durante un momento de la historia (core/momentos.gd) la bandeja, los botones y el título se
+## apartan con un fundido; al acabar vuelven (la bandeja no, si el diorama ya está completo).
+func set_moment(on: bool) -> void:
+	if on == _moment:
+		return
+	_moment = on
+	_hide_info()
+	if _moment_tween != null:
+		_moment_tween.kill()
+	_moment_tween = create_tween().set_parallel()
+	if on:
+		_moment_hidden.clear()
+		for c: Control in [_panel, _controls, _title]:
+			if c.visible:
+				_moment_hidden.append(c)
+				_moment_tween.tween_property(c, "modulate:a", 0.0, 0.45)
+		_moment_tween.chain().tween_callback(func() -> void:
+			for c in _moment_hidden:
+				c.hide())
+		return
+	var done := GameState.diorama != null and is_instance_valid(GameState.diorama) and GameState.diorama.completed
+	for c in _moment_hidden:
+		if c == _panel and done:
+			continue
+		c.show()
+		c.modulate.a = 0.0
+		_moment_tween.tween_property(c, "modulate:a", 1.0, 0.6)
+	_moment_hidden.clear()
+
+
+## (Tests) ¿Está la interfaz apartada por un momento de la historia?
+func in_moment() -> bool:
+	return _moment
+
+
+## Diorama hecho: la bandeja se recoge con un fundido.
 func _put_tray_away() -> void:
+	_hide_info()
 	_tray_tween = _panel.create_tween()
 	_tray_tween.tween_property(_panel, "modulate:a", 0.0, 0.45)
 	_tray_tween.tween_callback(_panel.hide)
@@ -263,6 +400,21 @@ func _on_level_started() -> void:
 		_tray_tween.kill()
 	_panel.modulate.a = 1.0
 	_panel.visible = _game_ui
+	_set_slide(0.0)
+	_hide_info()
+	if _moment_tween != null:
+		_moment_tween.kill()
+	_moment = false
+	for c in _moment_hidden:
+		c.visible = _game_ui
+	_moment_hidden.clear()
+	for c: Control in [_panel, _controls, _title]:
+		c.modulate.a = 1.0
+	for g in _list.get_children():               # las fichas son del diorama anterior
+		_list.remove_child(g)
+		g.queue_free()
+	_groups.clear()
+	_cards.clear()
 	_title.text = GameState.diorama.level_title
 	_chapter.modulate.a = 0.0
 	_tip_box.hide()
@@ -273,29 +425,97 @@ func _on_level_started() -> void:
 	rebuild_inventory()
 
 
+## Pone al día la bandeja sin rehacerla: las fichas que siguen se quedan (su vista 3D no se vuelve a
+## crear), las de piezas ya puestas se van, y cada una sabe si está bloqueada y por qué.
 func rebuild_inventory() -> void:
 	var d := GameState.diorama
-	for c in _list.get_children():
-		_list.remove_child(c)
-		c.queue_free()
-	if d == null:
-		return
-	for id in d.visible_inventory():
-		var item := InventoryItem.new()
-		item.setup(id, d.prototype_for(id), d.reference_node_for(id), d.count_of(id))
-		_list.add_child(item)
-	_empty.visible = _list.get_child_count() == 0 and not d.completed and not d.is_opening()
-	_empty.text = "Algo está guardado.\nToca el mueble que brilla." if d.has_findable() \
+	var entries: Array[Dictionary] = d.tray_entries() if d != null and is_instance_valid(d) else []
+	var keep: Dictionary = {}
+	for e in entries:
+		keep[e.id] = e
+	for id: StringName in _cards.keys():
+		var card: InventoryItem = _cards[id]
+		if not keep.has(id) or card.get_meta("grupo") != _group_key(d, keep[id]):
+			card.get_parent().remove_child(card)
+			card.queue_free()
+			_cards.erase(id)
+	var order: Array[int] = []
+	for e in entries:
+		var k := _group_key(d, e)
+		if not order.has(k):
+			order.append(k)
+	for k: int in _groups.keys():
+		if not order.has(k):
+			_list.remove_child(_groups[k].box)
+			_groups[k].box.queue_free()
+			_groups.erase(k)
+	for i in order.size():
+		var g := _group(d, order[i])
+		_list.move_child(g.box, i)
+	var placed_in: Dictionary = {}               # grupo -> fichas ya colocadas en su orden
+	for e in entries:
+		var k := _group_key(d, e)
+		var g: Dictionary = _groups[k]
+		var card: InventoryItem = _cards.get(e.id)
+		if card == null:
+			card = InventoryItem.new()
+			card.setup(e.id, d.prototype_for(e.id), d.reference_node_for(e.id), e.count)
+			card.set_meta("grupo", k)
+			card.hovered.connect(_on_card_hovered)
+			card.locked_pressed.connect(_on_locked_pressed)
+			g.grid.add_child(card)
+			_cards[e.id] = card
+		card.set_count(e.count)
+		var at: int = placed_in.get(k, 0)
+		g.grid.move_child(card, at)
+		placed_in[k] = at + 1
+		card.set_locked(e.locked, e.reason)
+	for k: int in _groups:
+		var sec: Section = d.sections[k] if k >= 0 and d != null and k < d.sections.size() else null
+		var header: Label = _groups[k].header
+		header.modulate = Color.WHITE if sec == null or sec.opened else Color(1, 1, 1, 0.55)
+	var any_ready := entries.any(func(e: Dictionary) -> bool: return not e.locked)
+	_empty.visible = d != null and not any_ready and not d.completed and not d.is_opening()
+	_empty.text = "Algo está guardado.\nToca el mueble que brilla." if d != null and d.has_findable() \
 		else "Aquí no queda nada.\nBusca piezas escondidas\no acércate a otro rincón."
 
 
+func _group_key(d: Diorama, e: Dictionary) -> int:
+	return d.sections.find(e.section) if d != null and e.section != null else -1
+
+
+## El grupo de un acto en la bandeja: su rótulo (del color del acto) y su rejilla de fichas.
+func _group(d: Diorama, k: int) -> Dictionary:
+	if _groups.has(k):
+		return _groups[k]
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+	_list.add_child(box)
+	var header := Label.new()
+	header.add_theme_font_size_override("font_size", 15)
+	header.add_theme_constant_override("outline_size", 4)
+	header.add_theme_color_override("font_outline_color", Color(0.1, 0.07, 0.05))
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sec: Section = d.sections[k] if k >= 0 else null
+	header.text = d.section_title(sec) if sec != null else ""
+	header.visible = sec != null
+	header.add_theme_color_override("font_color", sec.tint.lerp(UiTheme.CREAM, 0.35) if sec != null else UiTheme.CREAM)
+	box.add_child(header)
+	var grid := GridContainer.new()
+	grid.columns = COLUMNS
+	grid.add_theme_constant_override("h_separation", int(GAP))
+	grid.add_theme_constant_override("v_separation", int(GAP))
+	box.add_child(grid)
+	_groups[k] = {"box": box, "header": header, "grid": grid}
+	return _groups[k]
+
+
 func item_for(id: StringName) -> InventoryItem:
-	for c in _list.get_children():
-		if c is InventoryItem and (c as InventoryItem).piece_id == id:
-			return c
-	return null
+	var c: InventoryItem = _cards.get(id)
+	return c if c != null and is_instance_valid(c) and not c.is_queued_for_deletion() else null
 
 
+## Soltar aquí = no poner nada. Mientras se arrastra solo cuenta el borde que asoma.
 func is_over_panel(pos: Vector2) -> bool:
 	return _panel.visible and _panel.get_global_rect().has_point(pos)
 
@@ -307,7 +527,7 @@ func says_nothing_left() -> bool:
 
 func request_hint() -> void:
 	var d := GameState.diorama
-	if d == null or _charge < 1.0:
+	if d == null or _charge < 1.0 or _moment:
 		return
 	var h := d.hint_target(GameState.hovered_piece)
 	if h.is_empty():
@@ -370,6 +590,10 @@ func _process(delta: float) -> void:
 		_tip_left -= delta
 		if _tip_left <= 0.0:
 			_tip_box.hide()
+	if _info_left > 0.0:
+		_info_left -= delta
+		if _info_left <= 0.0:
+			_hide_info()
 
 
 func _unhandled_input(e: InputEvent) -> void:

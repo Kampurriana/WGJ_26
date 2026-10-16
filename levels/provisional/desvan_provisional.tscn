@@ -2403,776 +2403,776 @@ top_radius = 0.045
 bottom_radius = 0.045
 height = 0.012
 
-[node name="Desvan" type="Node3D" unique_id=1344831949]
+[node name="Desvan" type="Node3D" unique_id=2082814818]
 
-[node name="Peana" type="MeshInstance3D" parent="." unique_id=1713941669]
+[node name="Peana" type="MeshInstance3D" parent="." unique_id=2073377099]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, 0)
 mesh = SubResource("BoxMesh_ugcqi")
 
-[node name="Tabla1" type="MeshInstance3D" parent="." unique_id=572827879]
+[node name="Tabla1" type="MeshInstance3D" parent="." unique_id=1417660860]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.47)
 mesh = SubResource("BoxMesh_4fd5n")
 
-[node name="Tabla2" type="MeshInstance3D" parent="." unique_id=582947165]
+[node name="Tabla2" type="MeshInstance3D" parent="." unique_id=621258398]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.1)
 mesh = SubResource("BoxMesh_grbck")
 
-[node name="Tabla3" type="MeshInstance3D" parent="." unique_id=1855970502]
+[node name="Tabla3" type="MeshInstance3D" parent="." unique_id=466473819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.73)
 mesh = SubResource("BoxMesh_i0rki")
 
-[node name="Tabla4" type="MeshInstance3D" parent="." unique_id=1937232815]
+[node name="Tabla4" type="MeshInstance3D" parent="." unique_id=558195323]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.36)
 mesh = SubResource("BoxMesh_5nqy8")
 
-[node name="Tabla5" type="MeshInstance3D" parent="." unique_id=918988059]
+[node name="Tabla5" type="MeshInstance3D" parent="." unique_id=751081089]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01)
 mesh = SubResource("BoxMesh_0cquy")
 
-[node name="Tabla6" type="MeshInstance3D" parent="." unique_id=2003561486]
+[node name="Tabla6" type="MeshInstance3D" parent="." unique_id=1269440392]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.38)
 mesh = SubResource("BoxMesh_tdj82")
 
-[node name="Tabla7" type="MeshInstance3D" parent="." unique_id=92649321]
+[node name="Tabla7" type="MeshInstance3D" parent="." unique_id=945966343]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.75)
 mesh = SubResource("BoxMesh_s2wle")
 
-[node name="Tabla8" type="MeshInstance3D" parent="." unique_id=1410717077]
+[node name="Tabla8" type="MeshInstance3D" parent="." unique_id=1845990062]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.12)
 mesh = SubResource("BoxMesh_pgavp")
 
-[node name="Tabla9" type="MeshInstance3D" parent="." unique_id=1379282456]
+[node name="Tabla9" type="MeshInstance3D" parent="." unique_id=128285592]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.49)
 mesh = SubResource("BoxMesh_w8557")
 
-[node name="CajaVieja1" type="MeshInstance3D" parent="." unique_id=397764486]
+[node name="CajaVieja1" type="MeshInstance3D" parent="." unique_id=252777806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, 0.17, -1.35)
 mesh = SubResource("BoxMesh_125c0")
 
-[node name="CajaVieja2" type="MeshInstance3D" parent="." unique_id=2098358893]
+[node name="CajaVieja2" type="MeshInstance3D" parent="." unique_id=1370860614]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.46, -1.37)
 mesh = SubResource("BoxMesh_sn3xq")
 
-[node name="Maleta" type="MeshInstance3D" parent="." unique_id=1702524513]
+[node name="Maleta" type="MeshInstance3D" parent="." unique_id=1203765838]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.14, -1.42)
 mesh = SubResource("BoxMesh_m0xt5")
 
-[node name="AsaMaleta" type="MeshInstance3D" parent="." unique_id=1998714387]
+[node name="AsaMaleta" type="MeshInstance3D" parent="." unique_id=1202652553]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.3, -1.42)
 mesh = SubResource("BoxMesh_qla68")
 
-[node name="AlfombraEnrollada" type="MeshInstance3D" parent="." unique_id=1361893006]
+[node name="AlfombraEnrollada" type="MeshInstance3D" parent="." unique_id=900848934]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -2.35, 0.08, 1.35)
 mesh = SubResource("CylinderMesh_g3bj4")
 
-[node name="BaulViejo" type="MeshInstance3D" parent="." unique_id=1458956690]
+[node name="BaulViejo" type="MeshInstance3D" parent="." unique_id=1628227760]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 1.12)
 mesh = SubResource("BoxMesh_wrel6")
 
-[node name="HerrajeBaul" type="MeshInstance3D" parent="." unique_id=246940067]
+[node name="HerrajeBaul" type="MeshInstance3D" parent="." unique_id=1741376974]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 1.325)
 mesh = SubResource("BoxMesh_kahh1")
 
-[node name="S_1_desvan" type="Node3D" parent="." unique_id=1127954041]
+[node name="S_1_desvan" type="Node3D" parent="." unique_id=203853629]
 
-[node name="P_pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1146787643]
+[node name="P_pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=844000485]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.6)
 
-[node name="Pared" type="MeshInstance3D" parent="S_1_desvan/P_pared_fondo" unique_id=428837281]
+[node name="Pared" type="MeshInstance3D" parent="S_1_desvan/P_pared_fondo" unique_id=774167894]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("BoxMesh_bgx66")
 
-[node name="P_pared_izquierda" type="Node3D" parent="S_1_desvan" unique_id=220215506]
+[node name="P_pared_izquierda" type="Node3D" parent="S_1_desvan" unique_id=1966792329]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0, 0)
 
-[node name="Pared" type="MeshInstance3D" parent="S_1_desvan/P_pared_izquierda" unique_id=1651696062]
+[node name="Pared" type="MeshInstance3D" parent="S_1_desvan/P_pared_izquierda" unique_id=65386571]
 mesh = SubResource("ArrayMesh_7s6ln")
 
-[node name="P_pared_derecha" type="Node3D" parent="S_1_desvan" unique_id=1977027048]
+[node name="P_pared_derecha" type="Node3D" parent="S_1_desvan" unique_id=90246723]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 0, 0)
 
-[node name="Pared" type="MeshInstance3D" parent="S_1_desvan/P_pared_derecha" unique_id=1270257066]
+[node name="Pared" type="MeshInstance3D" parent="S_1_desvan/P_pared_derecha" unique_id=1104285852]
 mesh = SubResource("ArrayMesh_h36q5")
 
-[node name="P_cumbrera__after-pared_izquierda__after-pared_derecha" type="Node3D" parent="S_1_desvan" unique_id=1629095847]
+[node name="P_cumbrera__after-pared_izquierda__after-pared_derecha" type="Node3D" parent="S_1_desvan" unique_id=1943725688]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 
-[node name="Viga" type="MeshInstance3D" parent="S_1_desvan/P_cumbrera__after-pared_izquierda__after-pared_derecha" unique_id=80103170]
+[node name="Viga" type="MeshInstance3D" parent="S_1_desvan/P_cumbrera__after-pared_izquierda__after-pared_derecha" unique_id=765363715]
 mesh = SubResource("BoxMesh_a3y7p")
 
-[node name="P_tejado__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=1568637711]
+[node name="P_tejado__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=1439077116]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, 0.6469774, 0, -0.6469774, 0.76250917, -1.8, 1.7, -0.825)
 
-[node name="Tablero" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=510905229]
+[node name="Tablero" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=1466092617]
 mesh = SubResource("BoxMesh_n7mej")
 
-[node name="Rastrel0" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=473087244]
+[node name="Rastrel0" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=1577368081]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.7)
 mesh = SubResource("BoxMesh_kh6fn")
 
-[node name="Rastrel1" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=607595792]
+[node name="Rastrel1" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=1059981350]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 mesh = SubResource("BoxMesh_e7qwc")
 
-[node name="Rastrel2" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=1545514118]
+[node name="Rastrel2" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=1787321810]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0.7)
 mesh = SubResource("BoxMesh_foirh")
 
-[node name="P_tejado__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=586193278]
+[node name="P_tejado__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=1870794326]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, 0.6469774, 0, -0.6469774, 0.76250917, 0, 1.7, -0.825)
 
-[node name="Tablero" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=1235079890]
+[node name="Tablero" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=341331476]
 mesh = SubResource("BoxMesh_v0hp6")
 
-[node name="Rastrel0" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=2116851824]
+[node name="Rastrel0" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=1403491890]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.7)
 mesh = SubResource("BoxMesh_326rc")
 
-[node name="Rastrel1" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=1182742903]
+[node name="Rastrel1" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=1745132980]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 mesh = SubResource("BoxMesh_l30yn")
 
-[node name="Rastrel2" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=700629092]
+[node name="Rastrel2" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_001" unique_id=1346410342]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0.7)
 mesh = SubResource("BoxMesh_hgsus")
 
-[node name="P_tejado__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=1772305279]
+[node name="P_tejado__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=1895658862]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, 0.6469774, 0, -0.6469774, 0.76250917, 1.8, 1.7, -0.825)
 
-[node name="Tablero" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=492831603]
+[node name="Tablero" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=912810157]
 mesh = SubResource("BoxMesh_gprtt")
 
-[node name="Rastrel0" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=473608343]
+[node name="Rastrel0" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=1708286334]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.7)
 mesh = SubResource("BoxMesh_rw04q")
 
-[node name="Rastrel1" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=1316906435]
+[node name="Rastrel1" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=1233869150]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 mesh = SubResource("BoxMesh_sge5i")
 
-[node name="Rastrel2" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=1644243327]
+[node name="Rastrel2" type="MeshInstance3D" parent="S_1_desvan/P_tejado__after-cumbrera_002" unique_id=1047218320]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0.7)
 mesh = SubResource("BoxMesh_2sxb8")
 
-[node name="P_viga__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=734862023]
+[node name="P_viga__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=212975764]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, -0.6469774, 0, 0.6469774, 0.76250917, -2.62, 1.7, 0.825)
 
-[node name="Viga" type="MeshInstance3D" parent="S_1_desvan/P_viga__after-cumbrera" unique_id=693027741]
+[node name="Viga" type="MeshInstance3D" parent="S_1_desvan/P_viga__after-cumbrera" unique_id=1490890601]
 mesh = SubResource("BoxMesh_q5ymk")
 
-[node name="P_viga__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=51777347]
+[node name="P_viga__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=1254079834]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, -0.6469774, 0, 0.6469774, 0.76250917, 2.62, 1.7, 0.825)
 
-[node name="Viga" type="MeshInstance3D" parent="S_1_desvan/P_viga__after-cumbrera_001" unique_id=645131038]
+[node name="Viga" type="MeshInstance3D" parent="S_1_desvan/P_viga__after-cumbrera_001" unique_id=169804149]
 mesh = SubResource("BoxMesh_y17c7")
 
-[node name="P_ventana__after-pared_derecha" type="Node3D" parent="S_1_desvan" unique_id=174202878]
+[node name="P_ventana__after-pared_derecha" type="Node3D" parent="S_1_desvan" unique_id=651316517]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.64, 1.35, -0.75)
 
-[node name="Marco" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=981872496]
+[node name="Marco" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=1078997035]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("CylinderMesh_1tyat")
 
-[node name="Cristal" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=1662312394]
+[node name="Cristal" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=262686742]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.01, 0, 0)
 mesh = SubResource("CylinderMesh_avr1u")
 
-[node name="Cruceta1" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=1816674258]
+[node name="Cruceta1" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=706852624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.035, 0, 0)
 mesh = SubResource("BoxMesh_t64ok")
 
-[node name="Cruceta2" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=1839941950]
+[node name="Cruceta2" type="MeshInstance3D" parent="S_1_desvan/P_ventana__after-pared_derecha" unique_id=916502313]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.035, 0, 0)
 mesh = SubResource("BoxMesh_4bhcc")
 
-[node name="P_hucha__clave" type="Node3D" parent="S_1_desvan" unique_id=1369810991]
+[node name="P_hucha__clave" type="Node3D" parent="S_1_desvan" unique_id=268456571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 1.12)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=1478071733]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=294334282]
 transform = Transform3D(1.25, 0, 0, 0, 0.95, 0, 0, 0, 0.95, 0, 0.11, 0)
 mesh = SubResource("SphereMesh_0ayx7")
 
-[node name="Hocico" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=1966524874]
+[node name="Hocico" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=2133417637]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.16, 0.11, 0)
 mesh = SubResource("CylinderMesh_lm2ij")
 
-[node name="Oreja0" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=15969661]
+[node name="Oreja0" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=652783279]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.21, -0.05)
 mesh = SubResource("SphereMesh_7c5tu")
 
-[node name="Pata00" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=1873376465]
+[node name="Pata00" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=2047762210]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 0.025, -0.05)
 mesh = SubResource("CylinderMesh_1ajne")
 
-[node name="Pata10" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=254624191]
+[node name="Pata10" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=775964267]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.025, -0.05)
 mesh = SubResource("CylinderMesh_51e0u")
 
-[node name="Oreja1" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=109776913]
+[node name="Oreja1" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=27472943]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.21, 0.05)
 mesh = SubResource("SphereMesh_037ry")
 
-[node name="Pata01" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=756735852]
+[node name="Pata01" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=1871486288]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 0.025, 0.05)
 mesh = SubResource("CylinderMesh_pejv2")
 
-[node name="Pata11" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=1995500772]
+[node name="Pata11" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=626948151]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.025, 0.05)
 mesh = SubResource("CylinderMesh_oqprn")
 
-[node name="Ranura" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=28974909]
+[node name="Ranura" type="MeshInstance3D" parent="S_1_desvan/P_hucha__clave" unique_id=1711499498]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
 mesh = SubResource("BoxMesh_6qsjx")
 
-[node name="S_2_infancia" type="Node3D" parent="." unique_id=753143136]
+[node name="S_2_infancia" type="Node3D" parent="." unique_id=591086488]
 
-[node name="Bombilla" type="Node3D" parent="S_2_infancia" unique_id=1453759318]
+[node name="Bombilla" type="Node3D" parent="S_2_infancia" unique_id=1292630551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 1.8, -0.35)
 
-[node name="Cable" type="MeshInstance3D" parent="S_2_infancia/Bombilla" unique_id=1732101610]
+[node name="Cable" type="MeshInstance3D" parent="S_2_infancia/Bombilla" unique_id=1145235251]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("CylinderMesh_igf5a")
 
-[node name="Casquillo" type="MeshInstance3D" parent="S_2_infancia/Bombilla" unique_id=1658506568]
+[node name="Casquillo" type="MeshInstance3D" parent="S_2_infancia/Bombilla" unique_id=804612576]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("CylinderMesh_v7ghi")
 
-[node name="Cristal" type="MeshInstance3D" parent="S_2_infancia/Bombilla" unique_id=1697225184]
+[node name="Cristal" type="MeshInstance3D" parent="S_2_infancia/Bombilla" unique_id=1093949831]
 mesh = SubResource("SphereMesh_v2l5o")
 
-[node name="LuzZona" type="OmniLight3D" parent="S_2_infancia/Bombilla" unique_id=1266623979]
+[node name="LuzZona" type="OmniLight3D" parent="S_2_infancia/Bombilla" unique_id=420340116]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 1.3
 omni_range = 2.6
 omni_attenuation = 1.2
 
-[node name="BaulJuguetes" type="Node3D" parent="S_2_infancia" unique_id=475584086]
+[node name="BaulJuguetes" type="Node3D" parent="S_2_infancia" unique_id=1902022168]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.55, 0, -0.55)
 
-[node name="Fondo" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=1892496266]
+[node name="Fondo" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=1971464045]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 mesh = SubResource("BoxMesh_d3hai")
 
-[node name="Frente" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=1686304597]
+[node name="Frente" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=290340539]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0.16)
 mesh = SubResource("BoxMesh_3qjaq")
 
-[node name="Trasera" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=696245455]
+[node name="Trasera" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=1656790124]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -0.16)
 mesh = SubResource("BoxMesh_1vqxv")
 
-[node name="LadoA" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=649909830]
+[node name="LadoA" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=219684347]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27, 0.15, 0)
 mesh = SubResource("BoxMesh_35fdt")
 
-[node name="LadoB" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=1437961439]
+[node name="LadoB" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes" unique_id=1554409130]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27, 0.15, 0)
 mesh = SubResource("BoxMesh_n8ylh")
 
-[node name="OR_tapa_baul__x" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=99140009]
+[node name="OR_tapa_baul__x" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1927455935]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.17)
 
-[node name="Tapa" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=2005578360]
+[node name="Tapa" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=399767721]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, 0.17)
 mesh = SubResource("BoxMesh_5o0gt")
 
-[node name="Estrella" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=1301026494]
+[node name="Estrella" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=2121484852]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0.17)
 mesh = SubResource("BoxMesh_h6br1")
 
-[node name="H_cubos" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1388897053]
+[node name="H_cubos" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1090729528]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
 
-[node name="Cubo0" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/H_cubos" unique_id=1554189981]
+[node name="Cubo0" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/H_cubos" unique_id=901563024]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.035, 0)
 mesh = SubResource("BoxMesh_71dyd")
 
-[node name="Cubo1" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/H_cubos" unique_id=983575840]
+[node name="Cubo1" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/H_cubos" unique_id=2060734581]
 transform = Transform3D(0.9781476, 0, 0.2079117, 0, 1, 0, -0.2079117, 0, 0.9781476, 0.04, 0.035, 0)
 mesh = SubResource("BoxMesh_wmluo")
 
-[node name="Cubo2" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/H_cubos" unique_id=238020323]
+[node name="Cubo2" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/H_cubos" unique_id=1641307862]
 transform = Transform3D(0.9135454, 0, 0.40673664, 0, 1, 0, -0.40673664, 0, 0.9135454, -0.05, 0.105, 0)
 mesh = SubResource("BoxMesh_sn718")
 
-[node name="P_alfombra_infancia" type="Node3D" parent="S_2_infancia" unique_id=1630214350]
+[node name="P_alfombra_infancia" type="Node3D" parent="S_2_infancia" unique_id=1935028940]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 0.012, 0.45)
 
-[node name="Alfombra" type="MeshInstance3D" parent="S_2_infancia/P_alfombra_infancia" unique_id=996148673]
+[node name="Alfombra" type="MeshInstance3D" parent="S_2_infancia/P_alfombra_infancia" unique_id=775431162]
 mesh = SubResource("CylinderMesh_g6u2v")
 
-[node name="Circulo" type="MeshInstance3D" parent="S_2_infancia/P_alfombra_infancia" unique_id=519368585]
+[node name="Circulo" type="MeshInstance3D" parent="S_2_infancia/P_alfombra_infancia" unique_id=919288874]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, 0)
 mesh = SubResource("CylinderMesh_e4hy7")
 
-[node name="P_cama_infantil" type="Node3D" parent="S_2_infancia" unique_id=1646897255]
+[node name="P_cama_infantil" type="Node3D" parent="S_2_infancia" unique_id=2033273799]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0, -1)
 
-[node name="Marco" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=953620895]
+[node name="Marco" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=1569099517]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
 mesh = SubResource("BoxMesh_188gw")
 
-[node name="Cabecero" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=546208327]
+[node name="Cabecero" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=1906349056]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, -0.48)
 mesh = SubResource("BoxMesh_k11m4")
 
-[node name="Colchon" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=1153745505]
+[node name="Colchon" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=845815906]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.02)
 mesh = SubResource("BoxMesh_wx4fl")
 
-[node name="Almohada" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=1858068296]
+[node name="Almohada" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=1532000351]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31, -0.34)
 mesh = SubResource("BoxMesh_3utqe")
 
-[node name="Manta" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=2098142178]
+[node name="Manta" type="MeshInstance3D" parent="S_2_infancia/P_cama_infantil" unique_id=409288045]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0.2)
 mesh = SubResource("BoxMesh_4ndci")
 
-[node name="P_comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1524830127]
+[node name="P_comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1645626042]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0, -1.33)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=647612370]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=25900731]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0)
 mesh = SubResource("BoxMesh_mbyyv")
 
-[node name="Cajon0" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=1107785002]
+[node name="Cajon0" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=1056246445]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0.152)
 mesh = SubResource("BoxMesh_3g84x")
 
-[node name="Pomo0" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=2145428412]
+[node name="Pomo0" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=1569976462]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0.165)
 mesh = SubResource("SphereMesh_dxph5")
 
-[node name="Cajon1" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=423120534]
+[node name="Cajon1" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=331379039]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33, 0.152)
 mesh = SubResource("BoxMesh_mw31u")
 
-[node name="Pomo1" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=1748398329]
+[node name="Pomo1" type="MeshInstance3D" parent="S_2_infancia/P_comoda_infantil" unique_id=689784869]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33, 0.165)
 mesh = SubResource("SphereMesh_k6sm7")
 
-[node name="P_caja_musica__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1236615709]
+[node name="P_caja_musica__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1639390879]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3, 0.46, -1.36)
 
-[node name="Caja" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=599959708]
+[node name="Caja" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=298026962]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
 mesh = SubResource("BoxMesh_ijosa")
 
-[node name="TapaAbierta" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=295536207]
+[node name="TapaAbierta" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=730309106]
 transform = Transform3D(1, 0, 0, 0, 0.9781476, 0.2079117, 0, -0.2079117, 0.9781476, 0, 0.12, -0.065)
 mesh = SubResource("BoxMesh_6tcfk")
 
-[node name="Espejito" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=156518424]
+[node name="Espejito" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1079712]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.057)
 mesh = SubResource("BoxMesh_2mnm8")
 
-[node name="Bailarina" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1162362469]
+[node name="Bailarina" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=179887814]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
 mesh = SubResource("CylinderMesh_vtrku")
 
-[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1703278422]
+[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=2030445318]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
 mesh = SubResource("SphereMesh_k8n28")
 
-[node name="Tutu" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1601442619]
+[node name="Tutu" type="MeshInstance3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=877629964]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0)
 mesh = SubResource("CylinderMesh_y8drt")
 
-[node name="P_dibujo__after-caja_musica" type="Node3D" parent="S_2_infancia" unique_id=263402114]
+[node name="P_dibujo__after-caja_musica" type="Node3D" parent="S_2_infancia" unique_id=1679432744]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.95, 0.72, -1.545)
 
-[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=99300296]
+[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=2222903]
 mesh = SubResource("BoxMesh_owy7f")
 
-[node name="Tutu" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1752725456]
+[node name="Tutu" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1918216310]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0.004)
 mesh = SubResource("BoxMesh_jq3io")
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1466135016]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=530852582]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0.004)
 mesh = SubResource("BoxMesh_arsco")
 
-[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=845849417]
+[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=247924413]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0.004)
 mesh = SubResource("SphereMesh_y53iu")
 
-[node name="Piernas" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=396428684]
+[node name="Piernas" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=632228280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07, 0.004)
 mesh = SubResource("BoxMesh_cs26u")
 
-[node name="Sol" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1484784386]
+[node name="Sol" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1621411716]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.09, 0.004)
 mesh = SubResource("BoxMesh_kniv2")
 
-[node name="Celo" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1260357910]
+[node name="Celo" type="MeshInstance3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=1861158355]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0.004)
 mesh = SubResource("BoxMesh_na0gn")
 
-[node name="P_caballito" type="Node3D" parent="S_2_infancia" unique_id=1495982152]
+[node name="P_caballito" type="Node3D" parent="S_2_infancia" unique_id=2111780151]
 transform = Transform3D(0.90630776, 0, 0.42261827, 0, 1, 0, -0.42261827, 0, 0.90630776, -1.25, 0, 0.55)
 
-[node name="Balancin0" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=1130581620]
+[node name="Balancin0" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=2016873951]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, -0.08)
 mesh = SubResource("BoxMesh_tb2i8")
 
-[node name="Balancin1" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=615254659]
+[node name="Balancin1" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=1998168077]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.08)
 mesh = SubResource("BoxMesh_6irqi")
 
-[node name="Pata00" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=217798272]
+[node name="Pata00" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=1458357318]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.16, -0.06)
 mesh = SubResource("BoxMesh_5cm7i")
 
-[node name="Pata01" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=271113471]
+[node name="Pata01" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=43277701]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.16, 0.06)
 mesh = SubResource("BoxMesh_52hlu")
 
-[node name="Pata10" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=2026146252]
+[node name="Pata10" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=906318629]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.16, -0.06)
 mesh = SubResource("BoxMesh_ghp0x")
 
-[node name="Pata11" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=2020161007]
+[node name="Pata11" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=821577536]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.16, 0.06)
 mesh = SubResource("BoxMesh_slqnr")
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=1186330301]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=250369071]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("BoxMesh_wd12p")
 
-[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=800132253]
+[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=1199717233]
 transform = Transform3D(0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, 0, 0, 0, 1, 0.2, 0.42, 0)
 mesh = SubResource("BoxMesh_jm2h5")
 
-[node name="Crin" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=406241201]
+[node name="Crin" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=393722599]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17, 0.46, 0)
 mesh = SubResource("BoxMesh_d8mgu")
 
-[node name="Silla" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=907572116]
+[node name="Silla" type="MeshInstance3D" parent="S_2_infancia/P_caballito" unique_id=514631332]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, 0.38, 0)
 mesh = SubResource("BoxMesh_us64x")
 
-[node name="P_pelota" type="Node3D" parent="S_2_infancia" unique_id=1908082997]
+[node name="P_pelota" type="Node3D" parent="S_2_infancia" unique_id=1391338259]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 0.09, 1.2)
 
-[node name="Pelota" type="MeshInstance3D" parent="S_2_infancia/P_pelota" unique_id=1856762967]
+[node name="Pelota" type="MeshInstance3D" parent="S_2_infancia/P_pelota" unique_id=196828724]
 mesh = SubResource("SphereMesh_y7itc")
 
-[node name="Franja" type="MeshInstance3D" parent="S_2_infancia/P_pelota" unique_id=784499907]
+[node name="Franja" type="MeshInstance3D" parent="S_2_infancia/P_pelota" unique_id=247465254]
 mesh = SubResource("CylinderMesh_7m7qr")
 
-[node name="P_tren" type="Node3D" parent="S_2_infancia" unique_id=1235275139]
+[node name="P_tren" type="Node3D" parent="S_2_infancia" unique_id=1812925975]
 transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.9659258, -1.85, 0.03, 0.6)
 
-[node name="Locomotora" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=872210976]
+[node name="Locomotora" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=664965634]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 0.05, 0)
 mesh = SubResource("BoxMesh_fhqsg")
 
-[node name="Cabina" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=553988993]
+[node name="Cabina" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=487897783]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.11, 0)
 mesh = SubResource("BoxMesh_nugwc")
 
-[node name="Chimenea" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=1766381610]
+[node name="Chimenea" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=1374741060]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.11, 0)
 mesh = SubResource("CylinderMesh_cr5as")
 
-[node name="Vagon1" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=584316684]
+[node name="Vagon1" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=644689963]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, 0.045, 0)
 mesh = SubResource("BoxMesh_krw7o")
 
-[node name="Vagon2" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=1107737009]
+[node name="Vagon2" type="MeshInstance3D" parent="S_2_infancia/P_tren" unique_id=1234071873]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.17, 0.045, 0)
 mesh = SubResource("BoxMesh_oupcf")
 
-[node name="P_estante_cuentos" type="Node3D" parent="S_2_infancia" unique_id=1318973445]
+[node name="P_estante_cuentos" type="Node3D" parent="S_2_infancia" unique_id=2030270604]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.52, 0, -0.35)
 
-[node name="Mueble" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=231945092]
+[node name="Mueble" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=933635819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("BoxMesh_ar0m1")
 
-[node name="Balda" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1137945263]
+[node name="Balda" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=669852064]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.01)
 mesh = SubResource("BoxMesh_ewm43")
 
-[node name="Cuento0" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=427669800]
+[node name="Cuento0" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1691351819]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.36, 0.02)
 mesh = SubResource("BoxMesh_vgmaa")
 
-[node name="Cuento1" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1740457669]
+[node name="Cuento1" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1150688165]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.36, 0.02)
 mesh = SubResource("BoxMesh_2iksk")
 
-[node name="Cuento2" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1778713806]
+[node name="Cuento2" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1125200385]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 0.36, 0.02)
 mesh = SubResource("BoxMesh_01vpv")
 
-[node name="Cuento3" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=2102349804]
+[node name="Cuento3" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1244340721]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01, 0.36, 0.02)
 mesh = SubResource("BoxMesh_dh7yr")
 
-[node name="Cuento4" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=286788913]
+[node name="Cuento4" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=633370144]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0.36, 0.02)
 mesh = SubResource("BoxMesh_e6lrk")
 
-[node name="Cuento5" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=908695567]
+[node name="Cuento5" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1129504815]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, 0.36, 0.02)
 mesh = SubResource("BoxMesh_gk6ca")
 
-[node name="Cuento6" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=1689296615]
+[node name="Cuento6" type="MeshInstance3D" parent="S_2_infancia/P_estante_cuentos" unique_id=931291306]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.36, 0.02)
 mesh = SubResource("BoxMesh_83l0c")
 
-[node name="P_cubos" type="Node3D" parent="S_2_infancia" unique_id=1830388990]
+[node name="P_cubos" type="Node3D" parent="S_2_infancia" unique_id=1963209441]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55, 0.02, 0.75)
 
-[node name="Cubo0" type="MeshInstance3D" parent="S_2_infancia/P_cubos" unique_id=807113907]
+[node name="Cubo0" type="MeshInstance3D" parent="S_2_infancia/P_cubos" unique_id=1303046464]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.035, 0)
 mesh = SubResource("BoxMesh_i5eo0")
 
-[node name="Cubo1" type="MeshInstance3D" parent="S_2_infancia/P_cubos" unique_id=1837130947]
+[node name="Cubo1" type="MeshInstance3D" parent="S_2_infancia/P_cubos" unique_id=1390971725]
 transform = Transform3D(0.9781476, 0, 0.2079117, 0, 1, 0, -0.2079117, 0, 0.9781476, 0.04, 0.035, 0)
 mesh = SubResource("BoxMesh_yeslr")
 
-[node name="Cubo2" type="MeshInstance3D" parent="S_2_infancia/P_cubos" unique_id=1837186025]
+[node name="Cubo2" type="MeshInstance3D" parent="S_2_infancia/P_cubos" unique_id=353876639]
 transform = Transform3D(0.9135454, 0, 0.40673664, 0, 1, 0, -0.40673664, 0, 0.9135454, -0.05, 0.105, 0)
 mesh = SubResource("BoxMesh_orxhw")
 
-[node name="P_peluche__clave" type="Node3D" parent="S_2_infancia" unique_id=2026290049]
+[node name="P_peluche__clave" type="Node3D" parent="S_2_infancia" unique_id=2131517696]
 transform = Transform3D(0.9396926, 0, 0.34202012, 0, 1, 0, -0.34202012, 0, 0.9396926, -2.2, 0.33, -0.72)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1550058964]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=484656026]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
 mesh = SubResource("CylinderMesh_ih152")
 
-[node name="Culete" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=55710530]
+[node name="Culete" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=2044836283]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 mesh = SubResource("SphereMesh_bb6d6")
 
-[node name="Barriga" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=888837274]
+[node name="Barriga" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=463854872]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0.035)
 mesh = SubResource("SphereMesh_qmdhx")
 
-[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=2063970739]
+[node name="Cabeza" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=290634455]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19, 0)
 mesh = SubResource("SphereMesh_t7kmv")
 
-[node name="Hocico" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1416229475]
+[node name="Hocico" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1708963867]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0.045)
 mesh = SubResource("SphereMesh_jr0ys")
 
-[node name="Nariz" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=238296283]
+[node name="Nariz" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1233193059]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.185, 0.068)
 mesh = SubResource("SphereMesh_ntcg2")
 
-[node name="Oreja0" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=207282675]
+[node name="Oreja0" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=808686354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.042, 0.235, -0.01)
 mesh = SubResource("SphereMesh_h4ma7")
 
-[node name="Ojo0" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=781978703]
+[node name="Ojo0" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1483511377]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.021, 0.2, 0.047)
 mesh = SubResource("SphereMesh_2f7x4")
 
-[node name="Pata0" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1691101200]
+[node name="Pata0" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=219525630]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.039, 0.1, 0.05)
 mesh = SubResource("SphereMesh_i7ifn")
 
-[node name="Oreja1" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1403739839]
+[node name="Oreja1" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1202372992]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.042, 0.235, -0.01)
 mesh = SubResource("SphereMesh_rmvr1")
 
-[node name="Ojo1" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=732746055]
+[node name="Ojo1" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=794958090]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.021, 0.2, 0.047)
 mesh = SubResource("SphereMesh_tgx15")
 
-[node name="Pata1" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1772376827]
+[node name="Pata1" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1601174352]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.039, 0.1, 0.05)
 mesh = SubResource("SphereMesh_t0ra5")
 
-[node name="Cola" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=390197808]
+[node name="Cola" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1719274007]
 transform = Transform3D(1, 0, 0, 0, 0.34202015, -0.9396926, 0, 0.9396926, 0.34202015, 0, 0.02, -0.09)
 mesh = SubResource("CylinderMesh_f3nda")
 
-[node name="S_3_adolescencia" type="Node3D" parent="." unique_id=1640986765]
+[node name="S_3_adolescencia" type="Node3D" parent="." unique_id=935307808]
 
-[node name="Bombilla" type="Node3D" parent="S_3_adolescencia" unique_id=1738088803]
+[node name="Bombilla" type="Node3D" parent="S_3_adolescencia" unique_id=1081137340]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, -0.55)
 
-[node name="Cable" type="MeshInstance3D" parent="S_3_adolescencia/Bombilla" unique_id=427758826]
+[node name="Cable" type="MeshInstance3D" parent="S_3_adolescencia/Bombilla" unique_id=2050276636]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22499998, 0)
 mesh = SubResource("CylinderMesh_2ly62")
 
-[node name="Casquillo" type="MeshInstance3D" parent="S_3_adolescencia/Bombilla" unique_id=240883200]
+[node name="Casquillo" type="MeshInstance3D" parent="S_3_adolescencia/Bombilla" unique_id=1688519654]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("CylinderMesh_jmq55")
 
-[node name="Cristal" type="MeshInstance3D" parent="S_3_adolescencia/Bombilla" unique_id=1943180381]
+[node name="Cristal" type="MeshInstance3D" parent="S_3_adolescencia/Bombilla" unique_id=1125856668]
 mesh = SubResource("SphereMesh_u05wo")
 
-[node name="LuzZona" type="OmniLight3D" parent="S_3_adolescencia/Bombilla" unique_id=1919689619]
+[node name="LuzZona" type="OmniLight3D" parent="S_3_adolescencia/Bombilla" unique_id=1817653223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 1.3
 omni_range = 2.6
 omni_attenuation = 1.2
 
-[node name="Armario" type="Node3D" parent="S_3_adolescencia" unique_id=554365705]
+[node name="Armario" type="Node3D" parent="S_3_adolescencia" unique_id=1399960646]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.58, 0, -1.3)
 
-[node name="Fondo" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1624107930]
+[node name="Fondo" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=595733055]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, -0.19)
 mesh = SubResource("BoxMesh_1lbve")
 
-[node name="LadoIzq" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=606463359]
+[node name="LadoIzq" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1532617278]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.55, 0)
 mesh = SubResource("BoxMesh_acinw")
 
-[node name="LadoDer" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1654402234]
+[node name="LadoDer" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=55971688]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.55, 0)
 mesh = SubResource("BoxMesh_mt1ee")
 
-[node name="Techo" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1990096800]
+[node name="Techo" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1441513298]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 mesh = SubResource("BoxMesh_y1jwd")
 
-[node name="Suelo" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=988013769]
+[node name="Suelo" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1502839889]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 mesh = SubResource("BoxMesh_b6tvv")
 
-[node name="Balda" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1319205327]
+[node name="Balda" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=475043456]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
 mesh = SubResource("BoxMesh_noous")
 
-[node name="Ropa" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=1514974477]
+[node name="Ropa" type="MeshInstance3D" parent="S_3_adolescencia/Armario" unique_id=747373682]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.05)
 mesh = SubResource("BoxMesh_5m50n")
 
-[node name="OR_puerta_armario__n" type="Node3D" parent="S_3_adolescencia/Armario" unique_id=691146797]
+[node name="OR_puerta_armario__n" type="Node3D" parent="S_3_adolescencia/Armario" unique_id=1930310657]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0, 0.2)
 
-[node name="Puerta" type="MeshInstance3D" parent="S_3_adolescencia/Armario/OR_puerta_armario__n" unique_id=1642386213]
+[node name="Puerta" type="MeshInstance3D" parent="S_3_adolescencia/Armario/OR_puerta_armario__n" unique_id=1901147204]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.55, 0)
 mesh = SubResource("BoxMesh_an80s")
 
-[node name="Tirador" type="MeshInstance3D" parent="S_3_adolescencia/Armario/OR_puerta_armario__n" unique_id=2088575862]
+[node name="Tirador" type="MeshInstance3D" parent="S_3_adolescencia/Armario/OR_puerta_armario__n" unique_id=710287330]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.55, 0.02)
 mesh = SubResource("SphereMesh_pjnin")
 
-[node name="Pegatina" type="MeshInstance3D" parent="S_3_adolescencia/Armario/OR_puerta_armario__n" unique_id=1085479070]
+[node name="Pegatina" type="MeshInstance3D" parent="S_3_adolescencia/Armario/OR_puerta_armario__n" unique_id=1113483746]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.82, 0.012)
 mesh = SubResource("BoxMesh_r1bcs")
 
-[node name="H_camara" type="Node3D" parent="S_3_adolescencia/Armario" unique_id=754922101]
+[node name="H_camara" type="Node3D" parent="S_3_adolescencia/Armario" unique_id=1179102529]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.63, 0)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=356343131]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=1361935994]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0)
 mesh = SubResource("BoxMesh_3bgew")
 
-[node name="Piel" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=1162598540]
+[node name="Piel" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=1297406324]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0.002)
 mesh = SubResource("BoxMesh_d6u5r")
 
-[node name="Objetivo" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=703460635]
+[node name="Objetivo" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=672107249]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.045, 0.045)
 mesh = SubResource("CylinderMesh_1jmk5")
 
-[node name="Cristal" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=1317836868]
+[node name="Cristal" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=409376608]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.045, 0.066)
 mesh = SubResource("CylinderMesh_rinu7")
 
-[node name="Flash" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=500503570]
+[node name="Flash" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=1298668207]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, 0.1, 0)
 mesh = SubResource("BoxMesh_8g125")
 
-[node name="Disparador" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=47808708]
+[node name="Disparador" type="MeshInstance3D" parent="S_3_adolescencia/Armario/H_camara" unique_id=1341603398]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 0.09, 0)
 mesh = SubResource("CylinderMesh_2h7ji")
 
-[node name="Cajonera" type="Node3D" parent="S_3_adolescencia" unique_id=1551831187]
+[node name="Cajonera" type="Node3D" parent="S_3_adolescencia" unique_id=210368301]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, -1.25)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera" unique_id=1394070357]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera" unique_id=1091654354]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("BoxMesh_bpjmj")
 
-[node name="OD_cajon_cajonera" type="Node3D" parent="S_3_adolescencia/Cajonera" unique_id=1473917007]
+[node name="OD_cajon_cajonera" type="Node3D" parent="S_3_adolescencia/Cajonera" unique_id=460871207]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0.02)
 
-[node name="Frente" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera" unique_id=1588624327]
+[node name="Frente" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera" unique_id=1849342365]
 mesh = SubResource("BoxMesh_fy70t")
 
-[node name="Tirador" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera" unique_id=824364824]
+[node name="Tirador" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera" unique_id=1304588738]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.215)
 mesh = SubResource("BoxMesh_xydkq")
 
-[node name="H_solicitud" type="Node3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera" unique_id=1071061837]
+[node name="H_solicitud" type="Node3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera" unique_id=1553544093]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.065, 0)
 
-[node name="Folio" type="Node3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud" unique_id=206244870]
+[node name="Folio" type="Node3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud" unique_id=725028645]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 
-[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=862471933]
+[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=1361878162]
 mesh = SubResource("BoxMesh_l1cry")
 
-[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=1534199555]
+[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=348274533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0.004)
 mesh = SubResource("TextMesh_73yd5")
 
-[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=1671598331]
+[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=918782085]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0.003)
 mesh = SubResource("BoxMesh_n8f3a")
 
-[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=627692546]
+[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=476514577]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0.003)
 mesh = SubResource("BoxMesh_aqvne")
 
-[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=1934504151]
+[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=680794840]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07, 0.003)
 mesh = SubResource("BoxMesh_3nc8f")
 
-[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=2007066130]
+[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=1097595308]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.095, 0.003)
 mesh = SubResource("BoxMesh_v575p")
 
-[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=1123655916]
+[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/Cajonera/OD_cajon_cajonera/H_solicitud/Folio" unique_id=404328938]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0.006)
 mesh = SubResource("BoxMesh_6k6xg")
 
-[node name="P_alfombra_adolescencia" type="Node3D" parent="S_3_adolescencia" unique_id=1639022672]
+[node name="P_alfombra_adolescencia" type="Node3D" parent="S_3_adolescencia" unique_id=1671631149]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.012, 0.35)
 
-[node name="Alfombra" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=687416111]
+[node name="Alfombra" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=270625933]
 mesh = SubResource("BoxMesh_380x8")
 
-[node name="Raya0" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=510101094]
+[node name="Raya0" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=364197924]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, -0.3)
 mesh = SubResource("BoxMesh_govch")
 
-[node name="Raya1" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=1547524465]
+[node name="Raya1" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=1666830041]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, 0)
 mesh = SubResource("BoxMesh_bmu8p")
 
-[node name="Raya2" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=1706011844]
+[node name="Raya2" type="MeshInstance3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=968261708]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, 0.3)
 mesh = SubResource("BoxMesh_cgvbu")
 
-[node name="P_escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=830606951]
+[node name="P_escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1785490927]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, -1.25)
 
 [node name="Modelo" parent="S_3_adolescencia/P_escritorio" unique_id=697516264 instance=ExtResource("1_n77cw")]
 
-[node name="P_silla" type="Node3D" parent="S_3_adolescencia" unique_id=342237496]
+[node name="P_silla" type="Node3D" parent="S_3_adolescencia" unique_id=524440704]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.3, 0, -0.62)
 
 [node name="Modelo" parent="S_3_adolescencia/P_silla" unique_id=1211579740 instance=ExtResource("2_kerad")]
 
-[node name="P_lampara__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1407190326]
+[node name="P_lampara__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=864237239]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.68, 0.74, -1.37)
 
 [node name="Modelo" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1764864994 instance=ExtResource("3_wfsjx")]
 
-[node name="Luz" type="SpotLight3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1514516399]
+[node name="Luz" type="SpotLight3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1080778974]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.2656921, 0.0185)
 light_color = Color(1, 0.8, 0.55, 1)
 light_energy = 2.0
@@ -3180,584 +3180,584 @@ spot_range = 1.2
 spot_attenuation = 1.2
 spot_angle = 55.0
 
-[node name="P_altavoz__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=672010979]
+[node name="P_altavoz__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=518373292]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.060000002, 0.74, -1.38)
 
 [node name="Modelo" parent="S_3_adolescencia/P_altavoz__after-escritorio" unique_id=151359624 instance=ExtResource("4_b5gew")]
 
-[node name="P_libro__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=512291346]
+[node name="P_libro__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1731868933]
 transform = Transform3D(0.9848077, 0, 0.17364818, 0, 1, 0, -0.17364818, 0, 0.9848077, -0.45000002, 0.74, -1.4)
 
 [node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio" unique_id=1076077578 instance=ExtResource("5_vbmvr")]
 
-[node name="P_libro__after-escritorio_001" type="Node3D" parent="S_3_adolescencia" unique_id=1866482680]
+[node name="P_libro__after-escritorio_001" type="Node3D" parent="S_3_adolescencia" unique_id=1086483686]
 transform = Transform3D(0.9945219, 0, -0.104528464, 0, 1, 0, 0.104528464, 0, 0.9945219, -0.45000002, 0.775, -1.4)
 
-[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio_001" unique_id=1723516317 instance=ExtResource("5_vbmvr")]
+[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio_001" unique_id=533230226 instance=ExtResource("5_vbmvr")]
 
-[node name="P_mp3__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1746225244]
+[node name="P_mp3__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=866459338]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32000002, 0.74, -1.17)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=666531442]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=785169559]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.006, 0)
 mesh = SubResource("BoxMesh_1a1gt")
 
-[node name="Rueda" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1912977896]
+[node name="Rueda" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=220576131]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.013, 0.012)
 mesh = SubResource("CylinderMesh_r0vrw")
 
-[node name="Pantalla" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=600635915]
+[node name="Pantalla" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1382691627]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.013, -0.022)
 mesh = SubResource("BoxMesh_6ua84")
 
-[node name="Auricular0" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1998950361]
+[node name="Auricular0" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=374254037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, 0.01, 0.07)
 mesh = SubResource("SphereMesh_tssr5")
 
-[node name="Cable0" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1298257359]
+[node name="Cable0" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1187458642]
 transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, -0.03, 0.004, 0.06)
 mesh = SubResource("BoxMesh_hhr73")
 
-[node name="Auricular1" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=626317086]
+[node name="Auricular1" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1754502990]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0.01, 0.07)
 mesh = SubResource("SphereMesh_wukq7")
 
-[node name="Cable1" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=577347897]
+[node name="Cable1" type="MeshInstance3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1907576378]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0.03, 0.004, 0.06)
 mesh = SubResource("BoxMesh_bnv8y")
 
-[node name="P_camara__after-mp3__flash" type="Node3D" parent="S_3_adolescencia" unique_id=1567406727]
+[node name="P_camara__after-mp3__flash" type="Node3D" parent="S_3_adolescencia" unique_id=1437020228]
 transform = Transform3D(0.9396926, 0, -0.34202012, 0, 1, 0, 0.34202012, 0, 0.9396926, -0.10000001, 0.74, -1.19)
 
-[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1308760962]
+[node name="Cuerpo" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=97275572]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0)
 mesh = SubResource("BoxMesh_vf51s")
 
-[node name="Piel" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1245611968]
+[node name="Piel" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=572629057]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0.002)
 mesh = SubResource("BoxMesh_e76lv")
 
-[node name="Objetivo" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1306128017]
+[node name="Objetivo" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=541475413]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.045, 0.045)
 mesh = SubResource("CylinderMesh_i3lpf")
 
-[node name="Cristal" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=334644269]
+[node name="Cristal" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1658943718]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.045, 0.066)
 mesh = SubResource("CylinderMesh_hj844")
 
-[node name="Flash" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=956826566]
+[node name="Flash" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=299876666]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04, 0.1, 0)
 mesh = SubResource("BoxMesh_tdufg")
 
-[node name="Disparador" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=893483174]
+[node name="Disparador" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=756594053]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 0.09, 0)
 mesh = SubResource("CylinderMesh_rgial")
 
-[node name="Foto0" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=276976268]
+[node name="Foto0" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=167080498]
 transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.9659258, -0.16, 0.003, 0.06)
 mesh = SubResource("BoxMesh_cstyf")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash/Foto0" unique_id=87832039]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash/Foto0" unique_id=464529612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, -0.006)
 mesh = SubResource("BoxMesh_v45ls")
 
-[node name="Foto1" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1743747522]
+[node name="Foto1" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1022267203]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 0.005, 0.06)
 mesh = SubResource("BoxMesh_guvrc")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash/Foto1" unique_id=931765101]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash/Foto1" unique_id=425881850]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, -0.006)
 mesh = SubResource("BoxMesh_rbqgj")
 
-[node name="Foto2" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=1519697726]
+[node name="Foto2" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash" unique_id=425657748]
 transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, -0.12, 0.007, 0.06)
 mesh = SubResource("BoxMesh_0l2ex")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash/Foto2" unique_id=563740307]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_camara__after-mp3__flash/Foto2" unique_id=178173118]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, -0.006)
 mesh = SubResource("BoxMesh_hydbg")
 
-[node name="P_corcho" type="Node3D" parent="S_3_adolescencia" unique_id=1504622237]
+[node name="P_corcho" type="Node3D" parent="S_3_adolescencia" unique_id=1431576984]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.86, -1.54)
 
-[node name="Corcho" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=1439254317]
+[node name="Corcho" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=1149561403]
 mesh = SubResource("BoxMesh_kp80u")
 
-[node name="Marco" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=547361584]
+[node name="Marco" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=1328665211]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.004)
 mesh = SubResource("BoxMesh_ibq1h")
 
-[node name="Nota0" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=740814293]
+[node name="Nota0" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=452692523]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.17, 0.04, 0.012)
 mesh = SubResource("BoxMesh_cg2br")
 
-[node name="Nota1" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=271648080]
+[node name="Nota1" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=2058292538]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09, -0.02, 0.012)
 mesh = SubResource("BoxMesh_njy11")
 
-[node name="Nota2" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=139627108]
+[node name="Nota2" type="MeshInstance3D" parent="S_3_adolescencia/P_corcho" unique_id=569537476]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01, 0.04, 0.012)
 mesh = SubResource("BoxMesh_blo0q")
 
-[node name="P_fotos__after-camara" type="Node3D" parent="S_3_adolescencia" unique_id=204115762]
+[node name="P_fotos__after-camara" type="Node3D" parent="S_3_adolescencia" unique_id=913352831]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, 0.6469774, 0, -0.6469774, 0.76250917, -0.3, 1.4618745, -1.0283654)
 
-[node name="Cordel" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1082325897]
+[node name="Cordel" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=502876524]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.012, 0.05)
 mesh = SubResource("BoxMesh_mbg3j")
 
-[node name="Polaroid0" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1034291900]
+[node name="Polaroid0" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1508352642]
 transform = Transform3D(0.9945219, 0, -0.104528464, 0, 1, 0, 0.104528464, 0, 0.9945219, -0.42, -0.012, -0.03)
 mesh = SubResource("BoxMesh_es61v")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid0" unique_id=755934516]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid0" unique_id=868267404]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.004, 0.012)
 mesh = SubResource("BoxMesh_nvfqs")
 
-[node name="Polaroid1" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1629979110]
+[node name="Polaroid1" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1715711041]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, -0.012, -0.03)
 mesh = SubResource("BoxMesh_q2pu1")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid1" unique_id=2063630921]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid1" unique_id=2000521845]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.004, 0.012)
 mesh = SubResource("BoxMesh_s2qnr")
 
-[node name="Polaroid2" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=660809026]
+[node name="Polaroid2" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1143096622]
 transform = Transform3D(0.9945219, 0, 0.104528464, 0, 1, 0, -0.104528464, 0, 0.9945219, -0.08, -0.012, -0.03)
 mesh = SubResource("BoxMesh_x57lh")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid2" unique_id=1958846703]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid2" unique_id=846802707]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.004, 0.012)
 mesh = SubResource("BoxMesh_vlp84")
 
-[node name="Polaroid3" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=2004793373]
+[node name="Polaroid3" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1143377806]
 transform = Transform3D(0.9945219, 0, -0.104528464, 0, 1, 0, 0.104528464, 0, 0.9945219, 0.09, -0.012, -0.03)
 mesh = SubResource("BoxMesh_6dlb3")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid3" unique_id=1251891114]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid3" unique_id=2052591232]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.004, 0.012)
 mesh = SubResource("BoxMesh_t6670")
 
-[node name="Polaroid4" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1666397328]
+[node name="Polaroid4" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1194806011]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, -0.012, -0.03)
 mesh = SubResource("BoxMesh_aoseu")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid4" unique_id=2120493917]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid4" unique_id=1450235076]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.004, 0.012)
 mesh = SubResource("BoxMesh_6uu1x")
 
-[node name="Polaroid5" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1622814393]
+[node name="Polaroid5" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara" unique_id=1548439221]
 transform = Transform3D(0.9945219, 0, 0.104528464, 0, 1, 0, -0.104528464, 0, 0.9945219, 0.43, -0.012, -0.03)
 mesh = SubResource("BoxMesh_xn2bi")
 
-[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid5" unique_id=56707109]
+[node name="Imagen" type="MeshInstance3D" parent="S_3_adolescencia/P_fotos__after-camara/Polaroid5" unique_id=1358403554]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.004, 0.012)
 mesh = SubResource("BoxMesh_emjqd")
 
-[node name="P_poster_estrellas" type="Node3D" parent="S_3_adolescencia" unique_id=1066098847]
+[node name="P_poster_estrellas" type="Node3D" parent="S_3_adolescencia" unique_id=374444901]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, 0.6469774, 0, -0.6469774, 0.76250917, -0.75, 1.7118745, -0.73372257)
 
-[node name="Poster" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=878351545]
+[node name="Poster" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=81687166]
 mesh = SubResource("BoxMesh_0yvdo")
 
-[node name="Estrella0" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=2105927923]
+[node name="Estrella0" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=1252036484]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, -0.006, -0.15)
 mesh = SubResource("BoxMesh_a32vi")
 
-[node name="Estrella1" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=1570611313]
+[node name="Estrella1" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=181120132]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06, -0.006, -0.01)
 mesh = SubResource("BoxMesh_ooywq")
 
-[node name="Estrella2" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=1393271255]
+[node name="Estrella2" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=1204179954]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.006, 0.13)
 mesh = SubResource("BoxMesh_546xe")
 
-[node name="Estrella3" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=667479202]
+[node name="Estrella3" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=1998811810]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, -0.006, -0.08)
 mesh = SubResource("BoxMesh_a1hfq")
 
-[node name="Estrella4" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=1059370563]
+[node name="Estrella4" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_estrellas" unique_id=435487833]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, -0.006, 0.06)
 mesh = SubResource("BoxMesh_upuhx")
 
-[node name="P_poster_grupo" type="Node3D" parent="S_3_adolescencia" unique_id=2137780146]
+[node name="P_poster_grupo" type="Node3D" parent="S_3_adolescencia" unique_id=1667243959]
 transform = Transform3D(1, 0, 0, 0, 0.76250917, 0.6469774, 0, -0.6469774, 0.76250917, 0.45, 1.5618746, -0.9105083)
 
-[node name="Poster" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_grupo" unique_id=930950130]
+[node name="Poster" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_grupo" unique_id=520102508]
 mesh = SubResource("BoxMesh_68snx")
 
-[node name="Banda" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_grupo" unique_id=329459814]
+[node name="Banda" type="MeshInstance3D" parent="S_3_adolescencia/P_poster_grupo" unique_id=1187481885]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.006, 0.08)
 mesh = SubResource("BoxMesh_mlor1")
 
-[node name="P_puf" type="Node3D" parent="S_3_adolescencia" unique_id=272563210]
+[node name="P_puf" type="Node3D" parent="S_3_adolescencia" unique_id=194903846]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38, 0, 0.45)
 
-[node name="Puf" type="MeshInstance3D" parent="S_3_adolescencia/P_puf" unique_id=409747750]
+[node name="Puf" type="MeshInstance3D" parent="S_3_adolescencia/P_puf" unique_id=978604872]
 transform = Transform3D(1, 0, 0, 0, 0.62, 0, 0, 0, 1, 0, 0.16, 0)
 mesh = SubResource("SphereMesh_hdngc")
 
-[node name="P_guitarra" type="Node3D" parent="S_3_adolescencia" unique_id=60692315]
+[node name="P_guitarra" type="Node3D" parent="S_3_adolescencia" unique_id=928672388]
 transform = Transform3D(0.9659258, -0.05381151, 0.25316322, 0, 0.9781476, 0.2079117, -0.25881904, -0.20082727, 0.944818, 0.22, 0, -1.42)
 
-[node name="Caja" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=1076840705]
+[node name="Caja" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=363732571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.35, 0, 0.18, 0)
 mesh = SubResource("SphereMesh_jeodu")
 
-[node name="Caja2" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=593705065]
+[node name="Caja2" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=1402638220]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.35, 0, 0.36, 0)
 mesh = SubResource("SphereMesh_bepvm")
 
-[node name="Boca" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=256942205]
+[node name="Boca" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=26381595]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.3, 0.035)
 mesh = SubResource("CylinderMesh_0h033")
 
-[node name="Mastil" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=1317624284]
+[node name="Mastil" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=1949044646]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
 mesh = SubResource("BoxMesh_sudh0")
 
-[node name="Pala" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=1629475415]
+[node name="Pala" type="MeshInstance3D" parent="S_3_adolescencia/P_guitarra" unique_id=1371618988]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.86, 0)
 mesh = SubResource("BoxMesh_28fv3")
 
-[node name="P_solicitud__clave" type="Node3D" parent="S_3_adolescencia" unique_id=1295951955]
+[node name="P_solicitud__clave" type="Node3D" parent="S_3_adolescencia" unique_id=652980253]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.86, -1.515)
 
-[node name="Folio" type="Node3D" parent="S_3_adolescencia/P_solicitud__clave" unique_id=539429951]
+[node name="Folio" type="Node3D" parent="S_3_adolescencia/P_solicitud__clave" unique_id=2005224528]
 
-[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=473179087]
+[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=439143910]
 mesh = SubResource("BoxMesh_f1osi")
 
-[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=482762586]
+[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=1715650727]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0.004)
 mesh = SubResource("TextMesh_c4k2l")
 
-[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=885602230]
+[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=1854240497]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0.003)
 mesh = SubResource("BoxMesh_pn0hl")
 
-[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=1598606965]
+[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=960458342]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0.003)
 mesh = SubResource("BoxMesh_jxoy2")
 
-[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=1265724738]
+[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=839450007]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07, 0.003)
 mesh = SubResource("BoxMesh_0ti4t")
 
-[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=112095924]
+[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=1168067460]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.095, 0.003)
 mesh = SubResource("BoxMesh_du3sv")
 
-[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=1255765736]
+[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__clave/Folio" unique_id=356685005]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0.006)
 mesh = SubResource("BoxMesh_6stwt")
 
-[node name="S_4_adultez" type="Node3D" parent="." unique_id=1507023129]
+[node name="S_4_adultez" type="Node3D" parent="." unique_id=264336352]
 
-[node name="Bombilla" type="Node3D" parent="S_4_adultez" unique_id=1197569111]
+[node name="Bombilla" type="Node3D" parent="S_4_adultez" unique_id=575623701]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.8, -0.35)
 
-[node name="Cable" type="MeshInstance3D" parent="S_4_adultez/Bombilla" unique_id=1750521878]
+[node name="Cable" type="MeshInstance3D" parent="S_4_adultez/Bombilla" unique_id=1399463889]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("CylinderMesh_rhepr")
 
-[node name="Casquillo" type="MeshInstance3D" parent="S_4_adultez/Bombilla" unique_id=87945953]
+[node name="Casquillo" type="MeshInstance3D" parent="S_4_adultez/Bombilla" unique_id=127488480]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("CylinderMesh_yx7o1")
 
-[node name="Cristal" type="MeshInstance3D" parent="S_4_adultez/Bombilla" unique_id=511692088]
+[node name="Cristal" type="MeshInstance3D" parent="S_4_adultez/Bombilla" unique_id=1846969469]
 mesh = SubResource("SphereMesh_gdffm")
 
-[node name="LuzZona" type="OmniLight3D" parent="S_4_adultez/Bombilla" unique_id=892319371]
+[node name="LuzZona" type="OmniLight3D" parent="S_4_adultez/Bombilla" unique_id=1831487958]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 1.3
 omni_range = 2.6
 omni_attenuation = 1.2
 
-[node name="Mesita" type="Node3D" parent="S_4_adultez" unique_id=1516935619]
+[node name="Mesita" type="Node3D" parent="S_4_adultez" unique_id=1314503000]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.35, 0, 0.1)
 
-[node name="Tablero" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=1021239933]
+[node name="Tablero" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=475827512]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 mesh = SubResource("BoxMesh_kob6x")
 
-[node name="Pata00" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=226060192]
+[node name="Pata00" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=1134046439]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.25, -0.15)
 mesh = SubResource("BoxMesh_gsj8s")
 
-[node name="Pata01" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=1134960097]
+[node name="Pata01" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=1215272598]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.25, 0.15)
 mesh = SubResource("BoxMesh_n2tkx")
 
-[node name="Pata10" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=512294780]
+[node name="Pata10" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=1207930166]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.25, -0.15)
 mesh = SubResource("BoxMesh_2u7mr")
 
-[node name="Pata11" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=2086408809]
+[node name="Pata11" type="MeshInstance3D" parent="S_4_adultez/Mesita" unique_id=1928661992]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.25, 0.15)
 mesh = SubResource("BoxMesh_y0xbt")
 
-[node name="OD_cajon_mesita__nx" type="Node3D" parent="S_4_adultez/Mesita" unique_id=1530458971]
+[node name="OD_cajon_mesita__nx" type="Node3D" parent="S_4_adultez/Mesita" unique_id=611268704]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
 
-[node name="Cajon" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx" unique_id=95085413]
+[node name="Cajon" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx" unique_id=1313303728]
 mesh = SubResource("BoxMesh_q0hxw")
 
-[node name="Tirador" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx" unique_id=1125799056]
+[node name="Tirador" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx" unique_id=1356485162]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.185, 0, 0)
 mesh = SubResource("BoxMesh_8m1wb")
 
-[node name="H_pinceles" type="Node3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx" unique_id=1833274670]
+[node name="H_pinceles" type="Node3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx" unique_id=1504220574]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0.05, 0)
 
-[node name="Bote" type="Node3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles" unique_id=166630433]
+[node name="Bote" type="Node3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles" unique_id=515325468]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="Bote" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=155701833]
+[node name="Bote" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=436549254]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 mesh = SubResource("CylinderMesh_4m01u")
 
-[node name="Pincel0" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=1698912500]
+[node name="Pincel0" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=527155247]
 transform = Transform3D(0.99026805, 0.1391731, 0, -0.1391731, 0.99026805, 0, 0, 0, 1, -0.015, 0.16, 0)
 mesh = SubResource("CylinderMesh_88nro")
 
-[node name="Punta0" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=1737258476]
+[node name="Punta0" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=625233392]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.025, 0.25, 0)
 mesh = SubResource("SphereMesh_saow1")
 
-[node name="Pincel1" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=1056295704]
+[node name="Pincel1" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=954939214]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
 mesh = SubResource("CylinderMesh_icr17")
 
-[node name="Punta1" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=680636857]
+[node name="Punta1" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=719803946]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("SphereMesh_w1rc0")
 
-[node name="Pincel2" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=675809075]
+[node name="Pincel2" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=1464438472]
 transform = Transform3D(0.99026805, -0.1391731, 0, 0.1391731, 0.99026805, 0, 0, 0, 1, 0.015, 0.16, 0)
 mesh = SubResource("CylinderMesh_c0dnd")
 
-[node name="Punta2" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=733992831]
+[node name="Punta2" type="MeshInstance3D" parent="S_4_adultez/Mesita/OD_cajon_mesita__nx/H_pinceles/Bote" unique_id=1648514531]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025, 0.25, 0)
 mesh = SubResource("SphereMesh_jji1k")
 
-[node name="P_alfombra_adultez" type="Node3D" parent="S_4_adultez" unique_id=2095051979]
+[node name="P_alfombra_adultez" type="Node3D" parent="S_4_adultez" unique_id=167480525]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.75, 0.012, 0.35)
 
-[node name="Alfombra" type="MeshInstance3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=2131797341]
+[node name="Alfombra" type="MeshInstance3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=2015013072]
 mesh = SubResource("BoxMesh_7ym7v")
 
-[node name="Borde" type="MeshInstance3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=889995311]
+[node name="Borde" type="MeshInstance3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=1747006543]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.002, 0)
 mesh = SubResource("BoxMesh_b54ix")
 
-[node name="P_llaves" type="Node3D" parent="S_4_adultez" unique_id=1344229835]
+[node name="P_llaves" type="Node3D" parent="S_4_adultez" unique_id=584550196]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.62, -1.54)
 
-[node name="Tablilla" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=1931655314]
+[node name="Tablilla" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=312636046]
 mesh = SubResource("BoxMesh_by47v")
 
-[node name="Gancho" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=747949844]
+[node name="Gancho" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=592471293]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -0.02, 0.02)
 mesh = SubResource("CylinderMesh_u00sf")
 
-[node name="Llavero" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=408566477]
+[node name="Llavero" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=1099904037]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -0.05, 0.035)
 mesh = SubResource("CylinderMesh_2f6of")
 
-[node name="Llave0" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=801175428]
+[node name="Llave0" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=778003382]
 transform = Transform3D(0.9659258, 0.25881904, 0, -0.25881904, 0.9659258, 0, 0, 0, 1, -0.02, -0.1, 0.035)
 mesh = SubResource("BoxMesh_j620k")
 
-[node name="Llave1" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=2049456457]
+[node name="Llave1" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=97963232]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0.035)
 mesh = SubResource("BoxMesh_oeoo1")
 
-[node name="Llave2" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=36259097]
+[node name="Llave2" type="MeshInstance3D" parent="S_4_adultez/P_llaves" unique_id=739362487]
 transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, 0.02, -0.1, 0.035)
 mesh = SubResource("BoxMesh_ybj53")
 
-[node name="P_caballete__after-llaves" type="Node3D" parent="S_4_adultez" unique_id=1912377988]
+[node name="P_caballete__after-llaves" type="Node3D" parent="S_4_adultez" unique_id=188974204]
 transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.9659258, 1.7, 0, 0)
 
-[node name="Pata0" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=721479611]
+[node name="Pata0" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=984527624]
 transform = Transform3D(0.99026805, 0.1391731, 0, -0.1384107, 0.98484325, 0.104528464, 0.014547551, -0.1035112, 0.9945219, -0.22, 0.62, 0.05)
 mesh = SubResource("BoxMesh_7ngkt")
 
-[node name="Pata1" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=999218571]
+[node name="Pata1" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=1714410343]
 transform = Transform3D(0.99026805, -0.1391731, 0, 0.1384107, 0.98484325, 0.104528464, -0.014547551, -0.1035112, 0.9945219, 0.22, 0.62, 0.05)
 mesh = SubResource("BoxMesh_kobuf")
 
-[node name="PataTrasera" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=39078722]
+[node name="PataTrasera" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=1813150528]
 transform = Transform3D(1, 0, 0, 0, 0.95105654, -0.309017, 0, 0.309017, 0.95105654, 0, 0.6, -0.18)
 mesh = SubResource("BoxMesh_lxso1")
 
-[node name="Bandeja" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=90398201]
+[node name="Bandeja" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=607199392]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.1)
 mesh = SubResource("BoxMesh_byilr")
 
-[node name="Travesano" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=857827657]
+[node name="Travesano" type="MeshInstance3D" parent="S_4_adultez/P_caballete__after-llaves" unique_id=518924580]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0.03)
 mesh = SubResource("BoxMesh_m6hkh")
 
-[node name="P_lienzo__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=1338041136]
+[node name="P_lienzo__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=771560259]
 transform = Transform3D(0.9659258, 0.027053958, -0.2574012, 0, 0.9945219, 0.104528464, 0.25881904, -0.100966744, 0.9606344, 1.7, 0.78, 0.07)
 
-[node name="Lienzo" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=130069546]
+[node name="Lienzo" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=1981790941]
 mesh = SubResource("BoxMesh_y4nd4")
 
-[node name="P_pinceles__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=1992925346]
+[node name="P_pinceles__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=2002019386]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.98, 0, 0.32)
 
-[node name="Bote" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete" unique_id=646000061]
+[node name="Bote" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete" unique_id=473344295]
 
-[node name="Bote" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=1523307881]
+[node name="Bote" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=1644436486]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
 mesh = SubResource("CylinderMesh_d5vco")
 
-[node name="Pincel0" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=2037722091]
+[node name="Pincel0" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=176504261]
 transform = Transform3D(0.99026805, 0.1391731, 0, -0.1391731, 0.99026805, 0, 0, 0, 1, -0.015, 0.16, 0)
 mesh = SubResource("CylinderMesh_xbq3q")
 
-[node name="Punta0" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=1565824855]
+[node name="Punta0" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=948949897]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.025, 0.25, 0)
 mesh = SubResource("SphereMesh_o63qw")
 
-[node name="Pincel1" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=318937393]
+[node name="Pincel1" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=1741759250]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
 mesh = SubResource("CylinderMesh_e6a05")
 
-[node name="Punta1" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=1510993445]
+[node name="Punta1" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=647235921]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("SphereMesh_tgkxc")
 
-[node name="Pincel2" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=258578581]
+[node name="Pincel2" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=2004843433]
 transform = Transform3D(0.99026805, -0.1391731, 0, 0.1391731, 0.99026805, 0, 0, 0, 1, 0.015, 0.16, 0)
 mesh = SubResource("CylinderMesh_sdw01")
 
-[node name="Punta2" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=961707363]
+[node name="Punta2" type="MeshInstance3D" parent="S_4_adultez/P_pinceles__after-caballete/Bote" unique_id=1686174425]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025, 0.25, 0)
 mesh = SubResource("SphereMesh_hi850")
 
-[node name="P_espejo__clave" type="Node3D" parent="S_4_adultez" unique_id=268683299]
+[node name="P_espejo__clave__reflejo" type="Node3D" parent="S_4_adultez" unique_id=570928708]
 transform = Transform3D(0.7880108, 0, -0.6156615, 0, 1, 0, 0.6156615, 0, 0.7880108, 2.35, 0, -1.12)
 
-[node name="Marco" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave" unique_id=439258776]
+[node name="Marco" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=712985645]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1.55, 0, 1, -6.775265e-08, 0, 0.78, 0)
 mesh = SubResource("CylinderMesh_68jyw")
 
-[node name="Luna" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave" unique_id=606994967]
+[node name="Luna" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=520945937]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1.55, 0, 1, -6.775265e-08, 0, 0.78, 0.022)
 mesh = SubResource("CylinderMesh_41sg1")
 
-[node name="Pie0" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave" unique_id=241209136]
+[node name="Pie0" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=2002569719]
 transform = Transform3D(1, 0, 0, 0, 0.9396926, -0.34202012, 0, 0.34202012, 0.9396926, -0.18, 0.25, -0.12)
 mesh = SubResource("BoxMesh_gev4x")
 
-[node name="Pie1" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave" unique_id=2058606030]
+[node name="Pie1" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=1633640724]
 transform = Transform3D(1, 0, 0, 0, 0.9396926, -0.34202012, 0, 0.34202012, 0.9396926, 0.18, 0.25, -0.12)
 mesh = SubResource("BoxMesh_g6h5v")
 
-[node name="P_perchero" type="Node3D" parent="S_4_adultez" unique_id=1152816506]
+[node name="P_perchero" type="Node3D" parent="S_4_adultez" unique_id=2028783003]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 0, 0.95)
 
-[node name="Palo" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=1268350064]
+[node name="Palo" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=1679146487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
 mesh = SubResource("CylinderMesh_gcquq")
 
-[node name="Base" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=622968156]
+[node name="Base" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=118618922]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 mesh = SubResource("CylinderMesh_phjf8")
 
-[node name="Gancho0" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=784067226]
+[node name="Gancho0" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=2073954895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42, 0)
 mesh = SubResource("BoxMesh_va84d")
 
-[node name="Gancho1" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=1204685612]
+[node name="Gancho1" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=473552936]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 1.42, 0)
 mesh = SubResource("BoxMesh_o7hd7")
 
-[node name="Gancho2" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=1327801739]
+[node name="Gancho2" type="MeshInstance3D" parent="S_4_adultez/P_perchero" unique_id=1303950948]
 transform = Transform3D(-0.50000006, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.50000006, 0, 1.42, 0)
 mesh = SubResource("BoxMesh_yi3m3")
 
-[node name="P_abrigo__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=427944615]
+[node name="P_abrigo__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=18920820]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 0.95, 1.02)
 
-[node name="Abrigo" type="MeshInstance3D" parent="S_4_adultez/P_abrigo__after-perchero" unique_id=112903300]
+[node name="Abrigo" type="MeshInstance3D" parent="S_4_adultez/P_abrigo__after-perchero" unique_id=1518833342]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("BoxMesh_wjgq6")
 
-[node name="Cuello" type="MeshInstance3D" parent="S_4_adultez/P_abrigo__after-perchero" unique_id=948228683]
+[node name="Cuello" type="MeshInstance3D" parent="S_4_adultez/P_abrigo__after-perchero" unique_id=353079067]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
 mesh = SubResource("BoxMesh_y50kj")
 
-[node name="Bufanda" type="MeshInstance3D" parent="S_4_adultez/P_abrigo__after-perchero" unique_id=18546851]
+[node name="Bufanda" type="MeshInstance3D" parent="S_4_adultez/P_abrigo__after-perchero" unique_id=290155210]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06, 0.2, 0.06)
 mesh = SubResource("BoxMesh_04aek")
 
-[node name="P_cajas_tienda" type="Node3D" parent="S_4_adultez" unique_id=1096678041]
+[node name="P_cajas_tienda" type="Node3D" parent="S_4_adultez" unique_id=350951856]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.08, 0, -1.25)
 
-[node name="Caja0" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=1279156591]
+[node name="Caja0" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=705672608]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
 mesh = SubResource("BoxMesh_bm753")
 
-[node name="Caja1" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=1143728837]
+[node name="Caja1" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=1979693730]
 transform = Transform3D(0.9961947, 0, 0.08715574, 0, 1, 0, -0.08715574, 0, 0.9961947, 0.02, 0.46, 0)
 mesh = SubResource("BoxMesh_cs5rg")
 
-[node name="Caja2" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=34132875]
+[node name="Caja2" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=542104553]
 transform = Transform3D(0.9848077, 0, 0.17364818, 0, 1, 0, -0.17364818, 0, 0.9848077, 0, 0.76, 0)
 mesh = SubResource("BoxMesh_6kwe3")
 
-[node name="Rotulo" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=616933517]
+[node name="Rotulo" type="MeshInstance3D" parent="S_4_adultez/P_cajas_tienda" unique_id=1682971410]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0.185)
 mesh = SubResource("TextMesh_gjupw")
 
-[node name="P_taza" type="Node3D" parent="S_4_adultez" unique_id=1503852722]
+[node name="P_taza" type="Node3D" parent="S_4_adultez" unique_id=788110638]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.28, 0.515, 0.18)
 
 [node name="Modelo" parent="S_4_adultez/P_taza" unique_id=495550459 instance=ExtResource("6_nfh12")]
 
-[node name="P_reloj" type="Node3D" parent="S_4_adultez" unique_id=860204898]
+[node name="P_reloj" type="Node3D" parent="S_4_adultez" unique_id=1774026073]
 transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 2.42, 0.515, 0.02)
 
 [node name="Modelo" parent="S_4_adultez/P_reloj" unique_id=1217854778 instance=ExtResource("7_ic7wt")]
 
-[node name="P_planta" type="Node3D" parent="S_4_adultez" unique_id=575447371]
+[node name="P_planta" type="Node3D" parent="S_4_adultez" unique_id=1807170741]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0, 0.95)
 
-[node name="Maceta" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=2050285973]
+[node name="Maceta" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1566826080]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
 mesh = SubResource("CylinderMesh_bepda")
 
-[node name="Hoja0" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1707301642]
+[node name="Hoja0" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1897298530]
 transform = Transform3D(0.6, 0, 0, 0, 1.1, 0, 0, 0, 0.6, 0.08, 0.32, 0)
 mesh = SubResource("SphereMesh_2rp6f")
 
-[node name="Hoja1" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=2084729720]
+[node name="Hoja1" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1791287055]
 transform = Transform3D(0.6, 0, 0, 0, 1.1, 0, 0, 0, 0.6, 0.021399906, 0.42, 0.07708465)
 mesh = SubResource("SphereMesh_5enf5")
 
-[node name="Hoja2" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=175775264]
+[node name="Hoja2" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1075645420]
 transform = Transform3D(0.6, 0, 0, 0, 1.1, 0, 0, 0, 0.6, -0.0685511, 0.32, 0.04124011)
 mesh = SubResource("SphereMesh_uv1lj")
 
-[node name="Hoja3" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=963268958]
+[node name="Hoja3" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1048181370]
 transform = Transform3D(0.6, 0, 0, 0, 1.1, 0, 0, 0, 0.6, -0.058074586, 0.42, -0.055021293)
 mesh = SubResource("SphereMesh_ai2la")
 
-[node name="Hoja4" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=1854397322]
+[node name="Hoja4" type="MeshInstance3D" parent="S_4_adultez/P_planta" unique_id=470513527]
 transform = Transform3D(0.6, 0, 0, 0, 1.1, 0, 0, 0, 0.6, 0.037481334, 0.32, -0.07067637)
 mesh = SubResource("SphereMesh_5ef5r")
 
-[node name="S_5_epilogo" type="Node3D" parent="." unique_id=768987915]
+[node name="S_5_epilogo" type="Node3D" parent="." unique_id=1985756762]
 
-[node name="P_moneda" type="Node3D" parent="S_5_epilogo" unique_id=193667650]
+[node name="P_moneda__ofrecida" type="Node3D" parent="S_5_epilogo" unique_id=1332868448]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 1.12)
 
-[node name="Moneda" type="MeshInstance3D" parent="S_5_epilogo/P_moneda" unique_id=751595643]
+[node name="Moneda" type="MeshInstance3D" parent="S_5_epilogo/P_moneda__ofrecida" unique_id=823347284]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_3vnrt")

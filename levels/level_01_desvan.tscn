@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://core/diorama.gd" id="1_6c44a"]
 
-[node name="Nivel01Desvan" type="Node3D" unique_id=136310756]
+[node name="Nivel01Desvan" type="Node3D" unique_id=1983233459]
 script = ExtResource("1_6c44a")
 level_title = "El desván"
 modelo = "res://assets/modelos/desvan/desvan.glb"
@@ -20,3 +20,4 @@ camera_pitch_min_deg = 10.0
 camera_pitch_max_deg = 55.0
 iluminacion = "res://iluminacion/desvan.tscn"
 fundido_final = true
+momentos = true

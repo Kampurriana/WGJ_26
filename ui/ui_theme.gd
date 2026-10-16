@@ -35,11 +35,8 @@ static func get_theme() -> Theme:
 	# Bandeja de piezas: madera oscura translúcida sobre el fondo oscuro; fichas apenas marcadas
 	# (lo que se ve es la pieza, no la ficha).
 	t.set_type_variation("Bandeja", "PanelContainer")
-	var tray := _box(Color(0.11, 0.075, 0.05, 0.82), 18, Color(WOOD, 0.7), 0, 2, 12, 14)
-	tray.corner_radius_top_right = 0
-	tray.corner_radius_bottom_right = 0
-	tray.border_width_right = 0
-	t.set_stylebox("panel", "Bandeja", tray)
+	# Flota a la derecha con un margen (no ocupa el borde entero) y se aparta al coger una pieza.
+	t.set_stylebox("panel", "Bandeja", _box(Color(0.11, 0.075, 0.05, 0.78), 18, Color(WOOD, 0.7), 0, 2, 10, 12))
 	t.set_type_variation("Ficha", "PanelContainer")
 	t.set_stylebox("panel", "Ficha", _box(Color(1, 1, 1, 0.07), 12, Color(1, 1, 1, 0.1), 0, 1, 2, 2))
 	# Subtítulos: oscuros y translúcidos, para leerse sobre cualquier diorama.
