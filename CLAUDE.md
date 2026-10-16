@@ -12,6 +12,8 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 - Sin plugins ni addons. Sin C#.
 - La ruta del ejecutable de Godot va en la variable de entorno `GODOT` (en Windows, el
   `*_console.exe`, que es el que escribe en la terminal).
+- En sesiones de Claude Code **en la nube**, `.claude/hooks/session-start.sh` instala Godot 4.7.2
+  (Linux, con SHA512 comprobado) y exporta `GODOT` al arrancar. En un PC local no hace nada.
 
 ## Comandos (todos probados)
 
@@ -19,6 +21,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 |---|---|
 | Comprobación completa (importar + test de humo) | `bash tools/check.sh` → tiene que decir `CHECK OK` |
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
+| Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
 | Abrir el juego para jugar | `"$GODOT" --path .` |
 | Abrir el editor | `"$GODOT" --path . -e` |
