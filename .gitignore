@@ -1,0 +1,29 @@
+# Godot: caché local (se regenera sola)
+.godot/
+.import/
+
+# Salidas: logs, capturas, exportaciones
+build/
+export/
+*.tmp
+
+# Fuentes de trabajo pesadas: van a la carpeta compartida, no al repo
+*.blend
+*.blend1
+*.blend@
+*.psd
+*.kra
+*.aup3
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ajustes de Claude de cada máquina (ruta de Godot, permisos locales)
+.claude/settings.local.json
+
+# Credenciales: nunca
+.env
+*.keystore
+export_credentials.cfg

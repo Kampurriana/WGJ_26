@@ -1,0 +1,61 @@
+# GDD — clon mecánico de Woodo
+
+**Woodo** (Tiny Monks Tales / Daedalic, 16-sep-2026; PC, PS5, Xbox, Switch 1 y 2). Puzle "cozy" de
+dioramas de madera: cada escena está a medio hacer, faltan piezas, y al colocarlas la escena se llena
+de color y se anima. Sin tiempo, sin fallar, sin enemigos. Un narrador acompaña. Unas 3-4 h,
+"cientos de piezas".
+
+Cada fila dice **de dónde sale**: *visto* = lo dicen la ficha de Steam o varias reseñas;
+*supuesto* = deducción nuestra que hay que confirmar jugando. No mezclar las dos al decidir.
+
+## Mecánicas y dónde están en el código
+
+| # | Mecánica | Fuente | Implementación |
+|---|---|---|---|
+| 1 | Diorama sobre una peana; se gira libremente y se acerca/aleja para buscar huecos | visto | `camera/diorama_camera.gd` (órbita, zoom con límites, desplazamiento corto, suavizado) |
+| 2 | Las piezas que faltan se ven como **versiones blancas** en su sitio | visto | `core/piece_slot.gd` + `shaders/ghost.gdshader` (silueta translúcida con borde) |
+| 3 | La escena empieza sin color; al colocar, **la zona de alrededor se colorea** y se anima | visto | `Diorama._reveal_around` (onda de color, radio `color_radius`) + `AnimationPlayer` `<id>_placed` |
+| 4 | Panel de piezas **a la derecha, estrecho y con scroll** | visto | `ui/hud.gd` |
+| 5 | Se **arrastra** cada pieza del panel a su hueco; encaja con un "clic" táctil | visto | `ui/drag_controller.gd` (imán al acercarse) + `Diorama.try_place` + sonido `snap` |
+| 6 | **Al girar el diorama, las piezas del panel giran también**: se ven con la orientación que tendrán en su hueco | visto | `ui/inventory_item.gd` (`_process` copia la rotación relativa a la cámara) |
+| 7 | El jugador **no rota las piezas** a mano | supuesto | se colocan ya orientadas como su hueco |
+| 8 | Soltar en mal sitio no penaliza: la pieza vuelve al panel | supuesto | rechazo con temblor de la ficha + sonido `reject` |
+| 9 | Piezas iguales (dos sillas) valen en cualquiera de sus huecos | supuesto | mismo id; Blender `.001` se ignora |
+| 10 | **Pista recargable**: acerca la cámara y enseña dónde va una pieza | visto (recarga: una reseña) | `Hud.request_hint` (recarga `hint_cooldown`=25 s) + `look_at_point` + el hueco late |
+| 11 | El juego **se adapta al ritmo** y ofrece ayuda cuando hace falta | visto (Steam) | si no hay progreso en `assist_after`=45 s, la pista se recarga sola y brilla |
+| 12 | Cajones y armarios que **se abren** para encontrar piezas escondidas | visto | `OD_` (cajón), `OR_` (puerta), `H_` (escondido) en `core/interactable.gd` |
+| 13 | Más adelante, piezas que hay que **encontrar primero en el propio nivel** | visto | `H_`: al pulsarla pasa al inventario |
+| 14 | Más adelante, piezas que van **en un orden concreto** | visto | token `__after-<id>` u `order_rules` del Diorama; si no toca, el narrador lo dice |
+| 15 | **Escenas dentro de escenas**: se hace zoom a un rincón (la casa del ratón), se completa, y devuelve una pieza a la escena grande | visto | `Z_<nombre>__reward-<id>` (`Diorama.enter_focus/exit_focus`); el panel solo enseña las piezas de ese rincón |
+| 16 | Narrador con voz y subtítulos; cuenta la historia entre escenas | visto | `autoload/narrator.gd` + `data/narracion_es.json` + `assets/audio/voz/<clave>.ogg` |
+| 17 | Animales y personajes reaccionan al pasar cerca / al completar | visto | hook: animación `celebrar` al completar; reacciones al girar = **pendiente** |
+| 18 | Ratón, mando (joystick como puntero) y táctil | visto | `input/gamepad_cursor.gd`, pellizco en la cámara, táctil emula ratón |
+| 19 | Escenas de historia animadas entre niveles | visto | **pendiente** (para la jam: una viñeta + narración entre niveles) |
+
+## Bucle de un nivel
+
+1. Entra el diorama, el narrador presenta la escena (`intro_key`).
+2. El jugador gira y acerca para leer qué falta (siluetas blancas).
+3. Arrastra piezas del panel. Encaje → color que se expande + animación + sonido + frase opcional.
+4. Lo escondido se busca abriendo cosas; los rincones `Z_` se completan con zoom.
+5. Todo puesto → todo se colorea, animación `celebrar`, frase final, panel "Siguiente".
+
+## Sensación (lo que más importa en una jam)
+
+- **Tacto**: el "clic" del encaje (sonido corto, seco, con variación de tono), el pequeño rebote de
+  escala al colocar (`_pop`), el imán que coge la pieza los últimos centímetros.
+- **Calma**: sin temporizadores visibles, sin "error" rojo, música suave, colores que se despiertan.
+- **Lectura**: las siluetas tienen que distinguirse de la arcilla desde la vista general (ajustar
+  `base_alpha` del shader y `CLAY_COLOR` con capturas, no a ojo).
+
+## Fuera de alcance para 48 h (salvo que sobre tiempo)
+
+Guardado de partida, menú de opciones completo, localización a 8 idiomas, logros, escenas de
+historia animadas largas. Sí entra: menú mínimo (Jugar / Salir) y créditos.
+
+## Fuentes
+
+Leídas enteras (16-oct-2026): ficha de Steam (app 2572040), Indie Games Plus (preview), Console
+Creatures, Aftermath, GameWithUni. Vistas solo en extractos de búsqueda (no leídas enteras): The Xbox
+Hub, LadiesGamers, TheGamer, CBR. La recarga de la pista (#10) y el giro de las piezas con el diorama
+(#6) salen de esos extractos: son de lo primero que hay que confirmar jugando.

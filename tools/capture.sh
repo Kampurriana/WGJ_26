@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Abre el juego en una ventana real, opcionalmente coloca K piezas solo, guarda una captura y sale.
+# Es la forma de MIRAR el juego (un test en verde no dice si se ve bien).
+#   bash tools/capture.sh [salida.png] [piezas_auto] [nivel]
+#   bash tools/capture.sh build/captura.png 4 0
+# Comprueba que la imagen sale al tamaño pedido: si no coincide, la captura no vale.
+set -u
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+G="${GODOT:-godot}"
+OUT="${1:-build/captura.png}"
+SOLVE="${2:-0}"
+LEVEL="${3:-0}"
+W=1280
+H=720
+mkdir -p "$(dirname "$OUT")"
+rm -f "$OUT"
+LOG="build/capture.log"
+"$G" --path . --resolution ${W}x${H} -- --level="$LEVEL" --solve="$SOLVE" --capture="$OUT" >"$LOG" 2>&1
+LINE=$(grep -a "^CAPTURA" "$LOG" | tr -d '\r')
+if [ -z "$LINE" ] || [ ! -s "$OUT" ]; then
+	echo "CAPTURA FALLO: no se escribió $OUT (mira $LOG)"
+	exit 1
+fi
+case "$LINE" in
+	*" ${W}x${H} err=0") echo "CAPTURA OK $OUT (${W}x${H})" ;;
+	*) echo "CAPTURA RARA: $LINE (pedí ${W}x${H}; con otro tamaño la imagen engaña)"; exit 1 ;;
+esac
