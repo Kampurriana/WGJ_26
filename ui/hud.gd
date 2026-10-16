@@ -44,6 +44,7 @@ func _ready() -> void:
 	Events.focus_changed.connect(func(a: Node) -> void: _back_button.visible = a != null)
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
 	Events.level_completed.connect(func(_d: Node) -> void:
+		rebuild_inventory()                  # el último encaje avisó antes de marcarse completado
 		if GameState.mode == GameState.Mode.PLAYING:
 			get_tree().create_timer(1.6).timeout.connect(_show_done))
 	Narrator.subtitle.connect(_show_subtitle)

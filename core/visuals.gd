@@ -3,6 +3,10 @@ extends RefCounted
 ## Utilidades visuales sin estado: cajas, silueta blanca y capa de "arcilla".
 
 const CLAY_COLOR := Color(0.80, 0.76, 0.70)
+## Las siluetas se pintan DESPUÉS de la arcilla. Las dos son transparentes y Godot las ordena por
+## la distancia al centro de su caja: una pared grande tiene el centro más cerca que una estantería
+## pegada a ella, se pintaba después y la borraba entera (visto en la habitación japonesa).
+const GHOST_RENDER_PRIORITY := 10
 const GHOST_SHADER := preload("res://shaders/ghost.gdshader")
 
 
@@ -72,6 +76,7 @@ static func _strip_non_visual(n: Node) -> void:
 static func make_ghost_material() -> ShaderMaterial:
 	var m := ShaderMaterial.new()
 	m.shader = GHOST_SHADER
+	m.render_priority = GHOST_RENDER_PRIORITY
 	return m
 
 

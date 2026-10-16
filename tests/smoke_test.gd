@@ -120,6 +120,7 @@ func _run() -> void:
 		all_filled = all_filled and s.filled
 	check(all_filled, "todos los huecos llenos")
 	await _test_back_to_menu(main)
+	await _test_real_levels(main)
 	_end()
 
 
@@ -237,6 +238,41 @@ func _test_back_to_menu(main: Node) -> void:
 	check(GameState.has_progress(), "la primera pulsación de Borrar progreso solo pregunta")
 	reset.pressed.emit()
 	check(not GameState.has_progress() and not GameState.menu_unlocked and _saved(TEST_PROGRESS, "menu_desbloqueado") == false, "la segunda pulsación borra el progreso (también en disco)")
+
+
+## Los niveles de verdad (data/levels.json): cargan, cada pieza tiene su modelo, y se completan.
+func _test_real_levels(main: Node) -> void:
+	var listed: Variant = JSON.parse_string(FileAccess.get_file_as_string(GameState.LEVELS_PATH))
+	check(listed is Array and not (listed as Array).is_empty(), "data/levels.json lista niveles")
+	if not (listed is Array):
+		return
+	GameState.levels = PackedStringArray(listed)
+	for i in GameState.levels.size():
+		var path := GameState.levels[i]
+		main.play_level(i)
+		await get_tree().process_frame
+		var d := GameState.diorama
+		check(d != null and d.scene_file_path == path, "%s carga" % path.get_file())
+		if d == null or d.scene_file_path != path:
+			continue
+		var empty: Array[String] = []
+		for sl in d.slots:
+			if sl.meshes().is_empty():
+				empty.append(String(sl.id))
+		check(d.slots.size() >= 5 and empty.is_empty(), "%s: %d huecos y todos con su modelo (sin modelo: %s)" % [path.get_file(), d.slots.size(), empty])
+		check(d.slots[0].is_ghost() and (d.slots[0]._ghost as ShaderMaterial).render_priority > Visuals.make_clay_overlay().render_priority,
+			"%s: las siluetas se pintan después de la arcilla (si no, una pared grande las borra)" % path.get_file())
+		var steps := 0
+		while not d.completed and steps < 400:
+			d.debug_solve_step()
+			steps += 1
+			await get_tree().process_frame
+		var all_filled := true
+		for sl in d.slots:
+			all_filled = all_filled and sl.filled
+		check(d.completed and all_filled and d.inventory.is_empty(), "%s se completa entero (%d pasos)" % [path.get_file(), steps])
+		await get_tree().process_frame
+		check(GameState.hud._list.get_child_count() == 0, "%s completo: el panel no dice que busques más piezas" % path.get_file())
 
 
 ## La luz activa es la esperada, es la que usa el mundo, y no se ha quedado otra a la vez.

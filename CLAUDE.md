@@ -26,6 +26,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
 | Regenerar el puzle del título | `"$GODOT" --headless --path . --script res://tools/build_title_level.gd` |
+| Regenerar la habitación japonesa | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (pisa `levels/level_01_habitacion.tscn`) |
 | Abrir el juego para jugar | `"$GODOT" --path .` |
 | Abrir el editor | `"$GODOT" --path . -e` |
 
@@ -38,6 +39,8 @@ se ve) + commit. Sin las tres, no está hecho.
 |---|---|
 | `scenes/main.gd` | Monta cámara, arrastre, HUD, menús, mando, luz. Arranca en el puzle del título → menú → niveles de `data/levels.json`; guarda progreso; args `--level[=menu] --menu-page --solve --capture` |
 | `iluminacion/*.tscn` | La luz (ambiente + sol), editable en el editor por quien la lleva (`docs/ILUMINACION.md`). `main.gd` pone la del nivel (`Diorama.iluminacion`) o `luz_por_defecto.tscn`; `probar_luz.tscn` es para verla en el editor |
+| `levels/level_01_habitacion.tscn` | **El nivel jugable**: habitación japonesa con los 16 modelos del pack de props (MIT), 17 huecos, cajón con el boli escondido, rincón de la mesa baja que da el cuaderno. Lo genera `tools/build_room_level.gd` |
+| `levels/level_00_muestra.tscn` | Ya no se juega (no está en `data/levels.json`): es el banco de pruebas del test, usa toda la convención de nombres |
 | `levels/menu_titulo.tscn` | El puzle que desbloquea el menú: diorama de 4 piezas con el letrero del título (lo genera `tools/build_title_level.gd`; el texto es el nombre del proyecto) |
 | `core/diorama.gd` | Raíz de cada nivel. Lee la convención de nombres y monta huecos, inventario, cajones, escondidos, sub-dioramas, color, orden, pistas, final |
 | `core/name_rules.gd` | La convención `P_ H_ OD_ OR_ Z_` + tokens `__after-x`, `__reward-x` (ver `docs/ARTE-PIPELINE.md`) |
@@ -54,7 +57,7 @@ se ve) + commit. Sin las tres, no está hecho.
 | `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar |
 | `input/gamepad_cursor.gd` | Stick izq. = puntero, A = clic (mando sin código aparte) |
 | `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator`, `Sfx` |
-| `tests/smoke_test.gd` | Juega como un jugador: puzle del título, menú, nivel 0 entero con pausa, vuelta al menú; 62 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
+| `tests/smoke_test.gd` | Juega como un jugador: puzle del título, menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); 73 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
 
 Reglas de arquitectura: los sistemas se hablan por `Events`; la UI se construye en código (un
 `.tscn` hecho a mano es frágil y da conflictos); **todo lo jugable se define por nombres en el
@@ -123,6 +126,13 @@ modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escen
     de madera de `Button` con texto oscuro encima (ilegible, visto en captura). Al dar estilo a un
     tipo base, revisar sus hijos (`CheckButton`, `CheckBox`, `OptionButton`, `MenuButton`...).
 13. **`PackedStringArray` no tiene `any()`/`all()`** (los `Array` sí): bucle o `Array(...)`.
+14. **Una silueta puede desaparecer detrás de la arcilla.** Las dos son transparentes y Godot
+    las ordena por la distancia al CENTRO de su caja: una pared grande tiene el centro más cerca
+    que la estantería pegada a ella, se pintaba después y la borraba entera (visto en captura de la
+    habitación). Arreglo: `Visuals.GHOST_RENDER_PRIORITY`. Con modelos nuevos, mirar siempre una
+    captura con 0 piezas puestas: toda pieza tiene que verse como silueta.
+15. **Los packs de modelos traen rutas `res://` fijas.** Copiados a otra carpeta, sus escenas
+    salen vacías sin dar error en el check. El test comprueba que cada hueco tiene malla.
 
 ## Pendiente de verificar con el juego real (ver GDD)
 
