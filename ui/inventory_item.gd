@@ -13,6 +13,7 @@ var _pivot: Node3D
 var _viewport: SubViewport
 var _count: Label
 var _hover := false
+var _size := Vector3.ONE                     ## tamaño de la pieza (para saber si se ve de canto)
 
 
 func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
@@ -43,6 +44,7 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 	var copy := prototype.duplicate() as Node3D
 	_pivot.add_child(copy)
 	copy.position = -Visuals.local_aabb(copy).get_center()
+	_size = Visuals.local_aabb(copy).size
 	var radius := Visuals.local_aabb(copy).size.length() * 0.5 * maxf(ref.global_basis.get_scale().x, 0.001)
 	var c := Camera3D.new()
 	c.fov = 30.0
@@ -81,7 +83,13 @@ func _process(delta: float) -> void:
 		return
 	# Orientación de la pieza vista desde la cámara principal = la que verá en su hueco.
 	var grow := lerpf(_pivot.basis.get_scale().x, HOVER_SCALE if _hover else 1.0, 1.0 - exp(-12.0 * delta))
-	_pivot.basis = (main_cam.global_basis.orthonormalized().inverse() * _ref.global_basis).orthonormalized().scaled(Vector3.ONE * grow)
+	var rot := (main_cam.global_basis.orthonormalized().inverse() * _ref.global_basis).orthonormalized()
+	# Una pieza plana vista de canto (una pared, un póster) sería una raya: se gira un poco para que
+	# se reconozca. Sigue indicando hacia dónde mira; solo deja de ser ilegible.
+	var e := (rot * Vector3(_size.x, 0, 0)).abs() + (rot * Vector3(0, _size.y, 0)).abs() + (rot * Vector3(0, 0, _size.z)).abs()
+	if minf(e.x, e.y) < maxf(e.x, e.y) * 0.18:
+		rot = Basis(Vector3.UP, deg_to_rad(40.0)) * rot
+	_pivot.basis = rot.scaled(Vector3.ONE * grow)
 
 
 func _gui_input(e: InputEvent) -> void:

@@ -30,6 +30,7 @@ func check(cond: bool, what: String) -> void:
 
 func _run() -> void:
 	_test_name_rules()
+	_test_narrator()
 	if GameState.RESET_ON_START:
 		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
 			"modo prototipo: al darle a Play no se carga progreso (título y niveles desde cero)")
@@ -67,6 +68,10 @@ func _run() -> void:
 	var cam_yaw := GameState.camera.cam.global_rotation.y
 	check(rig != null and absf(cam_yaw) > 0.1 and absf(wrapf(rig.rotation.y - cam_yaw * rig.seguir_camara, -PI, PI)) < 0.02,
 		"la luz gira con la cámara (luz %.2f, cámara %.2f rad)" % [rig.rotation.y if rig else 0.0, cam_yaw])
+	var reach := GameState.camera.cam.global_position.distance_to(rig._center) + rig._radius * rig.margen_sombra if rig else -1.0
+	var shadow_dist := (sun as DirectionalLight3D).directional_shadow_max_distance if sun is DirectionalLight3D else -1.0
+	check(rig != null and absf(shadow_dist - clampf(reach, 4.0, 40.0)) < 0.3 and shadow_dist < 25.0,
+		"las sombras cubren solo lo que se ve, para que no salgan pixeladas (%.1f m)" % shadow_dist)
 	await _test_hint(d)
 	var cam := GameState.camera.cam
 	GameState.camera.snap()
@@ -89,7 +94,11 @@ func _run() -> void:
 
 	var mesa := _slot(d, &"mesa")
 	var bursts_before := fx.bursts
+	var cam_before := cam.global_position
 	check(mesa != null and d.try_place(&"mesa", cam.unproject_position(mesa.center()), cam), "la mesa encaja soltándola encima de su hueco")
+	var painted_at_once := mesa != null and d.is_painted_at(mesa.center())
+	await get_tree().process_frame
+	var first_step := cam.global_position.distance_to(cam_before)
 	check(mesa != null and mesa.filled and not mesa.is_ghost(), "la mesa colocada deja de ser silueta")
 	check(mesa != null and not mesa.node.find_children("Superficie", "StaticBody3D", true, false).is_empty(),
 		"la mesa colocada pasa a ser superficie (lo de encima se apoya en ella, no la atraviesa)")
@@ -97,10 +106,13 @@ func _run() -> void:
 		"al encajar una pieza salen serrín y chispas")
 	if mesa != null:
 		var far := mesa.center() + Vector3(d.color_radius * 1.6, 0.0, 0.0)
-		check(not d.is_painted_at(mesa.center()), "(control) justo al encajar la pintura aún no ha llegado: crece poco a poco")
+		check(not painted_at_once, "(control) justo al encajar la pintura aún no ha llegado: crece poco a poco")
 		await get_tree().create_timer(Diorama.PAINT_TIME + 0.15).timeout
 		check(d.is_painted_at(mesa.center()) and not d.is_painted_at(far) and d.has_unpainted_layer(),
 			"al encajar, la pintura se extiende desde la pieza hasta su radio, y no más allá")
+		var later := cam.global_position.distance_to(cam_before)
+		check(first_step < 0.01 and later > 0.03,
+			"al colocar, la cámara se acerca a la pieza suave: sin tirón al empezar (%.3f m) y se nota después (%.3f m)" % [first_step, later])
 
 	# Arrastrar de verdad: pulsar en la ficha del panel, mover y soltar encima del hueco,
 	# con eventos de ratón que recorren el mismo camino que los del jugador.
@@ -149,16 +161,169 @@ func _run() -> void:
 		all_filled = all_filled and s.filled
 	check(all_filled, "todos los huecos llenos")
 	check(GameState.camera.showcasing, "al completar, la cámara se mece enseñando el diorama")
-	check(fx.get_children().any(func(c: Node) -> bool: return c.name == "Hojas"), "al completar caen hojas y chispas")
+	check(fx.get_children().any(func(c: Node) -> bool: return c.name == "Luces") and not fx.get_children().any(func(c: Node) -> bool: return c.name == "Hojas"),
+		"al completar suben luces cálidas (sin hojas)")
 	await get_tree().create_timer(Diorama.FINAL_PAINT_TIME + 0.3).timeout
 	check(not d.has_unpainted_layer(), "al completar no queda madera sin pintar (y la capa se quita)")
 	check(sun != null and is_equal_approx(sun.light_energy, rig.energia_final) and sun.light_color.is_equal_approx(rig.color_final),
 		"la luz despierta con el diorama: completo, la luz principal es la final (%.2f)" % (sun.light_energy if sun else -1.0))
 	check(not GameState.hud._panel.visible, "al completar, la bandeja vacía se recoge")
 	await _test_back_to_menu(main)
+	await _test_story(main)
 	await _test_real_levels(main)
 	await _test_light_scale()
 	_end()
+
+
+## El narrador no pisa frases: una segunda frase espera a que acabe la primera.
+func _test_narrator() -> void:
+	Narrator.clear()
+	var got: Array[String] = []
+	var listen := func(text: String, _seconds: float) -> void: got.append(text)
+	Narrator.subtitle.connect(listen)
+	Narrator.say("pista")
+	Narrator.say("orden")
+	check(got.size() == 1 and got[0] == Narrator.text("pista") and Narrator.remaining() > 2.5,
+		"el narrador no pisa frases: la segunda espera a que acabe la primera (%d de 2 dichas)" % got.size())
+	Narrator.subtitle.disconnect(listen)
+	Narrator.clear()
+
+
+## La historia del desván (docs/GUION.md): se monta por secciones en orden; en cada una los objetos
+## de la historia aparecen de uno en uno y la clave al final; lo que está guardado en un mueble se
+## descubre porque el mueble brilla, y en la adolescencia primero la cámara y luego la inscripción.
+func _test_story(main: Node) -> void:
+	var attic := "res://levels/level_01_desvan.tscn"
+	GameState.levels = PackedStringArray([attic])
+	main.play_level(0)
+	await get_tree().process_frame
+	GameState.camera.snap()
+	var d := GameState.diorama
+	check(d != null and d.scene_file_path == attic and d.sections.size() == 5 and d.sections[0].opened and not d.sections[1].opened,
+		"el desván empieza con su primera sección abierta y las otras cuatro cerradas")
+	if d == null or d.sections.size() != 5:
+		return
+	var s1 := d.sections[0]
+	var s2 := d.sections[1]
+	var s3 := d.sections[2]
+	var s4 := d.sections[3]
+	var s5 := d.sections[4]
+	var shown := d.visible_inventory()
+	check(not shown.is_empty() and shown.all(func(id: StringName) -> bool: return _slot(d, id).section == s1)
+		and not shown.has(&"tejado") and not shown.has(&"hucha"),
+		"al empezar, la bandeja solo trae paredes: ni el tejado (va después) ni la hucha (la clave) ni nada de otra zona")
+	check(not _slot(d, &"peluche").available and not s2.decor[0].visible and not (s2.lights()[0] as Light3D).visible,
+		"las zonas cerradas no enseñan nada: ni siluetas, ni muebles, ni su luz")
+	var solid := 0
+	for dec in s2.decor:
+		for body in dec.find_children("Superficie", "StaticBody3D", true, false):
+			solid += 1 if (body as StaticBody3D).collision_layer != 0 else 0
+	check(solid == 0, "los muebles ocultos de una zona cerrada no chocan con la pieza en mano (%d chocan)" % solid)
+	var placed: Array[StringName] = []
+	var record := func(id: StringName, _n: Node3D) -> void: placed.append(id)
+	Events.piece_placed.connect(record)
+	var flashes := [0]
+	var count_flash := func() -> void: flashes[0] += 1
+	Events.flash_requested.connect(count_flash)
+	Narrator.clear()
+	var steps := 0
+	while not s1.completed and steps < 40:
+		d.debug_solve_step()
+		steps += 1
+	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
+		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
+	var waited := 0.0
+	while not s2.opened and waited < 10.0:
+		await get_tree().create_timer(0.25).timeout
+		waited += 0.25
+	check(s2.opened and waited >= Diorama.SECTION_PAUSE - 0.3, "al completarla, la infancia se abre sola tras una pausa (%.1f s)" % waited)
+	await get_tree().create_timer(0.3).timeout
+	check(GameState.hud.chapter_text() == Narrator.text("titulo_infancia") and s2.decor[0].visible and (s2.lights()[0] as Light3D).visible,
+		"al abrirse la infancia: su rótulo, sus muebles y su luz")
+	shown = d.visible_inventory()
+	check(shown.has(&"comoda_infantil") and not shown.has(&"caja_musica") and not shown.has(&"dibujo") and not shown.has(&"peluche"),
+		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
+	var blocks := _pickup(d, &"cubos")
+	var chest: Interactable = blocks.container if blocks != null else null
+	check(chest != null and chest.kind == NameRules.DOOR and not chest.target.is_ancestor_of(blocks.target),
+		"los cubos están guardados en el baúl, sin ser hijos de la tapa (si no, girarían con ella)")
+	check(chest != null and chest.attention and chest.glow_count() > 0 and main.effects.is_calling(chest),
+		"el baúl que guarda lo que toca encontrar brilla, se mueve y echa motas")
+	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles"), "la primera vez sale el consejo de tocar el mueble que brilla")
+	steps = 0
+	while steps < 30:                              # todo lo que se pueda colocar sin buscar
+		var h := d.hint_target()
+		if not h.has("slot"):
+			break
+		d.place(h.slot)
+		steps += 1
+	check(d.hint_target().get("container") == chest, "cuando solo falta buscar, la pista señala el mueble (no lo escondido)")
+	check(not _slot(d, &"peluche").available, "(control) la nutria no aparece mientras falten los cubos")
+	if chest != null:
+		chest.set_open(true)
+		await get_tree().process_frame
+		check(not chest.attention and blocks.attention and GameState.hud.tip_text() == Narrator.text("consejo_dentro"),
+			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo)")
+		d.collect(blocks)
+		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
+		d.place(_slot(d, &"cubos"))
+	check(_slot(d, &"peluche").available and d.visible_inventory().has(&"peluche"), "con todo lo demás puesto aparece la nutria (clave)")
+	d.place(_slot(d, &"peluche"))
+	check(s2.completed and placed.find(&"caja_musica") < placed.find(&"dibujo") and placed.find(&"dibujo") < placed.find(&"peluche"),
+		"infancia completa en el orden del guion: caja de música, dibujo, nutria")
+	d.debug_solve_step()                           # abre la adolescencia sin esperar (la espera ya se probó)
+	var camera_pick := _pickup(d, &"camara")
+	var application := _pickup(d, &"solicitud")
+	check(s3.opened and camera_pick != null and application != null and not camera_pick.available and not application.available,
+		"al abrirse la adolescencia, ni la cámara ni la inscripción se ven todavía")
+	steps = 0
+	while not _slot(d, &"mp3").filled and steps < 40:
+		d.debug_solve_step()
+		steps += 1
+	check(camera_pick.available and not application.available and camera_pick.container != null and camera_pick.container.attention,
+		"con el MP3 puesto toca encontrar la cámara: el armario brilla (la inscripción aún no aparece)")
+	var flashes_before: int = flashes[0]
+	steps = 0
+	while not _slot(d, &"camara").filled and steps < 40:
+		d.debug_solve_step()
+		steps += 1
+	check(flashes[0] > flashes_before, "al colocar la cámara, destello blanco (el flash)")
+	steps = 0
+	while not application.available and steps < 60:
+		d.debug_solve_step()
+		steps += 1
+	var rest := s3.slots.filter(func(sl: PieceSlot) -> bool: return not sl.filled and sl.id != &"solicitud")
+	check(application.available and rest.is_empty() and application.container != null
+		and application.container.kind == NameRules.DRAWER and application.container.attention,
+		"después de la cámara y de todo lo demás, toca encontrar la inscripción a Bellas Artes: el cajón brilla")
+	steps = 0
+	while not s4.completed and steps < 120:
+		d.debug_solve_step()
+		steps += 1
+	check(s4.completed and placed.find(&"llaves") < placed.find(&"caballete") and placed.find(&"caballete") < placed.find(&"espejo"),
+		"adultez en el orden del guion: llaves, caballete y el espejo (clave) el último")
+	Narrator.clear()
+	d._open_pending(s5)
+	check(not s5.opened and Narrator.remaining() > 3.0 and not _slot(d, &"moneda").available,
+		"el epílogo habla antes de enseñar la moneda")
+	d.debug_solve_step()
+	check(s5.opened and _slot(d, &"moneda").available, "después aparece la moneda, sobre la hucha")
+	Narrator.clear()
+	d.place(_slot(d, &"moneda"))
+	check(d.completed, "la moneda en la hucha completa el desván")
+	Events.piece_placed.disconnect(record)
+	Events.flash_requested.disconnect(count_flash)
+	await get_tree().create_timer(2.0).timeout
+	check(not GameState.hud._done.visible, "el final de la historia no enseña el aviso de «completado»")
+	await get_tree().create_timer(3.0).timeout
+	check(main._fade.color.a > 0.05, "el final funde a negro (hacia los créditos) (%.2f)" % main._fade.color.a)
+
+
+func _pickup(d: Diorama, id: StringName) -> Interactable:
+	for it in d.interactables:
+		if it.kind == NameRules.PICKUP and it.id == id:
+			return it
+	return null
 
 
 ## escala_luces: las luces que trae un modelo (de Blender llegan con otras unidades) se ajustan
@@ -232,7 +397,9 @@ func _test_title_menu(main: Node) -> bool:
 		return false
 	check(not GameState.hud._panel.visible and not GameState.hud._done.visible, "con el menú abierto, el panel de piezas se esconde")
 	check(main.menu.buttons.jugar.text == "Jugar", "sin progreso, el botón dice Jugar")
-	for i in 20:
+	var waited := 0.0
+	while GameState.camera.cam.h_offset > -0.3 and waited < 1.5:
+		waited += get_process_delta_time()
 		await get_tree().process_frame
 	check(GameState.camera.cam.h_offset < -0.3, "la cámara corre el diorama a la derecha del menú (h_offset %.2f)" % GameState.camera.cam.h_offset)
 	main.menu.show_page("opciones")
@@ -310,6 +477,7 @@ func _test_real_levels(main: Node) -> void:
 		var path := GameState.levels[i]
 		main.play_level(i)
 		await get_tree().process_frame
+		GameState.camera.snap()                  # sin la entrada de cine: las medidas, con el encuadre del nivel
 		var d := GameState.diorama
 		check(d != null and d.scene_file_path == path, "%s carga" % path.get_file())
 		if d == null or d.scene_file_path != path:
@@ -318,7 +486,7 @@ func _test_real_levels(main: Node) -> void:
 		for sl in d.slots:
 			if sl.meshes().is_empty():
 				empty.append(String(sl.id))
-		check(d.slots.size() >= 5 and empty.is_empty(), "%s: %d huecos y todos con su modelo (sin modelo: %s)" % [path.get_file(), d.slots.size(), empty])
+		check(d.slots.size() >= 5 and empty.is_empty(), "%s: todos los huecos con su modelo (%d huecos; sin modelo: %s)" % [path.get_file(), d.slots.size(), empty])
 		check(d.slots[0].is_ghost() and (d.slots[0]._ghost as ShaderMaterial).render_priority > Visuals.make_clay_overlay().render_priority,
 			"%s: las siluetas se pintan después de la arcilla (si no, una pared grande las borra)" % path.get_file())
 		await get_tree().process_frame
@@ -390,7 +558,9 @@ func _check_sweep(who: String) -> void:
 			inside += 1 if n > 0 else 0
 			rested += 1 if GameState.drag.last_rested else 0
 	check(checked >= 20 and inside == 0, "%s: la pieza en mano (%s) no atraviesa nada en %d puntos (dentro: %d)" % [who, piece, checked, inside])
-	check(rested * 2 >= checked, "%s: la pieza en mano se apoya en las superficies (%d de %d puntos)" % [who, rested, checked])
+	# Control (que el instrumento mida algo): al menos 1 de cada 8 puntos tiene que apoyarse. No más:
+	# un diorama que empieza casi vacío (el desván: solo suelo) tiene media pantalla de aire.
+	check(rested * 8 >= checked, "%s: la pieza en mano se apoya en las superficies (%d de %d puntos)" % [who, rested, checked])
 
 
 func _test_camera(d: Diorama) -> void:

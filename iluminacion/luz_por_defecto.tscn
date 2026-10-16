@@ -13,6 +13,9 @@ ambient_light_energy = 0.32
 tonemap_mode = 4
 glow_enabled = true
 glow_intensity = 0.7
+adjustment_enabled = true
+adjustment_contrast = 1.06
+adjustment_saturation = 1.06
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tqb12"]
 shader = ExtResource("2_0pdsr")
@@ -38,8 +41,9 @@ light_color = Color(0.9, 0.92, 1, 1)
 light_energy = 0.5
 shadow_enabled = true
 shadow_opacity = 0.85
-shadow_blur = 1.5
-directional_shadow_max_distance = 25.0
+shadow_blur = 2.5
+directional_shadow_mode = 0
+directional_shadow_max_distance = 12.0
 
 [node name="Contraluz" type="DirectionalLight3D" parent="." unique_id=1098587980]
 transform = Transform3D(-0.81915206, -0.28678823, 0.49673176, 0, 0.8660254, 0.5, -0.57357645, 0.40957603, -0.7094065, 0, 0, 0)

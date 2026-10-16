@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (108 comprobaciones, 9 avisos)`** (~45 s).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (138 comprobaciones, 9 avisos)`** (~70 s).
    Los 9 avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -29,24 +29,32 @@ donde pone **sin probar**.
 
 Si el paso 2 o 3 no sale así, **no sigas**: diagnostica con `build/check.log` / `build/capture.log`.
 
-## 2. Estado del juego (16-oct-2026, junta "Aspecto de Woodo" en `main` y en las 3 ramas)
+## 2. Estado del juego (16-oct-2026, junta "El desván por secciones" en `main` y en las 3 ramas)
 
-- **Aspecto (lo último, `docs/ANALISIS-WOODO.md`):** fondo oscuro con halo y viñeta; luz en tiempo
-  real que gira con la cámara y va de fría a cálida al montar; el diorama empieza en **madera
-  cruda** y la **pintura se extiende** desde cada pieza; partículas (polvo, serrín, chispas,
-  anillo, hojas al completar); cámara con entrada, inercia, pista que acerca, empujón al encajar
-  y vaivén al completar; **bandeja** oscura de dos columnas que se recoge al completar.
+- **El diorama principal es el desván de la historia** (`docs/GUION.md`, a partir del guion de
+  Manu con sus cambios): `levels/level_01_desvan.tscn`. Se monta por **secciones** (`S_`): primero
+  paredes y tejado (la hucha cierra esa fase), luego **infancia, adolescencia y adultez** (tres
+  zonas integradas en el mismo desván: cada una aparece con su rótulo, su bombilla y sus muebles)
+  y el epílogo (la moneda en la hucha, fundido a negro, créditos). Los objetos de la historia
+  aparecen de uno en uno y dicen su frase; los muebles que guardan algo **brillan y se mueven**
+  (baúl, armario, cajones) y la primera vez sale un consejo. Provisional (figuras + props del
+  pack); el de las artistas irá en `assets/modelos/desvan/desvan.glb`.
+- **Aspecto (`docs/ANALISIS-WOODO.md`):** fondo oscuro con halo y viñeta; luz en tiempo real que
+  gira con la cámara y va de fría a cálida al montar; **sombras nítidas** (alcance ajustado a lo
+  que se ve, mapa ortogonal, 8192 en PC); el diorama empieza en **madera cruda** y la **pintura se
+  extiende** desde cada pieza; partículas (polvo, serrín, chispas, anillo, **luces cálidas** al
+  completar, ya sin hojas); cámara con **muelles** (nada brusco), entrada, inercia, pista que
+  acerca, **acercamiento suave al colocar**, encuadre de cada sección y vaivén al completar;
+  **bandeja** oscura de dos columnas que se recoge al completar.
 - **Arranque:** el **cofre del título**, como en Woodo: las letras del nombre del juego (una pieza
   por letra) y un paisaje pequeño encima (casita, 2 árboles, 2 faroles que se encienden, banco):
   14 piezas. Es **un `.glb`** (`levels/provisional/menu_provisional.glb`, generado por
   `tools/build_title_level.gd`); si existe `assets/modelos/menu/menu.glb`, se usa ese. Al
   resolverlo sale el **menú** a la izquierda: Jugar/Continuar, Elegir diorama, Opciones, Créditos,
   Salir (no en Web). **Pausa** con Esc o el botón Menú.
-- **Nivel jugable:** `levels/level_01_habitacion.tscn`, "La habitación de estudio": los 16 modelos del
-  pack *Modern Japanese Home Props Lite* (MIT, en `assets/modelos/ModernJapaneseHomePropsLite/`),
-  17 huecos, órdenes (`__after-escritorio`, `__after-estanteria`), boli escondido en un cajón (`OD_`+`H_`),
-  rincón con zoom (`Z_rincon__reward-cuaderno`). Arquitectura con figuras simples (el pack no la trae).
-  Se genera con `tools/build_room_level.gd` (pisa la escena: si alguien la edita a mano, se pierde).
+- `levels/level_01_habitacion.tscn` ("La habitación de estudio", con el pack *Modern Japanese Home
+  Props Lite*, MIT) **ya no se juega**: el desván usa algunos de esos props (escritorio, silla,
+  lámpara, altavoz, libros, taza, reloj). Se puede borrar si nadie la quiere.
 - `levels/level_00_muestra.tscn` ya **no se juega**: es el banco de pruebas del test.
 - **Luz:** en escenas editables `iluminacion/*.tscn` (`docs/ILUMINACION.md`). La lámpara del
   escritorio y los faroles se encienden al colocarlos. Medido: quemado 0,0 % (`tools/medir_luz.py`
@@ -90,6 +98,14 @@ carpeta. Si no, parar y preguntar.
   cambiarlo a zoom solo al centro si lo prefiere — está en `DioramaCamera._zoom`).
 - La pieza en mano no atraviesa nada (también en el tramo del imán).
 - Cada Play empieza de cero mientras se prototipa (**antes de entregar: `RESET_ON_START = false`**).
+- **Feedback del 16-oct (nota a mano + guion PDF), ya hecho:** luz más tipo Unreal y sombras sin
+  pixelar; diorama en 3 secciones (infancia, adolescencia, adultez) integradas pero que se montan
+  por orden; se empieza por paredes y tejado y la historia se desbloquea por partes; partículas sin
+  hojas (cozy); movimiento de cámara al colocar suave; dressing lleno; muebles que brillan para
+  enseñar que se abren; peluche = **nutria**; caja de música **de la abuela** (y a mamá le pasó lo
+  mismo con el ballet); en la adolescencia, **primero la cámara y luego la inscripción** (la
+  inscripción cierra el acto; el flash sale al colocar la cámara). "Ventana abierta con luz entrando"
+  estaba tachado: no se hizo.
 - Ramas fijas por área (§3).
 - El juego se llama **"Woodo Jam"** (confirmado el 16-oct; la persona lo escribió "woodoo jam" al
   confirmar que no cambia).
@@ -110,16 +126,21 @@ carpeta. Si no, parar y preguntar.
    export lo que no se use (`demo/`, `scenes/` del pack).
    Ojo también al **rendimiento en navegador** de lo nuevo: la capa de madera es una pasada
    transparente más por malla, el contraluz otra, y las partículas son de CPU. Medir FPS.
-2. **Confirmar el aspecto con el juego de verdad**: la lista de 8 preguntas de
+2. **Probar en una GPU real** la luz y las sombras (todo se midió con render por software) y el
+   rendimiento del desván (51 piezas, 3 luces de zona, capa de madera) en navegador.
+3. **Confirmar el aspecto con el juego de verdad**: la lista de 8 preguntas de
    `docs/ANALISIS-WOODO.md` §4 (fondo, partículas, cámara al completar...). Cada respuesta es
    ajustar valores, no un sistema nuevo.
-3. Créditos con nombres reales (`data/creditos_es.txt`).
-4. Sonidos y música: no hay ninguno (`assets/audio/...`; nombres en `autoload/sfx.gd`).
-5. El cofre del título y la arquitectura de la habitación son provisionales: cuando lleguen los
-   `.glb` de las artistas, dejarlos en su sitio (`docs/ARTE-PIPELINE.md`) y mirar capturas.
-6. **Mando sin probar** (no hay mando en la nube).
-7. Más niveles (el plan habla de 3): cada nivel = escena con `core/diorama.gd` y su `.glb` en
-   `modelo` + línea en `data/levels.json`; el test ya prueba solo cada nivel de esa lista.
+4. Créditos con nombres reales (`data/creditos_es.txt`).
+5. Sonidos y música: no hay ninguno (`assets/audio/...`; nombres en `autoload/sfx.gd`). La caja de
+   música debería sonar y apagarse al cerrar la infancia (guion).
+6. El cofre del título y el desván son provisionales: cuando lleguen los `.glb` de las artistas,
+   dejarlos en su sitio (`docs/ARTE-PIPELINE.md`) y mirar capturas (sobre todo con 0 piezas
+   puestas: toda pieza tiene que verse como silueta). Si piden una plantilla `.glb` del desván para
+   Blender, generarla desde el provisional.
+7. **Mando sin probar** (no hay mando en la nube).
+8. Si hacen falta más dioramas: escena con `core/diorama.gd` y su `.glb` en `modelo` + línea en
+   `data/levels.json`; el test prueba solo cada nivel de esa lista.
 
 ## 7. Cosas que ya me costaron tiempo (y cómo se resolvieron)
 
@@ -145,8 +166,8 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 
 | Qué | Cómo |
 |---|---|
-| Todo el test | `bash tools/check.sh` → `CHECK OK (108 …)` |
-| Ver los tests en rojo | `python3 -I tools/mutantes.py . build/mutantes "$GODOT"` → 33 × `ROJO BIEN` (~30 min: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
+| Todo el test | `bash tools/check.sh` → `CHECK OK (138 …)` |
+| Ver los tests en rojo | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 47 × `ROJO BIEN` (~1 h: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`) |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

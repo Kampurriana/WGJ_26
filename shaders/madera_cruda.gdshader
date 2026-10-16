@@ -6,7 +6,7 @@
 shader_type spatial;
 render_mode blend_mix, depth_draw_never, cull_back;
 
-const int MAX_PINTURA = 48;
+const int MAX_PINTURA = 64;
 
 uniform vec4 color_claro : source_color = vec4(0.86, 0.74, 0.58, 1.0);
 uniform vec4 color_veta : source_color = vec4(0.68, 0.53, 0.38, 1.0);

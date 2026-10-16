@@ -7,24 +7,31 @@ extends Node3D
 ##   Arrastrar (izq. o dcho.) en vacío = girar · rueda/pellizco/Q-E = zoom
 ##   clic corto = tocar el objeto (Events.world_clicked)
 ## Movimientos "de cine" (docs/ANALISIS-WOODO.md): entrada al nivel desde lejos (intro), inercia
-## al soltar el giro, la pista gira y acerca (look_at_point), empujón al encajar (kick) y vaivén
-## de exhibición al completar (showcase).
+## al soltar el giro, la pista gira y acerca (look_at_point), encuadre de cada sección (frame_box),
+## acercamiento suave al colocar (nudge) y vaivén de exhibición al completar (showcase).
+## Todo se mueve con MUELLES amortiguados (_spring): la velocidad nunca salta, así nada arranca ni
+## frena de golpe (lo que pidió el equipo: "movimientos más suaves y agradecidos").
 
 @export var orbit_deg_per_px := 0.3
 @export var pad_orbit_deg_per_s := 140.0
 @export var zoom_step := 0.12
 @export var pad_zoom_per_s := 1.6
-@export var smoothing := 10.0
+@export var smooth_time := 0.12               ## lo que tarda en seguir al jugador (s): suave y sin retraso
 @export var drag_threshold_px := 6.0
 
 const MENU_SWAY_DEG := 14.0                  ## en el menú de inicio, el diorama se mece así de un lado a otro
 const MENU_SWAY_SPEED := 0.35
 const MENU_SHIFT := 0.22                     ## y se corre a la derecha para dejar sitio al panel del menú
-const INTRO_TIME := 1.6                      ## entrada al nivel: lo que tarda en posarse
-const SLOW_SMOOTHING := 2.6                  ## suavizado de los movimientos de cine (entrada, pista, rincones)
+const INTRO_TIME := 2.2                      ## entrada al nivel: segundos de movimiento de cine
+const INTRO_SMOOTH := 0.65                   ## y su suavidad (más = más lento y blando)
+const CINE_SMOOTH := 0.55                    ## suavidad de pista, rincones y secciones
 const INERTIA_DAMP := 4.0                    ## lo que frena el giro tras soltar (más = frena antes)
 const MAX_SPIN := 300.0                      ## impulso máximo al soltar (grados/s)
-const KICK := 0.03                           ## empujón al encajar: 3 % de la distancia
+const NUDGE := 0.04                          ## al colocar, la cámara se acerca un 4 %...
+const NUDGE_SHIFT := 0.15                    ## ...y se inclina un 15 % hacia la pieza (como mucho NUDGE_MAX m)
+const NUDGE_MAX := 0.3
+const NUDGE_SMOOTH := 0.7                    ## muy blando: ni empuja ni marea
+const NUDGE_HOLD := 1.1                      ## lo que se queda ahí antes de volver solo
 const HINT_ZOOM := 0.5                       ## la pista acerca hasta medio camino del zoom máximo
 const SHOWCASE_DEG := 18.0                   ## al completar, se mece así de un lado a otro
 
@@ -53,11 +60,24 @@ var _input_enabled := true
 var _menu_view := false
 var _sway_t := 0.0
 var _cur_h_offset := 0.0
-var _slow_left := 0.0                        ## segundos que quedan de suavizado lento
+var _cine_left := 0.0                        ## segundos que quedan de movimiento de cine
+var _cine_smooth := CINE_SMOOTH
 var _spin := Vector2.ZERO                    ## impulso del giro (grados/s, antes de la sensibilidad)
 var _last_motion_ms := 0
-var _kick := 0.0
+var _v_yaw := 0.0                            ## velocidades de los muelles
+var _v_pitch := 0.0
+var _v_distance := 0.0
+var _v_center := Vector3.ZERO
+var _v_h_offset := 0.0
+var _nudge_goal := Vector3.ZERO              ## acercamiento al colocar: desplazamiento del centro...
+var _nudge_zoom_goal := 0.0                  ## ...y acercamiento (fracción de la distancia)
+var _nudge := Vector3.ZERO
+var _nudge_zoom := 0.0
+var _v_nudge := Vector3.ZERO
+var _v_nudge_zoom := 0.0
+var _nudge_left := 0.0
 var showcasing := false                      ## vaivén de diorama completado
+var hovered: Interactable                    ## lo que se puede tocar bajo el ratón (null = nada)
 var _showcase_base := 0.0
 var _showcase_amp := 0.0
 
@@ -68,7 +88,7 @@ func _ready() -> void:
 	add_child(cam)
 	cam.make_current()
 	Events.focus_changed.connect(_on_focus_changed)
-	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: kick())
+	Events.piece_placed.connect(func(_id: StringName, n: Node3D) -> void: nudge(Visuals.global_aabb(n).get_center()))
 	Events.level_completed.connect(func(_d: Node) -> void:
 		if GameState.mode == GameState.Mode.PLAYING:
 			showcase())
@@ -86,8 +106,7 @@ func configure(d: Diorama) -> void:
 	_home.yaw = yaw
 	_home.pitch = pitch
 	_spin = Vector2.ZERO
-	_kick = 0.0
-	_slow_left = 0.0
+	_cine_left = 0.0
 	showcasing = false
 	snap()
 
@@ -97,13 +116,22 @@ func intro() -> void:
 	_cur_distance = distance * 1.8
 	_cur_pitch = minf(pitch + 20.0, 85.0)
 	_cur_yaw = yaw - 35.0
-	_slow_left = INTRO_TIME
+	_cine(INTRO_TIME, INTRO_SMOOTH)
 	_apply()
 
 
-## Empujón mínimo hacia el diorama (al encajar una pieza): se nota, no marea.
-func kick() -> void:
-	_kick = KICK
+## Al colocar una pieza: la cámara se acerca un poco y se inclina hacia ella, despacio, se queda un
+## momento y vuelve sola. Va en su propio muelle: el jugador puede seguir girando sin notar retraso.
+func nudge(p: Vector3) -> void:
+	_nudge_goal = ((p - _cur_center) * NUDGE_SHIFT).limit_length(NUDGE_MAX)
+	_nudge_zoom_goal = NUDGE
+	_nudge_left = NUDGE_HOLD
+
+
+## Movimiento de cine durante `seconds`, con esa suavidad (segundos del muelle).
+func _cine(seconds: float, smooth: float) -> void:
+	_cine_left = seconds
+	_cine_smooth = smooth
 
 
 ## Diorama completado: se aleja un poco y se mece de lado a lado, dentro de los límites. Lo corta
@@ -117,7 +145,7 @@ func showcase() -> void:
 	center = home_center()
 	distance = minf(float(_home.get("distance", distance)) * 1.1, max_distance)
 	pitch = clampf(float(_home.get("pitch", pitch)) + 4.0, pitch_min, pitch_max)
-	_slow_left = 1.5
+	_cine(2.5, 0.9)
 
 
 ## Vista del menú de inicio: vuelve al encuadre inicial, se mece sola, se corre a la derecha
@@ -154,6 +182,18 @@ func snap() -> void:
 	_cur_distance = distance
 	_cur_center = center
 	_cur_h_offset = _h_offset_goal()
+	_v_yaw = 0.0
+	_v_pitch = 0.0
+	_v_distance = 0.0
+	_v_center = Vector3.ZERO
+	_v_h_offset = 0.0
+	_nudge = Vector3.ZERO
+	_nudge_zoom = 0.0
+	_nudge_goal = Vector3.ZERO
+	_nudge_zoom_goal = 0.0
+	_v_nudge = Vector3.ZERO
+	_v_nudge_zoom = 0.0
+	_nudge_left = 0.0
 	_apply()
 
 
@@ -173,7 +213,7 @@ func _on_focus_changed(anchor: Node) -> void:
 	var sub := Visuals.global_aabb(it.target)
 	var r := sub.size.length()
 	_set_home(sub.get_center(), r * 1.5, r * 0.6, r * 3.0, r * 0.35)
-	_slow_left = 0.9
+	_cine(1.4, CINE_SMOOTH)
 
 
 ## Pista (como en Woodo): gira (dentro de los límites) para ver el punto de frente y se ACERCA
@@ -189,7 +229,24 @@ func look_at_point(p: Vector3) -> void:
 	distance = lerpf(float(_home.get("distance", distance)), min_distance, HINT_ZOOM)
 	center = p
 	_clamp_center()
-	_slow_left = 1.0
+	_cine(1.6, CINE_SMOOTH)
+
+
+## Encuadra una zona del diorama (al abrirse una sección): gira hacia ella y se acerca lo justo para
+## verla entera, sin salirse de los límites. El jugador puede alejarse después cuando quiera.
+func frame_box(box: AABB) -> void:
+	showcasing = false
+	_spin = Vector2.ZERO
+	var c := home_center()
+	var flat := box.get_center() - c
+	flat.y = 0.0
+	if flat.length() > 0.05:
+		yaw = clampf(rad_to_deg(atan2(flat.x, flat.z)) * 0.35 + float(_home.get("yaw", yaw)) * 0.65, yaw_min, yaw_max)
+	var home_d := float(_home.get("distance", distance))
+	distance = clampf(box.size.length() * 1.6, lerpf(home_d, min_distance, 0.6), home_d)
+	pitch = clampf(float(_home.get("pitch", pitch)) + 8.0, pitch_min, pitch_max)   # un poco más desde arriba
+	center = home_center().lerp(box.get_center(), 0.6)
+	_cine(2.0, 0.8)
 
 
 func _process(delta: float) -> void:
@@ -214,25 +271,73 @@ func _process(delta: float) -> void:
 	elif showcasing:
 		_sway_t += delta
 		yaw = _showcase_base + sin(_sway_t * MENU_SWAY_SPEED * 1.4) * _showcase_amp
-	var k := 1.0 - exp(-smoothing * delta)
-	var ks := k
-	if _slow_left > 0.0:
-		_slow_left -= delta
-		ks = 1.0 - exp(-SLOW_SMOOTHING * delta)
-	_cur_yaw = lerpf(_cur_yaw, yaw, ks)
-	_cur_pitch = lerpf(_cur_pitch, pitch, ks)
-	_cur_distance = lerpf(_cur_distance, distance, ks)
-	_cur_center = _cur_center.lerp(center, ks)
-	_cur_h_offset = lerpf(_cur_h_offset, _h_offset_goal(), k)
-	_kick *= exp(-9.0 * delta)
+	var t := smooth_time
+	if _cine_left > 0.0:
+		_cine_left -= delta
+		t = _cine_smooth
+	var r := _spring(_cur_yaw, _v_yaw, yaw, t, delta)
+	_cur_yaw = r.x
+	_v_yaw = r.y
+	r = _spring(_cur_pitch, _v_pitch, pitch, t, delta)
+	_cur_pitch = r.x
+	_v_pitch = r.y
+	r = _spring(_cur_distance, _v_distance, distance, t, delta)
+	_cur_distance = r.x
+	_v_distance = r.y
+	r = _spring(_cur_h_offset, _v_h_offset, _h_offset_goal(), smooth_time, delta)
+	_cur_h_offset = r.x
+	_v_h_offset = r.y
+	var rc := _spring3(_cur_center, _v_center, center, t, delta)
+	_cur_center = rc[0]
+	_v_center = rc[1]
+	if _nudge_left > 0.0:
+		_nudge_left -= delta
+		if _nudge_left <= 0.0:
+			_nudge_goal = Vector3.ZERO
+			_nudge_zoom_goal = 0.0
+	var rn := _spring3(_nudge, _v_nudge, _nudge_goal, NUDGE_SMOOTH, delta)
+	_nudge = rn[0]
+	_v_nudge = rn[1]
+	r = _spring(_nudge_zoom, _v_nudge_zoom, _nudge_zoom_goal, NUDGE_SMOOTH, delta)
+	_nudge_zoom = r.x
+	_v_nudge_zoom = r.y
 	_apply()
 
 
 func _apply() -> void:
-	global_position = _cur_center
+	global_position = _cur_center + _nudge
 	rotation = Vector3(deg_to_rad(-_cur_pitch), deg_to_rad(_cur_yaw), 0.0)
-	cam.position = Vector3(0.0, 0.0, _cur_distance * (1.0 - _kick))
+	cam.position = Vector3(0.0, 0.0, _cur_distance * (1.0 - _nudge_zoom))
 	cam.h_offset = _cur_h_offset
+
+
+## Muelle críticamente amortiguado (como SmoothDamp): va hacia `goal` sin arrancar ni frenar de
+## golpe; `smooth` es más o menos lo que tarda (s). Devuelve (valor, velocidad).
+static func _spring(cur: float, vel: float, goal: float, smooth: float, dt: float) -> Vector2:
+	var omega := 2.0 / maxf(smooth, 0.001)
+	var x := omega * dt
+	var e := 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var change := cur - goal
+	var temp := (vel + omega * change) * dt
+	return Vector2(goal + (change + temp) * e, (vel - omega * temp) * e)
+
+
+static func _spring3(cur: Vector3, vel: Vector3, goal: Vector3, smooth: float, dt: float) -> Array[Vector3]:
+	var omega := 2.0 / maxf(smooth, 0.001)
+	var x := omega * dt
+	var e := 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var change := cur - goal
+	var temp := (vel + omega * change) * dt
+	return [goal + (change + temp) * e, (vel - omega * temp) * e]
+
+
+## Mano encima de lo que se puede tocar (cajones, puertas, lo escondido): así se descubre que los
+## muebles se abren.
+func _update_hover(pos: Vector2) -> void:
+	var d := GameState.diorama
+	var it: Interactable = d.pick_interactable(pos, cam) if d != null else null
+	hovered = it if it != null and it.is_clickable() else null
+	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND if hovered != null else Input.CURSOR_ARROW)
 
 
 ## (Tests) ¿Sigue girando sola por la inercia?
@@ -315,6 +420,8 @@ func _unhandled_input(e: InputEvent) -> void:
 					_spin = _spin.limit_length(MAX_SPIN)
 					_press_button = 0
 					_orbiting = false
+	elif e is InputEventMouseMotion and _press_button == 0:
+		_update_hover((e as InputEventMouseMotion).position)
 	elif e is InputEventMouseMotion and _press_button != 0:
 		var mm := e as InputEventMouseMotion
 		if _orbiting or mm.position.distance_to(_press_pos) > drag_threshold_px:

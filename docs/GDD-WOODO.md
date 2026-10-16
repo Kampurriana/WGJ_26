@@ -26,7 +26,7 @@ El **aspecto** (luz, fondo, materiales, partículas, cámara, bandeja) está en 
 | 11 | El juego **se adapta al ritmo** y ofrece ayuda cuando hace falta | visto (Steam) | si no hay progreso en `assist_after`=45 s, la pista se recarga sola y brilla |
 | 12 | Cajones y armarios que **se abren** para encontrar piezas escondidas | visto | `OD_` (cajón), `OR_` (puerta), `H_` (escondido) en `core/interactable.gd` |
 | 13 | Más adelante, piezas que hay que **encontrar primero en el propio nivel** | visto | `H_`: al pulsarla pasa al inventario |
-| 14 | Más adelante, piezas que van **en un orden concreto** | visto | token `__after-<id>` u `order_rules` del Diorama; si no toca, el narrador lo dice |
+| 14 | Más adelante, piezas que van **en un orden concreto** | visto | token `__after-<id>` u `order_rules` del Diorama: la pieza no aparece (ni silueta ni ficha) hasta que le toca |
 | 15 | **Escenas dentro de escenas**: se hace zoom a un rincón (la casa del ratón), se completa, y devuelve una pieza a la escena grande | visto | `Z_<nombre>__reward-<id>` (`Diorama.enter_focus/exit_focus`); el panel solo enseña las piezas de ese rincón |
 | 16 | Narrador con voz y subtítulos; cuenta la historia entre escenas | visto | `autoload/narrator.gd` + `data/narracion_es.json` + `assets/audio/voz/<clave>.ogg` |
 | 17 | Animales y personajes reaccionan al pasar cerca / al completar | visto | hook: animación `celebrar` al completar; reacciones al girar = **pendiente** |
@@ -34,6 +34,11 @@ El **aspecto** (luz, fondo, materiales, partículas, cámara, bandeja) está en 
 | 19 | Escenas de historia animadas entre niveles | visto | **pendiente** (para la jam: una viñeta + narración entre niveles) |
 | 20 | **El menú de inicio se desbloquea con un puzle**: un **cofre de madera** con las **letras del nombre del juego** (una pieza por letra) y un paisaje pequeño encima; al montarlo aparece el menú. En las siguientes partidas sale ya montado | visto (letras del logo y cofre que es el menú: Game Asylum, GameGrin) | `levels/menu_titulo.tscn` (carga `levels/provisional/menu_provisional.glb` o el de las artistas) + `scenes/main.gd` (`show_title`) + `ui/main_menu.gd` |
 | 22 | **Colocar enciende las luces** de la pieza (farol, lámpara) | visto (una fuente, textual) | `PieceSlot.fill` (fundido) |
+| 23 | **El diorama se monta por secciones** (infancia, adolescencia, adultez): cada zona se abre al completar la anterior, con su rótulo, su luz y sus muebles | pedido del equipo | prefijo `S_` + `core/section.gd` + `Diorama._check_sections` |
+| 24 | **Primero la estructura** (paredes y tejado) y luego la historia | pedido del equipo | `S_1_desvan` en `tools/build_attic_level.gd` |
+| 25 | **Los objetos de la historia aparecen de uno en uno**, la clave la última; cada objeto dice su frase | pedido (guion) | `__after-`, `__clave`, frases `pieza_<id>`, cola del narrador |
+| 26 | **Los muebles que guardan algo brillan y se mueven** para enseñar que se abren; consejo la primera vez; la pista señala el mueble | pedido del equipo | `Interactable.set_attention`, `Diorama._refresh`, `hint_target` |
+| 27 | Flash de la cámara de fotos; fundido a negro al final | pedido (guion) | tokens `__flash`, `Diorama.fundido_final` |
 | 21 | Menú completo: Jugar/Continuar, Elegir diorama, Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso), Créditos, Salir; pausa con Esc | pedido del equipo | `ui/main_menu.gd`, `ui/pause_menu.gd`, `ui/options_panel.gd`, `autoload/settings.gd` |
 
 ## Bucle de un nivel
@@ -53,7 +58,8 @@ El **aspecto** (luz, fondo, materiales, partículas, cámara, bandeja) está en 
   (ajustar `base_alpha` de `ghost.gdshader` y los colores de `madera_cruda.gdshader` con capturas,
   no a ojo).
 - **Vida**: polvo flotando en la luz, serrín y chispas al encajar, la luz que se calienta al montar,
-  hojas al completar (`core/efectos.gd`, `iluminacion/rig_luz.gd`).
+  luces cálidas que suben al completar (`core/efectos.gd`, `iluminacion/rig_luz.gd`).
+- **La historia** del diorama principal: `GUION.md`.
 
 ## Fuera de alcance para 48 h (salvo que sobre tiempo)
 

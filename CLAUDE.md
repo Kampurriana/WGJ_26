@@ -26,13 +26,14 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Comprobación completa (importar + test de humo) | `bash tools/check.sh` → tiene que decir `CHECK OK` |
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
-| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~30 min, en segundo plano y sin tocar código mientras: copia el proyecto); `SOLO=M17` para uno |
+| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~1 h para 47, en segundo plano y sin tocar código mientras: copia el proyecto); `SOLO=M17` para uno |
 | Medir si la luz quema (sobre capturas 1280×720) | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/captura.png --fondo build/fondo.png` → `quemado` < 2 % (el fondo ya no es liso: sin `--fondo` no mide) |
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
 | Mirar una pieza en mano o el zoom | `bash tools/capture.sh build/mano.png 0 0 --hold=480,520` · `bash tools/capture.sh build/zoom.png 6 0 --zoom=14,700,300 --capture-after=5` |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
 | Regenerar el cofre del título | `"$GODOT" --headless --path . --script res://tools/build_title_level.gd` (escribe el modelo `levels/provisional/menu_provisional.glb` y `levels/menu_titulo.tscn`; después, `check.sh` lo importa). Hay que rehacerlo si cambia el nombre del juego |
-| Regenerar la habitación japonesa | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (pisa `levels/level_01_habitacion.tscn`) |
+| Regenerar el desván (el diorama principal) | `"$GODOT" --headless --path . --script res://tools/build_attic_level.gd` (escribe `levels/provisional/desvan_provisional.tscn` y `levels/level_01_desvan.tscn`) |
+| Regenerar la habitación japonesa | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (pisa `levels/level_01_habitacion.tscn`; ya no se juega) |
 | Abrir el juego para jugar | `"$GODOT" --path .` |
 | Abrir el editor | `"$GODOT" --path . -e` |
 
@@ -47,16 +48,18 @@ se ve) + commit. Sin las tres, no está hecho.
 | `iluminacion/*.tscn` + `rig_luz.gd` | La luz en tiempo real (`docs/ILUMINACION.md`): raíz `RigLuz` (gira con la cámara, va de fría a cálida con el progreso), `Ambiente` con fondo por capa, `Sol` con sombras, `Contraluz`, `Fondo` (degradado oscuro, `fondo.gdshader`) y `Vineta`. `main.gd` pone la del nivel (`Diorama.iluminacion`) o `luz_por_defecto.tscn` |
 | `core/efectos.gd` | Partículas (CPUParticles3D) que escuchan a `Events`: polvo en la luz, serrín + chispas + anillo al encajar, soplo al recoger, chispas de pista, hojas al completar. Texturas en código o en `assets/texturas/particulas/` |
 | `shaders/madera_cruda.gdshader` | La capa de madera sin pintar (veta de tablón) que cubre el diorama; la pintura son esferas que crecen desde cada pieza (`Diorama._add_paint`) |
-| `levels/level_01_habitacion.tscn` | **El nivel jugable**: habitación japonesa con los 16 modelos del pack de props (MIT), 17 huecos, cajón con el boli escondido, rincón de la mesa baja que da el cuaderno. Lo genera `tools/build_room_level.gd` |
+| `levels/level_01_desvan.tscn` | **El nivel jugable**: el desván de la historia (`docs/GUION.md`), en 5 secciones `S_` (estructura + hucha, infancia, adolescencia, adultez, epílogo), 51 piezas, muebles con cosas guardadas. Solo el Diorama: carga `assets/modelos/desvan/desvan.glb` si existe o el provisional `levels/provisional/desvan_provisional.tscn` (figuras + props del pack). Lo genera `tools/build_attic_level.gd` |
+| `levels/level_01_habitacion.tscn` | Ya no se juega (no está en `data/levels.json`): la habitación japonesa con el pack de props |
 | `levels/level_00_muestra.tscn` | Ya no se juega (no está en `data/levels.json`): es el banco de pruebas del test, usa toda la convención de nombres |
 | `levels/menu_titulo.tscn` | El cofre del título, como en Woodo: las letras del nombre (una pieza cada una) + paisaje pequeño. Solo el Diorama: carga `assets/modelos/menu/menu.glb` si existe (artistas) o `levels/provisional/menu_provisional.glb` (lo genera `tools/build_title_level.gd`) |
-| `core/diorama.gd` | Raíz de cada nivel. Carga su modelo (`modelo` / `modelo_provisional`), lee la convención de nombres y monta huecos, inventario, cajones, escondidos, sub-dioramas, pintura, orden, pistas, final; `progress()` |
+| `core/diorama.gd` | Raíz de cada nivel. Carga su modelo (`modelo` / `modelo_provisional`), lee la convención de nombres y monta huecos, inventario, cajones, escondidos, sub-dioramas, pintura, pistas, final. Desbloqueo (`is_unlocked`: sección abierta + `__after` + `__clave`), secciones (`_check_sections` → pausa/frases → `_open_pending` → `_reveal_pending`), qué mueble llama la atención (`_refresh`), `fundido_final` |
+| `core/section.gd` | Una sección `S_`: sus piezas, su decorado (oculto y sin colisión hasta abrirse), sus luces de zona |
 | `core/name_rules.gd` | La convención `P_ H_ OD_ OR_ Z_` + tokens `__after-x`, `__reward-x` (ver `docs/ARTE-PIPELINE.md`) |
 | `core/piece_slot.gd` | Un hueco: silueta blanca (shader `shaders/ghost.gdshader`) hasta que se coloca; sus luces, apagadas hasta entonces (se encienden con fundido) |
-| `core/interactable.gd` | Lo que se pulsa: cajón, puerta, escondido, sub-diorama (colisión calculada sola) |
+| `core/interactable.gd` | Lo que se pulsa: cajón, puerta o tapa (`__x`), escondido, sub-diorama (colisión calculada sola). "Atención": brillo (`shaders/brillo.gdshader`) + un pequeño movimiento cada 2,4 s. Un `H_` sabe su `container` (cajón padre o puerta hermana) |
 | `core/visuals.gd` | Cajas AABB, copia limpia de piezas, capa de madera cruda (`material_overlay`), superficies |
-| `camera/diorama_camera.gd` | Cámara fija (sin desplazar): giro dentro de los límites del nivel (`Diorama.camera_yaw_min_deg`...) con inercia, zoom con tope hacia el cursor que vuelve al encuadre al alejar; entrada al nivel (`intro`), pista que gira y acerca, empujón al encajar (`kick`), vaivén al completar (`showcase`); pellizco, mando |
-| `ui/hud.gd` | Bandeja de piezas (derecha, dos columnas, scroll; se recoge al completar), pista con recarga, Volver, Menú (pausa), subtítulos, fin de nivel (arriba) |
+| `camera/diorama_camera.gd` | Cámara fija (sin desplazar), todo con muelles amortiguados (`_spring`): giro dentro de los límites del nivel con inercia, zoom con tope hacia el cursor que vuelve al encuadre al alejar; entrada al nivel (`intro`), pista que gira y acerca, acercamiento suave al colocar (`nudge`, muelle aparte), encuadre de cada sección (`frame_box`), vaivén al completar (`showcase`); mano sobre lo que se puede tocar; pellizco, mando |
+| `ui/hud.gd` | Bandeja de piezas (derecha, dos columnas, scroll; se recoge al completar; dice si hay algo que buscar), pista con recarga, Volver, Menú (pausa), subtítulos (crecen hacia arriba), rótulo de sección, consejos, fin de nivel (arriba; no en `fundido_final`) |
 | `ui/main_menu.gd` | Menú de inicio: Jugar/Continuar, Elegir diorama, Opciones, Créditos (`data/creditos_es.txt`), Salir (no en Web) |
 | `ui/pause_menu.gd` | Pausa (Esc): Reanudar, Opciones, Menú principal, Salir |
 | `ui/options_panel.gd` | Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso) |
@@ -64,8 +67,8 @@ se ve) + commit. Sin las tres, no está hecho.
 | `ui/inventory_item.gd` | Ficha con vista 3D que **gira con la cámara** (orientación = la del hueco) |
 | `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar. La pieza en mano nunca atraviesa nada: su caja viaja por el rayo del cursor y choca con las superficies (`Visuals.add_surface`, capa 2) |
 | `input/gamepad_cursor.gd` | Stick izq. = puntero, A = clic (mando sin código aparte) |
-| `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator`, `Sfx` |
-| `tests/smoke_test.gd` | Juega como un jugador: cofre del título (asset .glb, letras, luces), menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada, la cámara (límites, inercia, pista), la pintura, la luz (gira con la cámara, despierta con el progreso) y las partículas, `escala_luces`; 108 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
+| `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator` (frases en cola, nunca se pisan; una clave puede ser una lista), `Sfx` |
+| `tests/smoke_test.gd` | Juega como un jugador: cofre del título (asset .glb, letras, luces), menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada, la cámara (límites, inercia, pista), la pintura, la luz (gira con la cámara, despierta con el progreso, sombras ajustadas), las partículas, `escala_luces`, el narrador, y la historia del desván entera (secciones en orden, uno a uno, clave al final, muebles que brillan, cámara antes que la inscripción, flash, epílogo, fundido); 138 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
 
 Reglas de arquitectura: los sistemas se hablan por `Events`; la UI se construye en código (un
 `.tscn` hecho a mano es frágil y da conflictos); **todo lo jugable se define por nombres en el
@@ -161,6 +164,19 @@ hacer (no se lee ni se guarda el progreso; las Opciones sí). Para la build de e
     `write_to_filesystem`) y vuelve a importarse con los nombres (`P_x__after-y`), las letras 3D
     (`TextMesh` → malla) y las luces. Así el título provisional pasa por el mismo camino que el
     arte de las artistas (probado ida y vuelta el 16-oct-2026).
+
+20. **Dos `RefCounted` que se apuntan entre sí no se liberan nunca** (`Section.slots` ↔
+    `PieceSlot.section`): 117 objetos y 53 materiales fugados al salir (visto en el log del check).
+    El Diorama corta el ciclo en `NOTIFICATION_PREDELETE`.
+21. **Un nodo oculto sigue chocando.** Ocultar un mueble (`visible = false`) no quita su colisión:
+    la pieza en mano tropezaría con muebles invisibles. Se pone `collision_layer = 0` a sus
+    `Superficie` (`Section.set_decor`).
+22. **Sombras pixeladas = alcance de sombra demasiado grande**, no falta de tamaño de mapa:
+    `directional_shadow_max_distance` 25 m para un diorama de 5 daba escalera; ajustado a lo que se
+    ve + modo ortogonal, bordes lisos (medido con recortes ×4). `soft_shadow_filter_quality` no hace
+    nada en Compatibility.
+23. **Un ambiente de cielo (`ambient_light_source = SKY`) con ACES lavó el diorama** (luminancia
+    196 frente a 140, 25 % saturado, sombras perdidas): descartado, medido con `medir_luz.py`.
 
 ## Pendiente de verificar con el juego real (ver GDD)
 

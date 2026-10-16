@@ -13,7 +13,7 @@ const CLICK_LAYER := 1
 const GHOST_SHADER := preload("res://shaders/ghost.gdshader")
 const CLAY_SHADER := preload("res://shaders/madera_cruda.gdshader")
 ## Esferas de pintura que caben en el shader (MAX_PINTURA en madera_cruda.gdshader).
-const MAX_PAINT := 48
+const MAX_PAINT := 64
 
 
 static func meshes_under(root: Node) -> Array[MeshInstance3D]:

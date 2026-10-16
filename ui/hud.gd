@@ -26,6 +26,10 @@ var _back_button: Button
 var _title: Label
 var _subtitle_box: PanelContainer
 var _subtitle: Label
+var _chapter: Label                          ## rótulo de sección ("I · Infancia")
+var _tip_box: PanelContainer                 ## consejo de juego (arriba)
+var _tip: Label
+var _tip_left := 0.0
 var _done: PanelContainer
 var _done_button: Button
 var _controls: VBoxContainer
@@ -45,6 +49,7 @@ func _ready() -> void:
 	_build_panel()
 	_build_controls()
 	_build_subtitle()
+	_build_chapter()
 	_build_done()
 	Events.level_started.connect(func(_d: Node) -> void: _on_level_started())
 	Events.inventory_changed.connect(rebuild_inventory)
@@ -53,9 +58,11 @@ func _ready() -> void:
 	Events.level_completed.connect(func(_d: Node) -> void:
 		rebuild_inventory()                  # el último encaje avisó antes de marcarse completado
 		_put_tray_away()
-		if GameState.mode == GameState.Mode.PLAYING:
+		if GameState.mode == GameState.Mode.PLAYING and not (GameState.diorama != null and GameState.diorama.fundido_final):
 			get_tree().create_timer(1.6).timeout.connect(_show_done))
 	Narrator.subtitle.connect(_show_subtitle)
+	Events.section_opened.connect(func(sec: RefCounted) -> void: show_chapter(Narrator.text("titulo_" + (sec as Section).name)))
+	Events.tip_requested.connect(func(key: String) -> void: show_tip(Narrator.text(key)))
 
 
 func _build_panel() -> void:
@@ -126,7 +133,9 @@ func _build_subtitle() -> void:
 	_subtitle_box = PanelContainer.new()
 	_subtitle_box.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	_subtitle_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_subtitle_box.offset_top = -110
+	_subtitle_box.grow_vertical = Control.GROW_DIRECTION_BEGIN    # una frase larga crece hacia arriba
+	_subtitle_box.offset_top = -16
+	_subtitle_box.offset_bottom = -16
 	_subtitle_box.offset_left = -360
 	_subtitle_box.offset_right = 360 - PANEL_WIDTH * 0.75
 	_subtitle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -139,6 +148,67 @@ func _build_subtitle() -> void:
 	_subtitle.theme_type_variation = &"SubtituloTexto"
 	_subtitle.add_theme_font_size_override("font_size", 22)
 	_subtitle_box.add_child(_subtitle)
+
+
+## Rótulo grande al abrirse una sección, y un consejo pequeño debajo cuando hace falta.
+func _build_chapter() -> void:
+	_chapter = Label.new()
+	_chapter.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_chapter.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_chapter.offset_top = 70
+	_chapter.offset_left = -400
+	_chapter.offset_right = 400 - PANEL_WIDTH
+	_chapter.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_chapter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chapter.add_theme_font_size_override("font_size", 44)
+	_chapter.add_theme_constant_override("outline_size", 12)
+	_chapter.add_theme_color_override("font_color", UiTheme.CREAM)
+	_chapter.add_theme_color_override("font_outline_color", Color(0.12, 0.08, 0.05, 0.9))
+	_chapter.modulate.a = 0.0
+	_root.add_child(_chapter)
+	_tip_box = PanelContainer.new()
+	_tip_box.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_tip_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_tip_box.offset_top = 140
+	_tip_box.offset_left = -300
+	_tip_box.offset_right = 300 - PANEL_WIDTH
+	_tip_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tip_box.theme_type_variation = &"Subtitulo"
+	_tip_box.hide()
+	_root.add_child(_tip_box)
+	_tip = Label.new()
+	_tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_tip.theme_type_variation = &"SubtituloTexto"
+	_tip.add_theme_font_size_override("font_size", 20)
+	_tip_box.add_child(_tip)
+
+
+func show_chapter(text: String) -> void:
+	if text == "":
+		return
+	_chapter.text = text
+	var tw := _chapter.create_tween()
+	tw.tween_property(_chapter, "modulate:a", 1.0, 0.8).from(0.0)
+	tw.tween_interval(2.4)
+	tw.tween_property(_chapter, "modulate:a", 0.0, 1.0)
+
+
+func show_tip(text: String, seconds := 7.0) -> void:
+	if text == "":
+		return
+	_tip.text = text
+	_tip_box.show()
+	_tip_left = seconds
+
+
+## (Tests) Lo que dicen ahora el rótulo y el consejo ("" = no se ven).
+func chapter_text() -> String:
+	return _chapter.text if _chapter.modulate.a > 0.01 else ""
+
+
+func tip_text() -> String:
+	return _tip.text if _tip_box.visible else ""
 
 
 ## Arriba y centrado: el diorama recién completado se tiene que ver entero (la cámara lo enseña).
@@ -194,6 +264,8 @@ func _on_level_started() -> void:
 	_panel.modulate.a = 1.0
 	_panel.visible = _game_ui
 	_title.text = GameState.diorama.level_title
+	_chapter.modulate.a = 0.0
+	_tip_box.hide()
 	_done.hide()
 	_back_button.hide()
 	_charge = 1.0
@@ -213,6 +285,8 @@ func rebuild_inventory() -> void:
 		item.setup(id, d.prototype_for(id), d.reference_node_for(id), d.count_of(id))
 		_list.add_child(item)
 	_empty.visible = _list.get_child_count() == 0 and not d.completed
+	_empty.text = "Algo está guardado.\nToca el mueble que brilla." if d.has_findable() \
+		else "Aquí no queda nada.\nBusca piezas escondidas\no acércate a otro rincón."
 
 
 func item_for(id: StringName) -> InventoryItem:
@@ -292,6 +366,10 @@ func _process(delta: float) -> void:
 		_subtitle_left -= delta
 		if _subtitle_left <= 0.0:
 			_subtitle_box.hide()
+	if _tip_left > 0.0:
+		_tip_left -= delta
+		if _tip_left <= 0.0:
+			_tip_box.hide()
 
 
 func _unhandled_input(e: InputEvent) -> void:

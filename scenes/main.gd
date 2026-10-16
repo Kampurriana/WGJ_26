@@ -18,6 +18,7 @@ extends Node3D
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
 const FADE_TIME := 0.7                       ## fundido desde negro al cargar un diorama
+const END_FADE_TIME := 2.5                   ## fundido a negro del final de la historia (Diorama.fundido_final)
 const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
@@ -27,6 +28,8 @@ var effects: Efectos
 var _level: Node
 var _lighting: Node
 var _fade: ColorRect
+var _fade_tween: Tween
+var _flash: ColorRect
 var _only_background := false
 var _lighting_path := ""
 var _menu_page := ""
@@ -72,6 +75,10 @@ func _ready() -> void:
 	add_child(pause)
 	_build_fade()
 	hud.next_requested.connect(next_level)
+	Events.flash_requested.connect(flash)
+	Events.section_opened.connect(func(sec: RefCounted) -> void:
+		if GameState.mode == GameState.Mode.PLAYING:
+			GameState.camera.frame_box((sec as Section).box()))
 	hud.pause_requested.connect(open_pause)
 	menu.play_requested.connect(play_level)
 	pause.main_menu_requested.connect(show_title)
@@ -123,12 +130,27 @@ func _build_fade() -> void:
 	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_fade)
+	_flash = ColorRect.new()
+	_flash.color = Color(1, 0.98, 0.94, 0)
+	_flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_flash)
+
+
+## Destello blanco (el flash de la cámara de fotos): la pantalla en blanco un instante.
+func flash() -> void:
+	var tw := _flash.create_tween()
+	tw.tween_property(_flash, "color:a", 0.92, 0.07)
+	tw.tween_interval(0.12)
+	tw.tween_property(_flash, "color:a", 0.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 
 func _fade_in() -> void:
+	if _fade_tween != null:
+		_fade_tween.kill()
 	_fade.color.a = 1.0
-	var tw := _fade.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tw.tween_property(_fade, "color:a", 0.0, FADE_TIME)
+	_fade_tween = _fade.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_fade_tween.tween_property(_fade, "color:a", 0.0, FADE_TIME)
 
 
 ## La luz vive en escenas de iluminacion/ que se ajustan en el editor (docs/ILUMINACION.md), no aquí.
@@ -210,6 +232,20 @@ func _on_level_completed(d: Node) -> void:
 				_open_menu())
 	else:
 		GameState.mark_completed(GameState.levels[GameState.level_index])
+		var ending := d as Diorama
+		if ending != null and ending.fundido_final:
+			# Final de la historia: deja que acabe la última frase y funde a negro hacia los créditos.
+			var wait := maxf(Narrator.remaining() + 1.2, 3.0)
+			get_tree().create_timer(wait).timeout.connect(func() -> void:
+				if GameState.diorama != ending:
+					return
+				if _fade_tween != null:
+					_fade_tween.kill()
+				_fade_tween = _fade.create_tween()
+				_fade_tween.tween_property(_fade, "color:a", 1.0, END_FADE_TIME).set_trans(Tween.TRANS_SINE)
+				_fade_tween.tween_callback(func() -> void:
+					if GameState.diorama == ending:
+						next_level()))
 
 
 ## silent = sin la frase de entrada (el título ya montado no tiene que explicar nada).

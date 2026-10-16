@@ -27,16 +27,20 @@ El **nombre del objeto** en Blender (no el de la malla) empieza por un prefijo:
 | `OD_` | Cajón: se desliza hacia fuera al pulsarlo | `OD_cajon_arriba` |
 | `OR_` | Puerta o tapa: gira 90º sobre su **origen** (poned el origen en la bisagra) | `OR_armario` |
 | `Z_` | Rincón con zoom (una escena dentro de la escena). Sus `P_` se hacen dentro | `Z_ratonera` |
-| (otro) | Decorado: se queda en la escena, empieza blanco y se colorea al completar piezas cerca | `Arbol`, `Pared` |
+| `S_` | **Sección**: una zona que se monta entera antes de pasar a la siguiente. `S_<orden>_<nombre>`. Todo lo de la zona (piezas, muebles, su bombilla) cuelga de ella. Mientras está cerrada no se ve nada suyo | `S_2_infancia` |
+| (otro) | Decorado: se queda en la escena, empieza en madera sin pintar y se pinta al completar piezas cerca | `Arbol`, `Pared` |
 
 Detrás del nombre, opciones con **doble guion bajo**:
 
 | Opción | Dónde | Qué hace |
 |---|---|---|
-| `__after-mesa` | en un `P_` | solo encaja cuando todas las `P_mesa` están puestas |
+| `__after-mesa` | en un `P_` | no aparece hasta que todas las `P_mesa` están puestas (así se cuenta la historia de uno en uno) |
+| `__clave` | en un `P_` | va **la última** de su sección y la cierra (la nutria, el espejo...) |
+| `__flash` | en un `P_` | destello blanco al colocarla (la cámara de fotos) |
 | `__reward-cuadro` | en un `Z_` | al completar el rincón, el jugador recibe la pieza `cuadro` (hace falta un `P_cuadro`) |
 | `__x` `__nx` `__z` `__nz` `__y` `__ny` | en un `OD_` | eje por el que sale el cajón si no sale bien por defecto |
 | `__n` | en un `OR_` | la puerta abre hacia el otro lado |
+| `__x` | en un `OR_` | bisagra horizontal: es una **tapa** que se levanta (un baúl) |
 
 Reglas de los nombres:
 - Ids en minúscula, sin espacios ni acentos, empezando por letra: `P_taza_roja` sí, `P_Taza Roja` no.
@@ -46,18 +50,45 @@ Reglas de los nombres:
   Godot los lee como órdenes de importación y cambia el objeto.
 - Una pieza `P_` puede tener hijos (patas, tablero…): todo lo que cuelga de ella es la pieza.
 - Lo que va **dentro de un cajón** (un `H_`) tiene que ser **hijo del cajón**, para que se mueva con él.
+- Lo que va **dentro de un armario o un baúl** (con puerta o tapa `OR_`) NO es hijo de la puerta
+  (giraría con ella): es **hermano** de la puerta, dentro del mismo grupo del mueble
+  (`Armario` → `OR_puerta`, `Balda`, `H_camara`).
+- Mientras no toca encontrarlo, un `H_` no se ve; cuando toca, su mueble brilla y se mueve un poco.
 - Las piezas de un `Z_` son hijas del `Z_`.
 - **Cajones:** con el diorama visto en vista frontal de Blender (tecla 1 del teclado numérico), el
   frente del cajón mira hacia vosotras. Si al probar sale hacia otro lado, añadid `__x`, `__nx`…
   o decídselo a Claude.
+
+### El diorama principal: el desván
+
+Es el de la historia (`docs/GUION.md`). Ahora es provisional (figuras simples y props del pack);
+el vuestro va en **`assets/modelos/desvan/desvan.glb`** y el juego lo usa solo en cuanto existe.
+Estructura que espera (los nombres de las piezas, en `levels/provisional/desvan_provisional.tscn`;
+si queréis una plantilla `.glb` para abrir en Blender, pedídsela a Claude):
+```
+Desvan
+├─ suelo, peana y trastos (decorado, siempre a la vista)
+├─ S_1_desvan        P_pared_fondo, P_pared_izquierda, P_pared_derecha, P_cumbrera__after-..., P_tejado__after-cumbrera (x3),
+│                    P_viga__after-cumbrera (x2), P_ventana__after-pared_derecha, P_hucha__clave
+├─ S_2_infancia      Bombilla (con su luz), BaulJuguetes (OR_tapa_baul__x + H_cubos), P_cama_infantil, ...,
+│                    P_caja_musica__after-comoda_infantil, P_dibujo__after-caja_musica, P_peluche__clave
+├─ S_3_adolescencia  Bombilla, Armario (OR_puerta_armario__n + H_camara), Cajonera (OD_cajon_cajonera > H_solicitud), ...,
+│                    P_mp3__after-escritorio, P_camara__after-mp3__flash, P_solicitud__clave
+├─ S_4_adultez       Bombilla, Mesita (OD_cajon_mesita__nx > H_pinceles), ..., P_llaves, P_caballete__after-llaves, P_espejo__clave
+└─ S_5_epilogo       P_moneda (encima de la hucha)
+```
+Podéis cambiar formas, tamaños, posiciones y añadir o quitar dressing: el puzle se monta con lo
+que haya. Lo único que no se puede tocar sin avisar son los nombres de las piezas de la historia
+(sus frases van por nombre).
 
 ## 3. Luces dentro del modelo (opcional)
 
 - Las luces de Blender (punto y foco) viajan dentro del `.glb`: al exportar, marcad
   **Include → Punctual Lights**.
 - Una luz **hija de una pieza `P_`** (la bombilla de una lámpara, la vela de un farol) está
-  apagada mientras la pieza es silueta y **se enciende al colocarla**. Una luz del decorado está
-  siempre encendida.
+  apagada mientras la pieza es silueta y **se enciende al colocarla**.
+- Una luz **del decorado de una sección** (la bombilla de la zona) se enciende cuando se abre la
+  sección. Una luz del decorado fuera de secciones está siempre encendida.
 - Las unidades de Blender y de Godot no coinciden: si salen muy fuertes o muy flojas, decídselo a
   Claude, que lo ajusta para todo el nivel con un número (`escala_luces`), sin reexportar.
 - Para que algo brille (el cristal de un farol): material con **Emission**. El juego tiene glow.

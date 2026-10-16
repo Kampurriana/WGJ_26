@@ -11,6 +11,7 @@ iluminada en un cuarto a oscuras. Por qué así y de dónde sale cada idea: `ANA
 |---|---|
 | `luz_por_defecto.tscn` | La luz de todos los niveles que no tengan una propia |
 | `menu.tscn` | La luz del cofre del título (y del menú) |
+| `desvan.tscn` | La luz del desván: empieza más oscura ("el desván a oscuras") y se calienta al montarlo |
 | `probar_luz.tscn` | Para mirarla en el editor: la luz por defecto + la habitación + la cámara del juego |
 | `rig_luz.gd` | El script de la raíz de cada escena de luz (lo que la hace "en tiempo real") |
 | `fondo.gdshader` | El degradado oscuro del fondo, con un halo cálido detrás del diorama |
@@ -39,11 +40,25 @@ iluminada en un cuarto a oscuras. Por qué así y de dónde sale cada idea: `ANA
   Borde* (casi negro), *Centro* y *Radio* del halo.
 - **`Vineta` → `Sombra`**: *Fuerza* (0 = sin viñeta) y *Suavidad*.
 
+## Sombras (por qué ya no salen pixeladas)
+
+Medido el 16-oct-2026 con recortes ampliados del borde de una sombra:
+- La sombra del sol cubría **25 m** para un diorama de 5: la resolución se gastaba en aire y los
+  bordes salían en escalera. Ahora el mapa de sombras **cubre solo lo que se ve** (distancia de la
+  cámara + el diorama; `RigLuz.ajustar_sombra`, `margen_sombra`): al acercarte, más nítidas.
+- *Shadow → Mode: Orthogonal* (un solo mapa) en vez de 4 cortes: con el alcance ajustado da bordes
+  lisos.
+- Mapa de sombras de **8192** en PC y **4096** en web (`project.godot`, `directional_shadow/size`).
+- *Shadow → Blur* 2,5: borde suave, sin escalera.
+- *Soft Shadow Filter Quality* no hace nada en Compatibility (probado): no tocarlo.
+
 ## Luces dentro de los modelos
 
 - Una luz que cuelga de una pieza `P_` (el farol del título, la lámpara del escritorio) **está
   apagada mientras la pieza es silueta y se enciende con un fundido al colocarla**.
-- Las luces del decorado (fuera de una `P_`) están siempre encendidas.
+- La luz de una **zona** (la bombilla de cada sección `S_` del desván) se enciende con un fundido
+  cuando se abre su sección. Así "la luz avanza" por el desván según el guion.
+- Las demás luces del decorado están siempre encendidas.
 - Las artistas pueden poner luces en Blender: el `.glb` las trae (ver `ARTE-PIPELINE.md`).
 
 ## Cómo trabajar

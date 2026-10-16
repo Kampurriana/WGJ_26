@@ -6,21 +6,25 @@ extends Node3D
 ##   encaja una pieza  -> serrín que salta, chispas que suben y un anillo que se abre en el suelo
 ##   se recoge una H_  -> un soplo de polvo
 ##   pista             -> chispas alrededor del sitio
-##   diorama completo  -> lluvia de chispas y hojas de colores
-## Texturas: si existe assets/texturas/particulas/<polvo|chispa|hoja|viruta>.png se usa esa (así
+##   mueble que llama  -> motas doradas que suben despacio a su alrededor (mientras guarde algo)
+##   sección completa  -> unas luces cálidas que suben (glow_up, más flojo)
+##   diorama completo  -> luces cálidas que suben despacio, como luciérnagas, y destellos suaves
+## Texturas: si existe assets/texturas/particulas/<polvo|chispa|luz|viruta>.png se usa esa (así
 ## las artistas las cambian sin tocar código); si no, se dibujan aquí.
 
 const TEXTURE_DIR := "res://assets/texturas/particulas/"
 const DUST_COLOR := Color(1.0, 0.86, 0.62, 0.55)
 const SAWDUST_COLOR := Color(0.86, 0.68, 0.46)
 const SPARK_COLOR := Color(1.0, 0.85, 0.55)
-const CONFETTI := [Color(0.98, 0.78, 0.35), Color(0.95, 0.5, 0.35), Color(0.55, 0.78, 0.4),
-	Color(0.98, 0.93, 0.8), Color(0.85, 0.45, 0.55)]
+## Luces del final: dorado, melocotón, rosa suave y crema (cálidas, nada de confeti).
+const WARM_LIGHTS := [Color(1.0, 0.72, 0.3, 0.9), Color(1.0, 0.84, 0.45, 0.9), Color(1.0, 0.6, 0.38, 0.85),
+	Color(1.0, 0.66, 0.55, 0.8)]
 
 var dust: CPUParticles3D                     ## (tests) el polvo del nivel actual
 var bursts := 0                              ## (tests) ráfagas lanzadas en este nivel
 
 var _textures: Dictionary = {}
+var _calling: Dictionary = {}                ## Interactable -> sus motas (mientras llama la atención)
 var _ring_shader := preload("res://shaders/anillo.gdshader")
 
 
@@ -30,11 +34,14 @@ func _ready() -> void:
 	Events.piece_collected.connect(func(_id: StringName, n: Node3D) -> void: _puff(Visuals.global_aabb(n)))
 	Events.hint_shown.connect(func(n: Node3D) -> void: _hint(Visuals.global_aabb(n)))
 	Events.level_completed.connect(func(d: Node) -> void: _celebrate(Visuals.global_aabb(d as Node3D)))
+	Events.section_completed.connect(func(sec: RefCounted) -> void: glow_up((sec as Section).box(), 0.4))
+	Events.attention_changed.connect(_on_attention)
 
 
 func _on_level_started(d: Node) -> void:
 	for c in get_children():
 		c.queue_free()
+	_calling.clear()
 	bursts = 0
 	var box := Visuals.global_aabb(d as Node3D)
 	dust = _dust(box)
@@ -191,51 +198,89 @@ func _hint(box: AABB) -> void:
 
 func _celebrate(box: AABB) -> void:
 	bursts += 1
-	var top := Vector3(box.get_center().x, box.end.y + box.size.y * 0.2, box.get_center().z)
-	var spread := Vector3(box.size.x * 0.45, 0.05, box.size.z * 0.45)
-	var leaves := _particles("Hojas", 70, _texture("hoja"), false)
-	leaves.position = top
-	leaves.one_shot = true
-	leaves.explosiveness = 0.25
-	leaves.lifetime = 4.0
-	leaves.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
-	leaves.emission_box_extents = spread
-	leaves.direction = Vector3.UP
-	leaves.spread = 50.0
-	leaves.initial_velocity_min = 0.6
-	leaves.initial_velocity_max = 1.4
-	leaves.gravity = Vector3(0.0, -0.7, 0.0)
-	leaves.damping_min = 0.4
-	leaves.damping_max = 0.8
-	leaves.angle_min = 0.0
-	leaves.angle_max = 360.0
-	leaves.angular_velocity_min = -180.0
-	leaves.angular_velocity_max = 180.0
-	var leaf := clampf(box.size.length() * 0.02, 0.04, 0.09)
-	leaves.scale_amount_min = leaf * 0.7
-	leaves.scale_amount_max = leaf * 1.3
-	leaves.color_initial_ramp = _palette(CONFETTI)
-	leaves.color_ramp = _fade(0.05, 0.75)
-	leaves.emitting = true
-	_free_later(leaves)
-	var sparks := _particles("ChispasFinal", 60, _texture("chispa"), true)
-	sparks.position = box.get_center()
-	sparks.one_shot = true
-	sparks.explosiveness = 0.4
-	sparks.lifetime = 2.5
-	sparks.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
-	sparks.emission_box_extents = box.size * 0.5
-	sparks.direction = Vector3.UP
-	sparks.spread = 30.0
-	sparks.initial_velocity_min = 0.2
-	sparks.initial_velocity_max = 0.7
-	sparks.gravity = Vector3(0.0, 0.15, 0.0)
-	sparks.scale_amount_min = leaf * 0.8
-	sparks.scale_amount_max = leaf * 1.8
-	sparks.color = SPARK_COLOR
-	sparks.color_ramp = _fade(0.1, 0.5)
-	sparks.emitting = true
-	_free_later(sparks)
+	glow_up(box, 1.0)
+
+
+## Luces cálidas que suben despacio desde el diorama (luciérnagas, motas de luz desenfocadas) y unos
+## pocos destellos suaves. `power` 1 = diorama completo; menos = una sección.
+func glow_up(box: AABB, power: float) -> void:
+	var size := clampf(box.size.length(), 0.8, 8.0)
+	var lights := _particles("Luces", maxi(8, int(46 * power)), _texture("luz"), true)
+	lights.position = Vector3(box.get_center().x, box.position.y + box.size.y * 0.15, box.get_center().z)
+	lights.one_shot = true
+	lights.explosiveness = 0.15
+	lights.randomness = 0.5
+	lights.lifetime = 5.5
+	lights.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	lights.emission_box_extents = Vector3(box.size.x * 0.42, box.size.y * 0.2, box.size.z * 0.42)
+	lights.direction = Vector3.UP
+	lights.spread = 20.0
+	lights.initial_velocity_min = 0.1 * size * 0.25
+	lights.initial_velocity_max = 0.3 * size * 0.25
+	lights.gravity = Vector3(0.0, 0.03, 0.0)
+	lights.tangential_accel_min = -0.04
+	lights.tangential_accel_max = 0.04
+	lights.damping_min = 0.02
+	lights.damping_max = 0.06
+	var dot := clampf(size * 0.012, 0.03, 0.09)
+	lights.scale_amount_min = dot * 0.6
+	lights.scale_amount_max = dot * 1.8
+	lights.color_initial_ramp = _palette(WARM_LIGHTS)
+	lights.color_ramp = _fade(0.15, 0.6)
+	lights.emitting = true
+	_free_later(lights)
+	var twinkles := _particles("Destellos", maxi(4, int(14 * power)), _texture("chispa"), true)
+	twinkles.position = box.get_center()
+	twinkles.one_shot = true
+	twinkles.explosiveness = 0.2
+	twinkles.lifetime = 2.2
+	twinkles.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	twinkles.emission_box_extents = box.size * 0.45
+	twinkles.direction = Vector3.UP
+	twinkles.spread = 20.0
+	twinkles.initial_velocity_min = 0.03
+	twinkles.initial_velocity_max = 0.1
+	twinkles.scale_amount_min = dot * 0.6
+	twinkles.scale_amount_max = dot * 1.1
+	twinkles.color = Color(1.0, 0.9, 0.72, 0.8)
+	twinkles.color_ramp = _fade(0.3, 0.6)
+	twinkles.emitting = true
+	_free_later(twinkles)
+
+
+## Motas doradas alrededor de un mueble (u objeto) que guarda lo que toca encontrar.
+func _on_attention(target: Node, on: bool) -> void:
+	var it := target as Interactable
+	if it == null:
+		return
+	if not on:
+		if _calling.has(it) and is_instance_valid(_calling[it]):
+			(_calling[it] as CPUParticles3D).emitting = false
+			_free_later(_calling[it], 1.5)
+		_calling.erase(it)
+		return
+	var box := Visuals.global_aabb(it.target)
+	var s := clampf(box.size.length(), 0.2, 2.0)
+	var p := _particles("Llamada", 10, _texture("chispa"), true)
+	p.position = box.get_center()
+	p.lifetime = 1.8
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = box.size * 0.5
+	p.direction = Vector3.UP
+	p.spread = 15.0
+	p.initial_velocity_min = 0.05
+	p.initial_velocity_max = 0.15
+	p.scale_amount_min = 0.03 * s
+	p.scale_amount_max = 0.06 * s
+	p.color = Color(1.0, 0.85, 0.5, 0.9)
+	p.color_ramp = _fade(0.25, 0.6)
+	p.emitting = true
+	_calling[it] = p
+
+
+## (Tests) ¿Hay motas alrededor de este mueble u objeto?
+func is_calling(it: Interactable) -> bool:
+	return _calling.has(it) and is_instance_valid(_calling[it])
 
 
 # --- Piezas ----------------------------------------------------------------------------------
@@ -316,9 +361,9 @@ static func _draw(n: String) -> Texture2D:
 					var rays := maxf(clampf(1.0 - absf(p.x) * 12.0, 0.0, 1.0) * (1.0 - absf(p.y)),
 						clampf(1.0 - absf(p.y) * 12.0, 0.0, 1.0) * (1.0 - absf(p.x)))
 					a = clampf(core * core + rays, 0.0, 1.0)
-				"hoja":                      # lente puntiaguda con nervio
-					var w := (1.0 - p.x * p.x) * 0.5
-					a = clampf((w - absf(p.y)) * 20.0, 0.0, 1.0) * (0.75 if absf(p.y) < 0.04 else 1.0)
+				"luz":                       # luciérnaga: centro intenso y halo suave
+					var r := p.length()
+					a = clampf(pow(clampf(1.0 - r, 0.0, 1.0), 2.4) * 1.3 + clampf(1.0 - r * 4.0, 0.0, 1.0), 0.0, 1.0)
 				"viruta":                    # astilla: rectángulo de bordes suaves
 					a = clampf((0.8 - absf(p.x)) * 8.0, 0.0, 1.0) * clampf((0.45 - absf(p.y)) * 8.0, 0.0, 1.0)
 				_:                           # polvo: punto suave

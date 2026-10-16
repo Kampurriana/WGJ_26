@@ -15,3 +15,9 @@ signal piece_collected(piece_id: StringName, node: Node3D)   # una pieza escondi
 
 signal world_clicked(screen_pos: Vector2)     # clic sin arrastre sobre el 3D
 signal hint_shown(target: Node3D)
+
+signal section_opened(section: RefCounted)    # se abre una zona del diorama (Section)
+signal section_completed(section: RefCounted)
+signal attention_changed(target: Node, on: bool)   # un mueble u objeto llama la atención (Interactable)
+signal tip_requested(key: String)             # consejo de juego (texto en narracion_<idioma>.json)
+signal flash_requested                        # destello blanco (pieza con token flash)
