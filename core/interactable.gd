@@ -10,6 +10,8 @@ extends StaticBody3D
 const OPEN_TIME := 0.45
 const RATTLE_EVERY := 2.4                    ## cada cuánto se mueve un mueble que llama la atención (s)
 const GLOW_SHADER := preload("res://shaders/brillo.gdshader")
+const OUTLINE_SHADER := preload("res://shaders/borde.gdshader")
+const OUTLINE := 0.02                        ## grosor del contorno dorado (m)
 
 var kind: String
 var id: StringName
@@ -34,6 +36,7 @@ var _shape: CollisionShape3D
 var _tween: Tween
 var _glow: Array[MeshInstance3D] = []
 var _glow_mat: ShaderMaterial
+var _outline_mat: ShaderMaterial
 var _rattle_t := 0.0
 var _clickable := true
 
@@ -146,19 +149,36 @@ func set_attention(on: bool) -> void:
 	Events.attention_changed.emit(self, on)
 
 
+## Dos copias por malla: una que suma luz cálida (el mueble se templa y su borde brilla) y otra un
+## poco más grande, de la que solo asoma un contorno dorado (lo que de verdad se lee de lejos).
 func _make_glow() -> void:
 	_glow_mat = ShaderMaterial.new()
 	_glow_mat.shader = GLOW_SHADER
+	_outline_mat = ShaderMaterial.new()
+	_outline_mat.shader = OUTLINE_SHADER
 	for m in Visuals.meshes_under(target):
 		if m.name == "Brillo" or _inside_other_pickup(m):
 			continue
-		var g := MeshInstance3D.new()
-		g.name = "Brillo"
-		g.mesh = m.mesh
-		g.material_override = _glow_mat
-		g.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		m.add_child(g)
+		var g := _glow_copy(m, _glow_mat)
 		_glow.append(g)
+		var o := _glow_copy(m, _outline_mat)
+		# Más grande desde el centro de la malla, lo mismo por cada lado (no por un factor: así una
+		# tabla fina y un cajón grande llevan el mismo borde).
+		var box := m.mesh.get_aabb()
+		var k := (box.size + Vector3.ONE * OUTLINE * 2.0) / box.size.max(Vector3.ONE * 0.001)
+		var c := box.get_center()
+		o.transform = Transform3D(Basis.from_scale(k), c - c * k)
+		_glow.append(o)
+
+
+func _glow_copy(m: MeshInstance3D, mat: Material) -> MeshInstance3D:
+	var g := MeshInstance3D.new()
+	g.name = "Brillo"
+	g.mesh = m.mesh
+	g.material_override = mat
+	g.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	m.add_child(g)
+	return g
 
 
 ## Lo que va guardado DENTRO de un mueble no brilla con él (si no, se delataría antes de abrirlo).
@@ -209,3 +229,9 @@ func rattle() -> void:
 ## (Tests) Copias de brillo vivas ahora mismo.
 func glow_count() -> int:
 	return _glow.filter(func(g: MeshInstance3D) -> bool: return is_instance_valid(g)).size()
+
+
+## (Tests) De esas, las del contorno dorado.
+func outline_count() -> int:
+	return _glow.filter(func(g: MeshInstance3D) -> bool:
+		return is_instance_valid(g) and g.material_override == _outline_mat).size()

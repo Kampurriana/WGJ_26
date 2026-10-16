@@ -284,7 +284,7 @@ func rebuild_inventory() -> void:
 		var item := InventoryItem.new()
 		item.setup(id, d.prototype_for(id), d.reference_node_for(id), d.count_of(id))
 		_list.add_child(item)
-	_empty.visible = _list.get_child_count() == 0 and not d.completed
+	_empty.visible = _list.get_child_count() == 0 and not d.completed and not d.is_opening()
 	_empty.text = "Algo está guardado.\nToca el mueble que brilla." if d.has_findable() \
 		else "Aquí no queda nada.\nBusca piezas escondidas\no acércate a otro rincón."
 

@@ -32,7 +32,8 @@ Reglas (las hace el código, no hay que pensarlas al montar el arte):
 ## Objetos escondidos en muebles
 
 Para que el jugador descubra que **los muebles se abren**, el mueble que guarda lo que toca
-encontrar **brilla, se mueve un poco cada pocos segundos y echa motas doradas**; la primera vez sale
+encontrar **brilla con un contorno dorado, se mueve un poco cada pocos segundos y echa motas
+doradas**; la primera vez sale
 el consejo *«Algo está guardado. Toca el mueble que brilla para abrirlo.»*. Al abrirlo, brilla lo de
 dentro (*«¡Ahí está! Tócalo para llevártelo a la bandeja.»*). La pista también señala el mueble.
 

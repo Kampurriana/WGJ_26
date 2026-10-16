@@ -37,7 +37,7 @@ El **aspecto** (luz, fondo, materiales, partículas, cámara, bandeja) está en 
 | 23 | **El diorama se monta por secciones** (infancia, adolescencia, adultez): cada zona se abre al completar la anterior, con su rótulo, su luz y sus muebles | pedido del equipo | prefijo `S_` + `core/section.gd` + `Diorama._check_sections` |
 | 24 | **Primero la estructura** (paredes y tejado) y luego la historia | pedido del equipo | `S_1_desvan` en `tools/build_attic_level.gd` |
 | 25 | **Los objetos de la historia aparecen de uno en uno**, la clave la última; cada objeto dice su frase | pedido (guion) | `__after-`, `__clave`, frases `pieza_<id>`, cola del narrador |
-| 26 | **Los muebles que guardan algo brillan y se mueven** para enseñar que se abren; consejo la primera vez; la pista señala el mueble | pedido del equipo | `Interactable.set_attention`, `Diorama._refresh`, `hint_target` |
+| 26 | **Los muebles que guardan algo brillan (contorno dorado que late) y se mueven** para enseñar que se abren; consejo la primera vez; la pista señala el mueble | pedido del equipo | `Interactable.set_attention`, `Diorama._refresh`, `hint_target` |
 | 27 | Flash de la cámara de fotos; fundido a negro al final | pedido (guion) | tokens `__flash`, `Diorama.fundido_final` |
 | 21 | Menú completo: Jugar/Continuar, Elegir diorama, Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso), Créditos, Salir; pausa con Esc | pedido del equipo | `ui/main_menu.gd`, `ui/pause_menu.gd`, `ui/options_panel.gd`, `autoload/settings.gd` |
 

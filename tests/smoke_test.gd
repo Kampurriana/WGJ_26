@@ -232,6 +232,9 @@ func _test_story(main: Node) -> void:
 		steps += 1
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
 		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
+	await get_tree().process_frame
+	check(d.is_opening() and not GameState.hud.says_nothing_left(),
+		"entre una sección y la siguiente, la bandeja espera: no dice que aquí no queda nada")
 	var waited := 0.0
 	while not s2.opened and waited < 10.0:
 		await get_tree().create_timer(0.25).timeout
@@ -249,6 +252,7 @@ func _test_story(main: Node) -> void:
 		"los cubos están guardados en el baúl, sin ser hijos de la tapa (si no, girarían con ella)")
 	check(chest != null and chest.attention and chest.glow_count() > 0 and main.effects.is_calling(chest),
 		"el baúl que guarda lo que toca encontrar brilla, se mueve y echa motas")
+	check(chest != null and chest.outline_count() > 0, "y lleva un contorno dorado (lo que se ve de lejos)")
 	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles"), "la primera vez sale el consejo de tocar el mueble que brilla")
 	steps = 0
 	while steps < 30:                              # todo lo que se pueda colocar sin buscar

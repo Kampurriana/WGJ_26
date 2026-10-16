@@ -131,7 +131,7 @@ MUTANTES = [
 		"el desván empieza con su primera sección abierta"),
 	("M37 la clave no espera a las demás", "core/diorama.gd",
 		"\tif slot.is_key and slot.section != null:", "\tif false:",
-		"la estructura se monta entera y la hucha"),
+		"al empezar, la bandeja solo trae paredes"),
 	("M38 el decorado de una zona cerrada se ve", "core/diorama.gd",
 		"\t\tsec.set_decor(sec.opened)", "\t\tsec.set_decor(true)",
 		"las zonas cerradas no enseñan nada"),
@@ -167,6 +167,12 @@ MUTANTES = [
 	("M48 los muebles ocultos siguen chocando", "core/section.gd",
 		"\t\t\t(body as StaticBody3D).collision_layer = Visuals.SURFACE_LAYER if on else 0", "\t\t\tpass",
 		"los muebles ocultos de una zona cerrada no chocan"),
+	("M49 el mueble que llama no lleva contorno", "core/interactable.gd",
+		"\t\t_glow.append(o)\n", "\t\to.queue_free()\n",
+		"y lleva un contorno dorado"),
+	("M50 la bandeja dice que no queda nada entre secciones", "ui/hud.gd",
+		" and not d.is_opening()", "",
+		"entre una sección y la siguiente, la bandeja espera"),
 ]
 
 solo = os.environ.get("SOLO")

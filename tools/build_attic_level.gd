@@ -167,7 +167,8 @@ func _build_structure(sec: Node3D) -> void:
 func _build_childhood(sec: Node3D) -> void:
 	_bulb(sec, Vector3(-1.8, 1.8, -0.35))
 	# Baúl de juguetes: la tapa se levanta (OR_ con bisagra horizontal) y dentro están los cubos.
-	var chest := _node(sec, "BaulJuguetes", Vector3(-2.3, 0, 0.55))
+	# Junto a los pies de la cama: a la vista desde la cámara (más adelante lo tapaba la viga).
+	var chest := _node(sec, "BaulJuguetes", Vector3(-1.55, 0, -0.55))
 	chest.rotation_degrees.y = 90.0
 	_box(chest, "Fondo", Vector3(0, 0.02, 0), Vector3(0.56, 0.04, 0.34), PASTEL_BLUE.darkened(0.15))
 	_box(chest, "Frente", Vector3(0, 0.15, 0.16), Vector3(0.56, 0.3, 0.02), PASTEL_BLUE)

@@ -321,6 +321,11 @@ func is_unlocked(slot: PieceSlot) -> bool:
 	return true
 
 
+## ¿Se está abriendo la sección siguiente? (entre una y otra la bandeja está vacía, pero no "acabada")
+func is_opening() -> bool:
+	return _pending != null
+
+
 ## ¿Hay algo escondido que ya toca encontrar (en el ámbito actual)?
 func has_findable() -> bool:
 	for it in interactables:
@@ -536,6 +541,7 @@ func _check_sections() -> void:
 			_pending = sections[i + 1]
 			var wait := maxf(SECTION_PAUSE, Narrator.remaining() + 0.3)
 			get_tree().create_timer(wait, false).timeout.connect(_open_pending.bind(_pending))
+			Events.inventory_changed.emit()       # la bandeja espera a la sección nueva (no está "vacía")
 
 
 ## Abre la sección que esperaba: luces de la zona, rótulo, cámara y sus frases (si las tiene).

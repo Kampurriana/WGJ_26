@@ -261,7 +261,7 @@ func _on_attention(target: Node, on: bool) -> void:
 		return
 	var box := Visuals.global_aabb(it.target)
 	var s := clampf(box.size.length(), 0.2, 2.0)
-	var p := _particles("Llamada", 10, _texture("chispa"), true)
+	var p := _particles("Llamada", 14, _texture("luz"), true)
 	p.position = box.get_center()
 	p.lifetime = 1.8
 	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
@@ -270,9 +270,9 @@ func _on_attention(target: Node, on: bool) -> void:
 	p.spread = 15.0
 	p.initial_velocity_min = 0.05
 	p.initial_velocity_max = 0.15
-	p.scale_amount_min = 0.03 * s
-	p.scale_amount_max = 0.06 * s
-	p.color = Color(1.0, 0.85, 0.5, 0.9)
+	p.scale_amount_min = maxf(0.06 * s, 0.04)
+	p.scale_amount_max = maxf(0.12 * s, 0.08)
+	p.color = Color(1.0, 0.72, 0.3, 1.0)
 	p.color_ramp = _fade(0.25, 0.6)
 	p.emitting = true
 	_calling[it] = p

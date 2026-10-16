@@ -13,6 +13,7 @@ void vertex() {
 
 void fragment() {
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 2.0);
-	float late = 0.55 + 0.45 * sin(TIME * 3.2);
-	ALBEDO = color.rgb * (0.1 + rim * 0.95) * late * fuerza;
+	float late = 0.5 + 0.5 * sin(TIME * 3.2);
+	// Todo el mueble se templa un poco (en una caja, el borde solo no se ve de frente) y el borde más.
+	ALBEDO = color.rgb * (0.14 + 0.2 * late + rim * (0.55 + 0.6 * late)) * fuerza;
 }

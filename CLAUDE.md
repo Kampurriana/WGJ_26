@@ -26,7 +26,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Comprobación completa (importar + test de humo) | `bash tools/check.sh` → tiene que decir `CHECK OK` |
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
-| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~1 h para 47, en segundo plano y sin tocar código mientras: copia el proyecto); `SOLO=M17` para uno |
+| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~1 h para 49, en segundo plano y sin tocar código mientras: copia el proyecto); `SOLO=M17` para uno |
 | Medir si la luz quema (sobre capturas 1280×720) | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/captura.png --fondo build/fondo.png` → `quemado` < 2 % (el fondo ya no es liso: sin `--fondo` no mide) |
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
 | Mirar una pieza en mano o el zoom | `bash tools/capture.sh build/mano.png 0 0 --hold=480,520` · `bash tools/capture.sh build/zoom.png 6 0 --zoom=14,700,300 --capture-after=5` |
@@ -56,7 +56,7 @@ se ve) + commit. Sin las tres, no está hecho.
 | `core/section.gd` | Una sección `S_`: sus piezas, su decorado (oculto y sin colisión hasta abrirse), sus luces de zona |
 | `core/name_rules.gd` | La convención `P_ H_ OD_ OR_ Z_` + tokens `__after-x`, `__reward-x` (ver `docs/ARTE-PIPELINE.md`) |
 | `core/piece_slot.gd` | Un hueco: silueta blanca (shader `shaders/ghost.gdshader`) hasta que se coloca; sus luces, apagadas hasta entonces (se encienden con fundido) |
-| `core/interactable.gd` | Lo que se pulsa: cajón, puerta o tapa (`__x`), escondido, sub-diorama (colisión calculada sola). "Atención": brillo (`shaders/brillo.gdshader`) + un pequeño movimiento cada 2,4 s. Un `H_` sabe su `container` (cajón padre o puerta hermana) |
+| `core/interactable.gd` | Lo que se pulsa: cajón, puerta o tapa (`__x`), escondido, sub-diorama (colisión calculada sola). "Atención": brillo (`shaders/brillo.gdshader`) + contorno dorado (`shaders/borde.gdshader`) + un pequeño movimiento cada 2,4 s. Un `H_` sabe su `container` (cajón padre o puerta hermana) |
 | `core/visuals.gd` | Cajas AABB, copia limpia de piezas, capa de madera cruda (`material_overlay`), superficies |
 | `camera/diorama_camera.gd` | Cámara fija (sin desplazar), todo con muelles amortiguados (`_spring`): giro dentro de los límites del nivel con inercia, zoom con tope hacia el cursor que vuelve al encuadre al alejar; entrada al nivel (`intro`), pista que gira y acerca, acercamiento suave al colocar (`nudge`, muelle aparte), encuadre de cada sección (`frame_box`), vaivén al completar (`showcase`); mano sobre lo que se puede tocar; pellizco, mando |
 | `ui/hud.gd` | Bandeja de piezas (derecha, dos columnas, scroll; se recoge al completar; dice si hay algo que buscar), pista con recarga, Volver, Menú (pausa), subtítulos (crecen hacia arriba), rótulo de sección, consejos, fin de nivel (arriba; no en `fundido_final`) |
@@ -68,7 +68,7 @@ se ve) + commit. Sin las tres, no está hecho.
 | `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar. La pieza en mano nunca atraviesa nada: su caja viaja por el rayo del cursor y choca con las superficies (`Visuals.add_surface`, capa 2) |
 | `input/gamepad_cursor.gd` | Stick izq. = puntero, A = clic (mando sin código aparte) |
 | `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator` (frases en cola, nunca se pisan; una clave puede ser una lista), `Sfx` |
-| `tests/smoke_test.gd` | Juega como un jugador: cofre del título (asset .glb, letras, luces), menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada, la cámara (límites, inercia, pista), la pintura, la luz (gira con la cámara, despierta con el progreso, sombras ajustadas), las partículas, `escala_luces`, el narrador, y la historia del desván entera (secciones en orden, uno a uno, clave al final, muebles que brillan, cámara antes que la inscripción, flash, epílogo, fundido); 138 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
+| `tests/smoke_test.gd` | Juega como un jugador: cofre del título (asset .glb, letras, luces), menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada, la cámara (límites, inercia, pista), la pintura, la luz (gira con la cámara, despierta con el progreso, sombras ajustadas), las partículas, `escala_luces`, el narrador, y la historia del desván entera (secciones en orden, uno a uno, clave al final, muebles que brillan con contorno dorado, la bandeja que espera entre secciones, cámara antes que la inscripción, flash, epílogo, fundido); 140 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
 
 Reglas de arquitectura: los sistemas se hablan por `Events`; la UI se construye en código (un
 `.tscn` hecho a mano es frágil y da conflictos); **todo lo jugable se define por nombres en el
@@ -177,6 +177,14 @@ hacer (no se lee ni se guarda el progreso; las Opciones sí). Para la build de e
     nada en Compatibility.
 23. **Un ambiente de cielo (`ambient_light_source = SKY`) con ACES lavó el diorama** (luminancia
     196 frente a 140, 25 % saturado, sombras perdidas): descartado, medido con `medir_luz.py`.
+24. **Un brillo que solo suma luz no se ve sobre madera clara** (el baúl "que brilla" parecía uno
+    más en la captura). Lo que se lee de lejos es un **contorno** opaco: copia de la malla un poco
+    más grande con `cull_front` (`shaders/borde.gdshader`). Y mirar que el mueble no quede detrás
+    de una viga desde la cámara del nivel.
+25. **Dos Godot del mismo proyecto a la vez comparten `user://`** (va por el nombre del proyecto,
+    no por la carpeta): un check en una copia mientras corren los mutantes se pisaron el
+    `user://test_progreso.cfg` y falló "completar el nivel queda guardado". No correr dos checks a
+    la vez.
 
 ## Pendiente de verificar con el juego real (ver GDD)
 
