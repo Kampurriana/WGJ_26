@@ -1,0 +1,233 @@
+[gd_scene load_steps=27 format=3]
+
+[ext_resource type="Script" path="res://assets/modern-japanese-props/demo/orbit.gd" id="orbit"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/book_01.tscn" id="a0"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/bookshelf_01.tscn" id="a1"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/chair_01.tscn" id="a2"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/clock_01.tscn" id="a3"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/desk_01.tscn" id="a4"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/lamp_01.tscn" id="a5"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/manga_01.tscn" id="a6"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/manga_stack_01.tscn" id="a7"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/monitor_01.tscn" id="a8"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/mouse_01.tscn" id="a9"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/mug_01.tscn" id="a10"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/notebook_01.tscn" id="a11"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/pen_01.tscn" id="a12"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/remote_01.tscn" id="a13"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/speaker_01.tscn" id="a14"]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/tissue_box_01.tscn" id="a15"]
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.075, 0.10, 0.105, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.79, 0.86, 0.86, 1)
+ambient_light_energy = 0.32
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="FloorMaterial"]
+albedo_color = Color(0.29, 0.35, 0.32, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="WallMaterial"]
+albedo_color = Color(0.69, 0.68, 0.60, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="PlinthMaterial"]
+albedo_color = Color(0.20, 0.26, 0.25, 1)
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="Floor"]
+size = Vector3(4.0000000, 0.0800000, 3.2000000)
+material = SubResource("FloorMaterial")
+
+[sub_resource type="BoxShape3D" id="FloorCollision"]
+size = Vector3(4.0000000, 0.0800000, 3.2000000)
+
+[sub_resource type="BoxMesh" id="Wall"]
+size = Vector3(4.0, 1.9, 0.05)
+material = SubResource("WallMaterial")
+
+[sub_resource type="BoxMesh" id="Plinth"]
+size = Vector3(0.62, 0.06, 0.51)
+material = SubResource("PlinthMaterial")
+
+[sub_resource type="BoxMesh" id="ConsoleShelf"]
+size = Vector3(0.95, 0.35, 0.4)
+material = SubResource("WallMaterial")
+
+[node name="DemoRoom" type="Node3D"]
+script = ExtResource("orbit")
+metadata/camera_focus = Vector3(0.0000000, 0.6000000, 0.0000000)
+metadata/camera_distance = 4.3
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(2.4, 2.1, 3.5)
+projection = 1
+size = 3.7
+current = true
+near = 0.05
+far = 20.0
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-50, -35, 0)
+light_color = Color(1, 0.89, 0.73, 1)
+light_energy = 0.65
+shadow_enabled = true
+directional_shadow_max_distance = 12.0
+
+[node name="Fill" type="OmniLight3D" parent="."]
+position = Vector3(-1.7, 1.8, 1.2)
+light_color = Color(0.68, 0.85, 1, 1)
+light_energy = 0.18
+omni_range = 5.0
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.04, 0)
+mesh = SubResource("Floor")
+
+[node name="FloorBody" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorBody"]
+position = Vector3(0, -0.04, 0)
+shape = SubResource("FloorCollision")
+
+[node name="TitleLayer" type="CanvasLayer" parent="."]
+
+[node name="TitleBackground" type="ColorRect" parent="TitleLayer"]
+offset_left = 22.0
+offset_top = 18.0
+offset_right = 462.0
+offset_bottom = 137.0
+color = Color(0.045, 0.065, 0.061, 0.92)
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="TitleLayer"]
+offset_left = 36.0
+offset_top = 25.0
+theme_override_colors/font_color = Color(0.92, 0.91, 0.81, 1)
+theme_override_font_sizes/font_size = 27
+text = "MODERN JAPANESE HOME"
+
+[node name="Subtitle" type="Label" parent="TitleLayer"]
+offset_left = 38.0
+offset_top = 67.0
+theme_override_colors/font_color = Color(0.69, 0.76, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "A quiet corner / Everyday room"
+
+[node name="Controls" type="Label" parent="TitleLayer"]
+offset_left = 38.0
+offset_top = 103.0
+theme_override_colors/font_color = Color(0.69, 0.76, 0.72, 1)
+theme_override_font_sizes/font_size = 13
+text = "DRAG  Orbit     SCROLL  Zoom     R  Reset     TAB  Switch scene"
+
+[node name="BackWall" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.95, -0.9)
+mesh = SubResource("Wall")
+
+[node name="MediaShelf" type="MeshInstance3D" parent="."]
+position = Vector3(0.9, 0.175, -0.31)
+mesh = SubResource("ConsoleShelf")
+
+[node name="book_01" parent="." instance=ExtResource("a0")]
+position = Vector3(-1.2300000, 0.7120000, -0.5200000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="bookshelf_01" parent="." instance=ExtResource("a1")]
+position = Vector3(-1.2700000, 0.0000000, -0.4800000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="chair_01" parent="." instance=ExtResource("a2")]
+position = Vector3(-0.4000000, 0.0000000, 0.4300000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 180, 0)
+
+[node name="clock_01" parent="." instance=ExtResource("a3")]
+position = Vector3(-1.2600000, 0.7120000, -0.5500000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="desk_01" parent="." instance=ExtResource("a4")]
+position = Vector3(-0.3500000, 0.0000000, -0.2200000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="lamp_01" parent="." instance=ExtResource("a5")]
+position = Vector3(-0.6200000, 0.7400000, -0.4000000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="manga_01" parent="." instance=ExtResource("a6")]
+position = Vector3(-1.2700000, 0.4440000, -0.5200000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="manga_stack_01" parent="." instance=ExtResource("a7")]
+position = Vector3(-1.2700000, 0.3850000, -0.5200000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="monitor_01" parent="." instance=ExtResource("a8")]
+position = Vector3(-0.4000000, 0.7400000, -0.3200000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="mouse_01" parent="." instance=ExtResource("a9")]
+position = Vector3(-0.2100000, 0.7400000, -0.0470000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="mug_01" parent="." instance=ExtResource("a10")]
+position = Vector3(-0.7900000, 0.7400000, -0.0900000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="notebook_01" parent="." instance=ExtResource("a11")]
+position = Vector3(0.0000000, 0.7400000, -0.0950000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="pen_01" parent="." instance=ExtResource("a12")]
+position = Vector3(0.0900000, 0.7400000, -0.0800000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="remote_01" parent="." instance=ExtResource("a13")]
+position = Vector3(1.2700000, 0.3500000, -0.1300000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="speaker_01" parent="." instance=ExtResource("a14")]
+position = Vector3(-0.7900000, 0.7400000, -0.3400000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+
+[node name="tissue_box_01" parent="." instance=ExtResource("a15")]
+position = Vector3(-1.2500000, 0.0580000, -0.5000000)
+scale = Vector3(1.0000000, 1.0000000, 1.0000000)
+rotation_degrees = Vector3(0, 0, 0)
+

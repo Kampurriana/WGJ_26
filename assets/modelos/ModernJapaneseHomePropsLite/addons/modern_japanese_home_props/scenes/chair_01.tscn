@@ -1,0 +1,55 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/models/furniture/chair_01.glb" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="Shape_0"]
+size = Vector3(0.4140000, 0.0250000, 0.4000000)
+
+[sub_resource type="BoxShape3D" id="Shape_1"]
+size = Vector3(0.3940000, 0.2020000, 0.0230000)
+
+[sub_resource type="BoxShape3D" id="Shape_2"]
+size = Vector3(0.0400000, 0.4260000, 0.0520000)
+
+[sub_resource type="BoxShape3D" id="Shape_3"]
+size = Vector3(0.0400000, 0.4260000, 0.0520000)
+
+[sub_resource type="BoxShape3D" id="Shape_4"]
+size = Vector3(0.0400000, 0.4260000, 0.0520000)
+
+[sub_resource type="BoxShape3D" id="Shape_5"]
+size = Vector3(0.0400000, 0.4260000, 0.0520000)
+
+[node name="chair_01" type="Node3D"]
+metadata/asset_id = "chair_01"
+metadata/license = "MIT"
+
+[node name="Visual" parent="." instance=ExtResource("1_model")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision_0" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.4380000, 0.0000000)
+shape = SubResource("Shape_0")
+
+[node name="Collision_1" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.6690000, -0.2040000)
+shape = SubResource("Shape_1")
+
+[node name="Collision_2" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(-0.1740000, 0.2130000, 0.1560000)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(-0.1740000, 0.2130000, -0.1560000)
+shape = SubResource("Shape_3")
+
+[node name="Collision_4" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.1740000, 0.2130000, 0.1560000)
+shape = SubResource("Shape_4")
+
+[node name="Collision_5" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.1740000, 0.2130000, -0.1560000)
+shape = SubResource("Shape_5")

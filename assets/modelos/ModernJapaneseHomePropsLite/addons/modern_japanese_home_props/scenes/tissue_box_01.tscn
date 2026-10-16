@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/models/household/tissue_box_01.glb" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="Shape_0"]
+size = Vector3(0.2300000, 0.1373493, 0.1186000)
+
+[node name="tissue_box_01" type="Node3D"]
+metadata/asset_id = "tissue_box_01"
+metadata/license = "MIT"
+
+[node name="Visual" parent="." instance=ExtResource("1_model")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision_0" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.0686747, 0.0003000)
+shape = SubResource("Shape_0")

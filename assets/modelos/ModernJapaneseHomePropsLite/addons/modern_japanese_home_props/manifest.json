@@ -1,0 +1,1140 @@
+[
+  {
+    "id": "book_01",
+    "name": "Book · Everyday Spaces",
+    "category": "books",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.1.0",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 942,
+      "vertices": 484,
+      "mesh_count": 1,
+      "material_count": 4,
+      "materials": [
+        "book_cover",
+        "ivory",
+        "paper",
+        "terracotta"
+      ],
+      "dimensions_m": [
+        0.158,
+        0.2415,
+        0.03106
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.15800000727176666,
+            0.031060000881552696,
+            0.24150000512599945
+          ],
+          "center": [
+            0.0,
+            0.015530000440776348,
+            0.010750003159046173
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "bookshelf_01",
+    "name": "Low Oak Bookshelf",
+    "category": "furniture",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 2068,
+      "vertices": 1056,
+      "mesh_count": 1,
+      "material_count": 3,
+      "materials": [
+        "graphite",
+        "oak",
+        "walnut"
+      ],
+      "dimensions_m": [
+        0.604,
+        0.26,
+        1.07
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.018,
+            1.03,
+            0.26
+          ],
+          "center": [
+            -0.293,
+            0.555,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.018,
+            1.03,
+            0.26
+          ],
+          "center": [
+            0.293,
+            0.555,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.6,
+            0.018,
+            0.26
+          ],
+          "center": [
+            0,
+            0.049,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.6,
+            0.018,
+            0.26
+          ],
+          "center": [
+            0,
+            0.376,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.6,
+            0.018,
+            0.26
+          ],
+          "center": [
+            0,
+            0.703,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.6,
+            0.018,
+            0.26
+          ],
+          "center": [
+            0,
+            1.061,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.565,
+            1.01,
+            0.008
+          ],
+          "center": [
+            0,
+            0.555,
+            -0.126
+          ]
+        },
+        {
+          "size": [
+            0.036,
+            0.04,
+            0.036
+          ],
+          "center": [
+            -0.247,
+            0.02,
+            0.086
+          ]
+        },
+        {
+          "size": [
+            0.036,
+            0.04,
+            0.036
+          ],
+          "center": [
+            -0.247,
+            0.02,
+            -0.086
+          ]
+        },
+        {
+          "size": [
+            0.036,
+            0.04,
+            0.036
+          ],
+          "center": [
+            0.247,
+            0.02,
+            0.086
+          ]
+        },
+        {
+          "size": [
+            0.036,
+            0.04,
+            0.036
+          ],
+          "center": [
+            0.247,
+            0.02,
+            -0.086
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "chair_01",
+    "name": "Everyday Desk Chair",
+    "category": "furniture",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 5544,
+      "vertices": 2800,
+      "mesh_count": 1,
+      "material_count": 3,
+      "materials": [
+        "ivory",
+        "oak",
+        "rubber"
+      ],
+      "dimensions_m": [
+        0.414,
+        0.416755,
+        0.772283
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.414,
+            0.025,
+            0.4
+          ],
+          "center": [
+            0,
+            0.438,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.394,
+            0.202,
+            0.023
+          ],
+          "center": [
+            0,
+            0.669,
+            -0.204
+          ]
+        },
+        {
+          "size": [
+            0.04,
+            0.426,
+            0.052
+          ],
+          "center": [
+            -0.174,
+            0.213,
+            0.156
+          ]
+        },
+        {
+          "size": [
+            0.04,
+            0.426,
+            0.052
+          ],
+          "center": [
+            -0.174,
+            0.213,
+            -0.156
+          ]
+        },
+        {
+          "size": [
+            0.04,
+            0.426,
+            0.052
+          ],
+          "center": [
+            0.174,
+            0.213,
+            0.156
+          ]
+        },
+        {
+          "size": [
+            0.04,
+            0.426,
+            0.052
+          ],
+          "center": [
+            0.174,
+            0.213,
+            -0.156
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "clock_01",
+    "name": "Bedside Clock",
+    "category": "electronics",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 1102,
+      "vertices": 664,
+      "mesh_count": 1,
+      "material_count": 4,
+      "materials": [
+        "graphite",
+        "ivory",
+        "rubber",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.126,
+        0.051,
+        0.0755
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.12600000202655792,
+            0.0754999965429306,
+            0.050999999046325684
+          ],
+          "center": [
+            0.0,
+            0.0377499982714653,
+            0.0010000001639127731
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "desk_01",
+    "name": "Oak Writing Desk",
+    "category": "furniture",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.1.0",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 3196,
+      "vertices": 1632,
+      "mesh_count": 1,
+      "material_count": 4,
+      "materials": [
+        "graphite",
+        "ivory",
+        "oak",
+        "rubber"
+      ],
+      "dimensions_m": [
+        1.1,
+        0.55,
+        0.74
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            1.1,
+            0.029,
+            0.55
+          ],
+          "center": [
+            0,
+            0.7255,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.033,
+            0.711,
+            0.033
+          ],
+          "center": [
+            -0.491,
+            0.3555,
+            0.218
+          ]
+        },
+        {
+          "size": [
+            0.033,
+            0.711,
+            0.033
+          ],
+          "center": [
+            -0.491,
+            0.3555,
+            -0.218
+          ]
+        },
+        {
+          "size": [
+            0.033,
+            0.711,
+            0.033
+          ],
+          "center": [
+            0.491,
+            0.3555,
+            0.218
+          ]
+        },
+        {
+          "size": [
+            0.033,
+            0.711,
+            0.033
+          ],
+          "center": [
+            0.491,
+            0.3555,
+            -0.218
+          ]
+        },
+        {
+          "size": [
+            0.336,
+            0.064,
+            0.376
+          ],
+          "center": [
+            -0.246,
+            0.674,
+            0.036
+          ]
+        },
+        {
+          "size": [
+            0.992,
+            0.054,
+            0.025
+          ],
+          "center": [
+            0,
+            0.682,
+            0.217
+          ]
+        },
+        {
+          "size": [
+            0.992,
+            0.054,
+            0.025
+          ],
+          "center": [
+            0,
+            0.682,
+            -0.217
+          ]
+        },
+        {
+          "size": [
+            0.025,
+            0.054,
+            0.424
+          ],
+          "center": [
+            -0.493,
+            0.682,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.025,
+            0.054,
+            0.424
+          ],
+          "center": [
+            0.493,
+            0.682,
+            0
+          ]
+        },
+        {
+          "size": [
+            0.44,
+            0.023,
+            0.095
+          ],
+          "center": [
+            0.12,
+            0.635,
+            -0.163
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "lamp_01",
+    "name": "Small Desk Lamp",
+    "category": "lighting",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 3752,
+      "vertices": 1886,
+      "mesh_count": 1,
+      "material_count": 4,
+      "materials": [
+        "ceramic",
+        "graphite",
+        "metal",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.14,
+        0.177,
+        0.305692
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.14000000059604645,
+            0.3056921064853668,
+            0.1770000010728836
+          ],
+          "center": [
+            0.0,
+            0.1528460532426834,
+            0.01850000023841858
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "manga_01",
+    "name": "Manga · Quiet Orbit",
+    "category": "books",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.1.0",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 754,
+      "vertices": 388,
+      "mesh_count": 1,
+      "material_count": 3,
+      "materials": [
+        "manga_teal",
+        "paper",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.128,
+        0.182,
+        0.01906
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.12800000607967377,
+            0.019060000777244568,
+            0.18199999630451202
+          ],
+          "center": [
+            0.0,
+            0.009530000388622284,
+            -0.0
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "manga_stack_01",
+    "name": "Manga Stack · Three Volumes",
+    "category": "books",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.1.0",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 2262,
+      "vertices": 1164,
+      "mesh_count": 1,
+      "material_count": 5,
+      "materials": [
+        "manga_navy",
+        "manga_rust",
+        "manga_teal",
+        "paper",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.143772,
+        0.191719,
+        0.05806
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.14377152919769287,
+            0.05806000158190727,
+            0.19171884655952454
+          ],
+          "center": [
+            0.0021295733749866486,
+            0.029030000790953636,
+            0.0009140037000179291
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "monitor_01",
+    "name": "24-inch Desktop Monitor",
+    "category": "computer",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.1.0",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 3878,
+      "vertices": 2044,
+      "mesh_count": 1,
+      "material_count": 5,
+      "materials": [
+        "black",
+        "graphite",
+        "metal",
+        "screen_desktop",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.548,
+        0.155,
+        0.51
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.5479999780654907,
+            0.5099999904632568,
+            0.1550000011920929
+          ],
+          "center": [
+            0.0,
+            0.2549999952316284,
+            -0.006999999284744263
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "mouse_01",
+    "name": "Wireless Mouse",
+    "category": "computer",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 7896,
+      "vertices": 3962,
+      "mesh_count": 1,
+      "material_count": 4,
+      "materials": [
+        "graphite",
+        "ivory",
+        "rubber",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.064035,
+        0.114826,
+        0.043
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.06403516232967377,
+            0.0429999977350235,
+            0.11482569575309753
+          ],
+          "center": [
+            0.0,
+            0.02149999886751175,
+            -0.0005373470485210419
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "mug_01",
+    "name": "Stoneware Mug",
+    "category": "tableware",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 2068,
+      "vertices": 1038,
+      "mesh_count": 1,
+      "material_count": 2,
+      "materials": [
+        "ceramic",
+        "terracotta"
+      ],
+      "dimensions_m": [
+        0.116,
+        0.08,
+        0.087
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.11599999666213989,
+            0.08699999749660492,
+            0.07999999821186066
+          ],
+          "center": [
+            0.017999999225139618,
+            0.04349999874830246,
+            -0.0
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "notebook_01",
+    "name": "Spiral Notebook",
+    "category": "stationery",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 11852,
+      "vertices": 6074,
+      "mesh_count": 1,
+      "material_count": 6,
+      "materials": [
+        "ivory",
+        "metal",
+        "paper",
+        "rubber",
+        "teal",
+        "terracotta"
+      ],
+      "dimensions_m": [
+        0.1557,
+        0.212,
+        0.0154
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.15569999814033508,
+            0.015399999916553497,
+            0.21199999749660492
+          ],
+          "center": [
+            -0.0028499960899353027,
+            0.007699999958276749,
+            -0.0
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "pen_01",
+    "name": "Retractable Pen",
+    "category": "stationery",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 1420,
+      "vertices": 720,
+      "mesh_count": 1,
+      "material_count": 3,
+      "materials": [
+        "metal",
+        "rubber",
+        "teal"
+      ],
+      "dimensions_m": [
+        0.0107,
+        0.1245,
+        0.0104
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.010700002312660217,
+            0.01040000468492508,
+            0.12449999898672104
+          ],
+          "center": [
+            0.00014999904669821262,
+            0.00520000234246254,
+            0.007249999791383743
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "remote_01",
+    "name": "Compact Remote",
+    "category": "electronics",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 4618,
+      "vertices": 2464,
+      "mesh_count": 1,
+      "material_count": 5,
+      "materials": [
+        "black",
+        "graphite",
+        "ivory",
+        "teal",
+        "terracotta"
+      ],
+      "dimensions_m": [
+        0.044,
+        0.1595,
+        0.022
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.04399999976158142,
+            0.02199999988079071,
+            0.15950000286102295
+          ],
+          "center": [
+            0.0,
+            0.010999999940395355,
+            -0.00025000423192977905
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "speaker_01",
+    "name": "Compact Two-way Speaker",
+    "category": "electronics",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.1.0",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 6032,
+      "vertices": 3050,
+      "mesh_count": 1,
+      "material_count": 7,
+      "materials": [
+        "black",
+        "fabric",
+        "graphite",
+        "metal",
+        "rubber",
+        "terracotta",
+        "walnut"
+      ],
+      "dimensions_m": [
+        0.118,
+        0.157,
+        0.198
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.11800000071525574,
+            0.1979999989271164,
+            0.15700000524520874
+          ],
+          "center": [
+            0.0,
+            0.0989999994635582,
+            0.004500001668930054
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  },
+  {
+    "id": "tissue_box_01",
+    "name": "Tissue Box",
+    "category": "household",
+    "itch": true,
+    "godot_store_lite": true,
+    "render_2d": true,
+    "version": "0.2.0",
+    "collection": "everyday",
+    "units": "meters",
+    "origin": "bottom_center",
+    "style": "Stylized Realistic",
+    "design": "original_generic",
+    "triangle_budget": 25000,
+    "lod": "Godot automatic mesh LOD on import; no authored LOD variants",
+    "lite_added_version": "0.3.0",
+    "effective_license": "MIT",
+    "geometry": {
+      "errors": [],
+      "warnings": [],
+      "triangles": 2704,
+      "vertices": 1452,
+      "mesh_count": 1,
+      "material_count": 4,
+      "materials": [
+        "black",
+        "ivory",
+        "teal",
+        "tissue"
+      ],
+      "dimensions_m": [
+        0.23,
+        0.1186,
+        0.137349
+      ],
+      "collision_boxes": [
+        {
+          "size": [
+            0.23000000417232513,
+            0.13734933733940125,
+            0.11859999597072601
+          ],
+          "center": [
+            0.0,
+            0.06867466866970062,
+            0.00029999949038028717
+          ]
+        }
+      ],
+      "normals_check": "finite unit normals, consistent adjacent winding, outward signed volume of closed components",
+      "internal_faces_check": "closed manufactured components with intentional contact overlap; not a global boolean union"
+    }
+  }
+]

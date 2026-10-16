@@ -1,0 +1,90 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/models/furniture/bookshelf_01.glb" id="1_model"]
+
+[sub_resource type="BoxShape3D" id="Shape_0"]
+size = Vector3(0.0180000, 1.0300000, 0.2600000)
+
+[sub_resource type="BoxShape3D" id="Shape_1"]
+size = Vector3(0.0180000, 1.0300000, 0.2600000)
+
+[sub_resource type="BoxShape3D" id="Shape_2"]
+size = Vector3(0.6000000, 0.0180000, 0.2600000)
+
+[sub_resource type="BoxShape3D" id="Shape_3"]
+size = Vector3(0.6000000, 0.0180000, 0.2600000)
+
+[sub_resource type="BoxShape3D" id="Shape_4"]
+size = Vector3(0.6000000, 0.0180000, 0.2600000)
+
+[sub_resource type="BoxShape3D" id="Shape_5"]
+size = Vector3(0.6000000, 0.0180000, 0.2600000)
+
+[sub_resource type="BoxShape3D" id="Shape_6"]
+size = Vector3(0.5650000, 1.0100000, 0.0080000)
+
+[sub_resource type="BoxShape3D" id="Shape_7"]
+size = Vector3(0.0360000, 0.0400000, 0.0360000)
+
+[sub_resource type="BoxShape3D" id="Shape_8"]
+size = Vector3(0.0360000, 0.0400000, 0.0360000)
+
+[sub_resource type="BoxShape3D" id="Shape_9"]
+size = Vector3(0.0360000, 0.0400000, 0.0360000)
+
+[sub_resource type="BoxShape3D" id="Shape_10"]
+size = Vector3(0.0360000, 0.0400000, 0.0360000)
+
+[node name="bookshelf_01" type="Node3D"]
+metadata/asset_id = "bookshelf_01"
+metadata/license = "MIT"
+
+[node name="Visual" parent="." instance=ExtResource("1_model")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 1
+
+[node name="Collision_0" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(-0.2930000, 0.5550000, 0.0000000)
+shape = SubResource("Shape_0")
+
+[node name="Collision_1" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.2930000, 0.5550000, 0.0000000)
+shape = SubResource("Shape_1")
+
+[node name="Collision_2" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.0490000, 0.0000000)
+shape = SubResource("Shape_2")
+
+[node name="Collision_3" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.3760000, 0.0000000)
+shape = SubResource("Shape_3")
+
+[node name="Collision_4" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.7030000, 0.0000000)
+shape = SubResource("Shape_4")
+
+[node name="Collision_5" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 1.0610000, 0.0000000)
+shape = SubResource("Shape_5")
+
+[node name="Collision_6" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.0000000, 0.5550000, -0.1260000)
+shape = SubResource("Shape_6")
+
+[node name="Collision_7" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(-0.2470000, 0.0200000, 0.0860000)
+shape = SubResource("Shape_7")
+
+[node name="Collision_8" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(-0.2470000, 0.0200000, -0.0860000)
+shape = SubResource("Shape_8")
+
+[node name="Collision_9" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.2470000, 0.0200000, 0.0860000)
+shape = SubResource("Shape_9")
+
+[node name="Collision_10" type="CollisionShape3D" parent="StaticBody3D"]
+position = Vector3(0.2470000, 0.0200000, -0.0860000)
+shape = SubResource("Shape_10")
