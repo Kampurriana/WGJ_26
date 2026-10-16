@@ -9,7 +9,9 @@ Puzle de dioramas en 3D para una game jam de 48 h (Godot 4.7.2).
 
 Jugar: instalar Godot 4.7.2, abrir el proyecto (`project.godot`) y pulsar F5.
 
+Al empezar, monta el letrero del título (arrastra sus 4 piezas) y se abre el menú.
+
 Controles: arrastrar en vacío o WASD/flechas = girar · rueda o Q/E = zoom · botón central o Mayús+arrastrar = desplazar ·
 arrastrar una pieza del panel a su hueco = colocar · clic = abrir cajones / coger lo escondido /
-entrar en un rincón · H = pista · Esc = volver. Mando: stick izq. = puntero, A = clic,
-stick dcho. = girar, gatillos = zoom, Y = pista, B = volver.
+entrar en un rincón · H = pista · Esc = pausa (o salir del rincón). Mando: stick izq. = puntero,
+A = clic, stick dcho. = girar, gatillos = zoom, Y = pista, B = pausa / volver.

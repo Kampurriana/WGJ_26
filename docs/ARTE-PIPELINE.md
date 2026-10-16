@@ -70,13 +70,20 @@ diorama y texturas de 1024 px como mucho (2048 solo si es imprescindible).
 
 ```
 assets/modelos/nivel_01/nivel_01.glb     ← un .glb por nivel
+assets/modelos/menu/menu.glb             ← (opcional) el puzle del título, ver abajo
 assets/texturas/                         ← solo si una textura va suelta
 assets/ui/                               ← iconos, botones, logo, fondo de menú (PNG)
 assets/fuentes/                          ← tipografías (.ttf / .otf) con licencia libre
-assets/audio/sfx/<nombre>.ogg            ← snap, reject, open, close, pickup, hint, complete, zoom_in, zoom_out
+assets/audio/sfx/<nombre>.ogg            ← snap, reject, open, close, pickup, hint, complete, zoom_in, zoom_out, click
 assets/audio/musica/musica.ogg           ← música en bucle
 assets/audio/voz/<clave>.ogg             ← voz del narrador; <clave> = la de data/narracion_es.json
 ```
+
+**El puzle del título (opcional).** El juego arranca con un diorama pequeño que hay que montar para
+que salga el menú: ahora es de figuras simples (un letrero, un farol, un árbol y un banco). Si
+queréis hacerlo bonito, es un diorama más: pocas piezas `P_` (3 a 5), sin `OD_`, `H_` ni `Z_`, y
+una pieza `P_letrero` con una cara plana donde irá el título. El texto lo pone el juego (el nombre
+del proyecto); si preferís el título modelado en el letrero, decídselo a Claude.
 
 Los `.blend` de trabajo **no van al repositorio** (pesan mucho y no se pueden fusionar): guardadlos
 en la carpeta compartida del equipo. Al repo va solo lo exportado.

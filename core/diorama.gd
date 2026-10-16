@@ -348,6 +348,20 @@ func _check_completed() -> void:
 	Events.level_completed.emit(self)
 
 
+## Lo deja terminado al instante, sin sonidos, frases ni señales de completado (el menú del
+## título cuando ya se resolvió en otra partida).
+func complete_silently() -> void:
+	for s in slots:
+		if not s.filled:
+			s.fill()
+	inventory.clear()
+	for m: MeshInstance3D in _clay:
+		_revealed[m] = true
+		Visuals.set_clay(m, _clay[m], 0.0)
+	completed = true
+	Events.inventory_changed.emit()
+
+
 func _reveal_around(origin: Vector3) -> void:
 	for m: MeshInstance3D in _clay:
 		if _revealed.has(m):

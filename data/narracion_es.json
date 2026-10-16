@@ -1,4 +1,6 @@
 {
+	"intro_menu": "Este letrero está sin montar. Arrastra cada pieza del panel hasta su hueco blanco.",
+	"fin_menu": "¡Eso es! Ya está todo listo para empezar.",
 	"intro_muestra": "Esta casita está a medio hacer. Mira bien: cada hueco blanco espera su pieza.",
 	"fin_muestra": "Ya está. Todo en su sitio, y la casa ha despertado.",
 	"orden": "Esa pieza todavía no encaja: le falta algo debajo.",

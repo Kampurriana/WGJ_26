@@ -11,6 +11,7 @@ var _player: AudioStreamPlayer
 
 func _ready() -> void:
 	_player = AudioStreamPlayer.new()
+	_player.bus = &"Voz"
 	add_child(_player)
 	load_language(language)
 

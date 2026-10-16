@@ -1,6 +1,7 @@
 extends Node
 ## Efectos y música. Se buscan por nombre en assets/audio/sfx|musica/<nombre>.(ogg|wav|mp3).
-## Nombres que usa el código: snap, reject, open, close, pickup, hint, complete, zoom_in, zoom_out.
+## Nombres que usa el código: snap, reject, open, close, pickup, hint, complete, zoom_in, zoom_out, click.
+## Suenan por los buses Efectos y Musica (los crea Settings), así les afectan las Opciones.
 ## Si falta un fichero se avisa UNA vez por nombre (un sonido mudo tiene que decirlo).
 
 const EXTENSIONS := ["ogg", "wav", "mp3"]
@@ -14,12 +15,15 @@ var _music: AudioStreamPlayer
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS      # la música y los clics del menú siguen en pausa
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
+		p.bus = &"Efectos"
 		add_child(p)
 		_pool.append(p)
 	_music = AudioStreamPlayer.new()
 	_music.volume_db = -8.0
+	_music.bus = &"Musica"
 	add_child(_music)
 
 

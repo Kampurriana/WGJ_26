@@ -16,6 +16,7 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 	piece_id = id
 	_ref = ref
 	custom_minimum_size = SIZE
+	theme_type_variation = &"Ficha"
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var holder := SubViewportContainer.new()
 	holder.stretch = true

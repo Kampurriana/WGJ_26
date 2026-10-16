@@ -31,6 +31,8 @@ Cada fila dice **de dónde sale**: *visto* = lo dicen la ficha de Steam o varias
 | 17 | Animales y personajes reaccionan al pasar cerca / al completar | visto | hook: animación `celebrar` al completar; reacciones al girar = **pendiente** |
 | 18 | Ratón, mando (joystick como puntero) y táctil | visto | `input/gamepad_cursor.gd`, pellizco en la cámara, táctil emula ratón |
 | 19 | Escenas de historia animadas entre niveles | visto | **pendiente** (para la jam: una viñeta + narración entre niveles) |
+| 20 | **El menú de inicio se desbloquea con un puzle**: se monta el letrero del título como un diorama sencillo (4 piezas, sin orden ni escondidos) y entonces aparece el menú. En las siguientes partidas sale ya montado | pedido del equipo (no encontrado en las fuentes; confirmar jugando) | `levels/menu_titulo.tscn` + `scenes/main.gd` (`show_title`) + `ui/main_menu.gd` |
+| 21 | Menú completo: Jugar/Continuar, Elegir diorama, Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso), Créditos, Salir; pausa con Esc | pedido del equipo | `ui/main_menu.gd`, `ui/pause_menu.gd`, `ui/options_panel.gd`, `autoload/settings.gd` |
 
 ## Bucle de un nivel
 
@@ -50,8 +52,9 @@ Cada fila dice **de dónde sale**: *visto* = lo dicen la ficha de Steam o varias
 
 ## Fuera de alcance para 48 h (salvo que sobre tiempo)
 
-Guardado de partida, menú de opciones completo, localización a 8 idiomas, logros, escenas de
-historia animadas largas. Sí entra: menú mínimo (Jugar / Salir) y créditos.
+Localización a 8 idiomas, logros, escenas de historia animadas largas, guardar a mitad de un
+nivel. Ya está hecho: menú completo con opciones, créditos, pausa y progreso por niveles
+(qué dioramas están completados).
 
 ## Fuentes
 

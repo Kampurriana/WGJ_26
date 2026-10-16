@@ -15,6 +15,10 @@ extends Node3D
 @export var drag_threshold_px := 6.0
 @export var pan_radius := 1.5                ## cuánto se puede alejar el centro de la vista
 
+const MENU_SWAY_DEG := 14.0                  ## en el menú de inicio, el diorama se mece así de un lado a otro
+const MENU_SWAY_SPEED := 0.35
+const MENU_SHIFT := 0.22                     ## y se corre a la derecha para dejar sitio al panel del menú
+
 var cam: Camera3D
 var yaw := 25.0
 var pitch := 32.0
@@ -33,6 +37,10 @@ var _press_button := 0
 var _orbiting := false
 var _panning := false
 var _touches: Dictionary = {}
+var _input_enabled := true
+var _menu_view := false
+var _sway_t := 0.0
+var _cur_h_offset := 0.0
 
 
 func _ready() -> void:
@@ -49,7 +57,22 @@ func configure(d: Diorama) -> void:
 	yaw = d.camera_yaw_deg
 	pitch = d.camera_pitch_deg
 	_set_home(box.get_center(), d.camera_distance, d.camera_min_distance, d.camera_max_distance, box.size.length() * 0.3)
+	_home.yaw = yaw
+	_home.pitch = pitch
 	snap()
+
+
+## Vista del menú de inicio: vuelve al encuadre inicial, se mece sola, se corre a la derecha
+## y no hace caso al jugador (las flechas y el ratón son para el menú).
+func set_menu_view(on: bool) -> void:
+	_menu_view = on
+	_input_enabled = not on
+	_sway_t = 0.0
+	if on:
+		yaw = _home.get("yaw", yaw)
+		pitch = _home.get("pitch", pitch)
+		center = _home.get("center", center)
+		distance = _home.get("distance", distance)
 
 
 func _set_home(c: Vector3, dist: float, dmin: float, dmax: float, radius: float) -> void:
@@ -67,7 +90,12 @@ func snap() -> void:
 	_cur_pitch = pitch
 	_cur_distance = distance
 	_cur_center = center
+	_cur_h_offset = _h_offset_goal()
 	_apply()
+
+
+func _h_offset_goal() -> float:
+	return -MENU_SHIFT * _cur_distance if _menu_view else 0.0
 
 
 func _on_focus_changed(anchor: Node) -> void:
@@ -96,18 +124,23 @@ func look_at_point(p: Vector3) -> void:
 
 
 func _process(delta: float) -> void:
-	var v := Input.get_vector("cam_left", "cam_right", "cam_up", "cam_down")
-	if v != Vector2.ZERO:
-		yaw -= v.x * pad_orbit_deg_per_s * delta
-		pitch = clampf(pitch - v.y * pad_orbit_deg_per_s * delta, pitch_min, pitch_max)
-	var z := Input.get_axis("zoom_out", "zoom_in")
-	if z != 0.0:
-		_zoom(1.0 - z * pad_zoom_per_s * delta)
+	if _input_enabled:
+		var v := Input.get_vector("cam_left", "cam_right", "cam_up", "cam_down")
+		if v != Vector2.ZERO:
+			yaw -= v.x * pad_orbit_deg_per_s * _sensitivity() * delta
+			pitch = clampf(pitch - v.y * pad_orbit_deg_per_s * _sensitivity() * _invert() * delta, pitch_min, pitch_max)
+		var z := Input.get_axis("zoom_out", "zoom_in")
+		if z != 0.0:
+			_zoom(1.0 - z * pad_zoom_per_s * delta)
+	if _menu_view:
+		_sway_t += delta
+		yaw = float(_home.get("yaw", 0.0)) + sin(_sway_t * MENU_SWAY_SPEED) * MENU_SWAY_DEG
 	var k := 1.0 - exp(-smoothing * delta)
 	_cur_yaw = lerpf(_cur_yaw, yaw, k)
 	_cur_pitch = lerpf(_cur_pitch, pitch, k)
 	_cur_distance = lerpf(_cur_distance, distance, k)
 	_cur_center = _cur_center.lerp(center, k)
+	_cur_h_offset = lerpf(_cur_h_offset, _h_offset_goal(), k)
 	_apply()
 
 
@@ -115,6 +148,16 @@ func _apply() -> void:
 	global_position = _cur_center
 	rotation = Vector3(deg_to_rad(-_cur_pitch), deg_to_rad(_cur_yaw), 0.0)
 	cam.position = Vector3(0.0, 0.0, _cur_distance)
+	cam.h_offset = _cur_h_offset
+
+
+## Opciones del jugador: multiplicador de giro y eje vertical invertido.
+func _sensitivity() -> float:
+	return float(Settings.get_value("sensibilidad_camara"))
+
+
+func _invert() -> float:
+	return -1.0 if Settings.get_value("invertir_y") else 1.0
 
 
 func _zoom(factor: float) -> void:
@@ -122,7 +165,7 @@ func _zoom(factor: float) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if GameState.is_dragging:
+	if GameState.is_dragging or not _input_enabled:
 		return
 	if e is InputEventMouseButton:
 		var mb := e as InputEventMouseButton
@@ -155,14 +198,14 @@ func _unhandled_input(e: InputEvent) -> void:
 			center = home_center + offset.limit_length(pan_radius)
 		elif _orbiting or mm.position.distance_to(_press_pos) > drag_threshold_px:
 			_orbiting = true
-			yaw -= mm.relative.x * orbit_deg_per_px
-			pitch = clampf(pitch + mm.relative.y * orbit_deg_per_px, pitch_min, pitch_max)
+			yaw -= mm.relative.x * orbit_deg_per_px * _sensitivity()
+			pitch = clampf(pitch + mm.relative.y * orbit_deg_per_px * _sensitivity() * _invert(), pitch_min, pitch_max)
 	elif e is InputEventMagnifyGesture:
 		_zoom(1.0 / (e as InputEventMagnifyGesture).factor)
 	elif e is InputEventPanGesture:
 		var pg := e as InputEventPanGesture
-		yaw -= pg.delta.x * 4.0
-		pitch = clampf(pitch + pg.delta.y * 4.0, pitch_min, pitch_max)
+		yaw -= pg.delta.x * 4.0 * _sensitivity()
+		pitch = clampf(pitch + pg.delta.y * 4.0 * _sensitivity() * _invert(), pitch_min, pitch_max)
 	elif e is InputEventScreenTouch:
 		var st := e as InputEventScreenTouch
 		if st.pressed:

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Abre el juego en una ventana real, opcionalmente coloca K piezas solo, guarda una captura y sale.
 # Es la forma de MIRAR el juego (un test en verde no dice si se ve bien).
-#   bash tools/capture.sh [salida.png] [piezas_auto] [nivel]
+#   bash tools/capture.sh [salida.png] [piezas_auto] [nivel] [más argumentos para main.gd...]
 #   bash tools/capture.sh build/captura.png 4 0
+#   bash tools/capture.sh build/menu.png 10 menu --menu-page=opciones --capture-after=5
+#   (nivel "menu" = el menú de inicio; ver los argumentos en scenes/main.gd)
 # Comprueba que la imagen sale al tamaño pedido: si no coincide, la captura no vale.
 set -u
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
@@ -15,7 +17,7 @@ H=720
 mkdir -p "$(dirname "$OUT")"
 rm -f "$OUT"
 LOG="build/capture.log"
-"$G" --path . --resolution ${W}x${H} -- --level="$LEVEL" --solve="$SOLVE" --capture="$OUT" >"$LOG" 2>&1
+"$G" --path . --resolution ${W}x${H} -- --level="$LEVEL" --solve="$SOLVE" --capture="$OUT" "${@:4}" >"$LOG" 2>&1
 LINE=$(grep -a "^CAPTURA" "$LOG" | tr -d '\r')
 if [ -z "$LINE" ] || [ ! -s "$OUT" ]; then
 	echo "CAPTURA FALLO: no se escribió $OUT (mira $LOG)"

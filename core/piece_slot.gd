@@ -11,6 +11,7 @@ var prototype: Node3D            # copia limpia: vista previa del inventario y p
 
 var _ghost: ShaderMaterial
 var _meshes: Array[MeshInstance3D] = []
+var _extras: Array[VisualInstance3D] = []   ## lo visible que no es malla (Label3D, Sprite3D...): oculto hasta colocar
 
 
 func setup(p_id: StringName, p_node: Node3D, p_scope: Interactable) -> void:
@@ -22,6 +23,10 @@ func setup(p_id: StringName, p_node: Node3D, p_scope: Interactable) -> void:
 	_ghost = Visuals.make_ghost_material()
 	for m in _meshes:
 		m.material_override = _ghost
+	for v in node.find_children("*", "VisualInstance3D", true, false):
+		if not (v is MeshInstance3D) and (v as VisualInstance3D).visible:
+			_extras.append(v)
+			(v as VisualInstance3D).hide()
 
 
 func meshes() -> Array[MeshInstance3D]:
@@ -44,3 +49,5 @@ func fill() -> void:
 	filled = true
 	for m in _meshes:
 		m.material_override = null
+	for v in _extras:
+		v.show()

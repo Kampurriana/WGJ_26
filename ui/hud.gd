@@ -1,10 +1,11 @@
 class_name Hud
 extends CanvasLayer
 ## Interfaz construida en código: panel de piezas a la derecha (con scroll), pista con recarga,
-## botón Volver (sub-dioramas), subtítulos del narrador y panel de diorama completado.
-## Para el aspecto: un Theme en res://ui/theme.tres se aplica solo si existe.
+## botón Volver (sub-dioramas), botón Menú (pausa), subtítulos del narrador y panel de diorama
+## completado. Aspecto: UiTheme (o res://ui/theme.tres si existe).
 
 signal next_requested
+signal pause_requested
 
 @export var hint_cooldown := 25.0            ## segundos de recarga de la pista
 @export var assist_after := 45.0             ## sin progreso tanto tiempo => la pista se recarga sola
@@ -19,6 +20,9 @@ var _title: Label
 var _subtitle_box: PanelContainer
 var _subtitle: Label
 var _done: PanelContainer
+var _done_button: Button
+var _controls: VBoxContainer
+var _game_ui := true
 var _charge := 1.0
 var _idle := 0.0
 var _subtitle_left := 0.0
@@ -29,8 +33,7 @@ func _ready() -> void:
 	_root = Control.new()
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if ResourceLoader.exists("res://ui/theme.tres"):
-		_root.theme = load("res://ui/theme.tres")
+	_root.theme = UiTheme.get_theme()
 	add_child(_root)
 	_build_panel()
 	_build_controls()
@@ -40,7 +43,9 @@ func _ready() -> void:
 	Events.inventory_changed.connect(rebuild_inventory)
 	Events.focus_changed.connect(func(a: Node) -> void: _back_button.visible = a != null)
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
-	Events.level_completed.connect(func(_d: Node) -> void: get_tree().create_timer(1.6).timeout.connect(_done.show))
+	Events.level_completed.connect(func(_d: Node) -> void:
+		if GameState.mode == GameState.Mode.PLAYING:
+			get_tree().create_timer(1.6).timeout.connect(_show_done))
 	Narrator.subtitle.connect(_show_subtitle)
 
 
@@ -63,6 +68,7 @@ func _build_controls() -> void:
 	_title.position = Vector2(20, 14)
 	_title.add_theme_font_size_override("font_size", 26)
 	_title.add_theme_constant_override("outline_size", 8)
+	_title.add_theme_color_override("font_color", UiTheme.CREAM)
 	_title.add_theme_color_override("font_outline_color", Color(0.25, 0.18, 0.12))
 	_root.add_child(_title)
 	_back_button = Button.new()
@@ -78,6 +84,11 @@ func _build_controls() -> void:
 	box.offset_bottom = -20
 	box.custom_minimum_size = Vector2(150, 0)
 	_root.add_child(box)
+	_controls = box
+	var menu := Button.new()
+	menu.text = "Menú"
+	menu.pressed.connect(func() -> void: pause_requested.emit())
+	box.add_child(menu)
 	_hint_button = Button.new()
 	_hint_button.text = "Pista"
 	_hint_button.pressed.connect(request_hint)
@@ -97,11 +108,13 @@ func _build_subtitle() -> void:
 	_subtitle_box.offset_left = -360
 	_subtitle_box.offset_right = 360 - InventoryItem.SIZE.x
 	_subtitle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_subtitle_box.theme_type_variation = &"Subtitulo"
 	_subtitle_box.hide()
 	_root.add_child(_subtitle_box)
 	_subtitle = Label.new()
 	_subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_subtitle.theme_type_variation = &"SubtituloTexto"
 	_subtitle.add_theme_font_size_override("font_size", 22)
 	_subtitle_box.add_child(_subtitle)
 
@@ -119,12 +132,30 @@ func _build_done() -> void:
 	l.text = "¡Diorama completado!"
 	l.add_theme_font_size_override("font_size", 30)
 	v.add_child(l)
-	var b := Button.new()
-	b.text = "Siguiente"
-	b.pressed.connect(func() -> void:
+	_done_button = Button.new()
+	_done_button.pressed.connect(func() -> void:
 		_done.hide()
 		next_requested.emit())
-	v.add_child(b)
+	v.add_child(_done_button)
+
+
+func _show_done() -> void:
+	var last := GameState.level_index + 1 >= GameState.levels.size()
+	_done_button.text = "Volver al menú" if last else "Siguiente"
+	_done.show()
+	_done_button.grab_focus()
+
+
+## Panel de piezas, título, pista, Menú y Volver. En el menú de inicio se esconden
+## (los subtítulos no: el narrador puede hablar encima del menú).
+func set_game_ui_visible(on: bool) -> void:
+	_game_ui = on
+	_panel.visible = on
+	_title.visible = on
+	_controls.visible = on
+	_back_button.visible = on and GameState.diorama != null and GameState.diorama.focus != null
+	if not on:
+		_done.hide()
 
 
 func _on_level_started() -> void:
@@ -207,6 +238,8 @@ func _on_back() -> void:
 
 
 func _show_subtitle(text: String, seconds: float) -> void:
+	if not Settings.get_value("subtitulos"):
+		return
 	_subtitle.text = text
 	_subtitle_box.show()
 	_subtitle_left = seconds
@@ -215,11 +248,12 @@ func _show_subtitle(text: String, seconds: float) -> void:
 func _process(delta: float) -> void:
 	_idle += delta
 	_charge = minf(1.0, _charge + delta / hint_cooldown)
-	if _idle >= assist_after:
+	var assist: bool = Settings.get_value("ayuda_automatica") and _idle >= assist_after
+	if assist:
 		_charge = 1.0
 	_hint_bar.value = _charge
 	_hint_button.disabled = _charge < 1.0
-	_hint_button.modulate = Color(1.2, 1.15, 0.7) if _idle >= assist_after else Color.WHITE
+	_hint_button.modulate = Color(1.2, 1.15, 0.7) if assist else Color.WHITE
 	if _subtitle_left > 0.0:
 		_subtitle_left -= delta
 		if _subtitle_left <= 0.0:
@@ -227,7 +261,13 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
+	if not _game_ui:
+		return
 	if e.is_action_pressed("hint"):
 		request_hint()
 	elif e.is_action_pressed("back"):
-		_on_back()
+		if GameState.diorama != null and GameState.diorama.focus != null:
+			_on_back()
+		else:
+			pause_requested.emit()
+		get_viewport().set_input_as_handled()

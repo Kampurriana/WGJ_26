@@ -1,0 +1,20 @@
+Hecho en 48 horas para la WGJ 2026
+
+ARTE
+(nombres de las artistas)
+
+DISEÑO
+(nombres)
+
+PROGRAMACIÓN
+Claude (Anthropic)
+
+MÚSICA Y SONIDO
+(nombres / fuentes y licencias)
+
+Inspirado en Woodo, de Tiny Monks Tales
+
+Hecho con Godot Engine
+godotengine.org/license
+
+¡Gracias por jugar!

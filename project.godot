@@ -14,6 +14,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Events="*res://autoload/events.gd"
+Settings="*res://autoload/settings.gd"
 GameState="*res://autoload/game_state.gd"
 InputSetup="*res://autoload/input_setup.gd"
 Narrator="*res://autoload/narrator.gd"

@@ -23,7 +23,9 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
 | Medir si la luz quema (sobre capturas 1280×720) | `python3 -I tools/medir_luz.py build/captura.png` → `quemado` < 2 % |
+| Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
+| Regenerar el puzle del título | `"$GODOT" --headless --path . --script res://tools/build_title_level.gd` |
 | Abrir el juego para jugar | `"$GODOT" --path .` |
 | Abrir el editor | `"$GODOT" --path . -e` |
 
@@ -34,19 +36,24 @@ se ve) + commit. Sin las tres, no está hecho.
 
 | Fichero | Qué hace |
 |---|---|
-| `scenes/main.gd` | Monta cámara, arrastre, HUD, mando, luz; carga niveles de `data/levels.json`; args `--level --solve --capture` |
+| `scenes/main.gd` | Monta cámara, arrastre, HUD, menús, mando, luz. Arranca en el puzle del título → menú → niveles de `data/levels.json`; guarda progreso; args `--level[=menu] --menu-page --solve --capture` |
+| `levels/menu_titulo.tscn` | El puzle que desbloquea el menú: diorama de 4 piezas con el letrero del título (lo genera `tools/build_title_level.gd`; el texto es el nombre del proyecto) |
 | `core/diorama.gd` | Raíz de cada nivel. Lee la convención de nombres y monta huecos, inventario, cajones, escondidos, sub-dioramas, color, orden, pistas, final |
 | `core/name_rules.gd` | La convención `P_ H_ OD_ OR_ Z_` + tokens `__after-x`, `__reward-x` (ver `docs/ARTE-PIPELINE.md`) |
 | `core/piece_slot.gd` | Un hueco: silueta blanca (shader `shaders/ghost.gdshader`) hasta que se coloca |
 | `core/interactable.gd` | Lo que se pulsa: cajón, puerta, escondido, sub-diorama (colisión calculada sola) |
 | `core/visuals.gd` | Cajas AABB, copia limpia de piezas, capa "arcilla" blanca (`material_overlay`) |
 | `camera/diorama_camera.gd` | Órbita tipo plataforma giratoria, zoom con límites, desplazamiento, pellizco, mando |
-| `ui/hud.gd` | Panel de piezas (derecha, scroll), pista con recarga, Volver, subtítulos, fin de nivel |
+| `ui/hud.gd` | Panel de piezas (derecha, scroll), pista con recarga, Volver, Menú (pausa), subtítulos, fin de nivel |
+| `ui/main_menu.gd` | Menú de inicio: Jugar/Continuar, Elegir diorama, Opciones, Créditos (`data/creditos_es.txt`), Salir (no en Web) |
+| `ui/pause_menu.gd` | Pausa (Esc): Reanudar, Opciones, Menú principal, Salir |
+| `ui/options_panel.gd` | Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso) |
+| `ui/ui_theme.gd` | Aspecto de toda la interfaz en código (madera y papel); `ui/theme.tres` manda si existe |
 | `ui/inventory_item.gd` | Ficha con vista 3D que **gira con la cámara** (orientación = la del hueco) |
 | `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar |
 | `input/gamepad_cursor.gd` | Stick izq. = puntero, A = clic (mando sin código aparte) |
-| `autoload/*` | `Events` (bus de señales), `GameState`, `InputSetup` (controles en código), `Narrator`, `Sfx` |
-| `tests/smoke_test.gd` | Juega el nivel 0 entero con eventos reales; 24 comprobaciones |
+| `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator`, `Sfx` |
+| `tests/smoke_test.gd` | Juega como un jugador: puzle del título, menú, nivel 0 entero con pausa, vuelta al menú; 62 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
 
 Reglas de arquitectura: los sistemas se hablan por `Events`; la UI se construye en código (un
 `.tscn` hecho a mano es frágil y da conflictos); **todo lo jugable se define por nombres en el
@@ -102,6 +109,13 @@ modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escen
     `scenes/main.gd` (constantes arriba de `_build_environment`) con captura +
     `tools/medir_luz.py`, nunca a ojo. Medido con render por software (llvmpipe): confirmar en
     una GPU real.
+11. **`main.gd` corre en `PROCESS_MODE_ALWAYS`** (capturas, menús y mando siguen en pausa). Sus
+    hijos HEREDAN eso: todo lo que sea "juego" (cámara, arrastre, HUD, el nivel) se pone
+    `PROCESS_MODE_PAUSABLE` a mano. Un hijo nuevo sin ese ajuste no se para en la pausa.
+12. **En un Theme, un tipo hereda los estilos de su clase padre**: `CheckButton` cogía la tablilla
+    de madera de `Button` con texto oscuro encima (ilegible, visto en captura). Al dar estilo a un
+    tipo base, revisar sus hijos (`CheckButton`, `CheckBox`, `OptionButton`, `MenuButton`...).
+13. **`PackedStringArray` no tiene `any()`/`all()`** (los `Array` sí): bucle o `Array(...)`.
 
 ## Pendiente de verificar con el juego real (ver GDD)
 
