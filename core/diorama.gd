@@ -16,6 +16,8 @@ extends Node3D
 @export var camera_yaw_deg := 25.0
 @export var order_rules: Dictionary = {}    ## {"taza": ["mesa"]} = la taza va después de la mesa
 @export var inventory_seed := 7
+## Luz propia de este nivel (una escena de iluminacion/). Vacío = la de por defecto.
+@export_file("*.tscn") var iluminacion := ""
 
 var slots: Array[PieceSlot] = []
 var interactables: Array[Interactable] = []

@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[sub_resource type="Environment" id="Environment_78n1v"]
+background_mode = 1
+background_color = Color(0.86, 0.8, 0.72, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 0.96, 0.9, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 4
+
+[node name="Iluminacion" type="Node3D" unique_id=506663491]
+
+[node name="Ambiente" type="WorldEnvironment" parent="." unique_id=1057447563]
+environment = SubResource("Environment_78n1v")
+
+[node name="Sol" type="DirectionalLight3D" parent="." unique_id=1096764674]
+transform = Transform3D(0.81915206, 0.43938506, -0.36868784, 0, 0.64278764, 0.76604444, 0.57357645, -0.62750685, 0.5265408, 0, 0, 0)
+light_energy = 0.55
+shadow_enabled = true
+shadow_opacity = 0.8

@@ -9,22 +9,20 @@ equipo tiene **su rama fija**; Claude prueba lo que llega a cada una y lo junta 
 |---|---|---|
 | `main` | Lo que funciona: siempre arranca y pasa el check. Es lo que se juega, se exporta y se entrega | **Solo Claude**, juntando las otras tres |
 | `arte` | Modelos, texturas, sonidos, música, voz, iconos y fuentes (todo dentro de `assets/`) | Artistas |
-| `iluminacion` | Luz y ambiente de los dioramas | Quien lleve la luz (y Claude) |
+| `iluminacion` | Luz y ambiente de los dioramas (todo dentro de `iluminacion/`) | Quien lleve la luz |
 | `programacion` | Código, escenas, datos (`data/`) y documentación | Claude |
 
 ## Las reglas
 
-1. **Cada fichero tiene un dueño.** Artistas: `assets/`. Claude: todo lo demás. Si alguien
-   necesita un cambio en algo que no es suyo, lo pide; no lo edita.
+1. **Cada fichero tiene un dueño.** Artistas: `assets/`. Quien lleva la luz: `iluminacion/`.
+   Claude: todo lo demás. Si alguien necesita un cambio en algo que no es suyo, lo pide; no lo edita.
 2. **Cada uno trabaja en la rama de su área, nunca en `main`.** Claude junta cada rama en `main`
    después de pasar `bash tools/check.sh` y mirar una captura, cada 1-2 horas como mucho.
 3. **Después de cada junta, Claude pone al día las tres ramas con `main`**, para que cada área
    tenga lo último de las demás. Por eso, **antes de empezar a trabajar: Pull**.
 
-La luz, hoy: está en código (constantes al principio de `_build_environment` en
-`scenes/main.gd`), así que los cambios de luz los hace Claude en `iluminacion` cuando se le piden.
-Si alguien del equipo va a ajustar la luz en el editor de Godot, Claude la pasa antes a una escena
-editable, para que pueda tocarla sin tocar código.
+La luz está en escenas de `iluminacion/` que se ajustan en el editor de Godot, sin código: los
+pasos, en `ILUMINACION.md`.
 
 Para la entrega se etiqueta: `git tag entrega-jam` sobre el commit exacto de `main` que se sube a
 itch.io.

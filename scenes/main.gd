@@ -1,5 +1,5 @@
 extends Node3D
-## Escena principal: monta cámara, arrastre, interfaz, menús, mando y luz por defecto.
+## Escena principal: monta cámara, arrastre, interfaz, menús, mando y la luz de cada nivel.
 ## Arranca en el menú de inicio: el diorama del título (levels/menu_titulo.tscn), cuyo puzle
 ## desbloquea el menú. Una vez resuelto, en las siguientes partidas sale ya montado.
 ## Los niveles jugables vienen de data/levels.json; el progreso se guarda en GameState.
@@ -14,11 +14,14 @@ extends Node3D
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
+const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var menu: MainMenu
 var pause: PauseMenu
 var _level: Node
+var _lighting: Node
+var _lighting_path := ""
 var _menu_page := ""
 var _capture_path := ""
 var _capture_after := 3.0
@@ -31,7 +34,6 @@ func _ready() -> void:
 	# main sigue viva en pausa (capturas, menús, mando); lo que es "juego" se pausa.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_parse_args()
-	_build_environment()
 	var cam := DioramaCamera.new()
 	cam.name = "Camera"
 	cam.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -87,35 +89,25 @@ func _parse_args() -> void:
 			_capture_after = a.get_slice("=", 1).to_float()
 
 
-## Luz por defecto, medida con capturas (ver "Trampas" en CLAUDE.md). Una cara de arriba recibe
-## SUN_ENERGY * 0,77 + AMBIENT_ENERGY: por encima de ~0,8 los colores claros salen quemados.
-const BACKGROUND_COLOR := Color(0.86, 0.80, 0.72)   ## más oscuro que la arcilla: el diorama se separa
-const AMBIENT_COLOR := Color(1.0, 0.96, 0.9)
-const AMBIENT_ENERGY := 0.35
-const SUN_ENERGY := 0.55
-const SUN_ROTATION := Vector3(-50, -35, 0)
-const SHADOW_OPACITY := 0.8                          ## sombras marrones, no negras
-const EXPOSURE := 1.0
-
-
-func _build_environment() -> void:
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = BACKGROUND_COLOR
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = AMBIENT_COLOR
-	env.ambient_light_energy = AMBIENT_ENERGY
-	env.tonemap_mode = Environment.TONE_MAPPER_AGX
-	env.tonemap_exposure = EXPOSURE
-	var we := WorldEnvironment.new()
-	we.environment = env
-	add_child(we)
-	var sun := DirectionalLight3D.new()
-	sun.rotation_degrees = SUN_ROTATION
-	sun.light_energy = SUN_ENERGY
-	sun.shadow_enabled = true
-	sun.shadow_opacity = SHADOW_OPACITY
-	add_child(sun)
+## La luz vive en escenas de iluminacion/ que se ajustan en el editor (docs/ILUMINACION.md), no aquí.
+## Cada nivel usa la suya si la indica (Diorama.iluminacion) y si no, la de por defecto. Solo hay
+## una a la vez: dos WorldEnvironment no se suman (manda uno) y dos soles sí (doble de luz).
+func _apply_lighting(path: String) -> void:
+	if path == _lighting_path:
+		return
+	var scene := load(path) as PackedScene
+	if scene == null:
+		push_error("Main: no puedo cargar la iluminación '%s'; uso la de por defecto" % path)
+		if path == DEFAULT_LIGHTING:
+			return
+		return _apply_lighting(DEFAULT_LIGHTING)
+	if _lighting != null:
+		remove_child(_lighting)
+		_lighting.queue_free()
+	_lighting = scene.instantiate()
+	_lighting.name = "Iluminacion"
+	add_child(_lighting)
+	_lighting_path = path
 
 
 func load_level(index: int) -> void:
@@ -195,6 +187,8 @@ func _load(path: String, silent := false) -> void:
 	if path == GameState.MENU_LEVEL and title_sign != null:
 		title_sign.text = GameState.game_title()
 	add_child(_level)
+	var own := String(_level.get("iluminacion")) if "iluminacion" in _level else ""
+	_apply_lighting(own if own != "" else DEFAULT_LIGHTING)
 	GameState.camera.configure(GameState.diorama)
 
 

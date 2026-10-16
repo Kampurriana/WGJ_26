@@ -48,6 +48,8 @@ func _run() -> void:
 	check(d != null and d.scene_file_path == SAMPLE_LEVEL, "Jugar carga el nivel 0 y registra su Diorama")
 	if d == null:
 		return _end()
+	await get_tree().process_frame               # la luz anterior se libera al final del fotograma
+	_check_lighting(main, main.DEFAULT_LIGHTING, "un nivel sin luz propia")
 	await _test_pause(main, d)
 	var cam := GameState.camera.cam
 	GameState.camera.snap()
@@ -156,6 +158,7 @@ func _test_title_menu(main: Node) -> bool:
 	var card_sign := proto.find_child("Titulo", true, false) as Label3D if proto != null else null
 	check(card_sign != null and card_sign.text == GameState.game_title(), "la ficha del letrero en el panel también lleva el nombre del juego")
 	check(GameState.hud._panel.visible, "durante el puzle del título se ve el panel de piezas")
+	_check_lighting(main, "res://iluminacion/menu.tscn", "el título")
 	var steps := 0
 	while not t.completed and steps < 20:
 		t.debug_solve_step()
@@ -234,6 +237,29 @@ func _test_back_to_menu(main: Node) -> void:
 	check(GameState.has_progress(), "la primera pulsación de Borrar progreso solo pregunta")
 	reset.pressed.emit()
 	check(not GameState.has_progress() and not GameState.menu_unlocked and _saved(TEST_PROGRESS, "menu_desbloqueado") == false, "la segunda pulsación borra el progreso (también en disco)")
+
+
+## La luz activa es la esperada, es la que usa el mundo, y no se ha quedado otra a la vez.
+func _check_lighting(main: Node, expected: String, who: String) -> void:
+	var light := main.get_node_or_null("Iluminacion")
+	check(light != null and light.scene_file_path == expected, "%s usa la luz %s" % [who, expected.get_file()])
+	var we: WorldEnvironment = null
+	for c in (light.get_children() if light != null else []):
+		if c is WorldEnvironment:
+			we = c
+	check(we != null and get_viewport().find_world_3d().environment == we.environment, "%s: el mundo usa el ambiente de esa escena" % who)
+	var envs := _count_in_main_world("WorldEnvironment")
+	var suns := _count_in_main_world("DirectionalLight3D")
+	check(envs == 1 and suns == 1, "%s: un solo ambiente y un solo sol (%d y %d)" % [who, envs, suns])
+
+
+## Solo los del mundo principal: las fichas del panel tienen su propio mundo con su propia luz.
+func _count_in_main_world(type: String) -> int:
+	var n := 0
+	for x in get_tree().root.find_children("*", type, true, false):
+		if x.is_inside_tree() and not x.is_queued_for_deletion() and x.get_viewport() == get_tree().root:
+			n += 1
+	return n
 
 
 ## Lee una clave del progreso guardado en disco (lo que vería la próxima partida).

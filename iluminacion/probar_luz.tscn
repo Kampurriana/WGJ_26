@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://iluminacion/luz_por_defecto.tscn" id="1_01uja"]
+[ext_resource type="PackedScene" path="res://levels/level_00_muestra.tscn" id="2_o5vjf"]
+
+[node name="ProbarLuz" type="Node3D" unique_id=2079559306]
+
+[node name="Iluminacion" parent="." unique_id=506663491 instance=ExtResource("1_01uja")]
+
+[node name="Nivel00Muestra" parent="." unique_id=914852621 instance=ExtResource("2_o5vjf")]
+
+[node name="CamaraDeJuego" type="Camera3D" parent="." unique_id=1215509610]
+transform = Transform3D(0.90630776, -0.22395356, 0.3584006, 0, 0.8480481, 0.52991927, -0.42261827, -0.48026994, 0.76859254, 2.5088043, 4.409435, 5.380148)
+current = true
+fov = 38.0

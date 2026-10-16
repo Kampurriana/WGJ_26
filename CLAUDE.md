@@ -37,6 +37,7 @@ se ve) + commit. Sin las tres, no está hecho.
 | Fichero | Qué hace |
 |---|---|
 | `scenes/main.gd` | Monta cámara, arrastre, HUD, menús, mando, luz. Arranca en el puzle del título → menú → niveles de `data/levels.json`; guarda progreso; args `--level[=menu] --menu-page --solve --capture` |
+| `iluminacion/*.tscn` | La luz (ambiente + sol), editable en el editor por quien la lleva (`docs/ILUMINACION.md`). `main.gd` pone la del nivel (`Diorama.iluminacion`) o `luz_por_defecto.tscn`; `probar_luz.tscn` es para verla en el editor |
 | `levels/menu_titulo.tscn` | El puzle que desbloquea el menú: diorama de 4 piezas con el letrero del título (lo genera `tools/build_title_level.gd`; el texto es el nombre del proyecto) |
 | `core/diorama.gd` | Raíz de cada nivel. Lee la convención de nombres y monta huecos, inventario, cajones, escondidos, sub-dioramas, color, orden, pistas, final |
 | `core/name_rules.gd` | La convención `P_ H_ OD_ OR_ Z_` + tokens `__after-x`, `__reward-x` (ver `docs/ARTE-PIPELINE.md`) |
@@ -77,7 +78,9 @@ modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escen
   (yo). `main` solo la toco yo, juntando esas ramas: siempre arranca y pasa `CHECK OK`.
 - Yo trabajo en `programacion`. Para juntar: `git merge origin/<rama>` en `main` → check +
   captura → push → **poner al día las tres ramas con `main`** (los comandos, en `docs/GIT-Y-RAMAS.md`).
-- Antes de juntar `arte`: `git diff --stat main...origin/arte` tiene que ser solo `assets/`.
+- Antes de juntar `arte`: `git diff --stat main...origin/arte` tiene que ser solo `assets/`; y
+  `iluminacion`, solo `iluminacion/`. Esa carpeta es de quien lleva la luz: no la edito si puede
+  tener el editor abierto (trampa 7); si me piden un cambio de luz, lo hago en la rama `iluminacion`.
 - No crear ramas `arte/...`, `iluminacion/...` ni `programacion/...`: Git no deja una rama y una
   "carpeta" de ramas con el mismo nombre.
 - **Nunca `git add -A` ni `git add .`**: se añade por nombre lo que he tocado. Si aparece un fichero
@@ -109,8 +112,8 @@ modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escen
 10. **La luz quemaba la escena** (93 % del diorama en blanco recortado al empezar, medido). En
     este renderer cambiar de tonemap (Filmic/AgX/lineal) apenas mueve el resultado; lo que
     manda es la energía: una cara de arriba recibe `SUN_ENERGY·0,77 + AMBIENT_ENERGY`, y por
-    encima de ~0,8 la arcilla y los colores claros se recortan. Ajustar la luz en
-    `scenes/main.gd` (constantes arriba de `_build_environment`) con captura +
+    encima de ~0,8 la arcilla y los colores claros se recortan. La luz está en
+    `iluminacion/luz_por_defecto.tscn` (y `menu.tscn`); medir con captura +
     `tools/medir_luz.py`, nunca a ojo. Medido con render por software (llvmpipe): confirmar en
     una GPU real.
 11. **`main.gd` corre en `PROCESS_MODE_ALWAYS`** (capturas, menús y mando siguen en pausa). Sus
