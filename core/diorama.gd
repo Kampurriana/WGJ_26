@@ -744,6 +744,35 @@ func _play_animation(anim: String) -> void:
 
 # --- Para tests y capturas: un paso de "jugador automático" ------------------------------
 
+## (Atajo F9) Lo monta entero de golpe: todas las zonas abiertas, cada pieza en su sitio (lo
+## escondido ya no hace falta buscarlo), sin frases. Luego el final de siempre (onda de color,
+## luces, cámara que se mece) pero sin fundido a negro: se queda a la vista con el panel de fin.
+func debug_complete() -> void:
+	if completed:
+		return
+	Narrator.clear()
+	fundido_final = false
+	while focus != null:
+		exit_focus()
+	for sec in sections:
+		if not sec.opened:
+			sec.set_lights(true, LIGHT_FADE)
+			sec.set_decor(true, true)
+		sec.opening = false
+		sec.opened = true
+		sec.completed = true
+	_pending = null
+	for s in slots:
+		if not s.filled:
+			s.fill()
+			for m in s.meshes():
+				Visuals.add_surface(m)
+	inventory.clear()
+	_refresh(false)
+	Events.inventory_changed.emit()
+	_check_completed()
+
+
 func debug_solve_step() -> bool:
 	if completed:
 		return false

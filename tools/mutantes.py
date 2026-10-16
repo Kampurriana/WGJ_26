@@ -173,6 +173,12 @@ MUTANTES = [
 	("M50 la bandeja dice que no queda nada entre secciones", "ui/hud.gd",
 		" and not d.is_opening()", "",
 		"entre una sección y la siguiente, la bandeja espera"),
+	("M51 F9 no completa nada", "ui/hud.gd",
+		"\t\tGameState.diorama.debug_complete()\n", "\t\tpass\n",
+		"F9 monta el desván entero de golpe"),
+	("M52 tras F9 funde a negro", "core/diorama.gd",
+		"\tfundido_final = false\n", "",
+		"tras F9 el desván se queda a la vista"),
 ]
 
 solo = os.environ.get("SOLO")

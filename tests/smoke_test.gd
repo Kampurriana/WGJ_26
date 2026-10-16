@@ -170,6 +170,7 @@ func _run() -> void:
 	check(not GameState.hud._panel.visible, "al completar, la bandeja vacía se recoge")
 	await _test_back_to_menu(main)
 	await _test_story(main)
+	await _test_complete_shortcut(main)
 	await _test_real_levels(main)
 	await _test_light_scale()
 	_end()
@@ -471,6 +472,30 @@ func _test_back_to_menu(main: Node) -> void:
 
 
 ## Los niveles de verdad (data/levels.json): cargan, cada pieza tiene su modelo, y se completan.
+## F9 (atajo de prueba) monta el desván entero de golpe y se queda a la vista, sin fundido.
+func _test_complete_shortcut(main: Node) -> void:
+	GameState.levels = PackedStringArray(["res://levels/level_01_desvan.tscn"])
+	main.play_level(0)
+	await get_tree().process_frame
+	var d := GameState.diorama
+	var ended := [false]
+	var on_end := func(_d: Node) -> void: ended[0] = true
+	Events.level_completed.connect(on_end)
+	var key := InputEventKey.new()
+	key.physical_keycode = KEY_F9
+	key.pressed = true
+	get_viewport().push_input(key, true)
+	await get_tree().process_frame
+	var all_open := d.sections.all(func(s: Section) -> bool: return s.opened)
+	var all_placed := d.slots.all(func(s: PieceSlot) -> bool: return s.filled)
+	check(d.completed and ended[0] and all_open and all_placed and d.visible_inventory().is_empty(),
+		"F9 monta el desván entero de golpe: todas las zonas abiertas y cada pieza en su sitio")
+	await get_tree().create_timer(4.0).timeout
+	check(GameState.diorama == d and GameState.hud._done.visible and main._fade.color.a < 0.1,
+		"tras F9 el desván se queda a la vista (panel de fin, sin fundido a negro)")
+	Events.level_completed.disconnect(on_end)
+
+
 func _test_real_levels(main: Node) -> void:
 	var listed: Variant = JSON.parse_string(FileAccess.get_file_as_string(GameState.LEVELS_PATH))
 	check(listed is Array and not (listed as Array).is_empty(), "data/levels.json lista niveles")

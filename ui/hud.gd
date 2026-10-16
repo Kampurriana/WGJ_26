@@ -377,6 +377,10 @@ func _unhandled_input(e: InputEvent) -> void:
 		return
 	if e.is_action_pressed("hint"):
 		request_hint()
+	elif e.is_action_pressed("complete_all") and GameState.DEBUG_SHORTCUTS and GameState.diorama != null:
+		GameState.drag.cancel()
+		GameState.diorama.debug_complete()
+		get_viewport().set_input_as_handled()
 	elif e.is_action_pressed("back"):
 		if GameState.diorama != null and GameState.diorama.focus != null:
 			_on_back()

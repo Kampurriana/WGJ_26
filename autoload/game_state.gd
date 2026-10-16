@@ -11,6 +11,9 @@ const SECTION := "progreso"
 ## MODO PROTOTIPO: cada vez que se le da a Play, el puzle del título y los niveles empiezan de cero
 ## (no se lee ni se guarda el progreso; las Opciones sí se guardan). Para la entrega: false.
 const RESET_ON_START := true
+## ATAJOS DE PRUEBA: F9 monta el diorama entero de golpe (para mirarlo o probar el final sin
+## colocar pieza a pieza). Para la entrega: false.
+const DEBUG_SHORTCUTS := true
 
 var diorama: Diorama
 var camera: DioramaCamera

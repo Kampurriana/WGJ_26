@@ -20,6 +20,7 @@ const ACTIONS := {
 	"pad_click": [[B, JOY_BUTTON_A]],
 	"hint": [[K, KEY_H], [B, JOY_BUTTON_Y]],
 	"back": [[K, KEY_ESCAPE], [K, KEY_BACKSPACE], [B, JOY_BUTTON_B]],
+	"complete_all": [[K, KEY_F9]],                  # atajo de prueba (GameState.DEBUG_SHORTCUTS)
 }
 
 

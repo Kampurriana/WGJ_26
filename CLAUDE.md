@@ -26,9 +26,10 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Comprobación completa (importar + test de humo) | `bash tools/check.sh` → tiene que decir `CHECK OK` |
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
-| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~1 h para 49, en segundo plano y sin tocar código mientras: copia el proyecto); `SOLO=M17` para uno |
+| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~1 h para 51, en segundo plano y sin tocar código mientras: copia el proyecto); `SOLO=M17` para uno |
 | Medir si la luz quema (sobre capturas 1280×720) | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/captura.png --fondo build/fondo.png` → `quemado` < 2 % (el fondo ya no es liso: sin `--fondo` no mide) |
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
+| Mirar el desván entero (F9) | `bash tools/capture.sh build/f9.png 0 0 --f9 --capture-after=7` |
 | Mirar una pieza en mano o el zoom | `bash tools/capture.sh build/mano.png 0 0 --hold=480,520` · `bash tools/capture.sh build/zoom.png 6 0 --zoom=14,700,300 --capture-after=5` |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
 | Regenerar el cofre del título | `"$GODOT" --headless --path . --script res://tools/build_title_level.gd` (escribe el modelo `levels/provisional/menu_provisional.glb` y `levels/menu_titulo.tscn`; después, `check.sh` lo importa). Hay que rehacerlo si cambia el nombre del juego |
@@ -44,7 +45,7 @@ se ve) + commit. Sin las tres, no está hecho.
 
 | Fichero | Qué hace |
 |---|---|
-| `scenes/main.gd` | Monta cámara, arrastre, HUD, efectos, menús, mando, luz y el fundido desde negro. Arranca en el cofre del título → menú → niveles de `data/levels.json`; guarda progreso; args `--level[=menu] --menu-page --solve --capture --solo-fondo` |
+| `scenes/main.gd` | Monta cámara, arrastre, HUD, efectos, menús, mando, luz y el fundido desde negro. Arranca en el cofre del título → menú → niveles de `data/levels.json`; guarda progreso; args `--level[=menu] --menu-page --solve --capture --solo-fondo --f9` |
 | `iluminacion/*.tscn` + `rig_luz.gd` | La luz en tiempo real (`docs/ILUMINACION.md`): raíz `RigLuz` (gira con la cámara, va de fría a cálida con el progreso), `Ambiente` con fondo por capa, `Sol` con sombras, `Contraluz`, `Fondo` (degradado oscuro, `fondo.gdshader`) y `Vineta`. `main.gd` pone la del nivel (`Diorama.iluminacion`) o `luz_por_defecto.tscn` |
 | `core/efectos.gd` | Partículas (CPUParticles3D) que escuchan a `Events`: polvo en la luz, serrín + chispas + anillo al encajar, soplo al recoger, chispas de pista, hojas al completar. Texturas en código o en `assets/texturas/particulas/` |
 | `shaders/madera_cruda.gdshader` | La capa de madera sin pintar (veta de tablón) que cubre el diorama; la pintura son esferas que crecen desde cada pieza (`Diorama._add_paint`) |
@@ -68,7 +69,7 @@ se ve) + commit. Sin las tres, no está hecho.
 | `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar. La pieza en mano nunca atraviesa nada: su caja viaja por el rayo del cursor y choca con las superficies (`Visuals.add_surface`, capa 2) |
 | `input/gamepad_cursor.gd` | Stick izq. = puntero, A = clic (mando sin código aparte) |
 | `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator` (frases en cola, nunca se pisan; una clave puede ser una lista), `Sfx` |
-| `tests/smoke_test.gd` | Juega como un jugador: cofre del título (asset .glb, letras, luces), menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada, la cámara (límites, inercia, pista), la pintura, la luz (gira con la cámara, despierta con el progreso, sombras ajustadas), las partículas, `escala_luces`, el narrador, y la historia del desván entera (secciones en orden, uno a uno, clave al final, muebles que brillan con contorno dorado, la bandeja que espera entre secciones, cámara antes que la inscripción, flash, epílogo, fundido); 140 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
+| `tests/smoke_test.gd` | Juega como un jugador: cofre del título (asset .glb, letras, luces), menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada, la cámara (límites, inercia, pista), la pintura, la luz (gira con la cámara, despierta con el progreso, sombras ajustadas), las partículas, `escala_luces`, el narrador, y la historia del desván entera (secciones en orden, uno a uno, clave al final, muebles que brillan con contorno dorado, la bandeja que espera entre secciones, cámara antes que la inscripción, flash, epílogo, fundido), el atajo F9; 142 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
 
 Reglas de arquitectura: los sistemas se hablan por `Events`; la UI se construye en código (un
 `.tscn` hecho a mano es frágil y da conflictos); **todo lo jugable se define por nombres en el
@@ -80,6 +81,10 @@ en su sitio**: un nivel nuevo = escena con `core/diorama.gd` en la raíz y la ru
 
 `GameState.RESET_ON_START = true`: cada Play empieza con el puzle del título y todos los niveles sin
 hacer (no se lee ni se guarda el progreso; las Opciones sí). Para la build de entrega: `false`.
+
+`GameState.DEBUG_SHORTCUTS = true`: **F9 monta el diorama entero de golpe** (todas las zonas,
+cada pieza, sin frases; se queda a la vista con el panel de fin, sin fundido). Para mirar el
+dressing o probar el final sin colocar 51 piezas. Para la build de entrega: `false`.
 
 ## Cómo trabajo aquí
 

@@ -14,6 +14,7 @@ extends Node3D
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
+##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
 ##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
@@ -35,6 +36,7 @@ var _lighting_path := ""
 var _menu_page := ""
 var _hold := Vector2(-1, -1)
 var _zoom_steps := 0
+var _press_f9 := false
 var _zoom_at := Vector2.ZERO
 var _capture_path := ""
 var _capture_after := 3.0
@@ -118,6 +120,8 @@ func _parse_args() -> void:
 			_capture_after = a.get_slice("=", 1).to_float()
 		elif a == "--solo-fondo":
 			_only_background = true
+		elif a == "--f9":
+			_press_f9 = true
 
 
 ## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
@@ -278,6 +282,12 @@ func _process(delta: float) -> void:
 			_solve_timer = 0.3
 			_solve_left -= 1
 			GameState.diorama.debug_solve_step()
+	if _press_f9 and _elapsed > 1.0:
+		_press_f9 = false
+		var key := InputEventKey.new()
+		key.physical_keycode = KEY_F9
+		key.pressed = true
+		Input.parse_input_event(key)         # por el mismo camino que la tecla de verdad
 	if _zoom_steps > 0 and _elapsed > 0.5:
 		_zoom_steps -= 1
 		GameState.camera.zoom_at(1.0 - GameState.camera.zoom_step, _zoom_at)

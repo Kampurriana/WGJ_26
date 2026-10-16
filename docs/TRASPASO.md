@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (140 comprobaciones, 9 avisos)`** (~70 s).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (142 comprobaciones, 9 avisos)`** (~70 s).
    Los 9 avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -62,6 +62,8 @@ Si el paso 2 o 3 no sale así, **no sigas**: diagnostica con `build/check.log` /
 - **Cámara:** fija (sin desplazar), giro dentro de límites por nivel, zoom con tope hacia el cursor.
 - **Pieza en mano:** nunca atraviesa paredes, suelo ni muebles (colisiones en capa 2).
 - **Modo prototipo:** `GameState.RESET_ON_START = true` → cada Play empieza de cero.
+- **Atajo de prueba F9:** monta el diorama entero de golpe y se queda a la vista
+  (`GameState.DEBUG_SHORTCUTS`).
 
 ## 3. Ramas y cómo se trabaja con el equipo
 
@@ -97,7 +99,8 @@ carpeta. Si no, parar y preguntar.
 - Cámara sin desplazamiento, giro limitado, **zoom hacia el cursor** (decisión mía; se le ofreció
   cambiarlo a zoom solo al centro si lo prefiere — está en `DioramaCamera._zoom`).
 - La pieza en mano no atraviesa nada (también en el tramo del imán).
-- Cada Play empieza de cero mientras se prototipa (**antes de entregar: `RESET_ON_START = false`**).
+- Cada Play empieza de cero mientras se prototipa (**antes de entregar: `RESET_ON_START = false`
+  y `DEBUG_SHORTCUTS = false`**, que quita el F9).
 - **Feedback del 16-oct (nota a mano + guion PDF), ya hecho:** luz más tipo Unreal y sombras sin
   pixelar; diorama en 3 secciones (infancia, adolescencia, adultez) integradas pero que se montan
   por orden; se empieza por paredes y tejado y la historia se desbloquea por partes; partículas sin
@@ -166,8 +169,8 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 
 | Qué | Cómo |
 |---|---|
-| Todo el test | `bash tools/check.sh` → `CHECK OK (140 …)` |
-| Ver los tests en rojo | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 49 × `ROJO BIEN` (~1 h: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
+| Todo el test | `bash tools/check.sh` → `CHECK OK (142 …)` |
+| Ver los tests en rojo | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 51 × `ROJO BIEN` (~1 h: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`) |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

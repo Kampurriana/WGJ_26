@@ -19,3 +19,4 @@ Controles: arrastrar en vacío o WASD/flechas = girar · rueda o Q/E = zoom (hac
 arrastrar una pieza del panel a su hueco = colocar · clic = abrir cajones / coger lo escondido /
 entrar en un rincón · H = pista · Esc = pausa (o salir del rincón). Mando: stick izq. = puntero,
 A = clic, stick dcho. = girar, gatillos = zoom, Y = pista, B = pausa / volver.
+Atajo de prueba: **F9 = montar el diorama entero de golpe** (se quita para la entrega).
