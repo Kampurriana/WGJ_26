@@ -1,5 +1,8 @@
 # Woodo Jam — reglas para Claude (único programador)
 
+> **¿Eres un Claude nuevo en este proyecto?** Antes de nada lee `docs/TRASPASO.md`: estado actual,
+> cómo arrancar, decisiones ya tomadas, lo pendiente y con quién trabajas.
+
 Juego de puzle de dioramas en 3D, clon mecánico de **Woodo** (Tiny Monks Tales, 2026), para una
 game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo aportan arte en
 `assets/`. Diseño de referencia: `docs/GDD-WOODO.md`. Lecciones de método: `docs/LECCIONES.md`.
@@ -22,6 +25,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Comprobación completa (importar + test de humo) | `bash tools/check.sh` → tiene que decir `CHECK OK` |
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
+| Ver los tests en ROJO (defectos provocados en copias) | `python3 -I tools/mutantes.py . build/mutantes "$GODOT"` → todos `ROJO BIEN` (~10 min); `SOLO=M17` para uno |
 | Medir si la luz quema (sobre capturas 1280×720) | `python3 -I tools/medir_luz.py build/captura.png` → `quemado` < 2 % |
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
 | Mirar una pieza en mano o el zoom | `bash tools/capture.sh build/mano.png 0 0 --hold=480,520` · `bash tools/capture.sh build/zoom.png 6 0 --zoom=14,700,300 --capture-after=5` |
