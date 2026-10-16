@@ -1,8 +1,7 @@
 class_name Visuals
 extends RefCounted
-## Utilidades visuales sin estado: cajas, silueta blanca y capa de "arcilla".
+## Utilidades visuales sin estado: cajas, silueta blanca y capa de madera cruda (sin pintar).
 
-const CLAY_COLOR := Color(0.80, 0.76, 0.70)
 ## Las siluetas se pintan DESPUÉS de la arcilla. Las dos son transparentes y Godot las ordena por
 ## la distancia al centro de su caja: una pared grande tiene el centro más cerca que una estantería
 ## pegada a ella, se pintaba después y la borraba entera (visto en la habitación japonesa).
@@ -12,6 +11,9 @@ const GHOST_RENDER_PRIORITY := 10
 const SURFACE_LAYER := 2
 const CLICK_LAYER := 1
 const GHOST_SHADER := preload("res://shaders/ghost.gdshader")
+const CLAY_SHADER := preload("res://shaders/madera_cruda.gdshader")
+## Esferas de pintura que caben en el shader (MAX_PINTURA en madera_cruda.gdshader).
+const MAX_PAINT := 48
 
 
 static func meshes_under(root: Node) -> Array[MeshInstance3D]:
@@ -103,15 +105,9 @@ static func make_ghost_material() -> ShaderMaterial:
 	return m
 
 
-static func make_clay_overlay() -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	m.albedo_color = CLAY_COLOR
-	m.roughness = 0.95
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+## Capa de madera cruda que tapa el color real hasta que llega la pintura. Un solo material para
+## todo el diorama: las manchas de pintura van en sus parámetros (las pone el Diorama).
+static func make_clay_overlay() -> ShaderMaterial:
+	var m := ShaderMaterial.new()
+	m.shader = CLAY_SHADER
 	return m
-
-
-## amount 1 = blanco arcilla, 0 = color real. Con 0 se quita la capa (no cuesta nada dibujarla).
-static func set_clay(mesh: MeshInstance3D, overlay: StandardMaterial3D, amount: float) -> void:
-	overlay.albedo_color.a = amount
-	mesh.material_overlay = overlay if amount > 0.001 else null

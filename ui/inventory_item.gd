@@ -1,15 +1,18 @@
 class_name InventoryItem
 extends PanelContainer
-## Una ficha del panel de piezas: vista 3D de la pieza que GIRA CON LA CÁMARA, para que se vea
-## en la misma orientación que tendrá en su hueco (así lo hace Woodo). Pulsar = empezar a arrastrar.
+## Una ficha de la bandeja de piezas: vista 3D de la pieza que GIRA CON LA CÁMARA, para que se vea
+## en la misma orientación que tendrá en su hueco (así lo hace Woodo). Al pasar el ratón, la pieza
+## crece un poco. Pulsar = empezar a arrastrar.
 
-const SIZE := Vector2(190, 140)
+const SIZE := Vector2(104, 104)
+const HOVER_SCALE := 1.18
 
 var piece_id: StringName
 var _ref: Node3D                 ## nodo del hueco: su orientación es la que se copia
 var _pivot: Node3D
 var _viewport: SubViewport
 var _count: Label
+var _hover := false
 
 
 func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
@@ -49,10 +52,17 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_count.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_count.size_flags_vertical = Control.SIZE_SHRINK_END
+	_count.add_theme_color_override("font_color", UiTheme.CREAM)
+	_count.add_theme_color_override("font_outline_color", Color(0.15, 0.1, 0.06))
+	_count.add_theme_constant_override("outline_size", 6)
+	_count.add_theme_font_size_override("font_size", 18)
 	add_child(_count)
 	set_count(count)
-	mouse_entered.connect(func() -> void: GameState.hovered_piece = piece_id)
+	mouse_entered.connect(func() -> void:
+		_hover = true
+		GameState.hovered_piece = piece_id)
 	mouse_exited.connect(func() -> void:
+		_hover = false
 		if GameState.hovered_piece == piece_id:
 			GameState.hovered_piece = &"")
 
@@ -65,12 +75,13 @@ func texture() -> Texture2D:
 	return _viewport.get_texture()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var main_cam := get_viewport().get_camera_3d()
 	if main_cam == null or not is_instance_valid(_ref):
 		return
 	# Orientación de la pieza vista desde la cámara principal = la que verá en su hueco.
-	_pivot.basis = main_cam.global_basis.orthonormalized().inverse() * _ref.global_basis
+	var grow := lerpf(_pivot.basis.get_scale().x, HOVER_SCALE if _hover else 1.0, 1.0 - exp(-12.0 * delta))
+	_pivot.basis = (main_cam.global_basis.orthonormalized().inverse() * _ref.global_basis).orthonormalized().scaled(Vector3.ONE * grow)
 
 
 func _gui_input(e: InputEvent) -> void:

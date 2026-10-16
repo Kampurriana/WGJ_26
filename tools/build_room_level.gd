@@ -72,7 +72,8 @@ func _initialize() -> void:
 
 	# --- Encima del escritorio ---
 	_prop(_root, "P_monitor__after-escritorio", "monitor_01", desk + Vector3(-0.02, DESK_TOP, -0.12))
-	_prop(_root, "P_lampara__after-escritorio", "lamp_01", desk + Vector3(-0.42, DESK_TOP, -0.12))
+	var lampara := _prop(_root, "P_lampara__after-escritorio", "lamp_01", desk + Vector3(-0.42, DESK_TOP, -0.12))
+	_lamp_light(lampara)
 	_prop(_root, "P_altavoz__after-escritorio", "speaker_01", desk + Vector3(0.40, DESK_TOP, -0.13))
 	_prop(_root, "P_taza__after-escritorio", "mug_01", desk + Vector3(-0.38, DESK_TOP, 0.13))
 	_prop(_root, "P_raton__after-escritorio", "mouse_01", desk + Vector3(0.33, DESK_TOP, 0.14))
@@ -122,6 +123,22 @@ func _prop(parent: Node, n: String, model: String, pos: Vector3, rot_y := 0.0) -
 	holder.rotation_degrees.y = rot_y
 	_instance(holder, model)
 	return holder
+
+
+## La lámpara del escritorio alumbra de verdad: un foco cálido desde la pantalla hacia la mesa.
+## Cuelga de la pieza, así está apagado hasta colocarla y entonces se enciende (PieceSlot.fill).
+func _lamp_light(lamp: Node3D) -> void:
+	var box := Visuals.local_aabb(lamp)
+	var luz := SpotLight3D.new()
+	luz.name = "Luz"
+	luz.position = Vector3(box.get_center().x, box.end.y - 0.04, box.get_center().z)
+	luz.rotation_degrees = Vector3(-90, 0, 0)
+	luz.light_color = Color(1.0, 0.8, 0.55)
+	luz.light_energy = 2.0
+	luz.spot_range = 1.2
+	luz.spot_angle = 55.0
+	luz.spot_attenuation = 1.2
+	lamp.add_child(luz)
 
 
 func _instance(parent: Node, model: String) -> Node3D:

@@ -14,15 +14,20 @@ extends Node3D
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
+##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
+const FADE_TIME := 0.7                       ## fundido desde negro al cargar un diorama
 const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var menu: MainMenu
 var pause: PauseMenu
+var effects: Efectos
 var _level: Node
 var _lighting: Node
+var _fade: ColorRect
+var _only_background := false
 var _lighting_path := ""
 var _menu_page := ""
 var _hold := Vector2(-1, -1)
@@ -49,6 +54,10 @@ func _ready() -> void:
 	drag.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(drag)
 	GameState.drag = drag
+	effects = Efectos.new()
+	effects.name = "Efectos"
+	effects.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(effects)
 	var hud := Hud.new()
 	hud.name = "Hud"
 	hud.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -61,6 +70,7 @@ func _ready() -> void:
 	pause = PauseMenu.new()
 	pause.name = "PauseMenu"
 	add_child(pause)
+	_build_fade()
 	hud.next_requested.connect(next_level)
 	hud.pause_requested.connect(open_pause)
 	menu.play_requested.connect(play_level)
@@ -99,6 +109,26 @@ func _parse_args() -> void:
 			_capture_path = a.get_slice("=", 1)
 		elif a.begins_with("--capture-after="):
 			_capture_after = a.get_slice("=", 1).to_float()
+		elif a == "--solo-fondo":
+			_only_background = true
+
+
+## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
+func _build_fade() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 50
+	add_child(layer)
+	_fade = ColorRect.new()
+	_fade.color = Color(0, 0, 0, 0)
+	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_fade)
+
+
+func _fade_in() -> void:
+	_fade.color.a = 1.0
+	var tw := _fade.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_fade, "color:a", 0.0, FADE_TIME)
 
 
 ## La luz vive en escenas de iluminacion/ que se ajustan en el editor (docs/ILUMINACION.md), no aquí.
@@ -193,15 +223,15 @@ func _load(path: String, silent := false) -> void:
 	_level.process_mode = Node.PROCESS_MODE_PAUSABLE
 	if silent:
 		_level.set("intro_key", "")
-	# El letrero del título lleva el nombre del proyecto. Antes de entrar en el árbol: el Diorama
-	# copia sus piezas en _ready (la ficha del panel) y la copia tiene que salir ya con el nombre.
-	var title_sign := _level.find_child("Titulo", true, false) as Label3D
-	if path == GameState.MENU_LEVEL and title_sign != null:
-		title_sign.text = GameState.game_title()
 	add_child(_level)
 	var own := String(_level.get("iluminacion")) if "iluminacion" in _level else ""
 	_apply_lighting(own if own != "" else DEFAULT_LIGHTING)
 	GameState.camera.configure(GameState.diorama)
+	GameState.camera.intro()
+	_fade_in()
+	if _only_background:
+		_level.hide()
+		effects.hide()
 
 
 func _process(delta: float) -> void:

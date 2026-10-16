@@ -1,20 +1,70 @@
 [gd_scene format=3]
 
-[sub_resource type="Environment" id="Environment_51n67"]
-background_mode = 1
-background_color = Color(0.86, 0.8, 0.72, 1)
+[ext_resource type="Script" path="res://iluminacion/rig_luz.gd" id="1_h0jc3"]
+[ext_resource type="Shader" path="res://iluminacion/fondo.gdshader" id="2_crqqh"]
+[ext_resource type="Shader" path="res://iluminacion/vineta.gdshader" id="3_khb5i"]
+
+[sub_resource type="Environment" id="Environment_q205n"]
+background_mode = 3
+background_canvas_max_layer = -1
 ambient_light_source = 2
-ambient_light_color = Color(1, 0.96, 0.9, 1)
-ambient_light_energy = 0.35
+ambient_light_color = Color(0.78, 0.74, 0.72, 1)
+ambient_light_energy = 0.32
 tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.7
 
-[node name="Iluminacion" type="Node3D" unique_id=1337787094]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xd1aa"]
+shader = ExtResource("2_crqqh")
+shader_parameter/color_centro = Color(0.38, 0.24, 0.15, 1)
+shader_parameter/color_borde = Color(0.025, 0.02, 0.018, 1)
+shader_parameter/centro = Vector2(0.62, 0.52)
+shader_parameter/radio = 0.8
 
-[node name="Ambiente" type="WorldEnvironment" parent="." unique_id=295329235]
-environment = SubResource("Environment_51n67")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s2q07"]
+shader = ExtResource("3_khb5i")
+shader_parameter/fuerza = 0.4
+shader_parameter/suavidad = 0.55
 
-[node name="Sol" type="DirectionalLight3D" parent="." unique_id=987188290]
-transform = Transform3D(0.81915206, 0.43938506, -0.36868784, 0, 0.64278764, 0.76604444, 0.57357645, -0.62750685, 0.5265408, 0, 0, 0)
-light_energy = 0.55
+[node name="Iluminacion" type="Node3D" unique_id=1728898748]
+script = ExtResource("1_h0jc3")
+energia_inicio = 0.55
+energia_final = 0.85
+
+[node name="Ambiente" type="WorldEnvironment" parent="." unique_id=2141128400]
+environment = SubResource("Environment_q205n")
+
+[node name="Sol" type="DirectionalLight3D" parent="." unique_id=1660599212]
+transform = Transform3D(0.81915206, 0.45198438, -0.35312894, 0, 0.6156615, 0.7880107, 0.57357645, -0.6455006, 0.5043204, 0, 0, 0)
+light_color = Color(0.9, 0.92, 1, 1)
+light_energy = 0.5
 shadow_enabled = true
-shadow_opacity = 0.8
+shadow_opacity = 0.85
+shadow_blur = 1.5
+directional_shadow_max_distance = 25.0
+
+[node name="Contraluz" type="DirectionalLight3D" parent="." unique_id=1650677896]
+transform = Transform3D(-0.81915206, -0.28678823, 0.49673176, 0, 0.8660254, 0.5, -0.57357645, 0.40957603, -0.7094065, 0, 0, 0)
+light_color = Color(0.62, 0.72, 1, 1)
+light_energy = 0.55
+light_specular = 0.6
+
+[node name="Fondo" type="CanvasLayer" parent="." unique_id=194285368]
+layer = -10
+
+[node name="Degradado" type="ColorRect" parent="Fondo" unique_id=338016322]
+material = SubResource("ShaderMaterial_xd1aa")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Vineta" type="CanvasLayer" parent="." unique_id=464890726]
+layer = 0
+
+[node name="Sombra" type="ColorRect" parent="Vineta" unique_id=2086711323]
+material = SubResource("ShaderMaterial_s2q07")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2

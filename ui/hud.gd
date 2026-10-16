@@ -1,8 +1,9 @@
 class_name Hud
 extends CanvasLayer
-## Interfaz construida en código: panel de piezas a la derecha (con scroll), pista con recarga,
-## botón Volver (sub-dioramas), botón Menú (pausa), subtítulos del narrador y panel de diorama
-## completado. Aspecto: UiTheme (o res://ui/theme.tres si existe).
+## Interfaz construida en código: bandeja de piezas a la derecha (dos columnas de fichas pequeñas,
+## con scroll; al completar el diorama se recoge, como en Woodo), pista con recarga, botón Volver
+## (sub-dioramas), botón Menú (pausa), subtítulos del narrador y aviso de diorama completado.
+## Aspecto: UiTheme (o res://ui/theme.tres si existe).
 
 signal next_requested
 signal pause_requested
@@ -10,9 +11,15 @@ signal pause_requested
 @export var hint_cooldown := 25.0            ## segundos de recarga de la pista
 @export var assist_after := 45.0             ## sin progreso tanto tiempo => la pista se recarga sola
 
+const COLUMNS := 2
+const GAP := 8.0
+const PANEL_WIDTH := COLUMNS * InventoryItem.SIZE.x + (COLUMNS - 1) * GAP + 2 * 12.0 + 14.0
+
 var _root: Control
 var _panel: PanelContainer
-var _list: VBoxContainer
+var _list: GridContainer
+var _empty: Label
+var _tray_tween: Tween
 var _hint_button: Button
 var _hint_bar: ProgressBar
 var _back_button: Button
@@ -45,6 +52,7 @@ func _ready() -> void:
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
 	Events.level_completed.connect(func(_d: Node) -> void:
 		rebuild_inventory()                  # el último encaje avisó antes de marcarse completado
+		_put_tray_away()
 		if GameState.mode == GameState.Mode.PLAYING:
 			get_tree().create_timer(1.6).timeout.connect(_show_done))
 	Narrator.subtitle.connect(_show_subtitle)
@@ -53,15 +61,28 @@ func _ready() -> void:
 func _build_panel() -> void:
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
-	_panel.offset_left = -InventoryItem.SIZE.x - 34
+	_panel.offset_left = -PANEL_WIDTH
+	_panel.theme_type_variation = &"Bandeja"
 	_root.add_child(_panel)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_panel.add_child(scroll)
-	_list = VBoxContainer.new()
-	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_list.add_theme_constant_override("separation", 10)
-	scroll.add_child(_list)
+	var column := VBoxContainer.new()
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(column)
+	_list = GridContainer.new()
+	_list.columns = COLUMNS
+	_list.add_theme_constant_override("h_separation", int(GAP))
+	_list.add_theme_constant_override("v_separation", int(GAP))
+	column.add_child(_list)
+	_empty = Label.new()
+	_empty.text = "Aquí no queda nada.\nBusca piezas escondidas\no acércate a otro rincón."
+	_empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_empty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_empty.custom_minimum_size = Vector2(PANEL_WIDTH - 40.0, 0)
+	_empty.add_theme_color_override("font_color", UiTheme.CREAM)
+	_empty.hide()
+	column.add_child(_empty)
 
 
 func _build_controls() -> void:
@@ -107,7 +128,7 @@ func _build_subtitle() -> void:
 	_subtitle_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_subtitle_box.offset_top = -110
 	_subtitle_box.offset_left = -360
-	_subtitle_box.offset_right = 360 - InventoryItem.SIZE.x
+	_subtitle_box.offset_right = 360 - PANEL_WIDTH * 0.75
 	_subtitle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_subtitle_box.theme_type_variation = &"Subtitulo"
 	_subtitle_box.hide()
@@ -120,11 +141,12 @@ func _build_subtitle() -> void:
 	_subtitle_box.add_child(_subtitle)
 
 
+## Arriba y centrado: el diorama recién completado se tiene que ver entero (la cámara lo enseña).
 func _build_done() -> void:
 	_done = PanelContainer.new()
-	_done.set_anchors_preset(Control.PRESET_CENTER)
+	_done.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_done.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_done.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_done.offset_top = 64
 	_done.hide()
 	_root.add_child(_done)
 	var v := VBoxContainer.new()
@@ -159,7 +181,18 @@ func set_game_ui_visible(on: bool) -> void:
 		_done.hide()
 
 
+## Bandeja vacía = diorama hecho: se recoge con un fundido.
+func _put_tray_away() -> void:
+	_tray_tween = _panel.create_tween()
+	_tray_tween.tween_property(_panel, "modulate:a", 0.0, 0.45)
+	_tray_tween.tween_callback(_panel.hide)
+
+
 func _on_level_started() -> void:
+	if _tray_tween != null:
+		_tray_tween.kill()
+	_panel.modulate.a = 1.0
+	_panel.visible = _game_ui
 	_title.text = GameState.diorama.level_title
 	_done.hide()
 	_back_button.hide()
@@ -179,12 +212,7 @@ func rebuild_inventory() -> void:
 		var item := InventoryItem.new()
 		item.setup(id, d.prototype_for(id), d.reference_node_for(id), d.count_of(id))
 		_list.add_child(item)
-	if _list.get_child_count() == 0 and not d.completed:
-		var empty := Label.new()
-		empty.text = "Aquí no queda nada.\nBusca piezas escondidas\no acércate a otro rincón."
-		empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		empty.custom_minimum_size = Vector2(InventoryItem.SIZE.x, 0)
-		_list.add_child(empty)
+	_empty.visible = _list.get_child_count() == 0 and not d.completed
 
 
 func item_for(id: StringName) -> InventoryItem:
@@ -195,7 +223,12 @@ func item_for(id: StringName) -> InventoryItem:
 
 
 func is_over_panel(pos: Vector2) -> bool:
-	return _panel.get_global_rect().has_point(pos)
+	return _panel.visible and _panel.get_global_rect().has_point(pos)
+
+
+## (Tests) ¿Dice la bandeja que no quedan piezas aquí?
+func says_nothing_left() -> bool:
+	return _empty.visible
 
 
 func request_hint() -> void:

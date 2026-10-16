@@ -1,10 +1,22 @@
 class_name Diorama
 extends Node3D
 ## Raíz de cada nivel. Lee la convención de nombres del modelo (NameRules) y monta el puzle:
-## huecos blancos, inventario, cajones, piezas escondidas, sub-dioramas y el color que despierta.
-## Un nivel = una escena con este script en la raíz y el .glb de las artistas dentro.
+## huecos blancos, inventario, cajones, piezas escondidas, sub-dioramas y la pintura que despierta.
+## Un nivel = una escena con este script en la raíz y el .glb de las artistas dentro, o con la
+## ruta del .glb en `modelo` (se carga al empezar: cambiar el arte = dejar el fichero en su sitio).
+
+const PAINT_TIME := 0.9                     ## lo que tarda en extenderse la pintura de una pieza (s)
+const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al completarlo
 
 @export var level_title := "Diorama"
+## Modelo del diorama: un .glb (o escena) con la convención de nombres. Si el fichero existe, se
+## carga como hijo "Modelo" antes de leer los nombres. Si no existe, se usa `modelo_provisional`.
+## Los dos vacíos = el nivel ya trae el modelo dentro de la escena.
+@export_file("*.glb", "*.gltf", "*.tscn", "*.scn") var modelo := ""
+@export_file("*.glb", "*.gltf", "*.tscn", "*.scn") var modelo_provisional := ""
+## Multiplica la energía de todas las luces del modelo (las de Blender llegan con otras unidades:
+## si salen muy fuertes o muy flojas, se ajusta aquí sin reexportar).
+@export_range(0.0, 20.0) var escala_luces := 1.0
 @export var intro_key := ""                 ## clave de narración al empezar ("" = nada)
 @export var outro_key := ""                 ## clave de narración al completar
 @export var color_radius := 1.4             ## radio (m) que se colorea alrededor de cada pieza
@@ -30,13 +42,19 @@ var interactables: Array[Interactable] = []
 var inventory: Array[StringName] = []       ## una entrada por pieza disponible (repetidas = varias)
 var focus: Interactable = null              ## sub-diorama Z_ con zoom activo (null = general)
 var completed := false
+var model_path := ""                        ## el modelo cargado ("" = venía dentro de la escena)
 
-var _clay: Dictionary = {}                  ## MeshInstance3D -> StandardMaterial3D (capa blanca)
-var _revealed: Dictionary = {}              ## MeshInstance3D -> true
+var _clay_meshes: Array[MeshInstance3D] = []  ## lo que lleva la capa de madera cruda
+var _paint_mat: ShaderMaterial              ## esa capa (una para todo el diorama)
+var _paint: Array[Vector4] = []             ## manchas de pintura: centro xyz + radio w
+var _paint_dirty := false
+var _all_painted := false
 var _base_scale: Dictionary = {}            ## Node3D -> Vector3
 
 
 func _ready() -> void:
+	_load_model()
+	_scale_lights()
 	_scan(self, null)
 	for s in slots:
 		for p in order_rules.get(String(s.id), []):
@@ -60,6 +78,29 @@ func _notification(what: int) -> void:
 
 
 # --- Lectura del modelo ---------------------------------------------------------------
+
+func _load_model() -> void:
+	var path := modelo if modelo != "" and ResourceLoader.exists(modelo) else modelo_provisional
+	if path == "":
+		return
+	var scene := load(path) as PackedScene
+	if scene == null:
+		push_error("Diorama '%s': no puedo cargar el modelo %s" % [name, path])
+		return
+	var inst := scene.instantiate()
+	inst.name = "Modelo"
+	add_child(inst)
+	model_path = path
+	if path == modelo_provisional and modelo != "":
+		print("Diorama '%s': uso el modelo provisional (cuando exista %s, se usará ese)" % [name, modelo])
+
+
+func _scale_lights() -> void:
+	if is_equal_approx(escala_luces, 1.0):
+		return
+	for l in find_children("*", "Light3D", true, false):
+		(l as Light3D).light_energy *= escala_luces
+
 
 func _scan(n: Node, scope: Interactable) -> void:
 	for c in n.get_children():
@@ -117,12 +158,12 @@ func _apply_clay() -> void:
 		if it.kind == NameRules.PICKUP:      # lo escondido se queda en color: es lo que se busca
 			for m in Visuals.meshes_under(it.target):
 				skip[m] = true
+	_paint_mat = Visuals.make_clay_overlay()
 	for m in Visuals.meshes_under(self):
 		if skip.has(m):
 			continue
-		var overlay := Visuals.make_clay_overlay()
-		_clay[m] = overlay
-		Visuals.set_clay(m, overlay, 1.0)
+		m.material_overlay = _paint_mat
+		_clay_meshes.append(m)
 
 
 ## Todo lo que se ve y no es un hueco pendiente ni algo escondido es "superficie": la pieza en
@@ -249,6 +290,7 @@ func collect(it: Interactable) -> void:
 	it.set_clickable(false)
 	inventory.append(it.id)
 	Sfx.play("pickup")
+	Events.piece_collected.emit(it.id, it.target)
 	Narrator.say_if_exists("recogido_" + String(it.id))
 	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tw.tween_property(it.target, "scale", Vector3.ONE * 0.01, 0.3)
@@ -366,8 +408,9 @@ func _check_completed() -> void:
 		if not s.filled:
 			return
 	completed = true
-	for m: MeshInstance3D in _clay:
-		_reveal(m, randf() * 0.6)
+	var box := Visuals.global_aabb(self)
+	_add_paint(box.get_center(), box.size.length() * 0.75, FINAL_PAINT_TIME)
+	get_tree().create_timer(FINAL_PAINT_TIME + 0.1, false).timeout.connect(_finish_paint)
 	_play_animation("celebrar")
 	Sfx.play("complete")
 	if outro_key != "":
@@ -380,34 +423,82 @@ func _check_completed() -> void:
 func complete_silently() -> void:
 	for s in slots:
 		if not s.filled:
-			s.fill()
+			s.fill(false)
 			for m in s.meshes():
 				Visuals.add_surface(m)
 	inventory.clear()
-	for m: MeshInstance3D in _clay:
-		_revealed[m] = true
-		Visuals.set_clay(m, _clay[m], 0.0)
+	_finish_paint()
 	completed = true
 	Events.inventory_changed.emit()
 
 
+# --- Pintura: la madera cruda se pinta en manchas que crecen desde cada pieza ------------
+
 func _reveal_around(origin: Vector3) -> void:
-	for m: MeshInstance3D in _clay:
-		if _revealed.has(m):
-			continue
-		var d := Visuals.global_aabb(m).get_center().distance_to(origin)
-		if d <= color_radius:
-			_reveal(m, d * 0.12)              # onda: lo más cercano se colorea antes
+	_add_paint(origin, color_radius, PAINT_TIME)
 
 
-func _reveal(m: MeshInstance3D, delay: float) -> void:
-	if _revealed.has(m):
+## Una mancha de pintura que crece desde `origin` hasta `radius` en `seconds`. Si ya no caben más
+## en el shader, lo de alrededor se pinta de golpe (sin onda): se nota menos que quedarse sin color.
+func _add_paint(origin: Vector3, radius: float, seconds: float) -> void:
+	if _clay_meshes.is_empty():
 		return
-	_revealed[m] = true
-	var overlay: StandardMaterial3D = _clay[m]
-	var tw := create_tween()
-	tw.tween_interval(delay)
-	tw.tween_method(func(a: float) -> void: Visuals.set_clay(m, overlay, a), 1.0, 0.0, 0.7)
+	if _paint.size() >= Visuals.MAX_PAINT:
+		push_warning("Diorama '%s': más de %d manchas de pintura; pinto de golpe" % [name, Visuals.MAX_PAINT])
+		for m in _clay_meshes:
+			if Visuals.global_aabb(m).get_center().distance_to(origin) <= radius:
+				m.material_overlay = null
+		return
+	_paint.append(Vector4(origin.x, origin.y, origin.z, 0.0))
+	var i := _paint.size() - 1
+	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_method(func(r: float) -> void:
+		_paint[i].w = r
+		_paint_dirty = true, 0.0, radius, seconds)
+
+
+## Todo pintado: se quita la capa de madera (dibujarla ya no aporta nada y cuesta).
+func _finish_paint() -> void:
+	_all_painted = true
+	for m in _clay_meshes:
+		if is_instance_valid(m):
+			m.material_overlay = null
+	if _paint_mat != null:
+		_paint_mat.set_shader_parameter("todo_pintado", 1.0)
+
+
+func _process(_delta: float) -> void:
+	if _paint_dirty:
+		_paint_dirty = false
+		_paint_mat.set_shader_parameter("pintura", PackedVector4Array(_paint))
+		_paint_mat.set_shader_parameter("n_pintura", _paint.size())
+
+
+## ¿Está ya pintado ese punto? (lo mismo que calcula el shader, sin el borde irregular)
+func is_painted_at(p: Vector3) -> bool:
+	if _clay_meshes.is_empty() or _all_painted:
+		return true
+	for e in _paint:
+		if p.distance_to(Vector3(e.x, e.y, e.z)) < e.w * 0.8:
+			return true
+	return false
+
+
+func has_unpainted_layer() -> bool:
+	for m in _clay_meshes:
+		if is_instance_valid(m) and m.material_overlay != null:
+			return true
+	return false
+
+
+## Parte montada del diorama, de 0 a 1 (la luz despierta con ella).
+func progress() -> float:
+	if slots.is_empty():
+		return 1.0 if completed else 0.0
+	var n := 0
+	for s in slots:
+		n += 1 if s.filled else 0
+	return float(n) / slots.size()
 
 
 func _pop(n: Node3D) -> void:

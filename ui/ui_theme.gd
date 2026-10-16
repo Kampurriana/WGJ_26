@@ -32,9 +32,16 @@ static func get_theme() -> Theme:
 	t.set_color("font_disabled_color", "Button", Color(CREAM, 0.6))
 	t.set_stylebox("panel", "PanelContainer", _box(PAPER, 18, WOOD, 0, 3, 22, 22))
 	t.set_color("font_color", "Label", INK)
-	# Fichas del panel de piezas: un poco más oscuras que el papel para que se separen.
+	# Bandeja de piezas: madera oscura translúcida sobre el fondo oscuro; fichas apenas marcadas
+	# (lo que se ve es la pieza, no la ficha).
+	t.set_type_variation("Bandeja", "PanelContainer")
+	var tray := _box(Color(0.11, 0.075, 0.05, 0.82), 18, Color(WOOD, 0.7), 0, 2, 12, 14)
+	tray.corner_radius_top_right = 0
+	tray.corner_radius_bottom_right = 0
+	tray.border_width_right = 0
+	t.set_stylebox("panel", "Bandeja", tray)
 	t.set_type_variation("Ficha", "PanelContainer")
-	t.set_stylebox("panel", "Ficha", _box(CARD, 12, WOOD, 0, 2, 4, 4))
+	t.set_stylebox("panel", "Ficha", _box(Color(1, 1, 1, 0.07), 12, Color(1, 1, 1, 0.1), 0, 1, 2, 2))
 	# Subtítulos: oscuros y translúcidos, para leerse sobre cualquier diorama.
 	t.set_type_variation("Subtitulo", "PanelContainer")
 	t.set_stylebox("panel", "Subtitulo", _box(Color(0.18, 0.12, 0.08, 0.78), 14, Color(0, 0, 0, 0), 0, 0, 18, 12))

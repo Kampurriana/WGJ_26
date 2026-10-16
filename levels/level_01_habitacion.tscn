@@ -220,7 +220,7 @@ roughness = 0.85
 material = SubResource("StandardMaterial3D_f7xoq")
 size = Vector3(0.05, 0.28, 0.05)
 
-[node name="Nivel01Habitacion" type="Node3D" unique_id=1037492371]
+[node name="Nivel01Habitacion" type="Node3D" unique_id=1073755736]
 script = ExtResource("1_4xnsw")
 level_title = "La habitación de estudio"
 intro_key = "intro_habitacion"
@@ -235,197 +235,205 @@ camera_yaw_max_deg = 70.0
 camera_pitch_min_deg = 15.0
 camera_pitch_max_deg = 60.0
 
-[node name="Peana" type="MeshInstance3D" parent="." unique_id=1803778582]
+[node name="Peana" type="MeshInstance3D" parent="." unique_id=243441166]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.16, 0)
 mesh = SubResource("CylinderMesh_qc7ok")
 
-[node name="Tatami" type="MeshInstance3D" parent="." unique_id=1105885284]
+[node name="Tatami" type="MeshInstance3D" parent="." unique_id=560510814]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.015, 0)
 mesh = SubResource("BoxMesh_6wsk7")
 
-[node name="BordeTatami1" type="MeshInstance3D" parent="." unique_id=220625524]
+[node name="BordeTatami1" type="MeshInstance3D" parent="." unique_id=640981012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.43, 0.001, 0.05)
 mesh = SubResource("BoxMesh_lb6xx")
 
-[node name="BordeTatami2" type="MeshInstance3D" parent="." unique_id=2133640130]
+[node name="BordeTatami2" type="MeshInstance3D" parent="." unique_id=568522362]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.44, 0.001, 0.05)
 mesh = SubResource("BoxMesh_e4gt1")
 
-[node name="BordeTatami3" type="MeshInstance3D" parent="." unique_id=684561580]
+[node name="BordeTatami3" type="MeshInstance3D" parent="." unique_id=414852021]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.31, 0.001, 0.05)
 mesh = SubResource("BoxMesh_rt5jj")
 
-[node name="ParedFondo" type="MeshInstance3D" parent="." unique_id=2138104506]
+[node name="ParedFondo" type="MeshInstance3D" parent="." unique_id=492225253]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -1.12)
 mesh = SubResource("BoxMesh_xfdov")
 
-[node name="ParedIzquierda" type="MeshInstance3D" parent="." unique_id=924252319]
+[node name="ParedIzquierda" type="MeshInstance3D" parent="." unique_id=1809125862]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.27, 0.8, 0)
 mesh = SubResource("BoxMesh_ekac7")
 
-[node name="Zocalo" type="MeshInstance3D" parent="." unique_id=1499767970]
+[node name="Zocalo" type="MeshInstance3D" parent="." unique_id=823242833]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, -1.08)
 mesh = SubResource("BoxMesh_uq06a")
 
-[node name="Shoji" type="MeshInstance3D" parent="." unique_id=161798765]
+[node name="Shoji" type="MeshInstance3D" parent="." unique_id=568627384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 1.05, -1.085)
 mesh = SubResource("BoxMesh_jmtrw")
 
-[node name="ShojiV1" type="MeshInstance3D" parent="." unique_id=1970497346]
+[node name="ShojiV1" type="MeshInstance3D" parent="." unique_id=1511458137]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.05, -1.078)
 mesh = SubResource("BoxMesh_u4x5o")
 
-[node name="ShojiV5" type="MeshInstance3D" parent="." unique_id=1896865457]
+[node name="ShojiV5" type="MeshInstance3D" parent="." unique_id=82046920]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 1.05, -1.078)
 mesh = SubResource("BoxMesh_1x1yj")
 
-[node name="ShojiV9" type="MeshInstance3D" parent="." unique_id=1846117520]
+[node name="ShojiV9" type="MeshInstance3D" parent="." unique_id=352950525]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 1.05, -1.078)
 mesh = SubResource("BoxMesh_i8gel")
 
-[node name="ShojiH2" type="MeshInstance3D" parent="." unique_id=2000159094]
+[node name="ShojiH2" type="MeshInstance3D" parent="." unique_id=1533675709]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.75, -1.078)
 mesh = SubResource("BoxMesh_xvi8o")
 
-[node name="ShojiH4" type="MeshInstance3D" parent="." unique_id=1004764374]
+[node name="ShojiH4" type="MeshInstance3D" parent="." unique_id=716438372]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0.95, -1.078)
 mesh = SubResource("BoxMesh_htpcf")
 
-[node name="ShojiH6" type="MeshInstance3D" parent="." unique_id=49280878]
+[node name="ShojiH6" type="MeshInstance3D" parent="." unique_id=891418363]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 1.15, -1.078)
 mesh = SubResource("BoxMesh_bcy0a")
 
-[node name="ShojiH8" type="MeshInstance3D" parent="." unique_id=1753580713]
+[node name="ShojiH8" type="MeshInstance3D" parent="." unique_id=919917843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 1.35, -1.078)
 mesh = SubResource("BoxMesh_lr3qf")
 
-[node name="P_escritorio" type="Node3D" parent="." unique_id=1224135298]
+[node name="P_escritorio" type="Node3D" parent="." unique_id=1083930373]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0, -0.78)
 
-[node name="Modelo" parent="P_escritorio" unique_id=1418251356 instance=ExtResource("2_fw0j2")]
+[node name="Modelo" parent="P_escritorio" unique_id=697516264 instance=ExtResource("2_fw0j2")]
 
-[node name="P_silla" type="Node3D" parent="." unique_id=506410753]
+[node name="P_silla" type="Node3D" parent="." unique_id=1784203740]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.12, 0, -0.18)
 
-[node name="Modelo" parent="P_silla" unique_id=1939703652 instance=ExtResource("3_lour4")]
+[node name="Modelo" parent="P_silla" unique_id=1211579740 instance=ExtResource("3_lour4")]
 
-[node name="P_estanteria" type="Node3D" parent="." unique_id=583406840]
+[node name="P_estanteria" type="Node3D" parent="." unique_id=93454803]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, 0, -0.95)
 
-[node name="Modelo" parent="P_estanteria" unique_id=421757987 instance=ExtResource("4_j2nyp")]
+[node name="Modelo" parent="P_estanteria" unique_id=719687269 instance=ExtResource("4_j2nyp")]
 
-[node name="P_monitor__after-escritorio" type="Node3D" parent="." unique_id=646488571]
+[node name="P_monitor__after-escritorio" type="Node3D" parent="." unique_id=1573154706]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13000001, 0.74, -0.9)
 
-[node name="Modelo" parent="P_monitor__after-escritorio" unique_id=1833277302 instance=ExtResource("5_7uogb")]
+[node name="Modelo" parent="P_monitor__after-escritorio" unique_id=941098660 instance=ExtResource("5_7uogb")]
 
-[node name="P_lampara__after-escritorio" type="Node3D" parent="." unique_id=1661371021]
+[node name="P_lampara__after-escritorio" type="Node3D" parent="." unique_id=1375791497]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26999998, 0.74, -0.9)
 
-[node name="Modelo" parent="P_lampara__after-escritorio" unique_id=1769225995 instance=ExtResource("6_de0d4")]
+[node name="Modelo" parent="P_lampara__after-escritorio" unique_id=1764864994 instance=ExtResource("6_de0d4")]
 
-[node name="P_altavoz__after-escritorio" type="Node3D" parent="." unique_id=1847915630]
+[node name="Luz" type="SpotLight3D" parent="P_lampara__after-escritorio" unique_id=125203538]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.2656921, 0.0185)
+light_color = Color(1, 0.8, 0.55, 1)
+light_energy = 2.0
+spot_range = 1.2
+spot_attenuation = 1.2
+spot_angle = 55.0
+
+[node name="P_altavoz__after-escritorio" type="Node3D" parent="." unique_id=1792519168]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.74, -0.90999997)
 
-[node name="Modelo" parent="P_altavoz__after-escritorio" unique_id=2042628890 instance=ExtResource("7_xifss")]
+[node name="Modelo" parent="P_altavoz__after-escritorio" unique_id=151359624 instance=ExtResource("7_xifss")]
 
-[node name="P_taza__after-escritorio" type="Node3D" parent="." unique_id=643064407]
+[node name="P_taza__after-escritorio" type="Node3D" parent="." unique_id=235909310]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22999999, 0.74, -0.65)
 
-[node name="Modelo" parent="P_taza__after-escritorio" unique_id=1602644839 instance=ExtResource("8_5oqey")]
+[node name="Modelo" parent="P_taza__after-escritorio" unique_id=495550459 instance=ExtResource("8_5oqey")]
 
-[node name="P_raton__after-escritorio" type="Node3D" parent="." unique_id=807148079]
+[node name="P_raton__after-escritorio" type="Node3D" parent="." unique_id=637833967]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48000002, 0.74, -0.64)
 
-[node name="Modelo" parent="P_raton__after-escritorio" unique_id=48179730 instance=ExtResource("9_blcwr")]
+[node name="Modelo" parent="P_raton__after-escritorio" unique_id=1640392451 instance=ExtResource("9_blcwr")]
 
-[node name="P_cuaderno__after-escritorio" type="Node3D" parent="." unique_id=2103329667]
+[node name="P_cuaderno__after-escritorio" type="Node3D" parent="." unique_id=906798737]
 transform = Transform3D(0.99026805, 0, -0.1391731, 0, 1, 0, 0.1391731, 0, 0.99026805, 0.09, 0.74, -0.64)
 
-[node name="Modelo" parent="P_cuaderno__after-escritorio" unique_id=1470154508 instance=ExtResource("10_ijbvr")]
+[node name="Modelo" parent="P_cuaderno__after-escritorio" unique_id=1588097281 instance=ExtResource("10_ijbvr")]
 
-[node name="P_boli__after-escritorio" type="Node3D" parent="." unique_id=1757856442]
+[node name="P_boli__after-escritorio" type="Node3D" parent="." unique_id=1827275273]
 transform = Transform3D(0.9945219, 0, 0.104528464, 0, 1, 0, -0.104528464, 0, 0.9945219, 0.25, 0.74, -0.64)
 
-[node name="Modelo" parent="P_boli__after-escritorio" unique_id=846880939 instance=ExtResource("11_yqis4")]
+[node name="Modelo" parent="P_boli__after-escritorio" unique_id=217212522 instance=ExtResource("11_yqis4")]
 
-[node name="P_libro__after-estanteria" type="Node3D" parent="." unique_id=328952468]
+[node name="P_libro__after-estanteria" type="Node3D" parent="." unique_id=354247293]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.07, 0.712, -0.95)
 
-[node name="Modelo" parent="P_libro__after-estanteria" unique_id=1188508072 instance=ExtResource("12_h1724")]
+[node name="Modelo" parent="P_libro__after-estanteria" unique_id=1076077578 instance=ExtResource("12_h1724")]
 
-[node name="P_libro__after-estanteria_001" type="Node3D" parent="." unique_id=332048835]
+[node name="P_libro__after-estanteria_001" type="Node3D" parent="." unique_id=2106519299]
 transform = Transform3D(0.9975641, 0, 0.06975647, 0, 1, 0, -0.06975647, 0, 0.9975641, -0.8, 0.712, -0.95)
 
-[node name="Modelo" parent="P_libro__after-estanteria_001" unique_id=676444279 instance=ExtResource("12_h1724")]
+[node name="Modelo" parent="P_libro__after-estanteria_001" unique_id=1656384283 instance=ExtResource("12_h1724")]
 
-[node name="P_manga__after-estanteria" type="Node3D" parent="." unique_id=1616644973]
+[node name="P_manga__after-estanteria" type="Node3D" parent="." unique_id=1224329325]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, 0.385, -0.95)
 
-[node name="Modelo" parent="P_manga__after-estanteria" unique_id=1221193851 instance=ExtResource("13_y5upt")]
+[node name="Modelo" parent="P_manga__after-estanteria" unique_id=968331662 instance=ExtResource("13_y5upt")]
 
-[node name="P_reloj__after-estanteria" type="Node3D" parent="." unique_id=351621580]
+[node name="P_reloj__after-estanteria" type="Node3D" parent="." unique_id=79056231]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 1.07, -0.93)
 
-[node name="Modelo" parent="P_reloj__after-estanteria" unique_id=2145110134 instance=ExtResource("14_52f0q")]
+[node name="Modelo" parent="P_reloj__after-estanteria" unique_id=1217854778 instance=ExtResource("14_52f0q")]
 
-[node name="Cajonera" type="MeshInstance3D" parent="." unique_id=1534638207]
+[node name="Cajonera" type="MeshInstance3D" parent="." unique_id=1609540863]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.98, 0.27, -0.85)
 mesh = SubResource("BoxMesh_syv0m")
 
-[node name="OD_cajon" type="Node3D" parent="." unique_id=1497325829]
+[node name="OD_cajon" type="Node3D" parent="." unique_id=1779447686]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.98, 0.44, -0.83000004)
 
-[node name="FrenteCajon" type="MeshInstance3D" parent="OD_cajon" unique_id=1681629440]
+[node name="FrenteCajon" type="MeshInstance3D" parent="OD_cajon" unique_id=1999975999]
 mesh = SubResource("BoxMesh_p7yy3")
 
-[node name="Tirador" type="MeshInstance3D" parent="OD_cajon" unique_id=459263337]
+[node name="Tirador" type="MeshInstance3D" parent="OD_cajon" unique_id=514214307]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.205)
 mesh = SubResource("BoxMesh_nv8ld")
 
-[node name="H_boli" type="Node3D" parent="OD_cajon" unique_id=2004886004]
+[node name="H_boli" type="Node3D" parent="OD_cajon" unique_id=2113428619]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
 
-[node name="Modelo" parent="OD_cajon/H_boli" unique_id=2137298758 instance=ExtResource("11_yqis4")]
+[node name="Modelo" parent="OD_cajon/H_boli" unique_id=573844443 instance=ExtResource("11_yqis4")]
 
-[node name="Z_rincon__reward-cuaderno" type="Node3D" parent="." unique_id=1416336769]
+[node name="Z_rincon__reward-cuaderno" type="Node3D" parent="." unique_id=168163]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.62, 0, 0.55)
 
-[node name="Zabuton" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=1464919664]
+[node name="Zabuton" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=2040726405]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0.42)
 mesh = SubResource("BoxMesh_ovmbj")
 
-[node name="TableroMesaBaja" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=283215571]
+[node name="TableroMesaBaja" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=1832276388]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
 mesh = SubResource("BoxMesh_i5fb4")
 
-[node name="PataMesa00" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=202889079]
+[node name="PataMesa00" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=1672779070]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31, 0.14, -0.21)
 mesh = SubResource("BoxMesh_kcof3")
 
-[node name="PataMesa01" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=477821138]
+[node name="PataMesa01" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=2108503550]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31, 0.14, 0.21)
 mesh = SubResource("BoxMesh_qte2j")
 
-[node name="PataMesa10" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=1473000737]
+[node name="PataMesa10" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=684043334]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.31, 0.14, -0.21)
 mesh = SubResource("BoxMesh_35nqf")
 
-[node name="PataMesa11" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=948517182]
+[node name="PataMesa11" type="MeshInstance3D" parent="Z_rincon__reward-cuaderno" unique_id=1058934822]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.31, 0.14, 0.21)
 mesh = SubResource("BoxMesh_cl65d")
 
-[node name="P_mangas" type="Node3D" parent="Z_rincon__reward-cuaderno" unique_id=1294189592]
+[node name="P_mangas" type="Node3D" parent="Z_rincon__reward-cuaderno" unique_id=991619405]
 transform = Transform3D(0.9781476, 0, 0.2079117, 0, 1, 0, -0.2079117, 0, 0.9781476, -0.2, 0.32, -0.05)
 
-[node name="Modelo" parent="Z_rincon__reward-cuaderno/P_mangas" unique_id=759835408 instance=ExtResource("15_ropy0")]
+[node name="Modelo" parent="Z_rincon__reward-cuaderno/P_mangas" unique_id=18272699 instance=ExtResource("15_ropy0")]
 
-[node name="P_mando" type="Node3D" parent="Z_rincon__reward-cuaderno" unique_id=297221554]
+[node name="P_mando" type="Node3D" parent="Z_rincon__reward-cuaderno" unique_id=1523451734]
 transform = Transform3D(0.9396926, 0, -0.34202012, 0, 1, 0, 0.34202012, 0, 0.9396926, 0.06, 0.32, 0.08)
 
-[node name="Modelo" parent="Z_rincon__reward-cuaderno/P_mando" unique_id=2101548346 instance=ExtResource("16_jl6m8")]
+[node name="Modelo" parent="Z_rincon__reward-cuaderno/P_mando" unique_id=1239973769 instance=ExtResource("16_jl6m8")]
 
-[node name="P_panuelos" type="Node3D" parent="Z_rincon__reward-cuaderno" unique_id=355755116]
+[node name="P_panuelos" type="Node3D" parent="Z_rincon__reward-cuaderno" unique_id=1305834249]
 transform = Transform3D(0.99026805, 0, 0.1391731, 0, 1, 0, -0.1391731, 0, 0.99026805, 0.2, 0.32, -0.1)
 
-[node name="Modelo" parent="Z_rincon__reward-cuaderno/P_panuelos" unique_id=675593502 instance=ExtResource("17_uc4uk")]
+[node name="Modelo" parent="Z_rincon__reward-cuaderno/P_panuelos" unique_id=483876851 instance=ExtResource("17_uc4uk")]

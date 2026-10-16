@@ -9,13 +9,14 @@ equipo tiene **su rama fija**; Claude prueba lo que llega a cada una y lo junta 
 |---|---|---|
 | `main` | Lo que funciona: siempre arranca y pasa el check. Es lo que se juega, se exporta y se entrega | **Solo Claude**, juntando las otras tres |
 | `arte` | Modelos, texturas, sonidos, música, voz, iconos y fuentes (todo dentro de `assets/`) | Artistas |
-| `iluminacion` | Luz y ambiente de los dioramas (todo dentro de `iluminacion/`) | Quien lleve la luz |
+| `iluminacion` | Luz y ambiente de los dioramas (todo dentro de `iluminacion/`) | Quien lleve la luz. **De momento nadie**: la luz la llevamos Claude y quien lleva el proyecto, en `programacion` |
 | `programacion` | Código, escenas, datos (`data/`) y documentación | Claude |
 
 ## Las reglas
 
-1. **Cada fichero tiene un dueño.** Artistas: `assets/`. Quien lleva la luz: `iluminacion/`.
-   Claude: todo lo demás. Si alguien necesita un cambio en algo que no es suyo, lo pide; no lo edita.
+1. **Cada fichero tiene un dueño.** Artistas: `assets/`. Quien lleva la luz: `iluminacion/` (de
+   momento, Claude). Claude: todo lo demás. Si alguien necesita un cambio en algo que no es suyo,
+   lo pide; no lo edita.
 2. **Cada uno trabaja en la rama de su área, nunca en `main`.** Claude junta cada rama en `main`
    después de pasar `bash tools/check.sh` y mirar una captura, cada 1-2 horas como mucho.
 3. **Después de cada junta, Claude pone al día las tres ramas con `main`**, para que cada área
