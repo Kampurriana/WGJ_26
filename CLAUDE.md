@@ -22,6 +22,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Comprobación completa (importar + test de humo) | `bash tools/check.sh` → tiene que decir `CHECK OK` |
 | Mirar el juego (captura real con ventana) | `bash tools/capture.sh build/captura.png 4 0` (4 piezas solas, nivel 0) y abrir el PNG |
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
+| Medir si la luz quema (sobre capturas 1280×720) | `python3 -I tools/medir_luz.py build/captura.png` → `quemado` < 2 % |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
 | Abrir el juego para jugar | `"$GODOT" --path .` |
 | Abrir el editor | `"$GODOT" --path . -e` |
@@ -94,6 +95,13 @@ modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escen
    vive en la escena del nivel que lo contiene, nunca dentro del `.glb`.
 9. El panel 3D del inventario usa un `SubViewport` por ficha: con más de ~30 fichas visibles,
    medir FPS antes de añadir más.
+10. **La luz quemaba la escena** (93 % del diorama en blanco recortado al empezar, medido). En
+    este renderer cambiar de tonemap (Filmic/AgX/lineal) apenas mueve el resultado; lo que
+    manda es la energía: una cara de arriba recibe `SUN_ENERGY·0,77 + AMBIENT_ENERGY`, y por
+    encima de ~0,8 la arcilla y los colores claros se recortan. Ajustar la luz en
+    `scenes/main.gd` (constantes arriba de `_build_environment`) con captura +
+    `tools/medir_luz.py`, nunca a ojo. Medido con render por software (llvmpipe): confirmar en
+    una GPU real.
 
 ## Pendiente de verificar con el juego real (ver GDD)
 
