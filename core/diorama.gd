@@ -14,6 +14,12 @@ extends Node3D
 @export var camera_max_distance := 12.0
 @export var camera_pitch_deg := 32.0
 @export var camera_yaw_deg := 25.0
+## Límites de giro (grados): el jugador no puede salirse de ellos. Elegirlos para que la cámara
+## nunca quede detrás de una pared ni deje de ver el diorama.
+@export var camera_yaw_min_deg := -35.0
+@export var camera_yaw_max_deg := 85.0
+@export var camera_pitch_min_deg := 12.0
+@export var camera_pitch_max_deg := 65.0
 @export var order_rules: Dictionary = {}    ## {"taza": ["mesa"]} = la taza va después de la mesa
 @export var inventory_seed := 7
 ## Luz propia de este nivel (una escena de iluminacion/). Vacío = la de por defecto.
@@ -37,6 +43,7 @@ func _ready() -> void:
 			s.prereqs.append(StringName(String(p).to_lower()))
 	_build_inventory()
 	_apply_clay()
+	_build_surfaces()
 	Events.world_clicked.connect(_on_world_clicked)
 	GameState.diorama = self
 	Events.level_started.emit(self)
@@ -116,6 +123,22 @@ func _apply_clay() -> void:
 		var overlay := Visuals.make_clay_overlay()
 		_clay[m] = overlay
 		Visuals.set_clay(m, overlay, 1.0)
+
+
+## Todo lo que se ve y no es un hueco pendiente ni algo escondido es "superficie": la pieza en
+## mano no lo atraviesa. Las piezas pasan a serlo al colocarse (place / complete_silently).
+func _build_surfaces() -> void:
+	var skip: Dictionary = {}
+	for s in slots:
+		for m in s.meshes():
+			skip[m] = true
+	for it in interactables:
+		if it.kind == NameRules.PICKUP:
+			for m in Visuals.meshes_under(it.target):
+				skip[m] = true
+	for m in Visuals.meshes_under(self):
+		if not skip.has(m):
+			Visuals.add_surface(m)
 
 
 # --- Consultas -------------------------------------------------------------------------
@@ -205,6 +228,8 @@ func try_place(piece_id: StringName, screen_pos: Vector2, cam: Camera3D) -> bool
 
 func place(slot: PieceSlot) -> void:
 	slot.fill()
+	for m in slot.meshes():
+		Visuals.add_surface(m)
 	inventory.erase(slot.id)
 	_pop(slot.node)
 	_reveal_around(slot.center())
@@ -275,7 +300,7 @@ func pick_interactable(screen_pos: Vector2, cam: Camera3D) -> Interactable:
 	var hits: Array[Interactable] = []
 	var exclude: Array[RID] = []
 	for i in 4:
-		var q := PhysicsRayQueryParameters3D.create(from, to)
+		var q := PhysicsRayQueryParameters3D.create(from, to, Visuals.CLICK_LAYER)
 		q.exclude = exclude
 		var r := space.intersect_ray(q)
 		if r.is_empty():
@@ -356,6 +381,8 @@ func complete_silently() -> void:
 	for s in slots:
 		if not s.filled:
 			s.fill()
+			for m in s.meshes():
+				Visuals.add_surface(m)
 	inventory.clear()
 	for m: MeshInstance3D in _clay:
 		_revealed[m] = true

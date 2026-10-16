@@ -12,6 +12,8 @@ extends Node3D
 ##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
+##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
+##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
 const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
@@ -23,6 +25,9 @@ var _level: Node
 var _lighting: Node
 var _lighting_path := ""
 var _menu_page := ""
+var _hold := Vector2(-1, -1)
+var _zoom_steps := 0
+var _zoom_at := Vector2.ZERO
 var _capture_path := ""
 var _capture_after := 3.0
 var _solve_left := 0
@@ -81,6 +86,13 @@ func _parse_args() -> void:
 				GameState.level_index = v.to_int()
 		elif a.begins_with("--menu-page="):
 			_menu_page = a.get_slice("=", 1)
+		elif a.begins_with("--hold="):
+			var v := a.get_slice("=", 1).split_floats(",")
+			_hold = Vector2(v[0], v[1])
+		elif a.begins_with("--zoom="):
+			var v := a.get_slice("=", 1).split_floats(",")
+			_zoom_steps = int(v[0])
+			_zoom_at = Vector2(v[1], v[2])
 		elif a.begins_with("--solve="):
 			_solve_left = a.get_slice("=", 1).to_int()
 		elif a.begins_with("--capture="):
@@ -200,6 +212,16 @@ func _process(delta: float) -> void:
 			_solve_timer = 0.3
 			_solve_left -= 1
 			GameState.diorama.debug_solve_step()
+	if _zoom_steps > 0 and _elapsed > 0.5:
+		_zoom_steps -= 1
+		GameState.camera.zoom_at(1.0 - GameState.camera.zoom_step, _zoom_at)
+	if _hold.x >= 0.0 and _elapsed > 1.0 and _solve_left == 0 and not GameState.is_dragging:
+		var cards := GameState.hud._list.get_children().filter(func(n: Node) -> bool: return n is InventoryItem)
+		if not cards.is_empty():
+			var card: InventoryItem = cards[0]
+			GameState.drag.begin(card.piece_id, card)
+			GameState.drag.hold_at(_hold)
+		_hold = Vector2(-1, -1)
 	if _capture_path != "" and _elapsed >= _capture_after and _solve_left == 0:
 		var img := get_viewport().get_texture().get_image()
 		var out := ProjectSettings.globalize_path("res://" + _capture_path)

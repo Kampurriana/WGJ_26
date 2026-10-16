@@ -12,11 +12,11 @@ Cada fila dice **de dónde sale**: *visto* = lo dicen la ficha de Steam o varias
 
 | # | Mecánica | Fuente | Implementación |
 |---|---|---|---|
-| 1 | Diorama sobre una peana; se gira libremente y se acerca/aleja para buscar huecos | visto | `camera/diorama_camera.gd` (órbita, zoom con límites, desplazamiento corto, suavizado) |
+| 1 | Diorama sobre una peana; se gira y se acerca/aleja para buscar huecos | visto (los límites: decisión del equipo) | `camera/diorama_camera.gd`: sin desplazamiento, giro dentro de límites por nivel, zoom con tope hacia el cursor, suavizado |
 | 2 | Las piezas que faltan se ven como **versiones blancas** en su sitio | visto | `core/piece_slot.gd` + `shaders/ghost.gdshader` (silueta translúcida con borde) |
 | 3 | La escena empieza sin color; al colocar, **la zona de alrededor se colorea** y se anima | visto | `Diorama._reveal_around` (onda de color, radio `color_radius`) + `AnimationPlayer` `<id>_placed` |
 | 4 | Panel de piezas **a la derecha, estrecho y con scroll** | visto | `ui/hud.gd` |
-| 5 | Se **arrastra** cada pieza del panel a su hueco; encaja con un "clic" táctil | visto | `ui/drag_controller.gd` (imán al acercarse) + `Diorama.try_place` + sonido `snap` |
+| 5 | Se **arrastra** cada pieza del panel a su hueco; encaja con un "clic" táctil. La pieza en mano no atraviesa paredes, suelo ni muebles (decisión del equipo) | visto | `ui/drag_controller.gd` (choque por el rayo del cursor, imán al acercarse) + `Diorama.try_place` + sonido `snap` |
 | 6 | **Al girar el diorama, las piezas del panel giran también**: se ven con la orientación que tendrán en su hueco | visto | `ui/inventory_item.gd` (`_process` copia la rotación relativa a la cámara) |
 | 7 | El jugador **no rota las piezas** a mano | supuesto | se colocan ya orientadas como su hueco |
 | 8 | Soltar en mal sitio no penaliza: la pieza vuelve al panel | supuesto | rechazo con temblor de la ficha + sonido `reject` |

@@ -22,6 +22,10 @@ func _initialize() -> void:
 	_root.set("camera_max_distance", 7.5)
 	_root.set("camera_pitch_deg", 16.0)
 	_root.set("camera_yaw_deg", 0.0)
+	_root.set("camera_yaw_min_deg", -45.0)         ## el letrero tiene que poder leerse
+	_root.set("camera_yaw_max_deg", 45.0)
+	_root.set("camera_pitch_min_deg", 8.0)
+	_root.set("camera_pitch_max_deg", 45.0)
 	_root.set("iluminacion", "res://iluminacion/menu.tscn")
 
 	var wood := Color(0.62, 0.42, 0.26)

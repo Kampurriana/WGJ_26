@@ -29,6 +29,9 @@ func check(cond: bool, what: String) -> void:
 
 func _run() -> void:
 	_test_name_rules()
+	if GameState.RESET_ON_START:
+		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
+			"modo prototipo: al darle a Play no se carga progreso (título y niveles desde cero)")
 	for f in [TEST_SETTINGS, TEST_PROGRESS]:
 		if FileAccess.file_exists(f):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(f))
@@ -51,6 +54,7 @@ func _run() -> void:
 	await get_tree().process_frame               # la luz anterior se libera al final del fotograma
 	_check_lighting(main, main.DEFAULT_LIGHTING, "un nivel sin luz propia")
 	await _test_pause(main, d)
+	await _test_camera(d)
 	var cam := GameState.camera.cam
 	GameState.camera.snap()
 	check(d.slots.size() >= 5, "hay huecos P_ (%d)" % d.slots.size())
@@ -73,6 +77,8 @@ func _run() -> void:
 	var mesa := _slot(d, &"mesa")
 	check(mesa != null and d.try_place(&"mesa", cam.unproject_position(mesa.center()), cam), "la mesa encaja soltándola encima de su hueco")
 	check(mesa != null and mesa.filled and not mesa.is_ghost(), "la mesa colocada deja de ser silueta")
+	check(mesa != null and not mesa.node.find_children("Superficie", "StaticBody3D", true, false).is_empty(),
+		"la mesa colocada pasa a ser superficie (lo de encima se apoya en ella, no la atraviesa)")
 
 	# Arrastrar de verdad: pulsar en la ficha del panel, mover y soltar encima del hueco,
 	# con eventos de ratón que recorren el mismo camino que los del jugador.
@@ -88,6 +94,7 @@ func _run() -> void:
 		_mouse_button(start, true)
 		await get_tree().process_frame
 		check(GameState.is_dragging and GameState.drag.piece_id == &"silla", "pulsar la ficha de la silla empieza a arrastrar la silla")
+		_check_sweep("muestra")
 		_mouse_move(goal)
 		await get_tree().process_frame
 		_mouse_button(goal, false)
@@ -262,6 +269,15 @@ func _test_real_levels(main: Node) -> void:
 		check(d.slots.size() >= 5 and empty.is_empty(), "%s: %d huecos y todos con su modelo (sin modelo: %s)" % [path.get_file(), d.slots.size(), empty])
 		check(d.slots[0].is_ghost() and (d.slots[0]._ghost as ShaderMaterial).render_priority > Visuals.make_clay_overlay().render_priority,
 			"%s: las siluetas se pintan después de la arcilla (si no, una pared grande las borra)" % path.get_file())
+		await get_tree().process_frame
+		# La pieza más grande y la más pequeña del panel: las pequeñas son las que se colarían.
+		var cards: Array = GameState.hud._list.get_children().filter(func(n: Node) -> bool: return n is InventoryItem)
+		cards.sort_custom(func(a: InventoryItem, b: InventoryItem) -> bool:
+			return Visuals.local_aabb(d.prototype_for(a.piece_id)).size.length() > Visuals.local_aabb(d.prototype_for(b.piece_id)).size.length())
+		for card: InventoryItem in ([cards.front(), cards.back()] if not cards.is_empty() else []):
+			GameState.drag.begin(card.piece_id, card)
+			_check_sweep(path.get_file())
+			GameState.drag.cancel()
 		var steps := 0
 		while not d.completed and steps < 400:
 			d.debug_solve_step()
@@ -296,6 +312,91 @@ func _count_in_main_world(type: String) -> int:
 		if x.is_inside_tree() and not x.is_queued_for_deletion() and x.get_viewport() == get_tree().root:
 			n += 1
 	return n
+
+
+## Con una pieza en mano, recorre el diorama en rejilla: en ningún punto puede atravesar paredes,
+## suelo ni muebles, y en buena parte tiene que quedar apoyada en algo (si no, el control no mide).
+func _check_sweep(who: String) -> void:
+	var checked := 0
+	var inside := 0
+	var rested := 0
+	var piece := String(GameState.drag.piece_id)
+	for x in range(140, 1000, 110):
+		for y in range(110, 650, 90):
+			_mouse_move(Vector2(x, y))
+			var n := GameState.drag.held_overlaps()
+			if n < 0:
+				continue
+			checked += 1
+			inside += 1 if n > 0 else 0
+			rested += 1 if GameState.drag.last_rested else 0
+	check(checked >= 20 and inside == 0, "%s: la pieza en mano (%s) no atraviesa nada en %d puntos (dentro: %d)" % [who, piece, checked, inside])
+	check(rested * 2 >= checked, "%s: la pieza en mano se apoya en las superficies (%d de %d puntos)" % [who, rested, checked])
+
+
+func _test_camera(d: Diorama) -> void:
+	var c := GameState.camera
+	c.configure(d)
+	var home := c.home_center()
+	_drag_mouse(MOUSE_BUTTON_MIDDLE, Vector2(500, 350), Vector2(800, 500))
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(500, 350), Vector2(800, 500), true)
+	check(c.center.is_equal_approx(home), "la cámara no se desplaza (ni botón central ni Mayús+arrastrar)")
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(300, 350), Vector2(950, 350))
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(300, 350), Vector2(950, 350))
+	check(is_equal_approx(c.yaw, c.yaw_min), "el giro se para en su límite (%.0f, mínimo %.0f)" % [c.yaw, c.yaw_min])
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(950, 350), Vector2(300, 350))
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(950, 350), Vector2(300, 350))
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(950, 350), Vector2(300, 350))
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(950, 350), Vector2(300, 350))
+	check(is_equal_approx(c.yaw, c.yaw_max), "y por el otro lado también (%.0f, máximo %.0f)" % [c.yaw, c.yaw_max])
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(500, 100), Vector2(500, 650))
+	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(500, 100), Vector2(500, 650))
+	check(c.pitch >= c.pitch_min and c.pitch <= c.pitch_max, "la inclinación se queda en sus límites (%.0f)" % c.pitch)
+	c.configure(d)
+	for i in 30:
+		_wheel(MOUSE_BUTTON_WHEEL_UP, Vector2(420, 300))
+	check(is_equal_approx(c.distance, c.min_distance), "el zoom tiene tope (%.2f)" % c.distance)
+	check(not c.center.is_equal_approx(home), "el zoom se acerca hacia lo que señala el cursor")
+	for i in 30:
+		_wheel(MOUSE_BUTTON_WHEEL_DOWN, Vector2(420, 300))
+	check(is_equal_approx(c.distance, c.max_distance) and c.center.is_equal_approx(home), "al alejar el zoom, la cámara vuelve a su sitio")
+	c.configure(d)
+
+
+## Pulsar, arrastrar en 10 pasos (con su desplazamiento relativo) y soltar.
+func _drag_mouse(button: MouseButton, from: Vector2, to: Vector2, shift := false) -> void:
+	var press := InputEventMouseButton.new()
+	press.button_index = button
+	press.pressed = true
+	press.shift_pressed = shift
+	press.position = from
+	press.global_position = from
+	get_viewport().push_input(press, true)
+	var last := from
+	for i in range(1, 11):
+		var p := from.lerp(to, i / 10.0)
+		var m := InputEventMouseMotion.new()
+		m.position = p
+		m.global_position = p
+		m.relative = p - last
+		m.shift_pressed = shift
+		get_viewport().push_input(m, true)
+		last = p
+	var release := press.duplicate() as InputEventMouseButton
+	release.pressed = false
+	release.position = to
+	release.global_position = to
+	get_viewport().push_input(release, true)
+
+
+func _wheel(button: MouseButton, pos: Vector2) -> void:
+	for pressed in [true, false]:
+		var e := InputEventMouseButton.new()
+		e.button_index = button
+		e.pressed = pressed
+		e.position = pos
+		e.global_position = pos
+		get_viewport().push_input(e, true)
 
 
 ## Lee una clave del progreso guardado en disco (lo que vería la próxima partida).

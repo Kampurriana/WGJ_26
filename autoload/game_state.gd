@@ -8,6 +8,9 @@ enum Mode { MENU, PLAYING }
 const LEVELS_PATH := "res://data/levels.json"
 const MENU_LEVEL := "res://levels/menu_titulo.tscn"
 const SECTION := "progreso"
+## MODO PROTOTIPO: cada vez que se le da a Play, el puzle del título y los niveles empiezan de cero
+## (no se lee ni se guarda el progreso; las Opciones sí se guardan). Para la entrega: false.
+const RESET_ON_START := true
 
 var diorama: Diorama
 var camera: DioramaCamera
@@ -33,7 +36,7 @@ func _ready() -> void:
 			levels.append(String(p))
 	if levels.is_empty():
 		push_error("GameState: %s no tiene niveles (o no es un array JSON)" % LEVELS_PATH)
-	load_progress("" if _capturing() else progress_path)
+	load_progress("" if _capturing() or RESET_ON_START else progress_path)
 
 
 static func _capturing() -> bool:

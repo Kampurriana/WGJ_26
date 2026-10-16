@@ -36,8 +36,12 @@ func _initialize() -> void:
 	_root.set("outro_key", "fin_habitacion")
 	_root.set("color_radius", 0.9)
 	_root.set("camera_distance", 5.0)
-	_root.set("camera_min_distance", 1.2)
-	_root.set("camera_max_distance", 7.5)
+	_root.set("camera_min_distance", 1.5)          ## zoom máximo: para colocar ratón, boli, mando
+	_root.set("camera_max_distance", 6.0)
+	_root.set("camera_yaw_min_deg", -12.0)         ## más a la izquierda, la pared izquierda tapa la habitación
+	_root.set("camera_yaw_max_deg", 70.0)          ## más a la derecha, se ve el canto de la pared del fondo
+	_root.set("camera_pitch_min_deg", 15.0)
+	_root.set("camera_pitch_max_deg", 60.0)
 	_root.set("camera_pitch_deg", 30.0)
 	_root.set("camera_yaw_deg", 25.0)
 

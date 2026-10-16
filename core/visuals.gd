@@ -7,6 +7,10 @@ const CLAY_COLOR := Color(0.80, 0.76, 0.70)
 ## la distancia al centro de su caja: una pared grande tiene el centro más cerca que una estantería
 ## pegada a ella, se pintaba después y la borraba entera (visto en la habitación japonesa).
 const GHOST_RENDER_PRIORITY := 10
+## Capa física de las "superficies" (paredes, suelo, muebles ya puestos): la pieza que se arrastra
+## choca con ellas y no las atraviesa. Los clics (cajones, rincones) van por la capa 1.
+const SURFACE_LAYER := 2
+const CLICK_LAYER := 1
 const GHOST_SHADER := preload("res://shaders/ghost.gdshader")
 
 
@@ -71,6 +75,25 @@ static func _strip_non_visual(n: Node) -> void:
 			c.free()
 		else:
 			_strip_non_visual(c)
+
+
+## Colisión con la forma exacta de la malla (triángulos), por las dos caras: una pieza que llega por
+## detrás de una pared tampoco la cruza. Se cuelga de la malla, así un cajón la lleva consigo.
+static func add_surface(m: MeshInstance3D) -> void:
+	if m.mesh == null or m.has_node("Superficie"):
+		return
+	var shape := m.mesh.create_trimesh_shape()
+	if shape == null:
+		return
+	shape.backface_collision = true
+	var body := StaticBody3D.new()
+	body.name = "Superficie"
+	body.collision_layer = SURFACE_LAYER
+	body.collision_mask = 0
+	var cs := CollisionShape3D.new()
+	cs.shape = shape
+	body.add_child(cs)
+	m.add_child(body)
 
 
 static func make_ghost_material() -> ShaderMaterial:

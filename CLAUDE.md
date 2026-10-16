@@ -24,6 +24,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Lo mismo en la nube (Linux sin pantalla) | `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/captura.png 4 0` |
 | Medir si la luz quema (sobre capturas 1280×720) | `python3 -I tools/medir_luz.py build/captura.png` → `quemado` < 2 % |
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 10 menu --capture-after=5` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|elegir\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa` |
+| Mirar una pieza en mano o el zoom | `bash tools/capture.sh build/mano.png 0 0 --hold=480,520` · `bash tools/capture.sh build/zoom.png 6 0 --zoom=14,700,300 --capture-after=5` |
 | Regenerar el nivel de muestra | `"$GODOT" --headless --path . --script res://tools/build_sample_level.gd` |
 | Regenerar el puzle del título | `"$GODOT" --headless --path . --script res://tools/build_title_level.gd` |
 | Regenerar la habitación japonesa | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (pisa `levels/level_01_habitacion.tscn`) |
@@ -47,22 +48,27 @@ se ve) + commit. Sin las tres, no está hecho.
 | `core/piece_slot.gd` | Un hueco: silueta blanca (shader `shaders/ghost.gdshader`) hasta que se coloca |
 | `core/interactable.gd` | Lo que se pulsa: cajón, puerta, escondido, sub-diorama (colisión calculada sola) |
 | `core/visuals.gd` | Cajas AABB, copia limpia de piezas, capa "arcilla" blanca (`material_overlay`) |
-| `camera/diorama_camera.gd` | Órbita tipo plataforma giratoria, zoom con límites, desplazamiento, pellizco, mando |
+| `camera/diorama_camera.gd` | Cámara fija (sin desplazar): giro dentro de los límites del nivel (`Diorama.camera_yaw_min_deg`...), zoom con tope hacia el cursor que vuelve al encuadre al alejar; pellizco, mando |
 | `ui/hud.gd` | Panel de piezas (derecha, scroll), pista con recarga, Volver, Menú (pausa), subtítulos, fin de nivel |
 | `ui/main_menu.gd` | Menú de inicio: Jugar/Continuar, Elegir diorama, Opciones, Créditos (`data/creditos_es.txt`), Salir (no en Web) |
 | `ui/pause_menu.gd` | Pausa (Esc): Reanudar, Opciones, Menú principal, Salir |
 | `ui/options_panel.gd` | Opciones (volúmenes, subtítulos, pantalla completa, cámara, pista automática, borrar progreso) |
 | `ui/ui_theme.gd` | Aspecto de toda la interfaz en código (madera y papel); `ui/theme.tres` manda si existe |
 | `ui/inventory_item.gd` | Ficha con vista 3D que **gira con la cámara** (orientación = la del hueco) |
-| `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar |
+| `ui/drag_controller.gd` | Arrastrar del panel al 3D, imán, soltar = encajar o rechazar. La pieza en mano nunca atraviesa nada: su caja viaja por el rayo del cursor y choca con las superficies (`Visuals.add_surface`, capa 2) |
 | `input/gamepad_cursor.gd` | Stick izq. = puntero, A = clic (mando sin código aparte) |
 | `autoload/*` | `Events` (bus de señales), `Settings` (opciones en `user://ajustes.cfg` + buses Musica/Efectos/Voz), `GameState` (estado + progreso en `user://progreso.cfg`), `InputSetup` (controles en código), `Narrator`, `Sfx` |
-| `tests/smoke_test.gd` | Juega como un jugador: puzle del título, menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); 73 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
+| `tests/smoke_test.gd` | Juega como un jugador: puzle del título, menú, la muestra entera con pausa, vuelta al menú, y cada nivel de `data/levels.json` (carga, cada pieza con su modelo, se completa); además la pieza en mano no atraviesa nada (rejilla de puntos) y la cámara no se desplaza y respeta sus límites; 89 comprobaciones. Usa sus propios ficheros `user://test_*.cfg` |
 
 Reglas de arquitectura: los sistemas se hablan por `Events`; la UI se construye en código (un
 `.tscn` hecho a mano es frágil y da conflictos); **todo lo jugable se define por nombres en el
 modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escena con
 `core/diorama.gd` en la raíz + el `.glb` dentro + línea en `data/levels.json`.
+
+## Modo prototipo (antes de entregar, cambiarlo)
+
+`GameState.RESET_ON_START = true`: cada Play empieza con el puzle del título y todos los niveles sin
+hacer (no se lee ni se guarda el progreso; las Opciones sí). Para la build de entrega: `false`.
 
 ## Cómo trabajo aquí
 
