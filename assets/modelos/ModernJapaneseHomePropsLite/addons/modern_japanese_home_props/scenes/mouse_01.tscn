@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/models/computer/mouse_01.glb" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/computer/mouse_01.glb" id="1_model"]
 
 [sub_resource type="BoxShape3D" id="Shape_0"]
 size = Vector3(0.0640352, 0.0430000, 0.1148257)

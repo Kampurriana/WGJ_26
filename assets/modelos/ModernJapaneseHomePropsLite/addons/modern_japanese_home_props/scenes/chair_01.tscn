@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/models/furniture/chair_01.glb" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/furniture/chair_01.glb" id="1_model"]
 
 [sub_resource type="BoxShape3D" id="Shape_0"]
 size = Vector3(0.4140000, 0.0250000, 0.4000000)

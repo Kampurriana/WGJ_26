@@ -1,38 +1,38 @@
 [gd_scene load_steps=27 format=3]
 
-[ext_resource type="Script" path="res://assets/modern-japanese-props/demo/orbit.gd" id="orbit"]
+[ext_resource type="Script" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/demo/orbit.gd" id="orbit"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/book_01.tscn" id="a0"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/book_01.tscn" id="a0"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/bookshelf_01.tscn" id="a1"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/bookshelf_01.tscn" id="a1"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/chair_01.tscn" id="a2"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/chair_01.tscn" id="a2"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/clock_01.tscn" id="a3"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/clock_01.tscn" id="a3"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/desk_01.tscn" id="a4"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/desk_01.tscn" id="a4"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/lamp_01.tscn" id="a5"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/lamp_01.tscn" id="a5"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/manga_01.tscn" id="a6"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/manga_01.tscn" id="a6"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/manga_stack_01.tscn" id="a7"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/manga_stack_01.tscn" id="a7"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/monitor_01.tscn" id="a8"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/monitor_01.tscn" id="a8"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/mouse_01.tscn" id="a9"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/mouse_01.tscn" id="a9"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/mug_01.tscn" id="a10"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/mug_01.tscn" id="a10"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/notebook_01.tscn" id="a11"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/notebook_01.tscn" id="a11"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/pen_01.tscn" id="a12"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/pen_01.tscn" id="a12"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/remote_01.tscn" id="a13"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/remote_01.tscn" id="a13"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/speaker_01.tscn" id="a14"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/speaker_01.tscn" id="a14"]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/scenes/tissue_box_01.tscn" id="a15"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/scenes/tissue_box_01.tscn" id="a15"]
 
 [sub_resource type="Environment" id="Environment"]
 background_mode = 1

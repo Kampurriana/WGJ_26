@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" path="res://assets/modern-japanese-props/models/books/book_01.glb" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/books/book_01.glb" id="1_model"]
 
 [sub_resource type="BoxShape3D" id="Shape_0"]
 size = Vector3(0.1580000, 0.0310600, 0.2415000)

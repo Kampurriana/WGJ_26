@@ -42,9 +42,9 @@ func _unhandled_input(event: InputEvent) -> void:
             distance = reset_distance
         elif event.keycode == KEY_TAB:
             var scenes: Array[String] = ["DemoRoom"]
-            if ResourceLoader.exists("res://assets/modern-japanese-props/demo/MessyRoom.tscn"):
+            if ResourceLoader.exists("res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/demo/MessyRoom.tscn"):
                 scenes.append("MessyRoom")
             scenes.append("Showcase")
             var current_index := scenes.find(str(name))
-            get_tree().change_scene_to_file("res://assets/modern-japanese-props/demo/" + scenes[(current_index + 1) % scenes.size()] + ".tscn")
+            get_tree().change_scene_to_file("res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/demo/" + scenes[(current_index + 1) % scenes.size()] + ".tscn")
     update_camera()
