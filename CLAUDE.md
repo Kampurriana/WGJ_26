@@ -73,9 +73,13 @@ modelo de las artistas**, no por escenas editadas a mano. Un nivel nuevo = escen
 
 ## Git (ver `docs/GIT-Y-RAMAS.md`)
 
-- `main` siempre arranca y pasa `CHECK OK`. Yo trabajo en `codigo/<tema>` y fusiono a `main`.
-- Las artistas suben a `arte/<nombre>-<cosa>` por PR; **yo** reviso, integro el arte en las escenas,
-  paso el check y fusiono.
+- Ramas fijas por área: `arte` (artistas, solo `assets/`), `iluminacion` (luz), `programacion`
+  (yo). `main` solo la toco yo, juntando esas ramas: siempre arranca y pasa `CHECK OK`.
+- Yo trabajo en `programacion`. Para juntar: `git merge origin/<rama>` en `main` → check +
+  captura → push → **poner al día las tres ramas con `main`** (los comandos, en `docs/GIT-Y-RAMAS.md`).
+- Antes de juntar `arte`: `git diff --stat main...origin/arte` tiene que ser solo `assets/`.
+- No crear ramas `arte/...`, `iluminacion/...` ni `programacion/...`: Git no deja una rama y una
+  "carpeta" de ramas con el mismo nombre.
 - **Nunca `git add -A` ni `git add .`**: se añade por nombre lo que he tocado. Si aparece un fichero
   que no reconozco, es de otra persona: mirarlo antes de nada.
 - Mensajes de commit con acentos, comillas o acentos graves: `git commit -F fichero.txt`

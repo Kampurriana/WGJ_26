@@ -1,28 +1,33 @@
 # Git y ramas para la jam
 
-Objetivo: que nadie pise el trabajo de nadie y que `main` **siempre** arranque. Con un solo
-programador (Claude) y artistas que solo tocan `assets/`, los conflictos desaparecen si se cumplen
-tres reglas.
+Objetivo: que nadie pise el trabajo de nadie y que `main` **siempre** arranque. Cada área del
+equipo tiene **su rama fija**; Claude prueba lo que llega a cada una y lo junta en `main`.
 
-## Las tres reglas
+## Las ramas
+
+| Rama | Para qué | Quién sube ahí |
+|---|---|---|
+| `main` | Lo que funciona: siempre arranca y pasa el check. Es lo que se juega, se exporta y se entrega | **Solo Claude**, juntando las otras tres |
+| `arte` | Modelos, texturas, sonidos, música, voz, iconos y fuentes (todo dentro de `assets/`) | Artistas |
+| `iluminacion` | Luz y ambiente de los dioramas | Quien lleve la luz (y Claude) |
+| `programacion` | Código, escenas, datos (`data/`) y documentación | Claude |
+
+## Las reglas
 
 1. **Cada fichero tiene un dueño.** Artistas: `assets/`. Claude: todo lo demás. Si alguien
    necesita un cambio en algo que no es suyo, lo pide; no lo edita.
-2. **Nadie empuja a `main` directamente.** Todo entra por Pull Request y lo fusiona Claude después
-   de pasar `bash tools/check.sh`.
-3. **Ramas cortas.** Una rama = una cosa (un modelo, un nivel, un juego de sonidos). Se fusiona el
-   mismo día. Una rama de 20 horas es un conflicto esperando.
+2. **Cada uno trabaja en la rama de su área, nunca en `main`.** Claude junta cada rama en `main`
+   después de pasar `bash tools/check.sh` y mirar una captura, cada 1-2 horas como mucho.
+3. **Después de cada junta, Claude pone al día las tres ramas con `main`**, para que cada área
+   tenga lo último de las demás. Por eso, **antes de empezar a trabajar: Pull**.
 
-## Nombres de rama
+La luz, hoy: está en código (constantes al principio de `_build_environment` en
+`scenes/main.gd`), así que los cambios de luz los hace Claude en `iluminacion` cuando se le piden.
+Si alguien del equipo va a ajustar la luz en el editor de Godot, Claude la pasa antes a una escena
+editable, para que pueda tocarla sin tocar código.
 
-| Rama | Quién | Ejemplo |
-|---|---|---|
-| `main` | nadie directamente | siempre jugable |
-| `arte/<nombre>-<cosa>` | cada artista | `arte/lucia-nivel01`, `arte/marta-sonidos` |
-| `codigo/<tema>` | Claude | `codigo/pista-adaptativa` |
-| `fix/<tema>` | Claude | `fix/cajon-no-abre` |
-
-Para la entrega se etiqueta: `git tag entrega-jam` sobre el commit exacto que se sube a itch.io.
+Para la entrega se etiqueta: `git tag entrega-jam` sobre el commit exacto de `main` que se sube a
+itch.io.
 
 ## Para las artistas, con GitHub Desktop (sin consola)
 
@@ -30,53 +35,73 @@ Primera vez (5 minutos):
 1. Instalad **GitHub Desktop** (desktop.github.com) e iniciad sesión con vuestra cuenta de GitHub.
 2. Aceptad la invitación al repositorio (llega por correo).
 3. `File → Clone repository` → elegid el repo → carpeta local.
+4. Arriba, **Current branch** → pestaña de ramas → elegid **`arte`** (si no sale en la lista,
+   antes pulsad **Fetch origin**). A partir de ahí trabajáis siempre en `arte`.
 
 Cada vez que vais a subir arte:
-1. Arriba, **Current branch → `main` → Fetch origin → Pull**. (Siempre empezar desde lo último.)
-2. **Current branch → New branch**: `arte/<vuestro-nombre>-<cosa>`.
+1. Comprobad que arriba pone **Current branch: `arte`**.
+2. **Fetch origin** → **Pull origin** (si aparece). Así tenéis lo último de todos.
 3. Copiad vuestros ficheros exportados a su carpeta de `assets/` (ver `ARTE-PIPELINE.md`).
 4. En GitHub Desktop aparecen los cambios a la izquierda. **Revisad que solo hay ficheros de
    `assets/`.** Si sale cualquier otra cosa, desmarcadla y avisad.
-5. Escribid un resumen corto ("Nivel 1: cocina con 14 piezas") → **Commit**.
-6. **Publish branch** → **Create Pull Request** (se abre en el navegador) → **Create pull request**.
-7. Avisad en el chat del equipo. Claude lo integra y lo fusiona.
+5. Escribid un resumen corto ("Nivel 1: cocina con 14 piezas") → **Commit to arte**.
+6. **Push origin**.
+7. Avisad en el chat ("subido a arte: …"). Claude lo prueba, lo integra en el juego y lo junta en
+   `main`.
 
 Si GitHub Desktop habla de "conflict": no toquéis nada y avisad. Con la regla de dueños no
 debería pasar nunca.
 
+Si subís algo a `main` por error, no pasa nada grave: avisad y Claude lo recoloca.
+
 ## Para Claude (consola)
 
+Trabajo diario, en mi rama:
+
 ```bash
-git switch main && git pull --ff-only
-git switch -c codigo/<tema>
+git switch programacion && git pull --ff-only
 # ... cambios ...
 bash tools/check.sh                       # tiene que decir CHECK OK
 git add <ficheros por nombre>             # nunca -A ni .
 git commit -F build/msg.txt               # mensaje escrito con la herramienta de ficheros
-git switch main && git merge --ff-only codigo/<tema> && git push
+git push
 ```
 
-Integrar el PR de una artista:
+Juntar una rama en `main` (la mía, la de arte o la de luz):
 
 ```bash
-gh pr list
-gh pr checkout <n>
-git diff --stat main...HEAD               # ¿solo assets/? si no, parar y preguntar
-# crear o actualizar la escena del nivel / data/levels.json en una rama codigo/ aparte
-bash tools/check.sh && bash tools/capture.sh build/pr<n>.png 3 <nivel>
-gh pr merge <n> --merge                   # solo tras CHECK OK y mirar la captura
+git fetch origin
+git diff --stat main...origin/arte        # arte: ¿solo assets/? si no, parar y preguntar
+git switch main && git pull --ff-only
+git merge origin/<rama>                   # sin conflictos si se respetan los dueños
+bash tools/check.sh && bash tools/capture.sh build/junta.png 3 <nivel>   # en main, con todo junto
+git push
 ```
 
-Proteger `main` en GitHub (una vez, lo hace quien sea admin del repo): Settings → Branches → Add
-rule → `main` → *Require a pull request before merging*. Para la jam, sin revisiones obligatorias:
-el filtro es el check de Claude. Ojo: en un repo **privado** de una cuenta **gratuita**, GitHub no
-deja proteger ramas; entonces la regla 2 se cumple por acuerdo (o se hace público el repo).
+Poner al día las tres ramas después de cada junta:
+
+```bash
+for b in arte iluminacion programacion; do
+  git switch "$b" && git pull --ff-only && git merge main && git push
+done
+git switch main
+```
+
+Para integrar el arte en el juego (escena del nivel, `data/levels.json`): en `programacion`, después
+de juntar `arte` en `main` y poner al día las ramas.
+
+No se usan ramas `arte/<algo>`: Git no deja tener a la vez una rama `arte` y ramas que empiecen
+por `arte/`. Pull Requests: no hacen falta (son opcionales para comentar algo concreto).
 
 ## Ficheros grandes
 
 GitHub rechaza ficheros de más de 100 MB y avisa a partir de 50 MB. Un `.glb` de un diorama de jam
 no debería acercarse. Si alguno pasa de 50 MB: reducir texturas antes que meter Git LFS (LFS añade
 una instalación y una cuota más a cada artista, y en 48 h no compensa).
+
+Ojo con el peso total, que es lo que se descarga la versión web: el pack de props japoneses ocupa
+332 MB (ningún fichero pasa de 18 MB, pero en total es mucho). Antes de la build web, quitar del
+juego lo que no se use o reducir sus texturas.
 
 ## `.gitignore` y fin de línea
 
