@@ -30,6 +30,8 @@ const BLACKOUT_TIME := 0.6                   ## al darle a Jugar (sexta nota): l
 const BLACKOUT_HOLD := 0.25                  ## ...un instante a oscuras (ahí se carga el diorama)...
 const BLACKOUT_IN := 1.1                     ## ...y el diorama aparece desde el negro (s)
 const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
+const MUSIC_MENU_DB := -6.0                  ## Ankui: puzle del título y menú
+const MUSIC_GAME_DB := -13.0                 ## Loft: en bucle durante la partida, "a volumen moderado"
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var menu: MainMenu
@@ -140,7 +142,6 @@ func _ready() -> void:
 		pass                                     # en _process, cuando ya han pasado F9 y compañía
 	elif _menu_page != "":
 		menu.pending_page = _menu_page
-	Sfx.music("musica")
 
 
 func _parse_args() -> void:
@@ -252,6 +253,7 @@ func load_level(index: int) -> void:
 		return
 	GameState.level_index = clampi(index, 0, GameState.levels.size() - 1)
 	GameState.mode = GameState.Mode.PLAYING
+	Sfx.music("juego", MUSIC_GAME_DB)
 	_load(GameState.levels[GameState.level_index])
 
 
@@ -259,6 +261,7 @@ func load_level(index: int) -> void:
 func show_title() -> void:
 	get_tree().paused = false
 	GameState.mode = GameState.Mode.MENU
+	Sfx.music("menu", MUSIC_MENU_DB)
 	var unlocked := GameState.menu_unlocked
 	_load(GameState.MENU_LEVEL, unlocked)
 	if unlocked:
@@ -276,6 +279,7 @@ func blackout_to_level(index: int) -> void:
 	if blacking_out:
 		return
 	blacking_out = true
+	Sfx.music("juego", MUSIC_GAME_DB, BLACKOUT_TIME + BLACKOUT_HOLD + BLACKOUT_IN)   # cambia con el negro
 	_fade.mouse_filter = Control.MOUSE_FILTER_STOP
 	if _fade_tween != null:
 		_fade_tween.kill()

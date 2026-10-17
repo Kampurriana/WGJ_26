@@ -1,17 +1,22 @@
 extends Node
 ## Efectos y música. Se buscan por nombre en assets/audio/sfx|musica/<nombre>.(ogg|wav|mp3).
 ## Nombres que usa el código: snap, reject, open, close, pickup, hint, complete, zoom_in, zoom_out, click.
+## Música (petición del equipo): musica/menu (Ankui) en el puzle del título y el menú; musica/juego
+## (Loft) en bucle durante la partida, a volumen moderado. Siempre en bucle y con fundido cruzado.
 ## Suenan por los buses Efectos y Musica (los crea Settings), así les afectan las Opciones.
 ## Si falta un fichero se avisa UNA vez por nombre (un sonido mudo tiene que decirlo).
 
 const EXTENSIONS := ["ogg", "wav", "mp3"]
 const POOL_SIZE := 8
+const MUSIC_FADE := 1.6                      ## segundos del fundido cruzado entre canciones
 
 var _pool: Array[AudioStreamPlayer] = []
 var _next := 0
 var _cache: Dictionary = {}
 var _warned: Dictionary = {}
-var _music: AudioStreamPlayer
+var _music: AudioStreamPlayer                ## la canción que suena (la otra se está yendo)
+var _music_old: AudioStreamPlayer
+var track := ""                               ## la canción pedida ("menu", "juego"; "" = ninguna)
 
 
 func _ready() -> void:
@@ -21,10 +26,15 @@ func _ready() -> void:
 		p.bus = &"Efectos"
 		add_child(p)
 		_pool.append(p)
-	_music = AudioStreamPlayer.new()
-	_music.volume_db = -8.0
-	_music.bus = &"Musica"
-	add_child(_music)
+	for i in 2:
+		var m := AudioStreamPlayer.new()
+		m.bus = &"Musica"
+		m.finished.connect(func() -> void:     # por si el formato no sabe hacer bucle (wav sin marcas)
+			if m == _music:
+				m.play())
+		add_child(m)
+		_music_old = _music
+		_music = m
 
 
 func play(sound: String, pitch_jitter := 0.08) -> void:
@@ -38,12 +48,52 @@ func play(sound: String, pitch_jitter := 0.08) -> void:
 	p.play()
 
 
-func music(track: String) -> void:
-	var stream := _find("musica", track)
-	if stream == null or _music.stream == stream:
+## Pone una canción en bucle a `volume_db`, con fundido cruzado desde la que sonaba. Si ya suena,
+## solo ajusta el volumen. Si no hay fichero, la anterior se va igual (no se queda la del menú).
+func music(song: String, volume_db := -8.0, fade := MUSIC_FADE) -> void:
+	track = song
+	var stream := _find("musica", song)
+	if stream != null and _music.stream == stream and _music.playing:
+		_fade(_music, db_to_linear(volume_db), fade)
 		return
+	var out := _music
+	_music = _music_old
+	_music_old = out
+	_fade(out, 0.0, fade)
+	if stream == null:
+		return
+	if stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
 	_music.stream = stream
+	_music.volume_linear = 0.0
 	_music.play()
+	_fade(_music, db_to_linear(volume_db), fade)
+
+
+## (Tests) Si la canción pedida está sonando en bucle.
+func music_looping() -> bool:
+	var s := _music.stream
+	if s == null or not _music.playing:
+		return false
+	if s is AudioStreamOggVorbis:
+		return (s as AudioStreamOggVorbis).loop
+	if s is AudioStreamMP3:
+		return (s as AudioStreamMP3).loop
+	return true                                  # wav: vuelve a empezar al acabar (finished)
+
+
+func _fade(p: AudioStreamPlayer, to: float, seconds: float) -> void:
+	if p.has_meta(&"fade"):
+		var old: Variant = p.get_meta(&"fade")
+		if old is Tween and (old as Tween).is_valid():
+			(old as Tween).kill()
+	var tw := create_tween()
+	p.set_meta(&"fade", tw)
+	tw.tween_property(p, "volume_linear", to, maxf(seconds, 0.01)).set_trans(Tween.TRANS_SINE)
+	if to <= 0.0:
+		tw.tween_callback(p.stop)
 
 
 func _find(folder: String, sound: String) -> AudioStream:
