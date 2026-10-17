@@ -627,7 +627,7 @@ static func drawing_color(n: Node) -> Color:
 static func drawing_texture(n: Node) -> Texture2D:
 	var m := n.find_child("Dibujo", true, false) as MeshInstance3D if n != null else null
 	var mat := m.get_active_material(0) as StandardMaterial3D if m != null else null
-	return null
+	return mat.albedo_texture if mat != null else null
 
 
 ## La tarjeta de tarea (como el panel de tareas de la referencia): dónde estás (la zona abierta),

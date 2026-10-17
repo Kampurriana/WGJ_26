@@ -12,9 +12,10 @@ extends "res://tools/build_room_level.gd"
 ## Las tres zonas comparten suelo y tejado (integradas); cada una tiene su alfombra, su bombilla
 ## (se enciende al abrirse) y muebles que se abren con algo dentro (baúl, armario, cajones).
 ## Dibujos escondidos (C_, cuarta nota): los dibujos de cuando era pequeña, los de las artistas
-## (assets/kit/dibujos/, DIBUJOS), por el desván; cada uno que se encuentra se cuelga en la cuerda de
-## la infancia (T_): la casa en el baúl de juguetes · la abuela bailarina debajo de la cama · el
-## monstruo con la cámara (con-camara) · el gato encima de las cajas de la tienda
+## (assets/kit/dibujos/, DIBUJOS), uno por acto; cada uno que se encuentra se cuelga en la cuerda de
+## la infancia (T_): la casa en el baúl de juguetes · el monstruo con la cámara (con-camara) · el
+## gato encima de las cajas de la tienda. El de la niña y la abuela bailarina no es coleccionable:
+## es el dibujo de pared de la infancia (P_dibujo, "las niñas no pintan monstruos"), DIBUJO_PARED.
 ## Ejecutar:
 ##   godot --headless --path . --script res://tools/build_attic_level.gd
 ## Escribe:
@@ -52,10 +53,11 @@ const DRAWING_LONG := 0.23                   ## el lado largo de un dibujo (m): 
 ## Los dibujos coleccionables (C_dibujo_<clave>): la imagen de cada uno.
 const DIBUJOS := {
 	"casa": "res://assets/kit/dibujos/t_draw_00.jpg",
-	"bailarina": "res://assets/kit/dibujos/t_draw_03.png",
 	"monstruo": "res://assets/kit/dibujos/t_draw_01.jpg",
 	"gato": "res://assets/kit/dibujos/t_draw_02.jpg",
 }
+## El dibujo de la pared de la infancia (la pieza P_dibujo): la niña bailarina y su abuela.
+const DIBUJO_PARED := "res://assets/kit/dibujos/t_draw_03.png"
 const LINE_Z := -1.15                        ## la cuerda de los dibujos: delante del faldón, encima de la cama
 const LINE_X := Vector2(-2.6, -0.98)         ## de la pared izquierda hasta casi el escritorio
 const LINE_Y := 1.42                         ## altura de sus extremos
@@ -229,8 +231,6 @@ func _build_childhood(sec: Node3D) -> void:
 	_kid_drawing(leaning, "casa")
 	# La cuerda de los dibujos (distinta de la de las fotos, encima del escritorio).
 	_clothesline(sec)
-	# Debajo de la cama asoma otro (está desde que la cama está puesta).
-	_kid_drawing(_lying(sec, "C_dibujo_bailarina__after-cama_infantil", Vector3(-2.08, 0.013, -0.43), 160.0), "bailarina")
 	# Piezas.
 	var rug := _node(sec, "P_alfombra_infancia", Vector3(-1.75, 0.012, 0.45))
 	_cyl(rug, "Alfombra", Vector3.ZERO, 0.62, 0.015, PASTEL_PINK)
@@ -255,13 +255,8 @@ func _build_childhood(sec: Node3D) -> void:
 	_sphere(box_music, "Cabeza", Vector3(0, 0.16, 0.0), 0.012, Color(0.98, 0.85, 0.8))
 	_cyl(box_music, "Tutu", Vector3(0, 0.125, 0.0), 0.028, 0.008, Color(0.98, 0.75, 0.85))
 	var drawing := _node(sec, "P_dibujo__after-caja_musica", Vector3(-1.95, 0.72, WALL_IN + 0.005))
-	_box(drawing, "Papel", Vector3.ZERO, Vector3(0.34, 0.26, 0.006), Color(0.98, 0.97, 0.94))
-	_box(drawing, "Tutu", Vector3(0, -0.01, 0.004), Vector3(0.12, 0.05, 0.002), Color(0.95, 0.55, 0.7))
-	_box(drawing, "Cuerpo", Vector3(0, 0.035, 0.004), Vector3(0.03, 0.06, 0.002), Color(0.95, 0.55, 0.7))
-	_sphere(drawing, "Cabeza", Vector3(0, 0.08, 0.004), 0.02, Color(0.98, 0.8, 0.65))
-	_box(drawing, "Piernas", Vector3(0, -0.07, 0.004), Vector3(0.04, 0.07, 0.002), Color(0.3, 0.3, 0.35))
-	_box(drawing, "Sol", Vector3(0.12, 0.09, 0.004), Vector3(0.04, 0.04, 0.002), Color(1.0, 0.82, 0.3))
-	_box(drawing, "Celo", Vector3(0, 0.13, 0.004), Vector3(0.06, 0.015, 0.002), Color(0.9, 0.88, 0.8))
+	var wall_size := _sheet(drawing, DIBUJO_PARED, 0.34, false)   # pegado a la pared por el centro
+	_box(drawing, "Celo", Vector3(0, wall_size.y * 0.5 - 0.005, 0.004), Vector3(0.06, 0.015, 0.002), Color(0.9, 0.88, 0.8))
 	var horse := _node(sec, "P_caballito", Vector3(-1.25, 0, 0.55))
 	horse.rotation_degrees.y = 25.0
 	for z in [-0.08, 0.08]:
@@ -561,28 +556,39 @@ func _lying(parent: Node3D, n: String, pos: Vector3, yaw: float) -> Node3D:
 
 
 ## Un dibujo de cuando era pequeña: el de las artistas (DIBUJOS[cual]) sobre su folio, con su trozo
-## de celo. El origen es el borde de arriba, donde lo coge la pinza; la cara mira a +Z. El folio va
-## a la medida de la imagen. Guarda en "color" el tono medio del dibujo (los puntos y acentos de la
-## interfaz): así no hay que leer la textura en el juego.
+## de celo. El origen es el borde de arriba, donde lo coge la pinza; la cara mira a +Z. Guarda en
+## "color" el color dominante del dibujo (los puntos y acentos de la interfaz): así no hay que leer
+## la textura en el juego.
 func _kid_drawing(n: Node3D, cual: String) -> void:
 	var path: String = DIBUJOS[cual]
+	_sheet(n, path, DRAWING_LONG, true)
+	_box(n, "Celo", Vector3(0, -0.006, 0.0025), Vector3(0.04, 0.012, 0.002), Color(0.92, 0.9, 0.8))
+	n.set_meta("color", _dominant_color(Image.load_from_file(ProjectSettings.globalize_path(path))))
+
+
+## Un folio con una imagen encima (la malla "Dibujo", que es la que lee la interfaz), a la medida de
+## la imagen con su lado largo = `long_side`; la cara mira a +Z. top_origin: el origen es el borde
+## de arriba (lo que cuelga de una pinza); si no, el centro. Devuelve su tamaño.
+func _sheet(n: Node3D, path: String, long_side: float, top_origin: bool) -> Vector2:
 	var tex := load(path) as Texture2D
 	var aspect := tex.get_width() / float(tex.get_height())
-	var size := Vector2(DRAWING_LONG, DRAWING_LONG / aspect) if aspect >= 1.0 else Vector2(DRAWING_LONG * aspect, DRAWING_LONG)
-	_box(n, "Papel", Vector3(0, -size.y * 0.5, 0), Vector3(size.x, size.y, 0.004), Color(0.97, 0.96, 0.92))
+	var size := Vector2(long_side, long_side / aspect) if aspect >= 1.0 else Vector2(long_side * aspect, long_side)
+	var center := Vector3(0, -size.y * 0.5 if top_origin else 0.0, 0)
+	_box(n, "Papel", center, Vector3(size.x, size.y, 0.004), Color(0.97, 0.96, 0.92))
 	var quad := QuadMesh.new()
 	quad.size = size - Vector2(0.008, 0.008)
+	# En el material de la malla, no en material_override: un hueco usa ese para la silueta y lo
+	# vacía al colocar la pieza (el dibujo de la pared se quedaba en blanco).
 	var mat := StandardMaterial3D.new()
 	mat.albedo_texture = tex
 	mat.roughness = 0.85
+	quad.material = mat
 	var drawing := MeshInstance3D.new()
 	drawing.name = "Dibujo"
 	drawing.mesh = quad
-	drawing.material_override = mat
-	drawing.position = Vector3(0, -size.y * 0.5, 0.0021)
+	drawing.position = center + Vector3(0, 0, 0.0021)
 	n.add_child(drawing)
-	_box(n, "Celo", Vector3(0, -0.006, 0.0025), Vector3(0.04, 0.012, 0.002), Color(0.92, 0.9, 0.8))
-	n.set_meta("color", _dominant_color(Image.load_from_file(ProjectSettings.globalize_path(path))))
+	return size
 
 
 ## El color que más se ve en un dibujo (el fondo blanco del papel no cuenta): los píxeles con color
@@ -634,7 +640,7 @@ func _clothesline(sec: Node3D) -> void:
 		_sphere(line, "Clavo%d" % int(x > -2.0), Vector3(x, height.call(x), 0), 0.008, Color(0.35, 0.33, 0.3))
 	var tilts := [-4.0, 3.0, -2.0, 5.0, -3.0, 2.0, -5.0]
 	for k in DIBUJOS.size():                     # una pinza por dibujo, repartidas por la cuerda
-		var x := -2.38 + k * 0.36
+		var x := lerpf(LINE_X.x + 0.3, LINE_X.y - 0.3, k / maxf(DIBUJOS.size() - 1.0, 1.0))
 		var pin := _node(line, "Pinza%d" % (k + 1), Vector3(x, height.call(x) - 0.006, 0))
 		pin.rotation_degrees.z = tilts[k]
 		_box(pin, "Pinza", Vector3(0, 0.004, 0.006), Vector3(0.012, 0.04, 0.008), WOOD_LIGHT)

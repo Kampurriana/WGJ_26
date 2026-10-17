@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (231 comprobaciones, 17 avisos)`** (~3 min).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (261 comprobaciones, 17 avisos)`** (~3 min).
    Los avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -165,6 +165,10 @@ carpeta. Si no, parar y preguntar.
   puzle del título es **el cerdito**, de unas 20 piezas, sobre todo pegatinas; primer plano de la
   hucha con los diálogos y la moneda (y el fade out); el espejo de frente, fondo negro y su
   diálogo; secuencias con personalidad; jugabilidad orientativa y pausada.
+- **17-oct, los dibujos de las artistas (`assets/kit/dibujos/`):** los coleccionables son los de la
+  carpeta 2D: la casa, el monstruo y el gato (3, uno por acto). El de la niña bailarina con su
+  abuela **no es coleccionable**: es el dibujo de la pared de la infancia («las niñas no pintan
+  monstruos», `P_dibujo`).
 - **Feedback del 17-oct, sexta nota:** los tablones: con arrastrar uno se completan todos los que son
   iguales; la moneda: diálogo → moneda fantasma (textura fantasma) que hace en bucle el gesto de
   meterse en el cerdito hasta que el jugador coge la moneda → el jugador la mete; más inmediato
