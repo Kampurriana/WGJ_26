@@ -14,18 +14,24 @@ extends Node
 ##              en silencio y un fundido lento a negro); luego, corte a un primer plano ligeramente
 ##              cenital de lo que la sostiene (la hucha), SOLA y quieta, en una escena acogedora: luz
 ##              cálida de lámpara que parpadea un pelín, un contraluz, motas de polvo y, detrás, un
-##              fondo cálido con luces desenfocadas (shaders/acogedor.gdshader). Mientras se dicen sus
-##              frases aparece la moneda a su lado, quieta y con un destello; cuando acaban, el jugador
-##              la ARRASTRA hasta la ranura (cerca, la ranura la atrae) y entra con un golpe de luz y
-##              chispas doradas. Después, fundido a negro y créditos (main.gd).
+##              fondo cálido con luces desenfocadas (shaders/acogedor.gdshader). Sexta nota, en orden:
+##              1) sus frases (un clic pasa a la siguiente); 2) en cuanto se callan, la moneda aparece a
+##              su lado, quieta y con un destello, y una moneda FANTASMA (shaders/fantasma.gdshader)
+##              enseña en bucle el gesto de meterla en la ranura; 3) el jugador la coge (el bucle se
+##              para) y la ARRASTRA hasta la ranura (cerca, la ranura la atrae): entra con un golpe de
+##              luz y chispas doradas. Después, fundido a negro y créditos (main.gd).
 
 const MIN_TIME := 2.0                        ## un momento dura al menos esto (s)
-const IRIS := 0.62                           ## lo oscuro alrededor del objeto en un momento normal
+const IRIS := 0.7                            ## lo oscuro alrededor del objeto en un momento normal
+const IRIS_SOFT := 1.9                       ## sexta nota: el foco, muy degradado; llega a 1 + esto veces el radio...
+const IRIS_INSIDE := 0.45                    ## ...y empieza a oscurecer ya dentro (fracción del radio): sin borde
+const COZY_DARK := Color(0.16, 0.08, 0.04)   ## (ofrecida) el oscuro del foco: el tono del fondo cálido
 const BARS := 54.0                           ## alto de las bandas de cine (px a 720)
 const FADE := 0.9
 const CUT_TIME := 0.45                       ## (ofrecida) fundido a negro antes del corte, y vuelta
 const ZENITH := 38.0                         ## (ofrecida) inclinación del primer plano de la hucha
 const ENDING_YAW := 22.0                     ## (ofrecida) giro sobre la vista del nivel: tres cuartos, se le ve la cara
+const ENDING_MARGIN := 3.2                   ## (ofrecida) la hucha y su sitio (la moneda y su fantasma alrededor)
 const ISOLATE_LAYER := 20                    ## capa de render de lo aislado (el resto no se ve)
 const COIN_GRAB_PX := 70.0                   ## lo cerca que hay que coger la moneda
 const COIN_SNAP_PX := 80.0                   ## y lo cerca de la ranura que hay que soltarla
@@ -33,7 +39,9 @@ const HIDE_TIME := 0.35                      ## lo que tarda en desvanecerse lo 
 const TRANSITION_HOLD := 1.4                 ## (espejo → final) el espejo vacío, en silencio...
 const TRANSITION_FADE := 1.8                 ## ...y el fundido lento a negro (s)
 const CUT_IN := 1.8                          ## (ofrecida) lo que tarda en verse la escena tras el corte
-const COIN_DELAY := 1.6                      ## (ofrecida) lo que tarda en aparecer la moneda tras el corte
+const GHOST_TIME := 1.5                      ## (ofrecida) la moneda fantasma va de la moneda a la ranura en esto...
+const GHOST_REST := 0.7                      ## ...y espera esto antes de repetirlo (s)
+const GHOST_ALPHA := 0.9                     ## lo que se ve la fantasma (es una pista, no la moneda)
 const COIN_SCALE := 1.15                     ## la moneda que espera, un poco más grande (se lee mejor)
 const COIN_MAGNET := 1.8                     ## la ranura atrae la moneda desde COIN_SNAP_PX × esto
 const COZY_IRIS := 0.3                       ## (ofrecida) poco foco: el fondo cálido tiene que verse
@@ -42,6 +50,7 @@ var active := false
 var kind := ""                               ## "" / "normal" / "reflejo" / "transicion" / "ofrecida"
 var target: Node3D                           ## el objeto del momento
 var coin: Node3D                             ## (ofrecida) la pieza flotando, lista para arrastrarla
+var ghost: Node3D                            ## (ofrecida) su fantasma, que enseña en bucle cómo meterla (null = parado)
 var reflection: Node3D                       ## (reflejo) vaho en la luna + la silueta de ella + su luz
 var hidden_for_shot: Array = []              ## lo que tapaba el plano (GeometryInstance3D escondidos mientras dura)
 var _figure: Sprite3D                        ## la silueta (aparece con la primera frase, se va con la última)
@@ -70,6 +79,9 @@ var _isolated: Dictionary = {}               ## VisualInstance3D -> capas de ant
 var _lines_seen := 0
 var _coin_rest := Vector3.ZERO               ## dónde flota la moneda cuando no se arrastra
 var _coin_state := ""                        ## "" flotando · "arrastrando" · "volviendo" · "entrando"
+var _shot_ready := false                     ## (ofrecida) ya se ha hecho el corte a la hucha
+var _ghost_mat: ShaderMaterial
+var _ghost_tween: Tween
 
 
 func _ready() -> void:
@@ -103,6 +115,9 @@ func _ready() -> void:
 	_iris_mat = ShaderMaterial.new()
 	_iris_mat.shader = preload("res://shaders/foco.gdshader")
 	_iris_mat.set_shader_parameter("fuerza", 0.0)
+	_iris_mat.set_shader_parameter("suave", IRIS_SOFT)
+	_iris_mat.set_shader_parameter("dentro", IRIS_INSIDE)
+	_iris_mat.set_shader_parameter("color", Color.BLACK)
 	_iris.material = _iris_mat
 	_layer.add_child(_iris)
 	for top in [true, false]:
@@ -162,8 +177,10 @@ func _ready() -> void:
 
 ## Corta lo que hubiera (al cambiar de diorama) sin animación.
 func reset() -> void:
+	_stop_ghost()
 	_unisolate()
 	_show_hidden(false)
+	_shot_ready = false
 	if is_instance_valid(coin):
 		coin.queue_free()
 	if is_instance_valid(reflection):
@@ -240,6 +257,7 @@ func start(node: Node3D, p_kind: String, _id: String) -> void:
 	_elapsed = 0.0
 	_t = 0.0
 	_lines_seen = 0
+	_shot_ready = false
 	_hold_sections(kind == "reflejo")           # tras el espejo, el final espera a su transición
 	var cam := GameState.camera
 	var box := Visuals.global_aabb(node)
@@ -351,6 +369,9 @@ func _process(delta: float) -> void:
 	if is_instance_valid(coin) and _coin_state == "":
 		_present_coin()
 	var talking := Narrator.remaining() > 0.0
+	if kind == "ofrecida" and not talking and _shot_ready and not is_instance_valid(coin) and _offered != null \
+			and _offered.available and not _offered.filled:
+		_spawn_coin()                            # se callan las frases: ya, la moneda (y su fantasma)
 	var coin_turn := _coin_ready() and not talking
 	_prompt.modulate.a = move_toward(_prompt.modulate.a, 1.0 if talking or coin_turn else 0.0, delta * 2.0)
 	_prompt.text = "arrastra la moneda hasta la hucha" if coin_turn else "clic para seguir  ›"
@@ -380,6 +401,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		return
 	if _coin_ready() and _near_coin(mb.position):
 		_coin_state = "arrastrando"               # se coge: ahora hay que llevarla hasta la ranura
+		_stop_ghost()                            # y la fantasma ya no hace falta
 		Sfx.play("pickup")
 	elif kind == "transicion":
 		pass                                     # la transición no se salta: dura lo que dura
@@ -451,7 +473,11 @@ func _follow_iris() -> void:
 	var r := ((hi - lo) * 0.5 * grow).max(Vector2(110, 110) if kind != "reflejo" else Vector2(40, 40))
 	_iris_mat.set_shader_parameter("centro", (lo + hi) * 0.5)
 	_iris_mat.set_shader_parameter("radio", r)
-	_iris_mat.set_shader_parameter("suave", 0.12 if kind == "reflejo" else 0.45)
+	var black := kind == "reflejo" or kind == "transicion"     # el espejo: todo a negro, con borde
+	_iris_mat.set_shader_parameter("suave", 0.12 if black else IRIS_SOFT)
+	_iris_mat.set_shader_parameter("dentro", 1.0 if black else IRIS_INSIDE)
+	_iris_mat.set_shader_parameter("color", Color.BLACK if black else COZY_DARK if kind == "ofrecida"
+		else Fondos.dark(Settings.get_value("fondo_color")))
 	_iris_mat.set_shader_parameter("tam", _iris.size)
 	if GameState.enfoque != null:
 		GameState.enfoque.focus_on((lo + hi) * 0.5, r * 1.1, 1.0)
@@ -607,14 +633,14 @@ func _cut_to_offered(node: Node3D) -> void:
 		# Desde donde la ve el jugador en el desván, un poco girada para verle la cara (venimos del
 		# espejo: su vista no sirve).
 		var yaw := deg_to_rad(GameState.diorama.camera_yaw_deg + ENDING_YAW)
-		cam.close_up(Visuals.global_aabb(node).grow(0.06), Vector3(sin(yaw), 0.0, cos(yaw)), ZENITH, 2.6)
+		cam.close_up(Visuals.global_aabb(node).grow(0.06), Vector3(sin(yaw), 0.0, cos(yaw)), ZENITH, ENDING_MARGIN)
 		cam.snap()                               # un corte, no un viaje: la cámara no da vueltas
 		_light_ending(node)
 		var shown: Array = [node, _offered.node, _spot, _rim, _motes]
 		shown.append_array(_support_under(node))
 		_isolate(shown)
 		_frame_to(COZY_IRIS, BARS, 0.01)
-		get_tree().create_timer(COIN_DELAY, false).timeout.connect(_spawn_coin))
+		_shot_ready = true)
 	tw.tween_interval(0.5)
 	tw.tween_property(_curtain, "color:a", 0.0, CUT_IN).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
@@ -797,8 +823,59 @@ func _spawn_coin() -> void:
 	coin.add_child(sparkle)
 	_isolate([coin])
 	var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(coin, "scale", Vector3.ONE * COIN_SCALE, 0.7)
+	tw.tween_property(coin, "scale", Vector3.ONE * COIN_SCALE, 0.45)
+	tw.tween_callback(_start_ghost)
 	Sfx.play("brillo")
+
+
+## La moneda fantasma: una copia translúcida que sale de la moneda, se endereza sobre la ranura y entra
+## en la hucha (desaparece dentro), una y otra vez, hasta que el jugador coge la moneda.
+func _start_ghost() -> void:
+	_stop_ghost()
+	if not active or kind != "ofrecida" or not is_instance_valid(coin) or _coin_state != "" or _offered == null:
+		return
+	ghost = _offered.prototype.duplicate() as Node3D
+	ghost.name = "Fantasma"
+	_ghost_mat = ShaderMaterial.new()
+	_ghost_mat.shader = preload("res://shaders/fantasma.gdshader")
+	_ghost_mat.set_shader_parameter("alpha", 0.0)
+	_ghost_mat.set_shader_parameter("color", Color(1.0, 0.97, 0.9))
+	for m in Visuals.meshes_under(ghost):
+		m.material_override = _ghost_mat
+		m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	GameState.diorama.add_child(ghost)
+	_ghost_at(0.0)
+	_isolate([ghost])
+	_ghost_tween = ghost.create_tween().set_loops()
+	_ghost_tween.tween_method(_ghost_at, 0.0, 1.0, GHOST_TIME)
+	_ghost_tween.tween_interval(GHOST_REST)
+
+
+func _stop_ghost() -> void:
+	if _ghost_tween != null:
+		_ghost_tween.kill()
+	_ghost_tween = null
+	if is_instance_valid(ghost):
+		ghost.queue_free()
+	ghost = null
+
+
+## La fantasma en el instante t (0..1) del gesto: sale de la moneda, sube un poco en arco mientras se
+## endereza como la ranura, y baja dentro de la hucha. Aparece al principio y se apaga al entrar.
+func _ghost_at(t: float) -> void:
+	if not is_instance_valid(ghost) or not is_instance_valid(coin) or _offered == null:
+		return
+	var from := coin.global_transform
+	var goal := _offered.node.global_transform
+	var above := goal.origin + Vector3.UP * 0.07
+	var a := smoothstep(0.0, 0.68, t)
+	var b := clampf((t - 0.68) / 0.27, 0.0, 1.0)
+	var pos := from.origin.lerp(above, a) + Vector3.UP * sin(a * PI) * 0.06
+	if b > 0.0:
+		pos = above.lerp(goal.origin - Vector3.UP * 0.03, b * b)
+	var q := from.basis.get_rotation_quaternion().slerp(goal.basis.get_rotation_quaternion(), a)
+	ghost.global_transform = Transform3D(Basis(q).scaled(Vector3.ONE * lerpf(from.basis.get_scale().x, 1.0, a)), pos)
+	_ghost_mat.set_shader_parameter("alpha", GHOST_ALPHA * smoothstep(0.0, 0.12, t) * (1.0 - smoothstep(0.8, 0.97, t)))
 
 
 func _coin_ready() -> bool:
@@ -860,7 +937,9 @@ func _release_coin(_pos: Vector2) -> void:
 		Sfx.play("reject")
 		var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tw.tween_property(coin, "global_position", _coin_rest, 0.35)
-		tw.tween_callback(func() -> void: _coin_state = "")
+		tw.tween_callback(func() -> void:
+			_coin_state = ""
+			_start_ghost())                      # vuelve a enseñar el gesto
 
 
 ## La moneda entra: un golpe de luz cálida desde la ranura, chispas doradas que saltan, luces que
@@ -1010,6 +1089,7 @@ func finish() -> void:
 
 ## Lo que pone un momento especial (lo aislado, el reflejo, la luz de arriba, el fondo negro) se quita.
 func _clear_extras() -> void:
+	_stop_ghost()
 	_unisolate()
 	if is_instance_valid(reflection):
 		reflection.queue_free()

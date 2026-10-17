@@ -52,7 +52,9 @@ minutos y pueda repetirse, se apunta en `CLAUDE.md` (sección Trampas) en el mom
     `( cd X && … )` o rutas absolutas.
 18. **`$?` después de una tubería es del último comando**, no del que importa.
 19. **Nunca matar procesos por patrón** (`pkill -f`, `Stop-Process` por línea de comandos): se lleva
-    por delante tu propia shell. Por PID, y excluyendo el propio.
+    por delante tu propia shell. Por PID, y excluyendo el propio. Ojo, `for p in $(pgrep -f X)` es lo
+    mismo (el patrón está en tu propia línea): pasó otra vez el 17-oct. Buscar el PID con `ps` y
+    matar ese número.
 20. **El scratchpad (carpeta temporal) no es un almacén:** algo lo barrió una vez entero. Lo que
     vale, commiteado y empujado.
 

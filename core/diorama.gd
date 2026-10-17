@@ -30,6 +30,7 @@ const LIFT_TIME := 0.45                     ## un dibujo encontrado se levanta d
 const HANG_TIME := 1.3                      ## ...vuela en arco hasta su pinza...
 const SWING_TIME := 2.4                     ## ...y se balancea en la cuerda hasta quedarse quieto (s)
 const GIVEN_DELAY := 0.7                    ## lo que espera el dibujo que viene con una pieza tras su momento (s)
+const TWIN_STEP := 0.07                     ## una pieza repetida se pone en todos sus huecos, uno tras otro (s)
 
 @export var level_title := "Diorama"
 ## Modelo del diorama: un .glb (o escena) con la convención de nombres. Si el fichero existe, se
@@ -486,25 +487,54 @@ func try_place(piece_id: StringName, screen_pos: Vector2, cam: Camera3D) -> bool
 	return true
 
 
+## Pone la pieza en ese hueco y, si es repetida, también en sus gemelos (twins_of): con soltar un
+## tablón se completan todos los iguales (sexta nota). Cuentan como puestos al momento; se ven
+## encajar uno tras otro, del más cercano al más lejano.
 func place(slot: PieceSlot) -> void:
-	slot.fill()
-	for m in slot.meshes():
-		Visuals.add_surface(m)
+	var twins := twins_of(slot)
+	slot.filled = true
 	inventory.erase(slot.id)
-	if not slot.offered:                        # la moneda entra en la hucha sin saltito: el final es quieto
-		_pop(slot.node)
-	_reveal_around(slot.center())
-	_play_animation(String(slot.id) + "_placed")
-	Sfx.play("snap")
+	for t in twins:
+		t.filled = true                          # ya puesta para el juego; su silueta espera su turno
+		inventory.erase(t.id)
+	_show_placed(slot)
+	for i in twins.size():
+		create_tween().tween_callback(_show_placed.bind(twins[i])).set_delay((i + 1) * TWIN_STEP)
 	Narrator.say_if_exists("pieza_" + String(slot.id))
 	if slot.flash:
 		Events.flash_requested.emit()
-	Events.piece_placed.emit(slot.id, slot.node)
 	_refresh(true)
 	Events.inventory_changed.emit()
 	_check_scope(slot.scope)
 	_check_sections()
 	_check_completed()
+
+
+## Los huecos libres iguales a ese (mismo id, mismo ámbito, ya desbloqueados) que se llenan con él,
+## del más cercano al más lejano; tantos como piezas de ese id queden en el inventario.
+func twins_of(slot: PieceSlot) -> Array[PieceSlot]:
+	var out: Array[PieceSlot] = []
+	for s in slots:
+		if s != slot and s.id == slot.id and not s.filled and s.scope == slot.scope and is_unlocked(s):
+			out.append(s)
+	var c := slot.center()
+	out.sort_custom(func(a: PieceSlot, b: PieceSlot) -> bool: return a.center().distance_to(c) < b.center().distance_to(c))
+	out.resize(mini(out.size(), maxi(0, inventory.count(slot.id) - 1)))
+	return out
+
+
+## Lo que se ve al encajar una pieza: deja de ser silueta, salta, pinta alrededor y avisa (efectos,
+## cámara, momentos). En las gemelas llega un poco después que en la que soltó el jugador.
+func _show_placed(slot: PieceSlot) -> void:
+	slot.fill()
+	for m in slot.meshes():
+		Visuals.add_surface(m)
+	if not slot.offered:                        # la moneda entra en la hucha sin saltito: el final es quieto
+		_pop(slot.node)
+	_reveal_around(slot.center())
+	_play_animation(String(slot.id) + "_placed")
+	Sfx.play("snap")
+	Events.piece_placed.emit(slot.id, slot.node)
 
 
 func collect(it: Interactable) -> void:
@@ -558,7 +588,8 @@ func exit_focus() -> void:
 
 ## Mientras se arrastra una pieza, laten las siluetas donde puede ir ("aquí"). &"" = ninguna.
 ## Las piezas repetidas (un tablón vale en varios huecos, no en todos) no laten: encontrar dónde va
-## cada una es el reto (quinta nota: "crea una cierta complejidad, ahora es muy intuitivo").
+## su juego (largo, medio o corto) es el reto (quinta nota: "crea una cierta complejidad"); al
+## soltarla bien se ponen todas las iguales (sexta nota, place).
 func _pulse_slots_for(id: StringName) -> void:
 	var guide := id != &"" and slots.filter(func(o: PieceSlot) -> bool: return o.id == id).size() == 1
 	for s in slots:
@@ -780,9 +811,14 @@ func _open_pending(sec: Section) -> void:
 			it.set_clickable(true)
 	Events.section_opened.emit(sec)
 	Narrator.say_if_exists("seccion_" + sec.name)
-	var talk := Narrator.remaining()
-	if talk > 0.05:
-		get_tree().create_timer(talk, false).timeout.connect(_reveal_pending.bind(sec))
+	_reveal_when_quiet(sec)
+
+
+## Sus piezas salen cuando se callan esas frases: antes si el jugador las pasa con clics (el final
+## no hace esperar a la moneda, sexta nota).
+func _reveal_when_quiet(sec: Section) -> void:
+	if Narrator.remaining() > 0.05:
+		get_tree().create_timer(0.1, false).timeout.connect(_reveal_when_quiet.bind(sec))
 	else:
 		_reveal_pending(sec)
 

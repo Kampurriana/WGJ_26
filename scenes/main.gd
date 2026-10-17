@@ -23,6 +23,9 @@ extends Node3D
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
 const FADE_TIME := 0.7                       ## fundido desde negro al cargar un diorama
 const END_FADE_TIME := 2.5                   ## fundido a negro del final de la historia (Diorama.fundido_final)
+const BLACKOUT_TIME := 0.6                   ## al darle a Jugar (sexta nota): la pantalla se va a negro...
+const BLACKOUT_HOLD := 0.25                  ## ...un instante a oscuras (ahí se carga el diorama)...
+const BLACKOUT_IN := 1.1                     ## ...y el diorama aparece desde el negro (s)
 const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
@@ -36,6 +39,7 @@ var _level: Node
 var _lighting: Node
 var _fade: ColorRect
 var _fade_tween: Tween
+var blacking_out := false                    ## yendo a negro desde el menú (no se puede tocar nada)
 var _flash: ColorRect
 var _only_background := false
 var _lighting_path := ""
@@ -105,7 +109,7 @@ func _ready() -> void:
 		if GameState.mode == GameState.Mode.PLAYING and not GameState.camera.in_moment:   # el epílogo es un momento
 			GameState.camera.frame_box((sec as Section).box()))
 	hud.pause_requested.connect(open_pause)
-	menu.play_requested.connect(play_level)
+	menu.play_requested.connect(blackout_to_level)
 	pause.main_menu_requested.connect(show_title)
 	Events.level_completed.connect(_on_level_completed)
 	Settings.changed.connect(func(key: String) -> void:
@@ -181,12 +185,12 @@ func flash() -> void:
 	tw.tween_property(_flash, "color:a", 0.0, 0.9).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 
-func _fade_in() -> void:
+func _fade_in(seconds := FADE_TIME) -> void:
 	if _fade_tween != null:
 		_fade_tween.kill()
 	_fade.color.a = 1.0
 	_fade_tween = _fade.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_fade_tween.tween_property(_fade, "color:a", 0.0, FADE_TIME)
+	_fade_tween.tween_property(_fade, "color:a", 0.0, seconds)
 
 
 ## La luz vive en escenas de iluminacion/ que se ajustan en el editor (docs/ILUMINACION.md), no aquí.
@@ -211,11 +215,15 @@ func _apply_lighting(path: String) -> void:
 	_apply_background()
 
 
-## El fondo que eligió el jugador en Opciones (ui/fondos.gd), en el de la escena de luz.
+## El fondo que eligió el jugador en Opciones (ui/fondos.gd), en el de la escena de luz; y la viñeta,
+## del oscuro de ese mismo tono.
 func _apply_background() -> void:
 	var rect := _lighting.get_node_or_null("Fondo/Degradado") as CanvasItem if _lighting != null else null
 	if rect != null:
 		Fondos.apply(rect.material as ShaderMaterial, true, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))
+	var vignette := _lighting.get_node_or_null("Vineta/Sombra") as CanvasItem if _lighting != null else null
+	if vignette != null and vignette.material is ShaderMaterial:
+		(vignette.material as ShaderMaterial).set_shader_parameter("color", Fondos.dark(Settings.get_value("fondo_color")))
 
 
 func load_level(index: int) -> void:
@@ -238,6 +246,26 @@ func show_title() -> void:
 	else:
 		GameState.camera.set_menu_view(false)
 		GameState.hud.set_game_ui_visible(true)
+
+
+## Desde el menú (Jugar, Continuar o un diorama elegido): la pantalla se va a negro con el menú
+## encima, a oscuras se carga el diorama y aparece desde el negro (sexta nota: "transición blackout").
+## Mientras dura, la cortina no deja tocar nada.
+func blackout_to_level(index: int) -> void:
+	if blacking_out:
+		return
+	blacking_out = true
+	_fade.mouse_filter = Control.MOUSE_FILTER_STOP
+	if _fade_tween != null:
+		_fade_tween.kill()
+	_fade_tween = _fade.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_fade_tween.tween_property(_fade, "color:a", 1.0, BLACKOUT_TIME)
+	_fade_tween.tween_interval(BLACKOUT_HOLD)
+	_fade_tween.tween_callback(func() -> void:
+		blacking_out = false
+		_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		play_level(index)
+		_fade_in(BLACKOUT_IN))
 
 
 func play_level(index: int) -> void:

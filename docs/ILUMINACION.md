@@ -17,7 +17,7 @@ color y su motivo en Opciones (`ui/fondos.gd`). Por qué así y de dónde sale c
 | `probar_luz.tscn` | Para mirarla en el editor: la luz por defecto + la habitación + la cámara del juego |
 | `rig_luz.gd` | El script de la raíz de cada escena de luz (lo que la hace "en tiempo real") |
 | `fondo.gdshader` | El fondo: un pastel con un halo más claro detrás del diorama y un motivo (estrellas, corazones, lunares o liso) en filas diagonales que se desplazan. Sus colores los pone el juego según lo que eligió el jugador (`ui/fondos.gd`); los de la escena son los del azul |
-| `vineta.gdshader` | La viñeta: oscurece un poco las esquinas |
+| `vineta.gdshader` | La viñeta: oscurece las esquinas con un degradado largo, **del tono del fondo** (no negra, sexta nota): su color lo pone el juego, el oscuro del fondo elegido (`Fondos.dark`) |
 
 ## Qué hay dentro de una escena de luz
 
@@ -42,7 +42,8 @@ color y su motivo en Opciones (`ui/fondos.gd`). Por qué así y de dónde sale c
   motivo (*Tam Forma* = separación, *Tam Figura*, *Velocidad*, *Angulo Patron* = 45º, *Giro*). Los
   **colores** los pone el juego (los que elija el jugador): cambiarlos aquí no sirve. Para cambiar
   o añadir un color de la lista, `ui/fondos.gd` + `tools/calibrar_fondo.gd` (ver "Cuidado").
-- **`Vineta` → `Sombra`**: *Fuerza* (0 = sin viñeta) y *Suavidad*.
+- **`Vineta` → `Sombra`**: *Fuerza* (0 = sin viñeta) y *Suavidad*. El *Color* lo pone el juego (el
+  oscuro del fondo elegido): cambiarlo aquí no sirve.
 
 ## Sombras (por qué ya no salen pixeladas)
 

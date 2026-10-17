@@ -71,9 +71,11 @@ Dos momentos especiales:
   nada más), quieta, vista un poco desde arriba y de tres cuartos, en una escena **acogedora**: luz
   cálida de lámpara que parpadea un pelín, un contraluz naranja que le dibuja el borde, motas de polvo
   flotando en la luz y, detrás, un fondo cálido con **luces desenfocadas** (como una guirnalda).
-  Mientras se dicen sus frases (empiezan tras un silencio) aparece **la moneda** a su lado, quieta y
-  con un destello. Cuando acaban, el jugador **coge la moneda y la arrastra hasta la ranura** (cerca,
-  la ranura la atrae; si la suelta lejos, vuelve a su sitio); se endereza, entra con **un golpe de
+  En orden (sexta nota: "más inmediato"): 1) **sus frases**, seguidas (un clic pasa a la siguiente);
+  2) en cuanto se callan aparece **la moneda** a su lado, quieta y con un destello, y una **moneda
+  fantasma** (blanca y translúcida) enseña en bucle el gesto de meterla en la ranura; 3) el jugador
+  **coge la moneda** (la fantasma se va) **y la arrastra hasta la ranura** (cerca, la ranura la atrae;
+  si la suelta lejos, vuelve a su sitio y la fantasma vuelve a enseñarlo); se endereza, entra con **un golpe de
   luz dorada, chispas y luces que suben**, el fondo se aviva, suena "Para unas pinturas de verdad." y
   **fundido a negro** hacia los créditos.
 

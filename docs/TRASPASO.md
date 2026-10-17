@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (207 comprobaciones, 17 avisos)`** (~3 min).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (218 comprobaciones, 17 avisos)`** (~3 min).
    Los avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -29,7 +29,15 @@ donde pone **sin probar**.
 
 Si el paso 2 o 3 no sale así, **no sigas**: diagnostica con `build/check.log` / `build/capture.log`.
 
-## 2. Estado del juego (17-oct-2026, junta "Quinta nota" en `main` y en las 3 ramas)
+## 2. Estado del juego (17-oct-2026, junta "Sexta nota" en `main` y en las 3 ramas)
+
+**Sexta nota:** con soltar un tablón (o cualquier pieza repetida: tejado, vigas, libros, las patas,
+ojos y orejas del cerdito) **se ponen todos los iguales**, uno tras otro (`Diorama.twins_of`); el
+final es más inmediato: sus frases (sin silencios; un clic pasa a la siguiente) → en cuanto se
+callan, la moneda y una **moneda fantasma** que enseña en bucle cómo meterla → el jugador la coge (la
+fantasma se va) y la mete; **fundido a negro** al darle a Jugar (`Main.blackout_to_level`); la viñeta
+y el foco de los momentos ya no son negros sino **el oscuro del tono del fondo**, con un degradado
+largo; los primeros planos, más abiertos (`DioramaCamera.CLOSE_UP_*`).
 
 **Quinta nota:** fondo **pastel** con un motivo en filas diagonales que se desplaza (el jugador elige
 color y motivo en Opciones: `ui/fondos.gd`; con HDR 2D y colores calibrados, trampa 37); el suelo del
@@ -150,6 +158,12 @@ carpeta. Si no, parar y preguntar.
   puzle del título es **el cerdito**, de unas 20 piezas, sobre todo pegatinas; primer plano de la
   hucha con los diálogos y la moneda (y el fade out); el espejo de frente, fondo negro y su
   diálogo; secuencias con personalidad; jugabilidad orientativa y pausada.
+- **Feedback del 17-oct, sexta nota:** los tablones: con arrastrar uno se completan todos los que son
+  iguales; la moneda: diálogo → moneda fantasma (textura fantasma) que hace en bucle el gesto de
+  meterse en el cerdito hasta que el jugador coge la moneda → el jugador la mete; más inmediato
+  ("ahora tardas mucho hasta que te deja interactuar con la moneda y es poco intuitivo"); transición
+  blackout al darle a Jugar; la viñeta no negra, oscura pero del tono del fondo, más degradada y
+  menos geométrica; el close-up, demasiado cercano.
 - **Feedback del 17-oct, quinta nota (y mensajes sueltos):** la estrella del cerdito, solo una
   pegatina; sin partículas al pasar al menú; fondo pastel con una forma repetida en diagonal que se
   desplaza (las estrellas, más grandes, en filas diagonales, separadas por igual y que se noten
@@ -233,8 +247,8 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 
 | Qué | Cómo |
 |---|---|
-| Todo el test | `bash tools/check.sh` → `CHECK OK (191 …)` |
-| Ver los tests en rojo | `PARALELO=3 HASTA=55 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` y luego `DESDE=56` → 110 × `ROJO BIEN` (~1 h cada tanda: en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada) |
-| Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=29` (hucha), `--solve=75 --capture-after=36` (espejo), `--solve=76 --capture-after=50` (la hucha del final, con la moneda); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
+| Todo el test | `bash tools/check.sh` → `CHECK OK (218 …)` |
+| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 123 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
+| Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final, con la moneda y su fantasma a medio gesto); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

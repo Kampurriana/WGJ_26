@@ -40,6 +40,13 @@ static func motivo(i: int) -> Dictionary:
 	return MOTIVOS[clampi(i, 0, MOTIVOS.size() - 1)]
 
 
+## El oscuro de ese fondo (la viñeta y el foco de los momentos, sexta nota: "oscuro pero con la misma
+## tonalidad que el fondo"): su mismo tono, más saturado y muy oscuro.
+static func dark(i: int) -> Color:
+	var c: Color = color(i).borde
+	return Color.from_hsv(c.h, maxf(c.s, 0.45), 0.22)
+
+
 ## Pone en el material del fondo el color y el motivo elegidos (índices de COLORES y MOTIVOS: los de
 ## Settings fondo_color y fondo_motivo). tonemapped = es el fondo del 3D.
 static func apply(mat: ShaderMaterial, tonemapped: bool, color_i: int, motivo_i: int) -> void:

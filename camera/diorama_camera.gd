@@ -41,6 +41,13 @@ const BREATH_DEG := Vector2(0.35, 0.22)      ## "respiración" de cámara de cin
 const BREATH_FADE := 0.8                     ## lo que tarda en dejar de respirar al entrar en un primer plano (s)
 const ZOOM_CENTER_PULL := 2.2                ## al acercar, lo de bajo el cursor se desliza hacia el centro (1 = se queda bajo el cursor)
 const CLOSE_UP_SMOOTH := 0.95
+## Lo lejos que se queda un primer plano (sexta nota: "demasiado cercano"): el objeto ocupa poco más
+## de un tercio del alto, con su sitio alrededor. Cuántas veces su tamaño, y entre qué distancias
+## (la de arriba, como fracción de la del nivel).
+const CLOSE_UP_FIT := 3.4
+const CLOSE_UP_MIN := 1.5
+const CLOSE_UP_MAX := 0.75
+const CLOSE_UP_MARGIN := 2.1                 ## los de frente (un dibujo en la pared): el objeto y su sitio
 
 var cam: Camera3D
 var yaw := 25.0
@@ -267,7 +274,7 @@ func frame_box(box: AABB) -> void:
 ## no la mueve. frontal = hacia dónde mira el objeto: la cámara se pone delante, a esa inclinación
 ## (el espejo, un dibujo en la pared); si no, avanza hacia él desde donde miraba el jugador (sin
 ## dar vueltas). Lo que se cruce por delante lo esconde Momentos.
-func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin := 1.5) -> void:
+func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin := CLOSE_UP_MARGIN) -> void:
 	if not in_moment:
 		_saved_view = {"yaw": yaw, "pitch": pitch, "distance": distance, "center": center}
 	in_moment = true
@@ -286,7 +293,8 @@ func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin :
 	else:
 		yaw = _saved_view.get("yaw", yaw)                  # la vista del jugador, no la del momento anterior
 		pitch = clampf(float(_saved_view.get("pitch", pitch)) - 4.0, 10.0, 60.0)
-		distance = clampf(box.size.length() / fit * 2.2, 0.7, float(_home.get("distance", distance)) * 0.6)
+		var far := float(_home.get("distance", distance)) * CLOSE_UP_MAX
+		distance = clampf(box.size.length() / fit * CLOSE_UP_FIT, minf(CLOSE_UP_MIN, far), far)
 	_cine(CLOSE_UP_TIME, CLOSE_UP_SMOOTH)
 
 

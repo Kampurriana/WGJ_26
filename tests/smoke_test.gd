@@ -237,10 +237,19 @@ func _test_story(main: Node) -> void:
 	var cam3 := GameState.camera.cam
 	var mid_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_medio")[0]
 	var long_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")[0]
-	d.try_place(&"tablon_largo", cam3.unproject_position(mid_plank.center()), cam3)
+	var took := d.try_place(&"tablon_largo", cam3.unproject_position(mid_plank.center()), cam3)
 	check(not mid_plank.filled, "un tablón largo no entra en el hueco de uno mediano")
-	check(d.try_place(&"tablon_largo", cam3.unproject_position(long_plank.center()), cam3) and long_plank.filled,
-		"y en el de uno largo, sí (cualquiera de los largos)")
+	if not took:                                   # (si al lado había uno largo, ya ha ido ahí)
+		took = d.try_place(&"tablon_largo", cam3.unproject_position(long_plank.center()), cam3)
+	check(took and long_plank.filled, "y cerca de uno largo, sí (cualquiera de los largos)")
+	var longs := s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")
+	check(longs.all(func(sl: PieceSlot) -> bool: return sl.filled) and d.count_of(&"tablon_largo") == 0
+		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"tablon_largo"),
+		"al soltar un tablón se ponen todos los iguales: los 6 largos de una vez, y su ficha se va de la bandeja")
+	check(longs.any(func(sl: PieceSlot) -> bool: return sl.is_ghost()) and longs.any(func(sl: PieceSlot) -> bool: return not sl.is_ghost()),
+		"se ven encajar uno tras otro: primero el que soltó el jugador")
+	await get_tree().create_timer(Diorama.TWIN_STEP * longs.size() + 0.15).timeout
+	check(longs.all(func(sl: PieceSlot) -> bool: return not sl.is_ghost()), "y enseguida están todos puestos")
 	GameState.drag.begin(&"tablon_corto", GameState.hud.item_for(&"tablon_corto"))
 	check(GameState.is_dragging and not d.slots.any(func(sl: PieceSlot) -> bool:
 		return float(sl._ghost.get_shader_parameter("pulse")) > 0.0 if sl._ghost != null else false),
@@ -273,8 +282,13 @@ func _test_story(main: Node) -> void:
 	var cam_ctl := GameState.camera
 	var m: Momentos = main.momentos
 	check(m.active and m.target == _slot(d, &"hucha").node and cam_ctl.in_moment and GameState.hud.in_moment()
-		and cam_ctl.distance < d.camera_distance * 0.6 + 0.01,
+		and cam_ctl.distance <= d.camera_distance * DioramaCamera.CLOSE_UP_MAX + 0.01,
 		"al poner la hucha (tiene frase), momento: la cámara se le acerca, la pantalla se enmarca y la bandeja se aparta")
+	var pig_size := Visuals.global_aabb(_slot(d, &"hucha").node).size.length()
+	var pig_share := pig_size / (cam_ctl.distance * tan(deg_to_rad(cam_ctl.cam.fov * 0.5)) * 2.0)
+	check(pig_share < 0.36 and cam_ctl.distance >= DioramaCamera.CLOSE_UP_MIN - 0.01,
+		"el primer plano no se pega al objeto: ocupa un %d %% del alto (antes, un 45 %%)" % roundi(pig_share * 100.0))
+
 	# Algo que se cruce entre la cámara y la hucha se esconde mientras dura el plano.
 	var pig_node := _slot(d, &"hucha").node
 	var blocker := MeshInstance3D.new()
@@ -293,6 +307,11 @@ func _test_story(main: Node) -> void:
 	fx_focus = GameState.enfoque.state()
 	check(float(fx_focus.fuera) > Enfoque.PLAY_BLUR + 0.5 and (fx_focus.centro as Vector2).distance_to(pig_px) < 120.0,
 		"en un momento, el enfoque se va al objeto y lo demás se desenfoca más")
+	var iris_color: Color = m._iris_mat.get_shader_parameter("color")
+	var bg_dark := Fondos.dark(Settings.get_value("fondo_color"))
+	check(iris_color.is_equal_approx(bg_dark) and iris_color.v > 0.1 and absf(iris_color.h - Fondos.color(Settings.get_value("fondo_color")).borde.h) < 0.03
+		and float(m._iris_mat.get_shader_parameter("dentro")) < 0.6 and float(m._iris_mat.get_shader_parameter("suave")) > 1.5,
+		"el foco del momento no es negro: oscuro del tono del fondo, y muy degradado (sin borde)")
 	var still := pig_node.global_transform
 	await get_tree().create_timer(0.5).timeout
 	check(pig_node.global_transform.is_equal_approx(still) and cam_ctl.breath_amount() < 0.01,
@@ -496,21 +515,38 @@ func _test_story(main: Node) -> void:
 		"corte a la hucha sola (sobre su baúl), vista un poco desde arriba, quieta y sin vueltas")
 	check(m.cozy_shown() and is_instance_valid(m._rim) and is_instance_valid(m._motes) and m.is_in_isolation(m._motes),
 		"la escena del final es acogedora: fondo cálido con luces desenfocadas, contraluz y motas en la luz")
-	await get_tree().create_timer(Momentos.COIN_DELAY + 0.9).timeout
-	check(is_instance_valid(m.coin), "mientras habla, la moneda aparece junto a la hucha")
+	await get_tree().create_timer(1.0).timeout
+	check(not is_instance_valid(m.coin) and Narrator.remaining() > 0.0, "primero el diálogo: mientras habla, aún no hay moneda")
+	Narrator.clear()                               # el jugador pasa las frases con clics: no hay que esperar
+	await get_tree().create_timer(0.3).timeout
+	check(s5.opened and _slot(d, &"moneda").available and is_instance_valid(m.coin) and m._coin_ready(),
+		"en cuanto se callan las frases, la moneda aparece junto a la hucha y ya se puede coger")
+	await get_tree().create_timer(0.6).timeout
+	var ghost_mesh: MeshInstance3D = Visuals.meshes_under(m.ghost)[0] if is_instance_valid(m.ghost) else null
+	check(ghost_mesh != null and m.is_in_isolation(ghost_mesh) and (ghost_mesh.material_override as ShaderMaterial).shader.resource_path.ends_with("fantasma.gdshader"),
+		"y una moneda fantasma (translúcida) enseña el gesto")
+	var slot_at := _slot(d, &"moneda").center()
+	var ghost_from := m.ghost.global_position.distance_to(slot_at) if is_instance_valid(m.ghost) else 0.0
 	var coin_xf: Transform3D = m.coin.global_transform if is_instance_valid(m.coin) else Transform3D()
 	var pig_xf := pig.global_transform
-	await get_tree().create_timer(0.5).timeout
-	check(is_instance_valid(m.coin) and m.coin.global_transform.is_equal_approx(coin_xf) and pig.global_transform.is_equal_approx(pig_xf),
-		"la moneda y la hucha se quedan quietas (lo que se mueve es la luz)")
-	d.debug_solve_step()
-	check(s5.opened and _slot(d, &"moneda").available, "después aparece la moneda, sobre la hucha")
-	Narrator.clear()
-	await get_tree().process_frame
-	_click(m.coin_screen_position())               # un clic sin arrastrar no la mete: vuelve a su sitio
 	await get_tree().create_timer(0.6).timeout
-	check(not _slot(d, &"moneda").filled and is_instance_valid(m.coin) and m._coin_state == "",
-		"soltar la moneda lejos de la ranura no la mete: vuelve a su sitio")
+	check(is_instance_valid(m.ghost) and m.ghost.global_position.distance_to(slot_at) < ghost_from - 0.05,
+		"la fantasma va de la moneda hacia la ranura de la hucha")
+	check(is_instance_valid(m.coin) and m.coin.global_transform.is_equal_approx(coin_xf) and pig.global_transform.is_equal_approx(pig_xf),
+		"la moneda y la hucha se quedan quietas (lo que se mueve es la fantasma y la luz)")
+	var ghost_node := m.ghost
+	var ghost_mid := m.ghost.global_position if is_instance_valid(m.ghost) else Vector3.ZERO
+	await get_tree().create_timer(Momentos.GHOST_TIME + Momentos.GHOST_REST).timeout
+	check(is_instance_valid(m.ghost) and m.ghost == ghost_node and m.ghost.global_position.distance_to(ghost_mid) < 0.03
+		and float(m._ghost_mat.get_shader_parameter("alpha")) > 0.05,
+		"el gesto de la fantasma se repite en bucle mientras no se coja la moneda")
+	_mouse_button(m.coin_screen_position(), true)  # coger la moneda para el bucle...
+	await get_tree().process_frame
+	check(m._coin_state == "arrastrando" and not is_instance_valid(m.ghost), "al coger la moneda, la fantasma se va")
+	_mouse_button(m.coin_screen_position(), false) # ...y soltarla lejos de la ranura no la mete: vuelve
+	await get_tree().create_timer(0.6).timeout
+	check(not _slot(d, &"moneda").filled and is_instance_valid(m.coin) and m._coin_state == "" and is_instance_valid(m.ghost),
+		"soltar la moneda lejos de la ranura no la mete: vuelve a su sitio y la fantasma vuelve a enseñar el gesto")
 	_mouse_button(m.coin_screen_position(), true)
 	await get_tree().process_frame
 	_mouse_move(m.slot_screen_position())
@@ -695,6 +731,10 @@ func _test_title_menu(main: Node) -> bool:
 	var bg := (main.get_node("Iluminacion/Fondo/Degradado") as CanvasItem).material as ShaderMaterial
 	check(int(Settings.get_value("fondo_color")) == 3 and bg.get_shader_parameter("color_centro") == Fondos.COLORES[3].centro_3d,
 		"en Opciones, tocar un color cambia el fondo al momento (%s)" % Fondos.COLORES[3].nombre)
+	var vignette := (main.get_node("Iluminacion/Vineta/Sombra") as CanvasItem).material as ShaderMaterial
+	var vig_color: Color = vignette.get_shader_parameter("color")
+	check(vig_color.is_equal_approx(Fondos.dark(3)) and vig_color.v > 0.1 and absf(vig_color.h - Fondos.COLORES[3].borde.h) < 0.03,
+		"la viñeta no es negra: es el oscuro del tono del fondo, y cambia con él")
 	main.menu.options.motifs[3].pressed.emit()
 	check((bg.get_shader_parameter("color_forma") as Color).a == 0.0, "y el motivo «Liso» quita las figuras del fondo")
 	main.menu.options.motifs[1].pressed.emit()
@@ -712,8 +752,12 @@ func _test_title_menu(main: Node) -> bool:
 	for i in 2:                                      # el menú se maqueta un fotograma después
 		await get_tree().process_frame
 	_click(main.menu.buttons.jugar.get_global_rect().get_center())
-	await get_tree().process_frame
-	check(not main.menu.is_open() and GameState.mode == GameState.Mode.PLAYING, "clic en Jugar cierra el menú y empieza la partida")
+	await get_tree().create_timer(main.BLACKOUT_TIME * 0.6).timeout
+	check(main.blacking_out and main.menu.is_open() and main._fade.color.a > 0.2 and main._fade.mouse_filter == Control.MOUSE_FILTER_STOP,
+		"al darle a Jugar, la pantalla se va a negro (y mientras no se puede tocar nada)")
+	await get_tree().create_timer(main.BLACKOUT_TIME * 0.4 + main.BLACKOUT_HOLD + 0.1).timeout
+	check(not main.menu.is_open() and GameState.mode == GameState.Mode.PLAYING and main._fade.color.a > 0.6 and not main.blacking_out,
+		"clic en Jugar cierra el menú y empieza la partida, que aparece desde el negro")
 	check(GameState.hud._panel.visible and is_zero_approx(GameState.camera.cam.h_offset), "en partida vuelven el panel de piezas y la cámara centrada")
 	return true
 

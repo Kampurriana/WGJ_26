@@ -81,8 +81,8 @@ si queréis una plantilla `.glb` para abrir en Blender, pedídsela a Claude):
 ```
 Desvan
 ├─ suelo, peana y trastos (decorado, siempre a la vista)
-├─ S_1_desvan        P_tablon_largo / P_tablon_medio / P_tablon_corto (6 de cada, el suelo; repetidas: valen
-│                    en cualquier hueco de su largo), P_pared_fondo, P_pared_izquierda, P_pared_derecha, P_cumbrera__after-..., P_tejado__after-cumbrera (x3),
+├─ S_1_desvan        P_tablon_largo / P_tablon_medio / P_tablon_corto (6 de cada, el suelo; repetidas: con
+│                    soltar un tablón se ponen los 6 de su largo), P_pared_fondo, P_pared_izquierda, P_pared_derecha, P_cumbrera__after-..., P_tejado__after-cumbrera (x3),
 │                    P_viga__after-cumbrera (x2), P_ventana__after-pared_derecha, P_hucha__clave
 ├─ S_2_infancia      Bombilla (con su luz), BaulJuguetes (OR_tapa_baul__x + H_cubos + C_dibujo_verde), P_cama_infantil, ...,
 │                    P_caja_musica__after-comoda_infantil, P_dibujo__after-caja_musica, P_peluche__clave,
@@ -168,7 +168,8 @@ en §2). Ahora es provisional: `levels/provisional/menu_provisional.glb`.
   los tamaños y las posiciones: sustituid las mallas por las vuestras manteniendo los nombres de los
   objetos, y exportad como `assets/modelos/menu/menu.glb`. El juego lo usará solo, sin tocar nada más.
 - Las piezas repetidas (patas, orejas, ojos) se llaman igual (Blender pondrá `P_pata.001`): valen
-  en cualquier hueco de su tipo. Podéis cambiar formas y posiciones, y añadir o quitar pegatinas:
+  en cualquier hueco de su tipo, y **con soltar una se ponen todas** (sexta nota), una tras otra.
+  Podéis cambiar formas y posiciones, y añadir o quitar pegatinas:
   el puzle se monta con lo que haya.
 - Sin `OD_`, `H_` ni `Z_` (es el tutorial).
 
