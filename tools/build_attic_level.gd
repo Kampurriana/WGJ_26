@@ -13,9 +13,9 @@ extends "res://tools/build_room_level.gd"
 ## Las tres zonas comparten suelo y tejado (integradas); cada una tiene su alfombra, su bombilla
 ## (se enciende al abrirse) y muebles que se abren con algo dentro (baúl, armario, cajones).
 ## Dibujos escondidos (C_, cuarta nota): los dibujos de cuando era pequeña, los de las artistas
-## (assets/kit/dibujos/, DIBUJOS), uno por acto; cada uno que se encuentra se cuelga en la cuerda de
-## la infancia (T_): la casa en el baúl de juguetes · el monstruo con la cámara (con-camara) · el
-## gato encima de las cajas de la tienda. El de la niña y la abuela bailarina no es coleccionable:
+## (assets/kit/dibujos/, DIBUJOS); cada uno que se encuentra se cuelga en la cuerda de la infancia
+## (T_): la casa en el baúl de juguetes · Ana y Lurdes debajo de la cama (after-cama_infantil) · el
+## monstruo con la cámara (con-camara) · el gato encima de las cajas de la tienda. El de la niña y la abuela bailarina no es coleccionable:
 ## es el dibujo de pared de la infancia (P_dibujo, "las niñas no pintan monstruos"), DIBUJO_PARED.
 ## Ejecutar:
 ##   godot --headless --path . --script res://tools/build_attic_level.gd
@@ -56,6 +56,7 @@ const DIBUJOS := {
 	"casa": "res://assets/kit/dibujos/t_draw_00.jpg",
 	"monstruo": "res://assets/kit/dibujos/t_draw_01.jpg",
 	"gato": "res://assets/kit/dibujos/t_draw_02.jpg",
+	"amigas": "res://assets/kit/dibujos/t_draw_04.jpg",
 }
 ## El dibujo de la pared de la infancia (la pieza P_dibujo): la niña bailarina y su abuela.
 const DIBUJO_PARED := "res://assets/kit/dibujos/t_draw_03.png"
@@ -241,6 +242,8 @@ func _build_childhood(sec: Node3D) -> void:
 	var leaning := _node(chest, "C_dibujo_casa", Vector3(0.235, 0.24, 0.0))
 	leaning.rotation_degrees = Vector3(-20.0, -90.0, 0.0)
 	_kid_drawing(leaning, "casa")
+	# Debajo de la cama asoma otro, el de Ana y Lurdes (está desde que la cama está puesta).
+	_kid_drawing(_lying(sec, "C_dibujo_amigas__after-cama_infantil", Vector3(-2.08, 0.013, -0.43), 160.0), "amigas")
 	# La cuerda de los dibujos (distinta de la de las fotos, encima del escritorio).
 	_clothesline(sec)
 	# Piezas.

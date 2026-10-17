@@ -21,7 +21,8 @@ allí, para que sea fácil poner al día:
 ## Importación (optimizada para la web)
 
 - Texturas de 3D: comprimidas en VRAM con mipmaps; la de normales, como normal map.
-- Dibujos 2D: con pérdida (WebP, calidad 0,85) y como mucho 1024 px de lado.
+- Dibujos 2D: con pérdida (WebP, calidad 0,85) y como mucho 1024 px de lado. Si llegan enormes se
+  guardan reducidos a 2048 px de lado en JPG (`t_draw_04` venía en 8455 × 12911).
 
 ## Lo que falta (a fecha de importación)
 
