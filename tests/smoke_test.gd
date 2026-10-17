@@ -226,6 +226,13 @@ func _test_story(main: Node) -> void:
 	var fx_focus: Dictionary = GameState.enfoque.state()
 	check(GameState.enfoque._rect.visible and absf(float(fx_focus.fuera) - Enfoque.PLAY_BLUR) < 0.3,
 		"todo se ve un poco desdibujado, más lejos del foco (enfoque de cine: %.1f px)" % float(fx_focus.fuera))
+	var hud_now: Hud = GameState.hud
+	check(hud_now.task_text().begins_with("EL DESVÁN | ") and hud_now.task_text().ends_with("| 0 / %d" % s1.slots.size())
+		and hud_now._task.get_global_rect().position.x < 60.0 and hud_now._task.get_global_rect().position.y < 60.0,
+		"arriba a la izquierda, la tarjeta de tarea: la zona, qué toca y cuánto falta (%s)" % hud_now.task_text())
+	check(hud_now.drawings_text() == "0 / 7" and hud_now._drawings.get_global_rect().position.x > get_viewport().get_visible_rect().size.x * 0.7
+		and hud_now._panel.get_global_rect().position.y >= hud_now._drawings.get_global_rect().end.y,
+		"arriba a la derecha, el contador de dibujos desde el principio (0 / 7), y la bandeja debajo")
 	await _test_tray(d, shown)
 	# El suelo, a tablones de tres largos parecidos: cada uno vale en varios huecos, pero no en todos.
 	var planks := {}
@@ -357,6 +364,14 @@ func _test_story(main: Node) -> void:
 		tip_wait += 0.25
 	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles") and tip_wait > 1.0,
 		"la primera vez sale el consejo de tocar el mueble que brilla (cuando se va el rótulo de capítulo: %.1f s)" % tip_wait)
+	check(GameState.hud.task_text().begins_with("I · INFANCIA | Lleva cada pieza") and d.has_findable(),
+		"mientras haya piezas que poner, la tarjeta pide ponerlas (aunque ya haya algo guardado que buscar)")
+	await get_tree().create_timer(0.5).timeout     # entra deslizándose
+	var tip_rect: Rect2 = GameState.hud._tip_box.get_global_rect()
+	var screen := get_viewport().get_visible_rect().size
+	check(tip_rect.get_center().x > screen.x * 0.5 and tip_rect.end.y > screen.y * 0.8
+		and tip_rect.end.x <= GameState.hud._panel.get_global_rect().position.x,
+		"los consejos salen como avisos abajo a la derecha, junto a la bandeja")
 	steps = 0
 	while steps < 30:                              # todo lo que se pueda colocar sin buscar
 		var h := d.hint_target()
@@ -365,6 +380,8 @@ func _test_story(main: Node) -> void:
 		d.place(h.slot)
 		steps += 1
 	check(d.hint_target().get("container") == chest, "cuando solo falta buscar, la pista señala el mueble (no lo escondido)")
+	check(GameState.hud.task_text().begins_with("I · INFANCIA | Busca lo guardado"),
+		"y la tarjeta de tarea dice que toca buscar (%s)" % GameState.hud.task_text())
 	check(not _slot(d, &"peluche").available, "(control) la nutria no aparece mientras falten los cubos")
 	var green := _collectible(d, &"dibujo_verde")
 	check(d.collectible_total() == 7 and green != null and green.available and green.container == chest and not green.is_clickable(),
@@ -424,6 +441,18 @@ func _test_story(main: Node) -> void:
 		await get_tree().create_timer(Diorama.LIFT_TIME + 0.15 + Diorama.HANG_TIME + 0.25).timeout
 		check(green.target.global_position.distance_to(d.spot(0).global_position) < 0.02 and hung[0] == 1,
 			"el dibujo vuela hasta la primera pinza de la cuerda y se cuelga")
+		main.open_pause()
+		main.pause.show_page("dibujos")
+		var album: PauseMenu = main.pause
+		check(album.buttons.dibujos.visible and album.album_slots.size() == 7
+			and album.album_detail().begins_with(Narrator.piece_name(&"dibujo_verde", true)),
+			"en la pausa, el álbum de dibujos: las 7 casillas y, a la derecha, el encontrado en grande (%s)" % album.album_detail())
+		var missing := album.album_slots.filter(func(b: Button) -> bool: return b.text == "?")
+		if not missing.is_empty():
+			(missing[0] as Button).pressed.emit()
+		check(missing.size() == 6 and album.album_detail().begins_with("???"),
+			"los que faltan salen en silueta con «?» y sin nombre")
+		main.pause.close()
 		check(not GameState.hud.tip_text().contains("dibujo") and not Narrator.has_line("consejo_dibujos"),
 			"no hay frases ni consejos sobre los dibujos escondidos: los encuentra el jugador")
 		await get_tree().create_timer(Efectos.GLINT_EVERY + 0.3).timeout
@@ -769,6 +798,14 @@ func _test_title_menu(main: Node) -> bool:
 	main.menu.options.motifs[1].pressed.emit()
 	check((bg.get_shader_parameter("color_forma") as Color).a > 0.0 and int(bg.get_shader_parameter("forma")) == 2,
 		"y «Corazones» pone corazones")
+	var opts: OptionsPanel = main.menu.options
+	check(opts.tabs.size() == 3 and opts.pages[0].visible and not opts.pages[1].visible and swatch.is_visible_in_tree()
+		and not (opts.controls["volumen_voz"] as Control).is_visible_in_tree(),
+		"las opciones van por pestañas (Fondo, Sonido, Juego): se empieza en el fondo")
+	opts.tabs[1].pressed.emit()
+	check(opts.pages[1].visible and (opts.controls["volumen_voz"] as Control).is_visible_in_tree() and not swatch.is_visible_in_tree(),
+		"y la de Sonido enseña los volúmenes")
+	opts.show_tab(0)
 	_key(KEY_ESCAPE)
 	await get_tree().process_frame
 	check(main.menu.page == "principal", "Esc en una página vuelve a la principal")

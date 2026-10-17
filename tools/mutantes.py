@@ -431,6 +431,25 @@ MUTANTES = [
 	("M130 Esc no cierra la inspección", "ui/inspeccion.gd",
 		"\tif e.is_action_pressed(\"back\") or e.is_action_pressed(\"ui_accept\"):", "\tif e.is_action_pressed(\"ui_accept\"):",
 		"Esc también lo cierra"),
+	# Pulido de la UI con la referencia (Ooblets)
+	("M131 la tarjeta de tarea no se pone al día", "ui/hud.gd",
+		"\tvar sec: Section = null\n\tfor s_ in d.sections:", "\treturn\n\tvar sec: Section = null\n\tfor s_ in d.sections:",
+		"arriba a la izquierda, la tarjeta de tarea"),
+	("M132 el contador de dibujos no está desde el principio", "ui/hud.gd",
+		"\t_drawings.visible = _game_ui and total > 0      # desde el principio: \"0 / 7\" invita a buscar", "\t_drawings.visible = false",
+		"arriba a la derecha, el contador de dibujos"),
+	("M133 los consejos arriba en el centro", "ui/hud.gd",
+		"\t_tip_box.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)", "\t_tip_box.set_anchors_preset(Control.PRESET_CENTER_TOP)",
+		"los consejos salen como avisos abajo a la derecha"),
+	("M134 el álbum enseña los que faltan", "ui/pause_menu.gd",
+		"\t\t\tb.text = \"?\"", "\t\t\tpass",
+		"los que faltan salen en silueta"),
+	("M135 las opciones sin pestañas", "ui/options_panel.gd",
+		"\t\tpages[k].visible = k == tab", "\t\tpages[k].visible = true",
+		"las opciones van por pestañas"),
+	("M136 la tarjeta pide buscar con piezas por poner", "ui/hud.gd",
+		"\telif d.has_findable() and d.visible_inventory().is_empty():", "\telif d.has_findable():",
+		"mientras haya piezas que poner, la tarjeta pide ponerlas"),
 ]
 
 solo = os.environ.get("SOLO")

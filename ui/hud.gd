@@ -13,8 +13,12 @@ extends CanvasLayer
 ## Lo que se encuentra guardado (H_) no aparece de golpe en la bandeja: su ficha sale de donde estaba
 ## el objeto y vuela en arco hasta su sitio (quinta nota: "que no se teletransporte").
 ##
-## Dibujos escondidos (C_): bajo el título queda el contador de dibujos (al encontrar uno, lo que se
-## enseña es su primer plano: ui/inspeccion.gd).
+## Disposición (pulido con la referencia de Ooblets): arriba a la izquierda, la TARJETA DE TAREA
+## (dónde estás, qué toca ahora y una barra con lo que falta de la zona, como su panel de tareas);
+## arriba a la derecha, el contador de dibujos (como su contador de la esquina) y debajo la bandeja;
+## abajo en el centro, los subtítulos; abajo a la derecha, los consejos como avisos que entran desde
+## el borde (como su "New ooblet spotted"); abajo a la izquierda, Menú y Pista con su tecla.
+## Dibujos escondidos (C_): al encontrar uno, lo que se enseña es su primer plano (ui/inspeccion.gd).
 
 signal next_requested
 signal pause_requested
@@ -29,6 +33,10 @@ const MARGIN := 10.0                         ## la bandeja flota: separada del b
 const LIP := 26.0                            ## lo que se ve de ella mientras se arrastra una pieza
 const SLIDE_TIME := 0.22
 const FLY_TIME := 0.8                        ## lo que tarda en volar a la bandeja lo que se recoge (s)
+const COUNTER_H := 42.0                      ## alto del contador de dibujos (la bandeja empieza debajo)
+const TASK_WIDTH := 300.0                    ## ancho de la tarjeta de tarea
+const TIP_WIDTH := 300.0                     ## ancho de un aviso (consejo), abajo a la derecha
+const TIP_SLIDE := 60.0                      ## lo que entra deslizándose desde la derecha
 
 var _root: Control
 var _panel: PanelContainer
@@ -50,7 +58,11 @@ var _moment_hidden: Array[Control] = []
 var _hint_button: Button
 var _hint_bar: ProgressBar
 var _back_button: Button
-var _title: Label
+var _task: PanelContainer                    ## tarjeta de tarea (arriba a la izquierda)
+var _title: Label                            ## dónde estás: "EL DESVÁN", "I · INFANCIA"
+var _task_text: Label                        ## qué toca ahora
+var _task_bar: ProgressBar                   ## lo puesto de la zona abierta
+var _task_count: Label                       ## "5 / 12"
 var _subtitle_box: PanelContainer
 var _subtitle: Label
 var _chapter: Control                        ## rótulo de capítulo a toda pantalla (al empezar un acto)
@@ -62,10 +74,11 @@ var _chapter_spacing: FontVariation          ## el título se abre letra a letra
 var _chapter_text := ""                      ## el rótulo entero ("II · Adolescencia"), para los tests
 var _chapter_tween: Tween
 var _tip_waiting: Array = []                 ## consejo que espera a que acabe el rótulo de capítulo
-var _tip_box: PanelContainer                 ## consejo de juego (arriba)
+var _tip_box: PanelContainer                 ## consejo de juego (aviso abajo a la derecha)
+var _tip_tween: Tween
 var _tip: Label
 var _tip_left := 0.0
-var _drawings: PanelContainer                ## contador de dibujos encontrados (bajo el título)
+var _drawings: PanelContainer                ## contador de dibujos encontrados (arriba a la derecha)
 var _drawings_icon: DibujoIcono
 var _drawings_label: Label
 var _done: PanelContainer
@@ -93,6 +106,9 @@ func _ready() -> void:
 	_build_done()
 	Events.level_started.connect(func(_d: Node) -> void: _on_level_started())
 	Events.inventory_changed.connect(rebuild_inventory)
+	Events.inventory_changed.connect(_update_task)
+	Events.inventory_changed.connect(_update_counter)
+	Events.level_completed.connect(func(_d: Node) -> void: _update_task())
 	Events.focus_changed.connect(func(a: Node) -> void: _back_button.visible = a != null)
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
 	Events.level_completed.connect(func(_d: Node) -> void:
@@ -156,7 +172,7 @@ func _set_slide(v: float) -> void:
 	var shift := v * (PANEL_WIDTH - LIP + MARGIN)
 	_panel.offset_left = -PANEL_WIDTH - MARGIN + shift
 	_panel.offset_right = -MARGIN + shift
-	_panel.offset_top = MARGIN
+	_panel.offset_top = MARGIN + (COUNTER_H + GAP if _drawings != null and _drawings.visible else 0.0)
 	_panel.offset_bottom = -MARGIN
 
 
@@ -219,31 +235,82 @@ func _on_locked_pressed(card: InventoryItem) -> void:
 
 
 func _build_controls() -> void:
+	_task = PanelContainer.new()
+	_task.position = Vector2(MARGIN + 6, MARGIN + 4)
+	_task.custom_minimum_size = Vector2(TASK_WIDTH, 0)
+	_task.theme_type_variation = &"Subtitulo"
+	_task.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_root.add_child(_task)
+	var task_col := VBoxContainer.new()
+	task_col.add_theme_constant_override("separation", 4)
+	_task.add_child(task_col)
 	_title = Label.new()
-	_title.position = Vector2(20, 14)
-	_title.add_theme_font_size_override("font_size", 26)
-	_title.add_theme_constant_override("outline_size", 8)
-	_title.add_theme_color_override("font_color", UiTheme.CREAM)
-	_title.add_theme_color_override("font_outline_color", Color(0.25, 0.18, 0.12))
-	_root.add_child(_title)
+	var spaced := FontVariation.new()
+	spaced.base_font = ThemeDB.fallback_font
+	spaced.spacing_glyph = 2
+	spaced.variation_embolden = 0.5
+	_title.add_theme_font_override("font", spaced)
+	_title.add_theme_font_size_override("font_size", 15)
+	_title.add_theme_color_override("font_color", Color(1.0, 0.8, 0.45))
+	task_col.add_child(_title)
+	_task_text = Label.new()
+	_task_text.theme_type_variation = &"SubtituloTexto"
+	_task_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_task_text.custom_minimum_size = Vector2(TASK_WIDTH - 36.0, 0)
+	_task_text.add_theme_font_size_override("font_size", 18)
+	task_col.add_child(_task_text)
+	var task_row := HBoxContainer.new()
+	task_row.add_theme_constant_override("separation", 10)
+	task_col.add_child(task_row)
+	_task_bar = ProgressBar.new()
+	_task_bar.show_percentage = false
+	_task_bar.max_value = 1.0
+	_task_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_task_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_task_bar.custom_minimum_size = Vector2(0, 10)
+	var bar_bg := StyleBoxFlat.new()
+	bar_bg.bg_color = Color(1, 1, 1, 0.14)
+	bar_bg.set_corner_radius_all(5)
+	var bar_fill := StyleBoxFlat.new()
+	bar_fill.bg_color = Color(1.0, 0.78, 0.4)
+	bar_fill.set_corner_radius_all(5)
+	_task_bar.add_theme_stylebox_override("background", bar_bg)
+	_task_bar.add_theme_stylebox_override("fill", bar_fill)
+	task_row.add_child(_task_bar)
+	_task_count = Label.new()
+	_task_count.theme_type_variation = &"SubtituloTexto"
+	_task_count.add_theme_font_size_override("font_size", 15)
+	task_row.add_child(_task_count)
 	_drawings = PanelContainer.new()
-	_drawings.position = Vector2(18, 54)
+	_drawings.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_drawings.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_drawings.offset_right = -MARGIN
+	_drawings.offset_top = MARGIN
+	_drawings.custom_minimum_size = Vector2(PANEL_WIDTH, COUNTER_H)
 	_drawings.theme_type_variation = &"Subtitulo"
+	_drawings.add_theme_stylebox_override("panel", UiTheme._box(Color(0.18, 0.12, 0.08, 0.78), 14, Color(0, 0, 0, 0), 0, 0, 14, 6))
 	_drawings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_drawings.hide()
 	_root.add_child(_drawings)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 8)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	_drawings.add_child(row)
-	_drawings_icon = DibujoIcono.new(Vector2(20, 25))
+	_drawings_icon = DibujoIcono.new(Vector2(18, 22))
 	row.add_child(_drawings_icon)
+	var drawings_word := Label.new()
+	drawings_word.text = "Dibujos"
+	drawings_word.theme_type_variation = &"SubtituloTexto"
+	drawings_word.add_theme_font_size_override("font_size", 15)
+	row.add_child(drawings_word)
 	_drawings_label = Label.new()
 	_drawings_label.theme_type_variation = &"SubtituloTexto"
 	_drawings_label.add_theme_font_size_override("font_size", 17)
+	_drawings_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.45))
 	row.add_child(_drawings_label)
 	_back_button = Button.new()
 	_back_button.text = "Volver"
-	_back_button.position = Vector2(20, 100)
+	_back_button.position = Vector2(MARGIN + 6, 150)
 	_back_button.hide()
 	_back_button.pressed.connect(_on_back)
 	_root.add_child(_back_button)
@@ -256,11 +323,11 @@ func _build_controls() -> void:
 	_root.add_child(box)
 	_controls = box
 	var menu := Button.new()
-	menu.text = "Menú"
+	menu.text = "Menú  · Esc"
 	menu.pressed.connect(func() -> void: pause_requested.emit())
 	box.add_child(menu)
 	_hint_button = Button.new()
-	_hint_button.text = "Pista"
+	_hint_button.text = "Pista  · H"
 	_hint_button.pressed.connect(request_hint)
 	box.add_child(_hint_button)
 	_hint_bar = ProgressBar.new()
@@ -278,7 +345,7 @@ func _build_subtitle() -> void:
 	_subtitle_box.offset_top = -16
 	_subtitle_box.offset_bottom = -16
 	_subtitle_box.offset_left = -360
-	_subtitle_box.offset_right = 360 - PANEL_WIDTH * 0.75
+	_subtitle_box.offset_right = 100.0           # centrados en lo que deja la bandeja; a su derecha, los avisos
 	_subtitle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_subtitle_box.theme_type_variation = &"Subtitulo"
 	_subtitle_box.hide()
@@ -345,21 +412,30 @@ func _chapter_label(font_size: int, color: Color) -> Label:
 
 func _build_tip() -> void:
 	_tip_box = PanelContainer.new()
-	_tip_box.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_tip_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_tip_box.offset_top = 140
-	_tip_box.offset_left = -300
-	_tip_box.offset_right = 300 - PANEL_WIDTH
+	_tip_box.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	_tip_box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_tip_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_tip_box.offset_right = -(PANEL_WIDTH + MARGIN * 2.0)
+	_tip_box.offset_bottom = -20
+	_tip_box.custom_minimum_size = Vector2(TIP_WIDTH, 0)
 	_tip_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tip_box.theme_type_variation = &"Subtitulo"
 	_tip_box.hide()
 	_root.add_child(_tip_box)
+	var tip_col := VBoxContainer.new()
+	tip_col.add_theme_constant_override("separation", 2)
+	_tip_box.add_child(tip_col)
+	var kicker := Label.new()
+	kicker.text = "CONSEJO"
+	kicker.add_theme_font_size_override("font_size", 13)
+	kicker.add_theme_color_override("font_color", Color(1.0, 0.8, 0.45))
+	tip_col.add_child(kicker)
 	_tip = Label.new()
 	_tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_tip.custom_minimum_size = Vector2(TIP_WIDTH - 36.0, 0)
 	_tip.theme_type_variation = &"SubtituloTexto"
-	_tip.add_theme_font_size_override("font_size", 20)
-	_tip_box.add_child(_tip)
+	_tip.add_theme_font_size_override("font_size", 18)
+	tip_col.add_child(_tip)
 
 
 ## Rótulo de "nuevo capítulo" al empezar un acto: la escena se oscurece un poco, sale "CAPÍTULO II"
@@ -399,6 +475,13 @@ func show_tip(text: String, seconds := 7.0) -> void:
 	_tip.text = text
 	_tip_box.show()
 	_tip_left = seconds
+	if _tip_tween != null:                       # entra deslizándose desde el borde, como un aviso
+		_tip_tween.kill()
+	_tip_box.modulate.a = 0.0
+	_tip_tween = create_tween().set_parallel().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_tip_tween.tween_property(_tip_box, "modulate:a", 1.0, 0.3)
+	_tip_tween.tween_method(func(x: float) -> void: _tip_box.offset_right = x,
+		-(PANEL_WIDTH + MARGIN * 2.0) + TIP_SLIDE, -(PANEL_WIDTH + MARGIN * 2.0), 0.45)
 
 
 func _chapter_showing() -> bool:
@@ -477,10 +560,17 @@ func _on_collectible_found(item: Node, found: int, total: int) -> void:
 	var color := drawing_color(it.target if it != null else null)
 	_drawings_label.text = "%d / %d" % [found, total]
 	_drawings_icon.color = color
-	if not _drawings.visible and _game_ui:
-		_drawings.show()
-		_drawings.modulate.a = 0.0
-		_drawings.create_tween().tween_property(_drawings, "modulate:a", 1.0, 0.6).set_delay(0.8)
+	_drawings_icon.faded = false
+
+
+## El contador, al día con lo encontrado (F9 los cuelga todos sin avisar uno a uno).
+func _update_counter() -> void:
+	var d := GameState.diorama
+	if d == null or not is_instance_valid(d) or d.collectible_total() == 0:
+		return
+	var found := d.collectibles_found()
+	_drawings_label.text = "%d / %d" % [found, d.collectible_total()]
+	_drawings_icon.faded = found == 0
 
 
 ## El color de un dibujo (el de su papel, o el de su malla más grande), para pintar el icono igual.
@@ -498,6 +588,44 @@ static func drawing_color(n: Node) -> Color:
 				best_area = area
 				best = mat.albedo_color
 	return best
+
+
+## La tarjeta de tarea (como el panel de tareas de la referencia): dónde estás (la zona abierta),
+## qué toca ahora y cuánto llevas de esa zona.
+func _update_task() -> void:
+	var d := GameState.diorama
+	if d == null or not is_instance_valid(d):
+		return
+	var sec: Section = null
+	for s_ in d.sections:
+		if s_.opened and not s_.completed:
+			sec = s_
+	if sec == null and d.is_opening():
+		sec = d.opening_section()
+	_title.text = (d.section_title(sec) if sec != null else d.level_title).to_upper()
+	_title.visible = _title.text != ""
+	var pool: Array = sec.slots if sec != null else d.slots
+	var done := pool.filter(func(o: PieceSlot) -> bool: return o.filled).size()
+	_task_bar.value = float(done) / maxf(1.0, pool.size())
+	_task_count.text = "%d / %d" % [done, pool.size()]
+	var left := pool.filter(func(o: PieceSlot) -> bool: return not o.filled)
+	if d.completed:
+		_task_text.text = "¡Completado!"
+	elif d.is_opening():
+		_task_text.text = "Se abre un capítulo nuevo…"
+	elif d.has_findable() and d.visible_inventory().is_empty():   # primero, lo que ya se puede poner
+		_task_text.text = "Busca lo guardado: toca lo que brilla."
+	elif left.size() == 1 and (left[0] as PieceSlot).is_key:
+		_task_text.text = "Falta la última: %s." % Narrator.piece_name((left[0] as PieceSlot).id)
+	elif left.size() == 1 and (left[0] as PieceSlot).offered:
+		_task_text.text = "Mete la moneda en la hucha."
+	else:
+		_task_text.text = "Lleva cada pieza de la bandeja a su silueta."
+
+
+## (Tests) Lo que dice la tarjeta de tarea: "ZONA | qué toca | 5 / 12".
+func task_text() -> String:
+	return "%s | %s | %s" % [_title.text, _task_text.text, _task_count.text] if _task.visible else ""
 
 
 ## (Tests) Lo que dice el contador de dibujos ("" = no se ve).
@@ -538,9 +666,10 @@ func _show_done() -> void:
 func set_game_ui_visible(on: bool) -> void:
 	_game_ui = on
 	_panel.visible = on
-	_title.visible = on
+	_task.visible = on
 	_drawings.visible = on and GameState.diorama != null and is_instance_valid(GameState.diorama) \
-		and GameState.diorama.collectibles_found() > 0
+		and GameState.diorama.collectible_total() > 0
+	_set_slide(_slide)                           # la bandeja empieza debajo del contador, si lo hay
 	_controls.visible = on
 	_back_button.visible = on and GameState.diorama != null and GameState.diorama.focus != null
 	if not on:
@@ -561,7 +690,7 @@ func set_moment(on: bool) -> void:
 	_moment_tween = create_tween().set_parallel()
 	if on:
 		_moment_hidden.clear()
-		for c: Control in [_panel, _controls, _title, _drawings]:
+		for c: Control in [_panel, _controls, _task, _drawings]:
 			if c.visible:
 				_moment_hidden.append(c)
 				_moment_tween.tween_property(c, "modulate:a", 0.0, 0.45)
@@ -605,9 +734,13 @@ func _on_level_started() -> void:
 	for c in _moment_hidden:
 		c.visible = _game_ui
 	_moment_hidden.clear()
-	for c: Control in [_panel, _controls, _title]:
+	for c: Control in [_panel, _controls, _task, _drawings]:
 		c.modulate.a = 1.0
-	_drawings.hide()
+	var total := GameState.diorama.collectible_total()
+	_drawings.visible = _game_ui and total > 0      # desde el principio: "0 / 7" invita a buscar
+	_drawings_label.text = "%d / %d" % [0, total]
+	_drawings_icon.faded = true
+	_set_slide(0.0)
 	for f in _flights:
 		if is_instance_valid(f):
 			f.queue_free()
@@ -617,7 +750,7 @@ func _on_level_started() -> void:
 		g.queue_free()
 	_groups.clear()
 	_cards.clear()
-	_title.text = GameState.diorama.level_title
+	_title.text = GameState.diorama.level_title.to_upper()
 	_chapter.modulate.a = 0.0
 	_tip_waiting = []
 	_tip_box.hide()
@@ -626,6 +759,7 @@ func _on_level_started() -> void:
 	_charge = 1.0
 	_idle = 0.0
 	rebuild_inventory()
+	_update_task()
 
 
 ## Pone al día la bandeja sin rehacerla: las fichas que siguen se quedan (su vista 3D no se vuelve a

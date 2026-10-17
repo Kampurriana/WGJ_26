@@ -21,7 +21,7 @@ func _init(size_px := Vector2(46, 58)) -> void:
 func _draw() -> void:
 	var r := Rect2(Vector2.ZERO, size).grow(-2.0)
 	if faded:
-		draw_rect(r, Color(UiTheme.INK, 0.35), false, 1.5)
+		draw_rect(r, Color(0.6, 0.55, 0.5, 0.8), false, 1.5)      # se ve igual sobre papel que sobre madera oscura
 		return
 	draw_rect(Rect2(r.position + Vector2(2, 3), r.size), Color(0.1, 0.06, 0.03, 0.35))      # sombra
 	draw_rect(r, color)

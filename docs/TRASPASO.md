@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (222 comprobaciones, 17 avisos)`** (~3 min).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (231 comprobaciones, 17 avisos)`** (~3 min).
    Los avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -40,6 +40,11 @@ y el foco de los momentos ya no son negros sino **el oscuro del tono del fondo**
 largo; los primeros planos, más abiertos (`DioramaCamera.CLOSE_UP_*`). Después: al encontrar un
 dibujo sale su **primer plano para inspeccionarlo** (`ui/inspeccion.gd`), con la disposición del
 aviso de "badge" de Ooblets (la referencia que mandaron), en lugar del aviso de logro de arriba.
+Y la UI se ha ordenado con la disposición de Ooblets (gameuidatabase id=1722; sus capturas no se
+pudieron ver desde la nube, así que se siguió lo que cuentan su wiki y sus guías): tarjeta de tarea
+arriba a la izquierda, contador de dibujos arriba a la derecha, consejos como avisos abajo a la
+derecha, el álbum de dibujos en la pausa (libro: lista a la izquierda, detalle a la derecha) y las
+opciones por pestañas. Si el equipo manda capturas de esa ficha, se puede afinar más.
 
 **Quinta nota:** fondo **pastel** con un motivo en filas diagonales que se desplaza (el jugador elige
 color y motivo en Opciones: `ui/fondos.gd`; con HDR 2D y colores calibrados, trampa 37); el suelo del
@@ -249,8 +254,8 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 
 | Qué | Cómo |
 |---|---|
-| Todo el test | `bash tools/check.sh` → `CHECK OK (222 …)` |
-| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 129 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
+| Todo el test | `bash tools/check.sh` → `CHECK OK (231 …)` |
+| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 135 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final, con la moneda y su fantasma a medio gesto); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

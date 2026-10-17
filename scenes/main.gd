@@ -9,7 +9,8 @@ extends Node3D
 ##   --level=N            empieza directamente en el nivel N (índice de data/levels.json)
 ##   --level=menu         empieza en el menú de inicio (igual que sin --level)
 ##   --menu-page=P        al abrirse el menú, en la página P (elegir, opciones, creditos);
-##                        "pausa" abre la pausa nada más cargar
+##                        "pausa" abre la pausa nada más cargar; "dibujos", la pausa en el álbum (a los 1,5 s,
+##                        para que --f9 ya haya colgado los dibujos)
 ##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s; solo dice la frase de la última
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
@@ -128,6 +129,8 @@ func _ready() -> void:
 		load_level(GameState.level_index)
 	if _menu_page == "pausa":
 		open_pause()
+	elif _menu_page == "dibujos":
+		pass                                     # en _process, cuando ya han pasado F9 y compañía
 	elif _menu_page != "":
 		menu.pending_page = _menu_page
 	Sfx.music("musica")
@@ -402,6 +405,10 @@ func _process(delta: float) -> void:
 	if _roll_credits and _elapsed > 1.0:
 		_roll_credits = false
 		roll_credits()
+	if _menu_page == "dibujos" and _elapsed > 1.5:
+		_menu_page = ""
+		open_pause()
+		pause.show_page("dibujos")
 	if _inspect and _elapsed > 1.0:
 		_inspect = false
 		var d := GameState.diorama
