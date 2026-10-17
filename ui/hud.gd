@@ -340,6 +340,8 @@ func _build_subtitle() -> void:
 	_subtitle = Label.new()
 	_subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# Se maqueta con la frase entera y se van destapando letras: la burbuja no crece mientras se escribe.
+	_subtitle.visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
 	_subtitle.add_theme_font_size_override("font_size", 21)
 	_subtitle.add_theme_color_override("font_color", UiTheme.BLUE_DEEP)
 	_subtitle_box.add_child(_subtitle)
@@ -950,7 +952,9 @@ func _show_subtitle(text: String, seconds: float) -> void:
 		_type_tween.kill()
 	_subtitle.visible_ratio = 0.0
 	_type_tween = create_tween()
-	_type_tween.tween_property(_subtitle, "visible_ratio", 1.0, minf(text.length() * TYPE_SPEED, seconds * 0.7))
+	# Con voz, al ritmo de la grabación (se escribe mientras lo dice); sin voz, a su ritmo.
+	var type_time := Narrator.typing if Narrator.typing > 0.0 else minf(text.length() * TYPE_SPEED, seconds * 0.7)
+	_type_tween.tween_property(_subtitle, "visible_ratio", 1.0, type_time)
 
 
 func _process(delta: float) -> void:

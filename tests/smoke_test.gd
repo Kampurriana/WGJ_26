@@ -221,9 +221,11 @@ func _test_voices() -> void:
 	Narrator.say("pieza_peluche")
 	var voice_len := (load("res://assets/audio/voz/pieza_peluche.ogg") as AudioStream).get_length()
 	var left := Narrator.remaining()
-	check(got.size() == 1 and got[0][0] == "¡Gatito! Ahora sé que eres una nutria…" and is_equal_approx(float(got[0][1]), 3.8)
+	check(got.size() == 1 and got[0][0] == "¡Gatito! Ahora sé que eres una nutria…" and is_equal_approx(float(got[0][1]), 3.85)
 		and Narrator.voice_playing() and absf(left - (voice_len + Narrator.VOICE_TAIL + Narrator.GAP)) < 0.05,
-		"una frase grabada suena con su voz y su subtítulo sale por trozos: el primero, hasta su pausa (%.2f s)" % left)
+		"una frase grabada suena entera con su voz y su subtítulo sale por trozos: el primero, hasta su pausa (%.2f s)" % left)
+	check(is_equal_approx(Narrator.typing, 3.85 - Narrator.TYPE_LEAD),
+		"el texto se escribe al ritmo de la voz: el primer trozo tarda lo que tarda en decirlo (%.2f s)" % Narrator.typing)
 	for i in 2:                                      # (process_frame llega antes del _process del Narrador)
 		await get_tree().process_frame
 	check(Sfx.ducked, "mientras habla una voz, la música baja (ducking)")
@@ -287,6 +289,16 @@ func _test_story(main: Node) -> void:
 		"el diálogo es una burbuja centrada en la pantalla, con su piquito, que se escribe letra a letra (%.2f)" % typing)
 	await get_tree().create_timer(2.5).timeout
 	check(is_equal_approx(hud_now._subtitle.visible_ratio, 1.0), "y acaba de escribirse")
+	Narrator.typing = 3.0                          # con voz: al ritmo de la grabación, no al suyo
+	hud_now._show_subtitle("Una frase de prueba, bastante larga, para ver cómo se escribe letra a letra.", 4.0)
+	await get_tree().create_timer(0.5).timeout
+	var early_h := hud_now._subtitle_box.size.y
+	await get_tree().create_timer(1.5).timeout
+	var voiced := hud_now._subtitle.visible_ratio
+	Narrator.typing = -1.0
+	check(voiced > 0.45 and voiced < 0.85, "con voz, la burbuja se escribe mientras lo dice (a los 2 s de 3, %.2f)" % voiced)
+	await get_tree().create_timer(1.2).timeout
+	check(is_equal_approx(hud_now._subtitle_box.size.y, early_h), "la burbuja tiene ya su tamaño final mientras se escribe (no crece)")
 	hud_now._subtitle_box.hide()
 	var stars: EstrellasLogros = hud_now.stars
 	check(stars.bar.visible and stars.filled_count() == 0 and stars.slots.size() == Logros.LISTA.size(),

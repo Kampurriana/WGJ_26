@@ -23,7 +23,7 @@
 			"«Por la familia una aprende a ceder», solía decirle a mi madre, y ella a mí. Y yo lo aprendí rápido."
 		],
 		"marcas": [
-			5.95
+			6.0
 		]
 	},
 	"pieza_dibujo": "Las niñas no pintan monstruos, ¿no, mamá? Princesas, gatitos, la familia, bailarinas… pero monstruos no.",
@@ -33,7 +33,7 @@
 			"Siempre te escondía de mi hermano, hasta que un día lloró tanto que te di para hacerle feliz."
 		],
 		"marcas": [
-			3.8
+			3.85
 		]
 	},
 	"titulo_adolescencia": "II · Adolescencia",
@@ -58,8 +58,8 @@
 			"Bueno, aquí, aunque me han cortado la cabeza y está un poco borrosa."
 		],
 		"marcas": [
-			6.85,
-			9.7
+			6.95,
+			9.85
 		]
 	},
 	"pieza_solicitud": {
@@ -70,9 +70,9 @@
 			"Ya recuerdo por qué la hucha está vacía…"
 		],
 		"marcas": [
-			2.75,
+			2.85,
 			8.4,
-			14.4
+			14.45
 		]
 	},
 	"titulo_adultez": "III · Profesión",
@@ -82,7 +82,7 @@
 			"Quién iba a imaginar que sería yo quien abriría la tienda todas las mañanas. Y eso que dije que nunca lo haría."
 		],
 		"marcas": [
-			5.85
+			6.1
 		]
 	},
 	"pieza_caballete": {
@@ -92,8 +92,8 @@
 			"Entonces subió el precio del alquiler, y adivina quién trabaja los domingos."
 		],
 		"marcas": [
-			8.1,
-			12.8
+			8.4,
+			13.1
 		]
 	},
 	"pieza_espejo": {
@@ -104,9 +104,9 @@
 			"¿Y yo…? ¿Y yo para cuándo?…"
 		],
 		"marcas": [
-			4.3,
-			7.8,
-			14.6
+			4.45,
+			7.95,
+			14.75
 		]
 	},
 	"seccion_epilogo": [

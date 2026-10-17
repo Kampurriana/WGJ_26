@@ -18,6 +18,8 @@ signal skipped                               ## el jugador ha pasado de frase (s
 const GAP := 0.4                             ## silencio entre frases (s)
 const PAUSE := 1.6                           ## lo que dura un "" en una lista de frases
 const VOICE_TAIL := 0.5                      ## el subtítulo se queda esto tras acabar la voz (guion v2)
+const VOICE_PAD := 0.4                       ## la cola de silencio de cada grabación (tools/preparar_voces.sh)
+const TYPE_LEAD := 0.6                       ## con voz, el texto acaba de escribirse esto antes del final del trozo
 const VOICE_EXTENSIONS := ["ogg", "wav", "mp3"]
 const SFX_PREFIX := "sfx:"
 
@@ -30,6 +32,7 @@ var _left := 0.0                             ## lo que le queda a la frase de ah
 var _group := 0                              ## trozo grabado que suena ahora (0 = ninguno)
 var _groups := 0
 var _ducked := false
+var typing := -1.0                           ## con voz, lo que tarda en escribirse la frase de ahora (-1 = a su ritmo)
 
 
 func _ready() -> void:
@@ -135,9 +138,12 @@ func _enqueue(key: String) -> void:
 			var line := String(seg)
 			var path := _voice(voice) if line != "" else ""
 			var seconds := PAUSE if line == "" else _seconds_for(line)
+			var type_time := -1.0
 			if path != "":
-				seconds = maxf(seconds, (load(path) as AudioStream).get_length() + VOICE_TAIL)
-			_queue.append({"text": line, "voice": path, "seconds": seconds, "last": line != ""})
+				var length := (load(path) as AudioStream).get_length()
+				seconds = maxf(seconds, length + VOICE_TAIL)
+				type_time = maxf(length - VOICE_PAD - TYPE_LEAD, 0.5)
+			_queue.append({"text": line, "voice": path, "seconds": seconds, "last": line != "", "typing": type_time})
 	if _left <= 0.0:
 		_next()
 
@@ -168,8 +174,9 @@ func _enqueue_recorded(voice: String, seg: Dictionary) -> void:
 	for i in parts.size():
 		var last := i == parts.size() - 1
 		var end := length + VOICE_TAIL if last else starts[i + 1]
+		var spoken := (length - VOICE_PAD if last else starts[i + 1]) - starts[i]
 		_queue.append({"text": parts[i], "voice": path if i == 0 else "", "seconds": maxf(end - starts[i], 0.3),
-			"group": _groups, "last": last})
+			"group": _groups, "last": last, "typing": maxf(spoken - TYPE_LEAD, 0.5)})
 
 
 func _next() -> void:
@@ -190,6 +197,7 @@ func _next() -> void:
 	if String(e.voice) != "":
 		_player.stream = load(String(e.voice))
 		_player.play()
+	typing = float(e.get("typing", -1.0))
 	subtitle.emit(line, float(e.seconds))
 
 
