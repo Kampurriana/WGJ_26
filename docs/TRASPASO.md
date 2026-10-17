@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (261 comprobaciones, 17 avisos)`** (~3 min).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (262 comprobaciones, 17 avisos)`** (~3 min).
    Los avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -169,6 +169,9 @@ carpeta. Si no, parar y preguntar.
   carpeta 2D: la casa, el monstruo y el gato (3, uno por acto). El de la niña bailarina con su
   abuela **no es coleccionable**: es el dibujo de la pared de la infancia («las niñas no pintan
   monstruos», `P_dibujo`).
+- **17-oct, el escritorio del kit:** el escritorio de la adolescencia es el de las artistas (`SM_DeskA`)
+  con sus cajones (`SM_DeskC`, `SM_DeskD`) en su columna; sustituye al escritorio del pack y a la
+  cajonera blanca. Falta `SM_DeskB` (el tercer cajón): mientras, se repite `SM_DeskC`.
 - **Feedback del 17-oct, sexta nota:** los tablones: con arrastrar uno se completan todos los que son
   iguales; la moneda: diálogo → moneda fantasma (textura fantasma) que hace en bucle el gesto de
   meterse en el cerdito hasta que el jugador coge la moneda → el jugador la mete; más inmediato

@@ -590,6 +590,21 @@ func _test_story(main: Node) -> void:
 	check(application.available and not camera_pick.available and application.container != null
 		and application.container.kind == NameRules.DRAWER and application.container.attention,
 		"con el MP3 puesto toca encontrar la solicitud de Bellas Artes: el cajón brilla (la cámara aún no aparece)")
+	# El escritorio y sus cajones son los de las artistas (kit), con su material, y el cajón de la
+	# solicitud está en la columna del escritorio y sale hacia el jugador (+Z).
+	var desk_meshes := Visuals.meshes_under(_slot(d, &"escritorio").node)
+	var drawer_it := application.container
+	var desk_box := Visuals.global_aabb(_slot(d, &"escritorio").node)
+	var drawer_box := Visuals.global_aabb(drawer_it.target) if drawer_it != null else AABB()
+	var kit_mat := func(m: MeshInstance3D) -> bool:
+		var mat := m.get_surface_override_material(0)
+		return mat != null and mat.resource_path == "res://assets/kit/materiales/M_Desk.tres"
+	check(desk_meshes.size() == 1 and desk_meshes[0].mesh.resource_path.begins_with("res://assets/kit/modelos/Desk/SM_DeskA.fbx")
+		and kit_mat.call(desk_meshes[0]) and drawer_it != null
+		and Visuals.meshes_under(drawer_it.target).any(func(m: MeshInstance3D) -> bool:
+			return m.mesh.resource_path.begins_with("res://assets/kit/modelos/Desk/SM_DeskC.fbx") and kit_mat.call(m))
+		and desk_box.grow(0.05).encloses(drawer_box) and (drawer_it._open.origin - drawer_it._closed.origin).z > 0.2,
+		"el escritorio es el del kit (SM_DeskA, M_Desk) y el cajón de la solicitud, uno de sus cajones (SM_DeskC), en su columna y saliendo hacia el jugador")
 	steps = 0
 	while not camera_pick.available and steps < 80:
 		d.debug_solve_step()

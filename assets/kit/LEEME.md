@@ -30,11 +30,19 @@ allí, para que sea fácil poner al día:
   (nombres buenos) y `FloorCeilingPlanksCajonesqueFaltan.fbx`, `Boxes.fbx` (tapas de las cajas),
   pero estos dos traen los **nombres por defecto de 3ds Max** (`CeilingSupport014`, `SB020`,
   `Object006`...), no los `SM_` buenos.
-- No están en ningún paquete: `SM_DeskB`, `SM_CeilingSupportVertical`, `SM_SkirtingBoardBack`,
+- No están en ningún paquete: `SM_DeskB` (el tercer cajón del escritorio: en el desván se repite
+  `SM_DeskC` mientras tanto), `SM_CeilingSupportVertical`, `SM_SkirtingBoardBack`,
   `SM_SkirtingBoardTop`, `SM_CeilingSupportSmallPillars`, `SM_CeilingSupporDiagonal`.
 - `Desk.fbx` (de `Texturas/`) no se ha traído: son las partes sueltas que luego se unieron en
   `SM_DeskA/C/D` (mismas mallas).
 - Solo el escritorio tiene texturas; lo demás se ve con el material gris por defecto.
+
+## En uso en el juego
+
+- El escritorio del desván (`P_escritorio`) es `SM_DeskA`, con sus tres cajones en la columna de la
+  derecha (`SM_DeskC`, `SM_DeskD` del paquete, `SM_DeskC`) y `M_Desk`. Lo monta
+  `tools/build_attic_level.gd` (`_kit`): el `.fbx` se instancia y el material va en *surface
+  override*; si se cambia el fichero aquí, el desván lo coge al regenerarlo.
 
 Para traerlo todo con sus nombres: un `.zip` de la carpeta en Drive (se baja entero de una vez).
 

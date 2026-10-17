@@ -5,7 +5,8 @@ extends "res://tools/build_room_level.gd"
 ##                     no en todos), paredes y tejado; al final, la hucha (prólogo, __clave)
 ##   S_2_infancia      zona izquierda: caja de música -> dibujo -> nutria (clave) + su dressing
 ##   S_3_adolescencia  zona central (guion v2): MP3 -> solicitud de Bellas Artes (escondida en el
-##                     cajón) -> cámara (escondida en el armario, clave y flash) + su dressing
+##                     cajón de arriba del escritorio) -> cámara (escondida en el armario, clave y
+##                     flash) + su dressing. El escritorio y sus cajones son los de las artistas (kit)
 ##   S_4_adultez       zona derecha, la profesión: llaves -> caballete -> espejo (clave, __reflejo: su momento
 ##                     es de frente y con todo a negro) + su dressing
 ##   S_5_epilogo       la moneda (__ofrecida: aparece junto a la hucha y se arrastra a la ranura)
@@ -58,6 +59,17 @@ const DIBUJOS := {
 }
 ## El dibujo de la pared de la infancia (la pieza P_dibujo): la niña bailarina y su abuela.
 const DIBUJO_PARED := "res://assets/kit/dibujos/t_draw_03.png"
+## El escritorio de las artistas (assets/kit/): SM_DeskA con el frente a -Z (aquí se gira 180° para que
+## mire al jugador). A un lado, una columna de 0,27 m sin baldas, bajo el tablero, para tres cajones
+## (SM_DeskC con estrella; SM_DeskD, con pomo redondo, solo viene en el paquete; SM_DeskB aún no está).
+const KIT_DESK := "res://assets/kit/modelos/Desk/SM_DeskA.fbx"
+const KIT_DRAWER := "res://assets/kit/modelos/Desk/SM_DeskC.fbx"
+const KIT_DRAWER_PACK := "res://assets/kit/paquetes/FloorCeilingPlanksCajonesqueFaltan.fbx"
+const KIT_DESK_MAT := "res://assets/kit/materiales/M_Desk.tres"
+const KIT_DESK_TOP := 0.745                  ## altura del tablero (medida del modelo)
+const KIT_DESK_COLUMN := Vector2(0.385, 0.66) ## la columna de cajones (girado): x del centro y techo
+const KIT_DRAWER_H := 0.2084                 ## alto de un cajón
+const KIT_DRAWER_Z := 0.064                  ## centro de un cajón: su frente, a ras del escritorio
 const LINE_Z := -1.15                        ## la cuerda de los dibujos: delante del faldón, encima de la cama
 const LINE_X := Vector2(-2.6, -0.98)         ## de la pared izquierda hasta casi el escritorio
 const LINE_Y := 1.42                         ## altura de sus extremos
@@ -125,8 +137,8 @@ func _initialize() -> void:
 func _build_base(root: Node3D) -> void:
 	_box(root, "Peana", Vector3(0, -0.16, 0), Vector3(HALF_W * 2 + 0.4, 0.3, HALF_D * 2 + 0.4), WOOD_DARK)
 	# Trastos entre zonas: cajas, una maleta, una alfombra enrollada.
-	_box(root, "CajaVieja1", Vector3(-0.92, 0.17, -1.35), Vector3(0.36, 0.34, 0.34), CARDBOARD)
-	_box(root, "CajaVieja2", Vector3(-0.9, 0.46, -1.37), Vector3(0.28, 0.24, 0.28), CARDBOARD.darkened(0.08))
+	_box(root, "CajaVieja1", Vector3(-0.64, 0.17, -1.3), Vector3(0.36, 0.34, 0.34), CARDBOARD)   # bajo el escritorio
+	_box(root, "CajaVieja2", Vector3(-0.62, 0.46, -1.32), Vector3(0.28, 0.24, 0.28), CARDBOARD.darkened(0.08))
 	_box(root, "Maleta", Vector3(0.95, 0.14, -1.42), Vector3(0.18, 0.28, 0.4), Color(0.5, 0.3, 0.22))
 	_box(root, "AsaMaleta", Vector3(0.95, 0.3, -1.42), Vector3(0.03, 0.04, 0.12), WOOD_DARK)
 	var rolled := _cyl(root, "AlfombraEnrollada", Vector3(-2.35, 0.08, 1.35), 0.08, 0.9, Color(0.62, 0.32, 0.28))
@@ -335,27 +347,43 @@ func _build_teen(sec: Node3D) -> void:
 	_sphere(door, "Tirador", Vector3(ww - 0.06, 0.55, 0.02), 0.018, Color(0.85, 0.75, 0.5))
 	_box(door, "Pegatina", Vector3(ww * 0.5, 0.82, 0.012), Vector3(0.12, 0.12, 0.004), Color(0.98, 0.85, 0.35))
 	_retro_camera(_node(wardrobe, "H_camara", Vector3(0, 0.63, 0.0)))
-	# Cajonera bajo el escritorio: en el cajón de arriba, la inscripción a Bellas Artes.
-	var drawers := _node(sec, "Cajonera", Vector3(-0.7, 0, -1.25))
-	_box(drawers, "Cuerpo", Vector3(0, 0.25, 0), Vector3(0.3, 0.5, 0.42), Color(0.92, 0.9, 0.86))
-	var drawer := _node(drawers, "OD_cajon_cajonera", Vector3(0, 0.42, 0.02))
-	_box(drawer, "Frente", Vector3(0, 0, 0.0), Vector3(0.27, 0.12, 0.42), Color(0.86, 0.84, 0.8))
-	_box(drawer, "Tirador", Vector3(0, 0, 0.215), Vector3(0.1, 0.015, 0.012), Color(0.3, 0.3, 0.32))
-	_application(_node(drawer, "H_solicitud", Vector3(0, 0.065, 0.0)), true)
 	# Piezas.
 	var rug := _node(sec, "P_alfombra_adolescencia", Vector3(0.0, 0.012, 0.35))
 	_box(rug, "Alfombra", Vector3.ZERO, Vector3(1.3, 0.015, 0.9), TEEN_PURPLE)
 	for k in 3:
 		_box(rug, "Raya%d" % k, Vector3(0, 0.002, -0.3 + k * 0.3), Vector3(1.3, 0.015, 0.06), TEEN_PURPLE.lightened(0.25))
-	var desk := Vector3(-0.3, 0, -1.25)
-	_prop(sec, "P_escritorio", "desk_01", desk)
-	_prop(sec, "P_silla", "chair_01", Vector3(-0.3, 0, -0.62), 180.0)
-	var lamp := _prop(sec, "P_lampara__after-escritorio", "lamp_01", desk + Vector3(-0.38, DESK_TOP, -0.12))
+	# El escritorio de las artistas, mirando al jugador, y sus cajones (decorado: se ven aunque el
+	# escritorio aún sea silueta). En el de arriba, la inscripción a Bellas Artes.
+	var desk := Vector3(-0.34, 0, -1.24)
+	var desk_mat := load(KIT_DESK_MAT) as Material
+	var desk_piece := _node(sec, "P_escritorio", desk)
+	desk_piece.rotation_degrees.y = 180.0
+	_kit(desk_piece, KIT_DESK, desk_mat)
+	var drawers := _node(sec, "Cajones", desk + Vector3(KIT_DESK_COLUMN.x, 0, KIT_DRAWER_Z))
+	var round_knob := _kit_mesh(KIT_DRAWER_PACK, "SM_DeskD")
+	for k in 3:
+		var y := KIT_DESK_COLUMN.y - 0.003 - (k + 1) * KIT_DRAWER_H - k * 0.003
+		var drawer := _node(drawers, "OD_cajon_escritorio" if k == 0 else "Cajon%d" % k, Vector3(0, y, 0))
+		if k == 1:                                # el del medio, el de pomo redondo
+			var m := MeshInstance3D.new()
+			m.name = "Modelo"
+			m.mesh = round_knob.mesh
+			m.transform = Transform3D(Basis(Vector3.UP, PI) * round_knob.basis, Vector3.ZERO)
+			m.set_surface_override_material(0, desk_mat)
+			drawer.add_child(m)
+		else:
+			var model := _kit(drawer, KIT_DRAWER, desk_mat)
+			model.position.y = KIT_DRAWER_H * 0.5   # este fichero tiene el pivote en el centro
+			model.rotation_degrees.y = 180.0
+	round_knob.free()
+	_application(_node(drawers.get_child(0) as Node3D, "H_solicitud", Vector3(0, 0.03, 0.02)), true)
+	_prop(sec, "P_silla", "chair_01", desk + Vector3(-0.17, 0, 0.62), 180.0)   # delante del hueco de las piernas
+	var lamp := _prop(sec, "P_lampara__after-escritorio", "lamp_01", desk + Vector3(-0.4, KIT_DESK_TOP, -0.12))
 	_lamp_light(lamp)
-	_prop(sec, "P_altavoz__after-escritorio", "speaker_01", desk + Vector3(0.36, DESK_TOP, -0.13))
-	_prop(sec, "P_libro__after-escritorio", "book_01", desk + Vector3(-0.15, DESK_TOP, -0.15), 10.0)
-	_prop(sec, "P_libro__after-escritorio_001", "book_01", desk + Vector3(-0.15, DESK_TOP + 0.035, -0.15), -6.0)
-	var mp3 := _node(sec, "P_mp3__after-escritorio", desk + Vector3(-0.02, DESK_TOP, 0.08))
+	_prop(sec, "P_altavoz__after-escritorio", "speaker_01", desk + Vector3(0.4, KIT_DESK_TOP, -0.13))
+	_prop(sec, "P_libro__after-escritorio", "book_01", desk + Vector3(-0.15, KIT_DESK_TOP, -0.15), 10.0)
+	_prop(sec, "P_libro__after-escritorio_001", "book_01", desk + Vector3(-0.15, KIT_DESK_TOP + 0.035, -0.15), -6.0)
+	var mp3 := _node(sec, "P_mp3__after-escritorio", desk + Vector3(-0.02, KIT_DESK_TOP, 0.08))
 	_box(mp3, "Cuerpo", Vector3(0, 0.006, 0), Vector3(0.05, 0.012, 0.08), Color(0.95, 0.95, 0.97))
 	_cyl(mp3, "Rueda", Vector3(0, 0.013, 0.012), 0.016, 0.003, Color(0.75, 0.75, 0.78))
 	_box(mp3, "Pantalla", Vector3(0, 0.013, -0.022), Vector3(0.035, 0.002, 0.025), Color(0.3, 0.55, 0.8))
@@ -363,11 +391,11 @@ func _build_teen(sec: Node3D) -> void:
 		_sphere(mp3, "Auricular%d" % int(x > 0), Vector3(x * 2.0, 0.01, 0.07), 0.01, Color(0.97, 0.97, 0.97))
 		var wire := _box(mp3, "Cable%d" % int(x > 0), Vector3(x, 0.004, 0.06), Vector3(0.004, 0.004, 0.06), Color(0.97, 0.97, 0.97))
 		wire.rotation_degrees.y = 30.0 if x > 0 else -30.0
-	var cam_piece := _node(sec, "P_camara__clave__flash", desk + Vector3(0.2, DESK_TOP, 0.06))
+	var cam_piece := _node(sec, "P_camara__clave__flash", desk + Vector3(0.2, KIT_DESK_TOP, 0.06))
 	cam_piece.rotation_degrees.y = -20.0
 	_retro_camera(cam_piece)
 	# Debajo de la cámara, entre las fotos: un dibujo suyo (se encuentra solo al ponerla).
-	_kid_drawing(_lying(sec, "C_dibujo_monstruo__con-camara", desk + Vector3(0.1, DESK_TOP + 0.008, -0.04), -10.0), "monstruo")
+	_kid_drawing(_lying(sec, "C_dibujo_monstruo__con-camara", desk + Vector3(0.1, KIT_DESK_TOP + 0.008, -0.04), -10.0), "monstruo")
 	for k in 3:                                   # las fotos, en abanico junto a la cámara
 		var photo := _box(cam_piece, "Foto%d" % k, Vector3(-0.16 + k * 0.02, 0.003 + k * 0.002, 0.06), Vector3(0.07, 0.003, 0.085), Color(0.97, 0.97, 0.95))
 		photo.rotation_degrees.y = -15.0 + k * 15.0
@@ -546,6 +574,31 @@ func _brushes(n: Node3D, lying: bool) -> void:
 
 
 # --- Dibujos escondidos y su cuerda -----------------------------------------------------------
+
+## Un modelo del kit de las artistas (assets/kit/): el .fbx instanciado (en el .tscn queda como
+## referencia al fichero, no copiado) con el material de su conjunto en cada superficie. Va en
+## surface override, no en material_override: ese lo usa el hueco para la silueta y lo vacía al colocar.
+func _kit(parent: Node3D, path: String, material: Material) -> Node3D:
+	var inst := (load(path) as PackedScene).instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE) as Node3D
+	inst.name = "Modelo"
+	parent.add_child(inst)
+	_root.set_editable_instance(inst, true)      # para guardar el material de sus mallas
+	for m: MeshInstance3D in inst.find_children("*", "MeshInstance3D", true, false):
+		for s in m.mesh.get_surface_count():
+			m.set_surface_override_material(s, material)
+	return inst
+
+
+## Una malla suelta de un .fbx de varias piezas (sin instanciar el resto): su MeshInstance3D, fuera
+## del árbol (hay que liberarla). Su malla se copia dentro del .tscn.
+func _kit_mesh(path: String, node_name: String) -> MeshInstance3D:
+	var scene := (load(path) as PackedScene).instantiate() as Node3D
+	var m := scene.find_child(node_name, true, false) as MeshInstance3D
+	m.owner = null
+	m.get_parent().remove_child(m)
+	scene.free()
+	return m
+
 
 ## Un nodo con un dibujo tumbado (la cara pintada hacia arriba), girado `yaw` grados: el papel se
 ## extiende desde `pos` (su borde de arriba) hacia delante.
