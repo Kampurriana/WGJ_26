@@ -20,10 +20,10 @@ const RETURN := 1.6                          ## lo que tarda en volver a mecerse
 const TITLE := "¡UN DIBUJO!"
 const TITLE_LAST := "¡EL ÚLTIMO!"
 const BUTTON := "¡A LA CUERDA!"
-const TITLE_COLOR := Color(1.0, 0.76, 0.32)
-const TITLE_EDGE := Color(0.93, 0.42, 0.45)
-const PILL_INK := Color(0.33, 0.36, 0.82)
-const BUTTON_COLOR := Color(0.56, 0.38, 0.86)
+const TITLE_COLOR := UiTheme.ORANGE
+const TITLE_EDGE := UiTheme.CORAL
+const PILL_INK := UiTheme.VIOLET
+const BUTTON_COLOR := UiTheme.PURPLE
 
 var item: Interactable                       ## el dibujo que se mira (null = cerrado)
 var copy: Node3D                             ## su copia en el visor
@@ -392,8 +392,7 @@ func _input(e: InputEvent) -> void:
 
 static func _bold(amount: float) -> FontVariation:
 	var f := FontVariation.new()
-	f.base_font = ThemeDB.fallback_font
-	f.variation_embolden = amount
+	f.base_font = UiTheme.FONT_BOLD if amount >= 0.6 else UiTheme.FONT
 	return f
 
 

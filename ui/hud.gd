@@ -246,12 +246,11 @@ func _build_controls() -> void:
 	_task.add_child(task_col)
 	_title = Label.new()
 	var spaced := FontVariation.new()
-	spaced.base_font = ThemeDB.fallback_font
+	spaced.base_font = UiTheme.FONT_BOLD
 	spaced.spacing_glyph = 2
-	spaced.variation_embolden = 0.5
 	_title.add_theme_font_override("font", spaced)
-	_title.add_theme_font_size_override("font_size", 15)
-	_title.add_theme_color_override("font_color", Color(1.0, 0.8, 0.45))
+	_title.add_theme_font_size_override("font_size", 16)
+	_title.add_theme_color_override("font_color", UiTheme.ORANGE)
 	task_col.add_child(_title)
 	_task_text = Label.new()
 	_task_text.theme_type_variation = &"SubtituloTexto"
@@ -272,7 +271,7 @@ func _build_controls() -> void:
 	bar_bg.bg_color = Color(1, 1, 1, 0.14)
 	bar_bg.set_corner_radius_all(5)
 	var bar_fill := StyleBoxFlat.new()
-	bar_fill.bg_color = Color(1.0, 0.78, 0.4)
+	bar_fill.bg_color = UiTheme.ORANGE
 	bar_fill.set_corner_radius_all(5)
 	_task_bar.add_theme_stylebox_override("background", bar_bg)
 	_task_bar.add_theme_stylebox_override("fill", bar_fill)
@@ -288,7 +287,7 @@ func _build_controls() -> void:
 	_drawings.offset_top = MARGIN
 	_drawings.custom_minimum_size = Vector2(PANEL_WIDTH, COUNTER_H)
 	_drawings.theme_type_variation = &"Subtitulo"
-	_drawings.add_theme_stylebox_override("panel", UiTheme._box(Color(0.18, 0.12, 0.08, 0.78), 14, Color(0, 0, 0, 0), 0, 0, 14, 6))
+	_drawings.add_theme_stylebox_override("panel", UiTheme._box(Color(0.14, 0.21, 0.52, 0.84), 21, Color(UiTheme.PALE, 0.25), 0, 2, 14, 5))
 	_drawings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_drawings.hide()
 	_root.add_child(_drawings)
@@ -306,7 +305,7 @@ func _build_controls() -> void:
 	_drawings_label = Label.new()
 	_drawings_label.theme_type_variation = &"SubtituloTexto"
 	_drawings_label.add_theme_font_size_override("font_size", 17)
-	_drawings_label.add_theme_color_override("font_color", Color(1.0, 0.8, 0.45))
+	_drawings_label.add_theme_color_override("font_color", UiTheme.ORANGE)
 	row.add_child(_drawings_label)
 	_back_button = Button.new()
 	_back_button.text = "Volver"
@@ -367,7 +366,7 @@ func _build_chapter() -> void:
 	_root.add_child(_chapter)
 	_chapter_dim = ColorRect.new()
 	_chapter_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_chapter_dim.color = Color(0.03, 0.02, 0.01, 0.5)
+	_chapter_dim.color = Color(UiTheme.BLUE_DEEP, 0.45)
 	_chapter_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_chapter.add_child(_chapter_dim)
 	var box := VBoxContainer.new()
@@ -378,23 +377,24 @@ func _build_chapter() -> void:
 	box.add_theme_constant_override("separation", 10)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_chapter.add_child(box)
-	_chapter_kicker = _chapter_label(20, Color(UiTheme.CREAM, 0.75))
+	_chapter_kicker = _chapter_label(22, UiTheme.CREAM)
 	var kicker_font := FontVariation.new()
-	kicker_font.base_font = ThemeDB.fallback_font
+	kicker_font.base_font = UiTheme.FONT_BOLD
 	kicker_font.spacing_glyph = 6
 	_chapter_kicker.add_theme_font_override("font", kicker_font)
 	box.add_child(_chapter_kicker)
-	_chapter_title = _chapter_label(68, UiTheme.CREAM)
+	_chapter_title = _chapter_label(76, UiTheme.CREAM)
+	UiTheme.style_title(_chapter_title, 76)          # como los títulos de la referencia
 	_chapter_spacing = FontVariation.new()
-	_chapter_spacing.base_font = ThemeDB.fallback_font
+	_chapter_spacing.base_font = UiTheme.FONT_BOLD
 	_chapter_title.add_theme_font_override("font", _chapter_spacing)
 	box.add_child(_chapter_title)
 	var line_holder := CenterContainer.new()
 	line_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(line_holder)
 	_chapter_line = ColorRect.new()
-	_chapter_line.color = Color(UiTheme.CREAM, 0.8)
-	_chapter_line.custom_minimum_size = Vector2(0, 2)
+	_chapter_line.color = Color(UiTheme.PALE, 0.85)
+	_chapter_line.custom_minimum_size = Vector2(0, 4)
 	_chapter_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line_holder.add_child(_chapter_line)
 
@@ -406,7 +406,7 @@ func _chapter_label(font_size: int, color: Color) -> Label:
 	l.add_theme_font_size_override("font_size", font_size)
 	l.add_theme_constant_override("outline_size", 10)
 	l.add_theme_color_override("font_color", color)
-	l.add_theme_color_override("font_outline_color", Color(0.08, 0.05, 0.03, 0.85))
+	l.add_theme_color_override("font_outline_color", Color(UiTheme.BLUE_DEEP, 0.85))
 	return l
 
 
@@ -428,7 +428,8 @@ func _build_tip() -> void:
 	var kicker := Label.new()
 	kicker.text = "CONSEJO"
 	kicker.add_theme_font_size_override("font_size", 13)
-	kicker.add_theme_color_override("font_color", Color(1.0, 0.8, 0.45))
+	kicker.add_theme_font_override("font", UiTheme.FONT_BOLD)
+	kicker.add_theme_color_override("font_color", UiTheme.ORANGE)
 	tip_col.add_child(kicker)
 	_tip = Label.new()
 	_tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

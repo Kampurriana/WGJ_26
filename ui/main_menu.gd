@@ -89,6 +89,13 @@ func show_page(p: String) -> void:
 func _build_main(parent: Control) -> void:
 	var p := VBoxContainer.new()
 	p.add_theme_constant_override("separation", 10)
+	var logo := Label.new()                      # el nombre del juego, como el logo de la referencia
+	logo.text = GameState.game_title()
+	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.style_title(logo, 54)
+	logo.rotation_degrees = -3.0
+	logo.resized.connect(func() -> void: logo.pivot_offset = logo.size * 0.5)
+	p.add_child(logo)
 	_add_button(p, "jugar", "Jugar", func() -> void: play_requested.emit(GameState.next_level_to_play()))
 	_add_button(p, "elegir", "Elegir diorama", func() -> void: show_page("elegir"))
 	_add_button(p, "opciones", "Opciones", func() -> void: show_page("opciones"))
@@ -192,7 +199,7 @@ func _heading(text: String) -> Label:
 	var l := Label.new()
 	l.text = text
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", 26)
+	UiTheme.style_title(l, 34)
 	return l
 
 

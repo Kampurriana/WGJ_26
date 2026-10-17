@@ -65,7 +65,7 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 	_count.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_count.size_flags_vertical = Control.SIZE_SHRINK_END
 	_count.add_theme_color_override("font_color", UiTheme.CREAM)
-	_count.add_theme_color_override("font_outline_color", Color(0.15, 0.1, 0.06))
+	_count.add_theme_color_override("font_outline_color", UiTheme.BLUE_DEEP)
 	_count.add_theme_constant_override("outline_size", 6)
 	_count.add_theme_font_size_override("font_size", 16)
 	add_child(_count)

@@ -34,7 +34,7 @@ func _ready() -> void:
 	add_child(root)
 	var dim := ColorRect.new()
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dim.color = Color(0.12, 0.08, 0.05, 0.45)
+	dim.color = Color(UiTheme.BLUE_DEEP, 0.5)
 	root.add_child(dim)                     # tapa el juego: los clics no pasan al diorama
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
@@ -48,7 +48,7 @@ func _ready() -> void:
 	var title := Label.new()
 	title.text = "Pausa"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 32)
+	UiTheme.style_title(title, 44)
 	v.add_child(title)
 	_main_page = VBoxContainer.new()
 	_main_page.add_theme_constant_override("separation", 10)

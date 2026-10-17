@@ -195,7 +195,7 @@ func _line(text: String, size: int, color: Color, spacing := 0) -> Label:
 	l.add_theme_color_override("font_color", color)
 	if spacing > 0:
 		var f := FontVariation.new()
-		f.base_font = ThemeDB.fallback_font
+		f.base_font = UiTheme.FONT_BOLD
 		f.spacing_glyph = spacing
 		l.add_theme_font_override("font", f)
 	return l
