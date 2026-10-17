@@ -895,10 +895,11 @@ func _test_title_menu(main: Node) -> bool:
 	main.menu.show_page("principal")
 	for i in 2:                                      # el menú se maqueta un fotograma después
 		await get_tree().process_frame
-	check(Sfx.track == "menu", "en el puzle del título y el menú suena su canción (musica/menu, Ankui)")
+	check(Sfx.track == "menu" and _has_music("menu") and Sfx.music_looping(),
+		"en el puzle del título y el menú suena su canción en bucle (musica/menu, Ankui)")
 	_click(main.menu.buttons.jugar.get_global_rect().get_center())
 	await get_tree().create_timer(main.BLACKOUT_TIME * 0.6).timeout
-	check(Sfx.track == "juego" and (Sfx.music_looping() or not _has_music("juego")),
+	check(Sfx.track == "juego" and _has_music("juego") and Sfx.music_looping(),
 		"al darle a Jugar cambia a la canción de la partida (musica/juego, Loft), en bucle")
 	check(main.blacking_out and main.menu.is_open() and main._fade.color.a > 0.2 and main._fade.mouse_filter == Control.MOUSE_FILTER_STOP,
 		"al darle a Jugar, la pantalla se va a negro (y mientras no se puede tocar nada)")
@@ -1282,4 +1283,4 @@ func _end() -> void:
 		print("SMOKE OK")
 	else:
 		print("SMOKE FALLO %d" % _fails)
-	get_tree().quit(0 if _fails == 0 else 1)
+	Sfx.quit(0 if _fails == 0 else 1)

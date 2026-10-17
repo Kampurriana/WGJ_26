@@ -64,7 +64,7 @@ func _ready() -> void:
 	_add_button(_main_page, "menu", "Menú principal", func() -> void:
 		close()
 		main_menu_requested.emit())
-	var quit := _add_button(_main_page, "salir", "Salir del juego", func() -> void: get_tree().quit())
+	var quit := _add_button(_main_page, "salir", "Salir del juego", func() -> void: Sfx.quit())
 	quit.visible = not OS.has_feature("web")
 	_options_page = VBoxContainer.new()
 	_options_page.add_theme_constant_override("separation", 10)

@@ -9,6 +9,7 @@ extends Node
 const EXTENSIONS := ["ogg", "wav", "mp3"]
 const POOL_SIZE := 8
 const MUSIC_FADE := 1.6                      ## segundos del fundido cruzado entre canciones
+const QUIT_WAIT := 0.2                       ## al salir, lo que se espera a que el audio suelte la música (s)
 
 var _pool: Array[AudioStreamPlayer] = []
 var _next := 0
@@ -17,10 +18,12 @@ var _warned: Dictionary = {}
 var _music: AudioStreamPlayer                ## la canción que suena (la otra se está yendo)
 var _music_old: AudioStreamPlayer
 var track := ""                               ## la canción pedida ("menu", "juego"; "" = ninguna)
+var _quitting := false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS      # la música y los clics del menú siguen en pausa
+	get_tree().auto_accept_quit = false          # la X de la ventana pasa por quit()
 	for i in POOL_SIZE:
 		var p := AudioStreamPlayer.new()
 		p.bus = &"Efectos"
@@ -35,6 +38,26 @@ func _ready() -> void:
 		add_child(m)
 		_music_old = _music
 		_music = m
+
+
+## Salir del juego: antes se para el sonido y se le da un momento al servidor de audio para soltarlo
+## (si se cierra con la música sonando, su reproducción sigue viva y Godot avisa de una fuga). Lo usan
+## los botones de Salir, la X de la ventana, las capturas y el test.
+func quit(code := 0) -> void:
+	if _quitting:
+		return
+	_quitting = true
+	for p: AudioStreamPlayer in [_music, _music_old] + _pool:
+		p.stop()
+		p.stream = null
+	_cache.clear()
+	await get_tree().create_timer(QUIT_WAIT, true, false, true).timeout
+	get_tree().quit(code)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		quit()
 
 
 func play(sound: String, pitch_jitter := 0.08) -> void:

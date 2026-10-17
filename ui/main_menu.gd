@@ -113,7 +113,7 @@ func _build_main(parent: Control) -> void:
 	_add_button(p, "opciones", "Opciones", func() -> void: show_page("opciones"))
 	_add_button(p, "logros", "Logros", func() -> void: show_page("logros"))
 	_add_button(p, "creditos", "Créditos", func() -> void: show_page("creditos"))
-	var quit := _add_button(p, "salir", "Salir", func() -> void: get_tree().quit())
+	var quit := _add_button(p, "salir", "Salir", func() -> void: Sfx.quit())
 	quit.visible = not OS.has_feature("web")     # en el navegador no hay "salir"
 	_add_page(parent, "principal", p)
 

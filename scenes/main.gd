@@ -30,8 +30,11 @@ const BLACKOUT_TIME := 0.6                   ## al darle a Jugar (sexta nota): l
 const BLACKOUT_HOLD := 0.25                  ## ...un instante a oscuras (ahí se carga el diorama)...
 const BLACKOUT_IN := 1.1                     ## ...y el diorama aparece desde el negro (s)
 const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
-const MUSIC_MENU_DB := -6.0                  ## Ankui: puzle del título y menú
-const MUSIC_GAME_DB := -13.0                 ## Loft: en bucle durante la partida, "a volumen moderado"
+# Volumen de cada canción, medido (ffmpeg ebur128): Ankui está masterizada muy baja (-32 LUFS, pico
+# -15 dB) y Loft a -27,6 LUFS. Con el bus Musica al 0,7 de las Opciones, el menú queda en ~-22 LUFS y
+# la partida ~5 LU por debajo, de fondo ("volumen moderado"), sin que ninguna llegue a recortar.
+const MUSIC_MENU_DB := 13.0                  ## Ankui (musica/menu): puzle del título y menú
+const MUSIC_GAME_DB := 3.5                   ## Loft (musica/juego): en bucle durante la partida
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var menu: MainMenu
@@ -449,4 +452,4 @@ func _process(delta: float) -> void:
 		var err := img.save_png(out)
 		print("CAPTURA %s %dx%d err=%d" % [out, img.get_width(), img.get_height(), err])
 		_capture_path = ""
-		get_tree().quit()
+		Sfx.quit()
