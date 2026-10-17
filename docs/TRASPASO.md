@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (263 comprobaciones, 17 avisos)`** (~3 min).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (262 comprobaciones, 17 avisos)`** (~3 min).
    Los avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -100,7 +100,7 @@ cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos �
   **pegatinas**: estrella, corazón, flor, luna, rayo, arcoíris y la del
   nombre del juego en un cartel). Es **un `.glb`** (`levels/provisional/menu_provisional.glb`,
   generado por `tools/build_title_level.gd`); si existe `assets/modelos/menu/menu.glb`, se usa ese. Al
-  resolverlo sale el **menú** a la izquierda: Jugar/Continuar, Elegir diorama, Opciones, Créditos,
+  resolverlo sale el **menú** a la izquierda: Jugar/Continuar, Opciones, Logros, Créditos,
   Salir (no en Web). **Pausa** con Esc o el botón Menú.
 - `levels/level_01_habitacion.tscn` ("La habitación de estudio", con el pack *Modern Japanese Home
   Props Lite*, MIT) **ya no se juega**: el desván usa algunos de esos props (escritorio, silla,

@@ -1017,9 +1017,8 @@ func _test_title_menu(main: Node) -> bool:
 	_key(KEY_ESCAPE)
 	await get_tree().process_frame
 	check(main.menu.page == "principal", "Esc en una página vuelve a la principal")
-	main.menu.show_page("elegir")
-	var level_button: Button = main.menu.buttons.get("nivel_0")
-	check(level_button != null and level_button.text.contains("Muestra: la casita") and not level_button.disabled, "Elegir diorama lista el nivel 0 con su título")
+	check(not main.menu.buttons.has("elegir") and not main.menu._pages.has("elegir"),
+		"el menú no tiene selector de nivel: el juego es un solo diorama")
 	main.menu.show_page("creditos")
 	check(main.menu.page == "creditos", "la página de créditos se abre")
 	main.menu.show_page("principal")
@@ -1087,8 +1086,6 @@ func _test_back_to_menu(main: Node) -> void:
 	check(main.menu.is_open() and main.menu.page == "principal" and Narrator.remaining() <= 0.0,
 		"y el menú se abre en su página principal, sin frases")
 	check(main.menu.buttons.jugar.text == "Continuar", "con progreso, el botón dice Continuar")
-	main.menu.show_page("elegir")
-	check(main.menu.buttons.nivel_0.text.contains("✓"), "Elegir diorama marca el nivel completado")
 	main.menu.show_page("opciones")
 	var reset: Button = main.menu.options.reset_button
 	reset.pressed.emit()

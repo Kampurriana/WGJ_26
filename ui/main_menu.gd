@@ -3,8 +3,8 @@ extends CanvasLayer
 ## Menú de inicio. Sale a la izquierda, encima del diorama del título, cuando su puzle está
 ## resuelto (o directamente si ya se resolvió en otra partida). El título del juego es el letrero
 ## que el jugador acaba de montar: el panel no lo repite. Páginas:
-##   principal  Jugar/Continuar · Elegir diorama · Opciones · Créditos · Salir (no en Web)
-##   elegir     un botón por nivel de data/levels.json (bloqueado hasta completar el anterior)
+##   principal  Jugar/Continuar · Opciones · Logros · Créditos · Salir (no en Web). Sin selector de
+##              nivel: el juego es un solo diorama (el desván)
 ##   opciones   OptionsPanel con "Borrar progreso"
 ##   creditos   el texto de data/creditos_es.txt
 ## Teclado: flechas + Intro. Esc vuelve a la página principal.
@@ -22,8 +22,6 @@ var pending_page := ""                      ## página con la que abrirse la pr�
 
 var _panel: PanelContainer
 var _pages: Dictionary = {}                 ## nombre -> Control
-var _level_list: VBoxContainer
-var _titles: Dictionary = {}                ## ruta de nivel -> título (leído de la escena sin instanciarla)
 var _logo: Label
 var _logros: LogrosLista
 var _t := 0.0
@@ -47,7 +45,6 @@ func _ready() -> void:
 	v.add_theme_constant_override("separation", 14)
 	_panel.add_child(v)
 	_build_main(v)
-	_build_levels(v)
 	_build_options(v)
 	_build_achievements(v)
 	_build_credits(v)
@@ -88,9 +85,7 @@ func show_page(p: String) -> void:
 	page = p
 	for k: String in _pages:
 		(_pages[k] as Control).visible = k == p
-	if p == "elegir":
-		_fill_levels()
-	elif p == "opciones":
+	if p == "opciones":
 		options.refresh()
 	elif p == "logros":
 		_logros.refresh()
@@ -109,24 +104,12 @@ func _build_main(parent: Control) -> void:
 	_logo.resized.connect(func() -> void: _logo.pivot_offset = _logo.size * 0.5)
 	p.add_child(_logo)
 	_add_button(p, "jugar", "Jugar", func() -> void: play_requested.emit(GameState.next_level_to_play()))
-	_add_button(p, "elegir", "Elegir diorama", func() -> void: show_page("elegir"))
 	_add_button(p, "opciones", "Opciones", func() -> void: show_page("opciones"))
 	_add_button(p, "logros", "Logros", func() -> void: show_page("logros"))
 	_add_button(p, "creditos", "Créditos", func() -> void: show_page("creditos"))
 	var quit := _add_button(p, "salir", "Salir", func() -> void: Sfx.quit())
 	quit.visible = not OS.has_feature("web")     # en el navegador no hay "salir"
 	_add_page(parent, "principal", p)
-
-
-func _build_levels(parent: Control) -> void:
-	var p := VBoxContainer.new()
-	p.add_theme_constant_override("separation", 10)
-	p.add_child(_heading("Elige un diorama"))
-	_level_list = VBoxContainer.new()
-	_level_list.add_theme_constant_override("separation", 8)
-	p.add_child(_scroll(_level_list))
-	_add_button(p, "elegir_volver", "Volver", func() -> void: show_page("principal"))
-	_add_page(parent, "elegir", p)
 
 
 func _build_options(parent: Control) -> void:
@@ -163,39 +146,6 @@ func _build_credits(parent: Control) -> void:
 	p.add_child(_scroll(text))
 	_add_button(p, "creditos_volver", "Volver", func() -> void: show_page("principal"))
 	_add_page(parent, "creditos", p)
-
-
-func _fill_levels() -> void:
-	for c in _level_list.get_children():
-		_level_list.remove_child(c)
-		c.queue_free()
-	for i in GameState.levels.size():
-		var b: Button
-		if GameState.is_unlocked(i):
-			var done := "   ✓" if GameState.is_completed(i) else ""
-			b = _add_button(_level_list, "nivel_%d" % i, "%d. %s%s" % [i + 1, _level_title(i), done],
-				func() -> void: play_requested.emit(i))
-		else:
-			b = _add_button(_level_list, "nivel_%d" % i, "%d. Bloqueado" % (i + 1), func() -> void: pass)
-			b.disabled = true
-			b.tooltip_text = "Completa el diorama anterior para abrirlo"
-
-
-## El título sale de la propiedad level_title guardada en la escena, sin instanciarla
-## (instanciar un nivel con su .glb solo para leer un texto sería caro).
-func _level_title(i: int) -> String:
-	var path := GameState.levels[i]
-	if _titles.has(path):
-		return _titles[path]
-	var title := path.get_file().get_basename()
-	var scene := load(path) as PackedScene
-	if scene != null:
-		var st := scene.get_state()
-		for k in st.get_node_property_count(0):
-			if st.get_node_property_name(0, k) == &"level_title":
-				title = String(st.get_node_property_value(0, k))
-	_titles[path] = title
-	return title
 
 
 # --- Piezas de interfaz ------------------------------------------------------------------

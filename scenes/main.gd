@@ -8,7 +8,7 @@ extends Node3D
 ## Argumentos para Claude (después de "--" en la línea de comandos):
 ##   --level=N            empieza directamente en el nivel N (índice de data/levels.json)
 ##   --level=menu         empieza en el menú de inicio (igual que sin --level)
-##   --menu-page=P        al abrirse el menú, en la página P (elegir, opciones, creditos);
+##   --menu-page=P        al abrirse el menú, en la página P (opciones, logros, creditos);
 ##                        "pausa" abre la pausa nada más cargar; "dibujos", la pausa en el álbum (a los 1,5 s,
 ##                        para que --f9 ya haya colgado los dibujos)
 ##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s; solo dice la frase de la última
