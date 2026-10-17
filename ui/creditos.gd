@@ -77,7 +77,7 @@ func _ready() -> void:
 	hide()
 
 
-## Empieza a pasar. drawings = colores de los dibujos encontrados; total = los que había (0 = no hay).
+## Empieza a pasar. drawings = los dibujos encontrados ({color, textura}); total = los que había (0 = no hay).
 func play(drawings: Array, total: int) -> void:
 	for c in _roll.get_children():
 		_roll.remove_child(c)
@@ -92,8 +92,10 @@ func play(drawings: Array, total: int) -> void:
 		row.add_theme_constant_override("separation", 10)
 		for k in total:
 			var icon := DibujoIcono.new(Vector2(34, 43))
-			if k < drawings.size():
-				icon.color = drawings[k]
+			if k < drawings.size():                  # {color, textura} (o solo un Color)
+				var dib: Variant = drawings[k]
+				icon.color = dib.get("color", icon.color) if dib is Dictionary else dib
+				icon.texture = dib.get("textura") if dib is Dictionary else null
 			else:
 				icon.faded = true
 			row.add_child(icon)

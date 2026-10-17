@@ -319,7 +319,7 @@ func roll_credits() -> void:
 		total = d.collectible_total()
 		for it in d.interactables:
 			if it.kind == NameRules.COLLECTIBLE and it.collected:
-				found.append(Hud.drawing_color(it.target))
+				found.append({"color": Hud.drawing_color(it.target), "textura": Hud.drawing_texture(it.target)})
 	Narrator.clear()
 	momentos.reset()
 	GameState.drag.cancel()

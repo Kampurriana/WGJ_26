@@ -602,10 +602,13 @@ func flights() -> Array[Control]:
 	return _flights
 
 
-## El color de un dibujo (el de su papel, o el de su malla más grande), para pintar el icono igual.
+## El color de un dibujo, para los acentos de la interfaz: el que guardó el generador (su color
+## dominante, metadato "color") o, si no, el de su papel o su malla más grande.
 static func drawing_color(n: Node) -> Color:
 	var best := Color(0.35, 0.72, 0.32)
 	var best_area := -1.0
+	if n != null and n.has_meta("color"):
+		return n.get_meta("color")
 	if n != null:
 		for m in Visuals.meshes_under(n):
 			var mat := m.get_active_material(0) as StandardMaterial3D
@@ -617,6 +620,14 @@ static func drawing_color(n: Node) -> Color:
 				best_area = area
 				best = mat.albedo_color
 	return best
+
+
+## La imagen de un dibujo (la de su malla "Dibujo"), para enseñarla en el álbum y los créditos; null
+## si es un folio sin imagen.
+static func drawing_texture(n: Node) -> Texture2D:
+	var m := n.find_child("Dibujo", true, false) as MeshInstance3D if n != null else null
+	var mat := m.get_active_material(0) as StandardMaterial3D if m != null else null
+	return null
 
 
 ## La tarjeta de tarea (como el panel de tareas de la referencia): dónde estás (la zona abierta),

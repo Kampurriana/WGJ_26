@@ -4,7 +4,7 @@ extends Node
 ## el progreso (GameState.achievements) y avisan con Events.achievement_unlocked (el HUD saca una
 ## notificación). Se ven todos en la pausa y en el menú de inicio (ui/logros_lista.gd).
 ##   infancia, adolescencia, adultez: al completar esa sección del desván (sus recuerdos).
-##   dibujos: al encontrar los 7 dibujos escondidos.
+##   dibujos: al encontrar todos los dibujos escondidos.
 ##   speedrunner: acabar el desván (el juego) en menos de SPEEDRUN segundos, sin el atajo F9.
 
 const SPEEDRUN := 480.0                      ## 8 minutos
@@ -12,7 +12,7 @@ const LISTA := [
 	{"id": "infancia", "nombre": "Recuerdos de la infancia", "texto": "Desbloquea los recuerdos de la infancia."},
 	{"id": "adolescencia", "nombre": "Recuerdos de la adolescencia", "texto": "Desbloquea los recuerdos de la adolescencia."},
 	{"id": "adultez", "nombre": "Recuerdos de la profesión", "texto": "Desbloquea los recuerdos de la profesión."},
-	{"id": "dibujos", "nombre": "Los siete dibujos", "texto": "Recupera los 7 dibujos de cuando era pequeña."},
+	{"id": "dibujos", "nombre": "Todos mis dibujos", "texto": "Recupera todos los dibujos de cuando era pequeña."},
 	{"id": "speedrunner", "nombre": "Speedrunner", "texto": "Acaba el juego en menos de 8 minutos."},
 ]
 

@@ -432,7 +432,7 @@ func _test_story(main: Node) -> void:
 	shown = d.visible_inventory()
 	check(shown.has(&"comoda_infantil") and not shown.has(&"caja_musica") and not shown.has(&"dibujo") and not shown.has(&"peluche"),
 		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
-	var orange := _collectible(d, &"dibujo_naranja")
+	var orange := _collectible(d, &"dibujo_bailarina")
 	check(orange != null and not orange.available and not orange.target.visible and d.clothesline != null and d.clothesline.is_visible_in_tree(),
 		"al abrirse la infancia aparece la cuerda de los dibujos; el de debajo de la cama aún no está (after-cama_infantil)")
 	var blocks := _pickup(d, &"cubos")
@@ -467,9 +467,14 @@ func _test_story(main: Node) -> void:
 	check(GameState.hud.task_text().begins_with("I · INFANCIA | Busca lo guardado"),
 		"y la tarjeta de tarea dice que toca buscar (%s)" % GameState.hud.task_text())
 	check(not _slot(d, &"peluche").available, "(control) la nutria no aparece mientras falten los cubos")
-	var green := _collectible(d, &"dibujo_verde")
-	check(d.collectible_total() == 7 and green != null and green.available and green.container == chest and not green.is_clickable(),
-		"hay 7 dibujos escondidos; uno está en el baúl y, con el baúl cerrado, no se puede coger")
+	var green := _collectible(d, &"dibujo_casa")
+	check(d.collectible_total() == 4 and green != null and green.available and green.container == chest and not green.is_clickable(),
+		"hay 4 dibujos escondidos; uno está en el baúl y, con el baúl cerrado, no se puede coger")
+	var con_imagen := d.interactables.filter(func(it: Interactable) -> bool:
+		var tex := Hud.drawing_texture(it.target) if it.kind == NameRules.COLLECTIBLE else null
+		return tex != null and tex.resource_path.begins_with("res://assets/kit/dibujos/") and it.target.has_meta("color"))
+	check(con_imagen.size() == d.collectible_total(),
+		"los dibujos coleccionables son los de las artistas: cada uno lleva su imagen de assets/kit/dibujos y su color (%d)" % con_imagen.size())
 	check(orange.available and orange.target.visible and orange.is_clickable(), "con la cama puesta, asoma el dibujo de debajo y se puede coger")
 	Narrator.clear()                           # sin primer plano encima: consejos y avisos esperan a que acabe
 	m.finish()
@@ -506,13 +511,13 @@ func _test_story(main: Node) -> void:
 		await get_tree().process_frame
 		await get_tree().process_frame
 		var look: Inspeccion = main.inspeccion
-		check(green.collected and found_events.size() == 1 and found_events[0][1] == 1 and found_events[0][2] == 7
+		check(green.collected and found_events.size() == 1 and found_events[0][1] == 1 and found_events[0][2] == 4
 			and look.is_open() and look.item == green and d.is_held(green) and green.target.get_parent() != d.clothesline,
-			"tocar el dibujo lo encuentra (1 de 7) y sale su primer plano para mirarlo (aún no vuela a la cuerda)")
-		check(look.title_text() == Inspeccion.TITLE and look.name_text() == Narrator.piece_name(&"dibujo_verde").to_upper()
-			and look.count_text() == "1 DE 7" and is_instance_valid(look.copy)
+			"tocar el dibujo lo encuentra (1 de 4) y sale su primer plano para mirarlo (aún no vuela a la cuerda)")
+		check(look.title_text() == Inspeccion.TITLE and look.name_text() == Narrator.piece_name(&"dibujo_casa").to_upper()
+			and look.count_text() == "1 DE 4" and is_instance_valid(look.copy)
 			and (look._pill_label.get_parent() as Control).get_global_rect().position.y >= look._title.get_global_rect().end.y - 2.0,
-			"como en la referencia: título grande, su nombre en una cápsula, el dibujo en 3D, «1 DE 7» y el contador (%s · %s)"
+			"como en la referencia: título grande, su nombre en una cápsula, el dibujo en 3D, «1 DE 4» y el contador (%s · %s)"
 			% [look.title_text(), look.name_text()])
 		for i in 2:                                # el visor se maqueta un fotograma después
 			await get_tree().process_frame
@@ -541,13 +546,14 @@ func _test_story(main: Node) -> void:
 		main.open_pause()
 		main.pause.show_page("dibujos")
 		var album: PauseMenu = main.pause
-		check(album.buttons.dibujos.visible and album.album_slots.size() == 7
-			and album.album_detail().begins_with(Narrator.piece_name(&"dibujo_verde", true)),
-			"en la pausa, el álbum de dibujos: las 7 casillas y, a la derecha, el encontrado en grande (%s)" % album.album_detail())
+		check(album.buttons.dibujos.visible and album.album_slots.size() == 4
+			and album.album_detail().begins_with(Narrator.piece_name(&"dibujo_casa", true))
+			and (album.album_slots[0].get_child(0) as DibujoIcono).texture == Hud.drawing_texture(green.target),
+			"en la pausa, el álbum de dibujos: las 4 casillas (con la imagen del dibujo) y, a la derecha, el encontrado en grande (%s)" % album.album_detail())
 		var missing := album.album_slots.filter(func(b: Button) -> bool: return b.text == "?")
 		if not missing.is_empty():
 			(missing[0] as Button).pressed.emit()
-		check(missing.size() == 6 and album.album_detail().begins_with("???"),
+		check(missing.size() == 3 and album.album_detail().begins_with("???"),
 			"los que faltan salen en silueta con «?» y sin nombre")
 		main.pause.close()
 		check(not GameState.hud.tip_text().contains("dibujo") and not Narrator.has_line("consejo_dibujos"),
@@ -599,7 +605,7 @@ func _test_story(main: Node) -> void:
 	check(flashes[0] > flashes_before, "al colocar la cámara, destello blanco (el flash)")
 	check(placed.find(&"mp3") < placed.find(&"solicitud") and placed.find(&"solicitud") < placed.find(&"camara"),
 		"adolescencia en el orden del guion v2: MP3, solicitud y la cámara (clave) la última")
-	var pink := _collectible(d, &"dibujo_rosa")
+	var pink := _collectible(d, &"dibujo_monstruo")
 	if not lamp.filled:
 		d.place(lamp)
 	await get_tree().create_timer(maxf(Diorama.GIVEN_DELAY + 0.3, PieceSlot.LIGHT_FADE + 0.1)).timeout
@@ -613,8 +619,8 @@ func _test_story(main: Node) -> void:
 	m.finish()
 	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
 	var look2: Inspeccion = main.inspeccion
-	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and look2.is_open() and look2.count_text() == "2 DE 7",
-		"al acabar el momento de la cámara, su dibujo se encuentra solo y sale su primer plano (2 de 7)")
+	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and look2.is_open() and look2.count_text() == "2 DE 4",
+		"al acabar el momento de la cámara, su dibujo se encuentra solo y sale su primer plano (2 de 4)")
 	await get_tree().create_timer(Inspeccion.BUTTON_DELAY + 0.05).timeout
 	_key(KEY_ESCAPE)
 	await get_tree().process_frame
@@ -736,8 +742,8 @@ func _test_story(main: Node) -> void:
 	while not credits.rolling and wait_credits < 8.0:
 		await get_tree().create_timer(0.25).timeout
 		wait_credits += 0.25
-	check(credits.rolling and credits.lines().has("DIBUJOS ENCONTRADOS") and credits.lines().has("2 de 7"),
-		"tras el fundido pasan los créditos, con los dibujos encontrados (2 de 7)")
+	check(credits.rolling and credits.lines().has("DIBUJOS ENCONTRADOS") and credits.lines().has("2 de 4"),
+		"tras el fundido pasan los créditos, con los dibujos encontrados (2 de 4)")
 	await get_tree().create_timer(1.2).timeout
 	_click(Vector2(640, 360))
 	await get_tree().create_timer(Creditos.FADE + 0.4).timeout
@@ -1084,7 +1090,7 @@ func _test_complete_shortcut(main: Node) -> void:
 		for it in d.interactables:
 			if it.kind == NameRules.COLLECTIBLE and it.target.visible and it.target.global_position.distance_to(d.spot(k).global_position) < 0.01:
 				on_line += 1
-	check(d.collectibles_found() == 7 and on_line == 7, "y con F9 los 7 dibujos están colgados en la cuerda (%d)" % on_line)
+	check(d.collectibles_found() == 4 and on_line == 4, "y con F9 los 4 dibujos están colgados en la cuerda (%d)" % on_line)
 	await get_tree().create_timer(4.0).timeout
 	check(GameState.diorama == d and GameState.hud._done.visible and main._fade.color.a < 0.1,
 		"tras F9 el desván se queda a la vista (panel de fin, sin fundido a negro)")

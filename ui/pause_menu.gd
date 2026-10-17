@@ -158,6 +158,7 @@ func _fill_album() -> void:
 		icon.position = Vector2(11, 12)          # centrado en la casilla de 58×70
 		icon.faded = not it.collected
 		icon.color = Hud.drawing_color(it.target)
+		icon.texture = Hud.drawing_texture(it.target)
 		b.add_child(icon)
 		if not it.collected:
 			b.text = "?"
@@ -182,6 +183,7 @@ func _show_drawing(i: int) -> void:
 		album_slots[k].set_pressed_no_signal(k == i)
 	_album_icon.faded = not it.collected
 	_album_icon.color = Hud.drawing_color(it.target)
+	_album_icon.texture = Hud.drawing_texture(it.target)
 	_album_name.text = Narrator.piece_name(it.id, true) if it.collected else "???"
 	_album_text.text = Narrator.text("logro_dibujo") if it.collected else "Todavía no lo has encontrado. Está escondido por el desván."
 
