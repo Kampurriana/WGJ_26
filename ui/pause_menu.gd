@@ -13,6 +13,7 @@ var buttons: Dictionary = {}                ## nombre -> Button (los tests pulsa
 var options: OptionsPanel
 var page := ""
 
+var _panel: PanelContainer
 var _main_page: VBoxContainer
 var _options_page: VBoxContainer
 var _album_page: VBoxContainer
@@ -42,6 +43,7 @@ func _ready() -> void:
 	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
 	panel.custom_minimum_size = Vector2(420, 0)
 	root.add_child(panel)
+	_panel = panel
 	var v := VBoxContainer.new()
 	v.add_theme_constant_override("separation", 12)
 	panel.add_child(v)
@@ -192,6 +194,7 @@ func open(can_go_menu: bool) -> void:
 	show()
 	get_tree().paused = true
 	show_page("principal")
+	Juice.pop_in(_panel, 0.0, 0.88, 0.4)
 
 
 func resume() -> void:
@@ -218,6 +221,7 @@ func show_page(p: String) -> void:
 	if p == "dibujos":
 		_fill_album()
 	var shown: Control = {"principal": _main_page, "opciones": _options_page, "dibujos": _album_page}.get(p, _main_page)
+	Juice.stagger(shown)
 	for c in shown.find_children("*", "Button", true, false):
 		if (c as Button).is_visible_in_tree():
 			(c as Button).grab_focus.call_deferred()

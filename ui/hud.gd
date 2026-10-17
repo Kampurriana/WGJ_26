@@ -63,6 +63,8 @@ var _title: Label                            ## dónde estás: "EL DESVÁN", "I 
 var _task_text: Label                        ## qué toca ahora
 var _task_bar: ProgressBar                   ## lo puesto de la zona abierta
 var _task_count: Label                       ## "5 / 12"
+var _task_done := -1                         ## lo puesto la última vez (para animar cuando cambia)
+var _bar_tween: Tween
 var _subtitle_box: PanelContainer
 var _subtitle: Label
 var _chapter: Control                        ## rótulo de capítulo a toda pantalla (al empezar un acto)
@@ -562,6 +564,8 @@ func _on_collectible_found(item: Node, found: int, total: int) -> void:
 	_drawings_label.text = "%d / %d" % [found, total]
 	_drawings_icon.color = color
 	_drawings_icon.faded = false
+	Juice.bounce(_drawings, 1.18)                # ¡uno más!
+	Juice.wiggle(_drawings_icon, 14.0)
 
 
 ## El contador, al día con lo encontrado (F9 los cuelga todos sin avisar uno a uno).
@@ -607,8 +611,18 @@ func _update_task() -> void:
 	_title.visible = _title.text != ""
 	var pool: Array = sec.slots if sec != null else d.slots
 	var done := pool.filter(func(o: PieceSlot) -> bool: return o.filled).size()
-	_task_bar.value = float(done) / maxf(1.0, pool.size())
+	var goal := float(done) / maxf(1.0, pool.size())
+	if done != _task_done and _task_done >= 0 and _task.visible:   # avanza: la barra corre y la cifra salta
+		if _bar_tween != null:
+			_bar_tween.kill()
+		_bar_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		_bar_tween.tween_property(_task_bar, "value", goal, 0.5)
+		Juice.bounce(_task_count, 1.3)
+	else:
+		_task_bar.value = goal
+	_task_done = done
 	_task_count.text = "%d / %d" % [done, pool.size()]
+	var before := _task_text.text
 	var left := pool.filter(func(o: PieceSlot) -> bool: return not o.filled)
 	if d.completed:
 		_task_text.text = "¡Completado!"
@@ -622,6 +636,8 @@ func _update_task() -> void:
 		_task_text.text = "Mete la moneda en la hucha."
 	else:
 		_task_text.text = "Lleva cada pieza de la bandeja a su silueta."
+	if before != "" and before != _task_text.text and _task.visible:     # cambia lo que toca: la tarjeta da un saltito
+		Juice.bounce(_task, 1.05)
 
 
 ## (Tests) Lo que dice la tarjeta de tarea: "ZONA | qué toca | 5 / 12".
@@ -659,6 +675,7 @@ func _show_done() -> void:
 	var last := GameState.level_index + 1 >= GameState.levels.size()
 	_done_button.text = "Volver al menú" if last else "Siguiente"
 	_done.show()
+	Juice.pop_in(_done, 0.0, 0.7, 0.5)
 	_done_button.grab_focus()
 
 
@@ -752,6 +769,8 @@ func _on_level_started() -> void:
 	_groups.clear()
 	_cards.clear()
 	_title.text = GameState.diorama.level_title.to_upper()
+	_task_done = -1
+	_task_text.text = ""
 	_chapter.modulate.a = 0.0
 	_tip_waiting = []
 	_tip_box.hide()
@@ -803,6 +822,7 @@ func rebuild_inventory() -> void:
 			card.locked_pressed.connect(_on_locked_pressed)
 			g.grid.add_child(card)
 			_cards[e.id] = card
+			Juice.pop_in(card, 0.05 * placed_in.get(k, 0), 0.6, 0.4)   # las fichas nuevas llegan una tras otra
 		card.set_count(e.count)
 		var at: int = placed_in.get(k, 0)
 		g.grid.move_child(card, at)
@@ -907,6 +927,8 @@ func _show_subtitle(text: String, seconds: float) -> void:
 	if not Settings.get_value("subtitulos"):
 		return
 	_subtitle.text = text
+	if not _subtitle_box.visible:
+		Juice.pop_in(_subtitle_box, 0.0, 0.94, 0.25)
 	_subtitle_box.show()
 	_subtitle_left = seconds
 
@@ -918,6 +940,8 @@ func _process(delta: float) -> void:
 	if assist:
 		_charge = 1.0
 	_hint_bar.value = _charge
+	if _hint_button.disabled and _charge >= 1.0:  # la pista vuelve a estar lista: se nota
+		Juice.bounce(_hint_button, 1.15)
 	_hint_button.disabled = _charge < 1.0
 	_hint_button.modulate = Color(1.2, 1.15, 0.7) if assist else Color.WHITE
 	if _subtitle_left > 0.0:

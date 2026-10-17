@@ -249,6 +249,8 @@ func _test_story(main: Node) -> void:
 	if not took:                                   # (si al lado había uno largo, ya ha ido ahí)
 		took = d.try_place(&"tablon_largo", cam3.unproject_position(long_plank.center()), cam3)
 	check(took and long_plank.filled, "y cerca de uno largo, sí (cualquiera de los largos)")
+	await get_tree().create_timer(0.06).timeout
+	check(GameState.hud._task_count.scale.x > 1.05, "al poner una pieza, la cifra de la tarjeta de tarea da un salto")
 	var longs := s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")
 	check(longs.all(func(sl: PieceSlot) -> bool: return sl.filled) and d.count_of(&"tablon_largo") == 0
 		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"tablon_largo"),
@@ -777,6 +779,18 @@ func _test_title_menu(main: Node) -> bool:
 		waited += get_process_delta_time()
 		await get_tree().process_frame
 	check(GameState.camera.cam.h_offset < -0.3, "la cámara corre el diorama a la derecha del menú (h_offset %.2f)" % GameState.camera.cam.h_offset)
+	var play_btn: Button = main.menu.buttons.jugar
+	play_btn.mouse_entered.emit()
+	await get_tree().create_timer(0.3).timeout
+	var hovered_scale := play_btn.scale.x
+	play_btn.button_down.emit()
+	await get_tree().create_timer(0.12).timeout
+	var pressed_scale := play_btn.scale.x
+	play_btn.mouse_exited.emit()
+	play_btn.button_up.emit()
+	await get_tree().create_timer(0.6).timeout
+	check(hovered_scale > 1.03 and pressed_scale < 0.95 and absf(play_btn.scale.x - 1.0) < 0.06,
+		"los botones reaccionan: crecen con el ratón encima, se aplastan al pulsar y vuelven (%.2f / %.2f)" % [hovered_scale, pressed_scale])
 	main.menu.show_page("opciones")
 	var slider := main.menu.options.controls["volumen_voz"] as HSlider
 	slider.value = 0.35

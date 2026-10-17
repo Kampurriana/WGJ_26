@@ -57,6 +57,7 @@ func open(p := "principal") -> void:
 	buttons.jugar.text = "Continuar" if GameState.has_progress() else "Jugar"
 	show()
 	show_page(p)
+	Juice.pop_in(_panel, 0.0, 0.88, 0.4)         # el panel llega con un saltito
 
 
 func close() -> void:
@@ -81,6 +82,7 @@ func show_page(p: String) -> void:
 		_fill_levels()
 	elif p == "opciones":
 		options.refresh()
+	Juice.stagger(_pages[p])                     # y lo de la página, uno tras otro
 	_focus_first(_pages[p])
 
 

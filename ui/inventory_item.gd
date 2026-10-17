@@ -79,13 +79,21 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 		_hover = true
 		if not locked:
 			GameState.hovered_piece = piece_id
+			_hover_scale(1.08)                   # la ficha se ofrece: crece un poco
 		hovered.emit(self, true))
 	mouse_exited.connect(func() -> void:
 		_hover = false
+		_hover_scale(1.0)
 		if GameState.hovered_piece == piece_id:
 			GameState.hovered_piece = &""
 		hovered.emit(self, false))
 	_orient()
+
+
+func _hover_scale(s: float) -> void:
+	pivot_offset = size * 0.5
+	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(self, "scale", Vector2.ONE * s, 0.2)
 
 
 func set_count(n: int) -> void:

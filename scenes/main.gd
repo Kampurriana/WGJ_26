@@ -63,6 +63,7 @@ var _elapsed := 0.0
 func _ready() -> void:
 	# main sigue viva en pausa (capturas, menús, mando); lo que es "juego" se pausa.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	Juice.watch(get_tree())                      # todo botón que aparezca, con sus animaciones (ui/juice.gd)
 	# El fondo pastel pasa por el tonemap del 3D: sin HDR en 2D, el lienzo se corta en 1,0 y no sale
 	# de un gris apagado (medido: tope 208/255). Con HDR sale el color calibrado (iluminacion/fondo.gdshader).
 	get_viewport().use_hdr_2d = true
