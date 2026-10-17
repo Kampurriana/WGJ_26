@@ -377,8 +377,8 @@ func _test_tray(d: Diorama, shown: Array[StringName]) -> void:
 	if otter != null:
 		_click(otter.get_global_rect().get_center())
 		await get_tree().process_frame
-		check(not GameState.is_dragging and hud.info_text().contains(otter.reason),
-			"tocar una ficha con candado no la coge: tiembla y dice por qué")
+		check(not GameState.is_dragging and hud.info_text().begins_with("Todavía no se puede poner") and hud.info_text().contains(otter.reason),
+			"tocar una ficha con candado no la coge: tiembla y dice por qué (%s)" % hud.info_text().replace("\n", " / "))
 		GameState.drag.begin(&"peluche", otter)
 		check(not GameState.is_dragging, "ni a la fuerza: una pieza bloqueada no se puede arrastrar")
 	var wall := hud.item_for(&"pared_fondo")
