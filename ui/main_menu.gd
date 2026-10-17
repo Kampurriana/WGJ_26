@@ -55,12 +55,18 @@ func _ready() -> void:
 
 
 func open(p := "principal") -> void:
+	var tab := -1
 	if pending_page != "":
 		p = pending_page
 		pending_page = ""
+		if p.contains(":"):                      # (capturas) "opciones:2" = la pestaña Juego
+			tab = p.get_slice(":", 1).to_int()
+			p = p.get_slice(":", 0)
 	buttons.jugar.text = "Continuar" if GameState.has_progress() else "Jugar"
 	show()
 	show_page(p)
+	if tab >= 0:
+		options.show_tab(tab)
 	Juice.pop_in(_panel, 0.0, 0.88, 0.4)         # el panel llega con un saltito
 
 

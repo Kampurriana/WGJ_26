@@ -4,24 +4,28 @@ extends VBoxContainer
 ## (se oye y se ve el cambio); Settings lo guarda en disco medio segundo después del último cambio.
 ## El fondo (quinta nota): una fila de muestras de color y otra de motivos (ui/fondos.gd); se ve el
 ## cambio detrás del menú en cuanto se toca.
-## Por pestañas (pulido con la referencia de Ooblets, que agrupa sus ajustes): Fondo, Sonido y Juego.
+## Por pestañas (pulido con la referencia de Ooblets, que agrupa sus ajustes): Fondo, Sonido y Juego,
+## en una barra en forma de cápsula. Dentro, cada grupo de ajustes va en su TARJETA con su título
+## (feedback: "resáltalas por secciones para que quede más unificado y no parezca información
+## flotando"): Color y Motivo; Volumen y Texto; Cámara, Pantalla y ayuda, Progreso.
 
 const TABS := ["Fondo", "Sonido", "Juego"]
-## [clave, texto, mínimo, máximo, pestaña]
+## [clave, texto, mínimo, máximo, pestaña, sección]
 const SLIDERS := [
-	["volumen_general", "Volumen general", 0.0, 1.0, 1],
-	["volumen_musica", "Música", 0.0, 1.0, 1],
-	["volumen_efectos", "Efectos", 0.0, 1.0, 1],
-	["volumen_voz", "Voz del narrador", 0.0, 1.0, 1],
-	["sensibilidad_camara", "Giro de cámara", 0.3, 2.0, 2],
+	["volumen_general", "General", 0.0, 1.0, 1, "Volumen"],
+	["volumen_musica", "Música", 0.0, 1.0, 1, "Volumen"],
+	["volumen_efectos", "Efectos", 0.0, 1.0, 1, "Volumen"],
+	["volumen_voz", "Voz del narrador", 0.0, 1.0, 1, "Volumen"],
+	["sensibilidad_camara", "Giro de cámara", 0.3, 2.0, 2, "Cámara"],
 ]
-## [clave, texto, pestaña]
+## [clave, texto, pestaña, sección]
 const TOGGLES := [
-	["subtitulos", "Subtítulos", 1],
-	["pantalla_completa", "Pantalla completa", 2],
-	["invertir_y", "Invertir eje vertical", 2],
-	["ayuda_automatica", "Pista automática si te atascas", 2],
+	["subtitulos", "Subtítulos", 1, "Texto"],
+	["invertir_y", "Invertir eje vertical", 2, "Cámara"],
+	["pantalla_completa", "Pantalla completa", 2, "Pantalla y ayuda"],
+	["ayuda_automatica", "Pista automática si te atascas", 2, "Pantalla y ayuda"],
 ]
+const LABEL_WIDTH := 150.0                   ## los textos de las filas, todos del mismo ancho (alineados)
 const RESET_CONFIRM_TIME := 3.0
 
 var controls: Dictionary = {}               ## clave de Settings -> HSlider o CheckButton
@@ -32,14 +36,18 @@ var tabs: Array[Button] = []                 ## las pestañas (Fondo, Sonido, Ju
 var pages: Array[VBoxContainer] = []         ## lo de cada pestaña
 var tab := 0
 var _reset_armed := 0.0
+var _sections: Dictionary = {}               ## "pestaña/título" -> lo de dentro de su tarjeta
 
 
 ## show_reset: el botón "Borrar progreso" solo tiene sentido en el menú de inicio.
 func _init(show_reset := true) -> void:
-	add_theme_constant_override("separation", 10)
+	add_theme_constant_override("separation", 12)
+	var bar := PanelContainer.new()              # las pestañas, juntas en una cápsula
+	bar.add_theme_stylebox_override("panel", UiTheme._box(Color(UiTheme.BLUE_DEEP, 0.45), 24, Color(UiTheme.PALE, 0.5), 0, 2, 6, 5))
+	add_child(bar)
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 6)
-	add_child(row)
+	row.add_theme_constant_override("separation", 4)
+	bar.add_child(row)
 	var group := ButtonGroup.new()
 	for i in TABS.size():
 		var b := Button.new()
@@ -47,26 +55,76 @@ func _init(show_reset := true) -> void:
 		b.toggle_mode = true
 		b.button_group = group
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.add_theme_font_size_override("font_size", 17)
+		_pill_style(b, 18)
 		b.pressed.connect(show_tab.bind(i))
 		row.add_child(b)
 		tabs.append(b)
 		var page := VBoxContainer.new()
-		page.add_theme_constant_override("separation", 6)
-		page.custom_minimum_size = Vector2(0, 230)        # las tres del mismo alto: el panel no salta
+		page.add_theme_constant_override("separation", 10)
 		add_child(page)
 		pages.append(page)
-	_add_background(pages[0])                    # lo primero: es lo que más se nota al cambiarlo
+	_add_background()                            # lo primero: es lo que más se nota al cambiarlo
 	for s: Array in SLIDERS:
-		_add_slider(pages[s[4]], s[0], s[1], s[2], s[3])
+		_add_slider(_section(s[4], s[5]), s[0], s[1], s[2], s[3])
 	for t: Array in TOGGLES:
-		_add_toggle(pages[t[2]], t[0], t[1])
+		_add_toggle(_section(t[2], t[3]), t[0], t[1])
 	if show_reset:
 		reset_button = Button.new()
 		reset_button.text = "Borrar progreso"
+		reset_button.add_theme_font_size_override("font_size", 17)
+		for state: String in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
+			reset_button.add_theme_stylebox_override(state, UiTheme._box(Color(UiTheme.CORAL, 0.9 if state != "hover" else 1.0), 18, Color.WHITE, 0, 2, 16, 6))
+		reset_button.add_theme_stylebox_override("disabled", UiTheme._box(Color(UiTheme.CORAL, 0.35), 18, Color(1, 1, 1, 0.4), 0, 2, 16, 6))
+		for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
+			reset_button.add_theme_color_override(state, Color.WHITE)
+		reset_button.add_theme_constant_override("outline_size", 0)
+		reset_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		reset_button.pressed.connect(_on_reset)
-		pages[2].add_child(reset_button)
+		_section(2, "Progreso").add_child(reset_button)
 	show_tab(0)
+
+
+## La tarjeta de una sección (en su pestaña), con su título; la crea la primera vez. Devuelve dónde
+## van sus filas.
+func _section(i: int, title: String) -> VBoxContainer:
+	var key := "%d/%s" % [i, title]
+	if _sections.has(key):
+		return _sections[key]
+	var card := PanelContainer.new()
+	card.add_theme_stylebox_override("panel", UiTheme._box(Color(0.16, 0.27, 0.62, 0.5), 18, Color(UiTheme.PALE, 0.7), 0, 2, 16, 10))
+	var calm := Theme.new()                      # dentro de la tarjeta el fondo ya da contraste: sin contorno
+	calm.set_constant("outline_size", "Label", 0)
+	calm.set_constant("outline_size", "CheckButton", 0)
+	for state in ["normal", "pressed", "disabled", "focus"]:   # interruptores alineados con los textos
+		calm.set_stylebox(state, "CheckButton", UiTheme._box(Color(0, 0, 0, 0), 10, Color(0, 0, 0, 0), 0, 0, 0, 4))
+	for state in ["hover", "hover_pressed"]:
+		calm.set_stylebox(state, "CheckButton", UiTheme._box(Color(1, 1, 1, 0.1), 10, Color(0, 0, 0, 0), 0, 0, 0, 4))
+	card.theme = calm
+	pages[i].add_child(card)
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 6)
+	card.add_child(col)
+	var head := Label.new()
+	head.text = title.to_upper()
+	head.add_theme_font_override("font", UiTheme.FONT_BOLD)
+	head.add_theme_font_size_override("font_size", 13)
+	head.add_theme_color_override("font_color", UiTheme.ORANGE)
+	col.add_child(head)
+	_sections[key] = col
+	return col
+
+
+## Botón en cápsula pequeña: transparente; elegido, morado con borde blanco (pestañas y motivos).
+static func _pill_style(b: Button, font_size: int) -> void:
+	b.add_theme_font_size_override("font_size", font_size)
+	b.add_theme_constant_override("outline_size", 0)
+	b.add_theme_stylebox_override("normal", UiTheme._box(Color(1, 1, 1, 0.08), 18, Color(1, 1, 1, 0.0), 0, 0, 12, 5))
+	b.add_theme_stylebox_override("hover", UiTheme._box(Color(1, 1, 1, 0.2), 18, Color(1, 1, 1, 0.0), 0, 0, 12, 5))
+	for state: String in ["pressed", "hover_pressed"]:
+		b.add_theme_stylebox_override(state, UiTheme._box(UiTheme.PURPLE, 18, Color.WHITE, 0, 2, 12, 5))
+	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	for state: String in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
+		b.add_theme_color_override(state, Color.WHITE)
 
 
 ## Enseña una pestaña (0 Fondo, 1 Sonido, 2 Juego).
@@ -99,7 +157,8 @@ func _add_slider(parent: Control, key: String, label: String, lo: float, hi: flo
 	var row := HBoxContainer.new()
 	var l := Label.new()
 	l.text = label
-	l.custom_minimum_size = Vector2(190, 0)
+	l.add_theme_font_size_override("font_size", 17)
+	l.custom_minimum_size = Vector2(LABEL_WIDTH, 0)
 	row.add_child(l)
 	var s := HSlider.new()
 	s.min_value = lo
@@ -118,6 +177,7 @@ func _add_slider(parent: Control, key: String, label: String, lo: float, hi: flo
 func _add_toggle(parent: Control, key: String, label: String) -> void:
 	var c := CheckButton.new()
 	c.text = label
+	c.add_theme_font_size_override("font_size", 17)
 	c.button_pressed = Settings.get_value(key)
 	c.toggled.connect(func(on: bool) -> void: Settings.set_value(key, on))
 	parent.add_child(c)
@@ -125,10 +185,7 @@ func _add_toggle(parent: Control, key: String, label: String) -> void:
 
 
 ## El fondo: muestras de color (redondas, la elegida con borde) y botones de motivo.
-func _add_background(parent: Control) -> void:
-	var title := Label.new()
-	title.text = "Color"
-	parent.add_child(title)
+func _add_background() -> void:
 	var colors := HBoxContainer.new()
 	colors.add_theme_constant_override("separation", 10)
 	var group := ButtonGroup.new()
@@ -145,10 +202,7 @@ func _add_background(parent: Control) -> void:
 		b.pressed.connect(func() -> void: Settings.set_value("fondo_color", i))
 		colors.add_child(b)
 		swatches.append(b)
-	parent.add_child(colors)
-	var motif_title := Label.new()
-	motif_title.text = "Motivo"
-	parent.add_child(motif_title)
+	_section(0, "Color").add_child(colors)
 	var shapes := HBoxContainer.new()
 	shapes.add_theme_constant_override("separation", 6)
 	var shape_group := ButtonGroup.new()
@@ -158,12 +212,12 @@ func _add_background(parent: Control) -> void:
 		b.toggle_mode = true
 		b.button_group = shape_group
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.add_theme_font_size_override("font_size", 15)
+		_pill_style(b, 15)
 		b.button_pressed = i == int(Settings.get_value("fondo_motivo"))
 		b.pressed.connect(func() -> void: Settings.set_value("fondo_motivo", i))
 		shapes.add_child(b)
 		motifs.append(b)
-	parent.add_child(shapes)
+	_section(0, "Motivo").add_child(shapes)
 
 
 static func _swatch(color: Color, selected: bool, hover: bool) -> StyleBoxFlat:
