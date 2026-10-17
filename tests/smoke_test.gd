@@ -33,6 +33,7 @@ func _run() -> void:
 	_test_name_rules()
 	_test_narrator()
 	await _test_voices()
+	_test_kit()
 	if GameState.RESET_ON_START:
 		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
 			"modo prototipo: al darle a Play no se carga progreso (título y niveles desde cero)")
@@ -829,6 +830,38 @@ func _test_settings() -> void:
 	Settings.load_from(TEST_SETTINGS)
 	check(is_equal_approx(Settings.get_value("volumen_musica"), 0.25) and Settings.get_value("subtitulos") == false, "al volver a leer el fichero, los ajustes siguen ahí")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_SETTINGS))
+
+
+## El arte de las artistas (assets/kit/): cada modelo se carga, trae mallas con UV (sin UV no se
+## ven las texturas) y el material del escritorio lleva sus texturas; la preview aparte carga.
+func _test_kit() -> void:
+	var modelos := 0
+	var sin_uv := PackedStringArray()
+	var pendientes := ["res://assets/kit"]
+	while not pendientes.is_empty():
+		var dir: String = pendientes.pop_back()
+		for sub in DirAccess.get_directories_at(dir):
+			pendientes.append(dir + "/" + sub)
+		for f in DirAccess.get_files_at(dir):
+			if f.get_extension() != "fbx":
+				continue
+			var escena := load(dir + "/" + f) as PackedScene
+			var raiz := escena.instantiate() if escena != null else null
+			var mallas := raiz.find_children("*", "MeshInstance3D", true, false) if raiz != null else []
+			if mallas.is_empty():
+				sin_uv.append(f)
+			for m: MeshInstance3D in mallas:
+				if m.mesh.surface_get_arrays(0)[Mesh.ARRAY_TEX_UV] == null:
+					sin_uv.append("%s/%s" % [f, m.name])
+			if raiz != null:
+				raiz.free()
+			modelos += 1
+	check(modelos >= 14 and sin_uv.is_empty(), "los modelos del kit se cargan y todas sus piezas traen UV (%d modelos; sin UV: %s)" % [modelos, ", ".join(sin_uv)])
+	var desk := load("res://assets/kit/materiales/M_Desk.tres") as StandardMaterial3D
+	check(desk != null and desk.albedo_texture != null and desk.normal_enabled and desk.normal_texture != null
+		and desk.roughness_texture == desk.ao_texture and desk.ao_texture != null,
+		"el material del escritorio lleva su color, sus normales y la textura ARM (oclusión, rugosidad, metálico)")
+	check(load("res://preview/preview_assets.tscn") is PackedScene, "la escena de preview de assets (aparte del juego) carga")
 
 
 func _has_music(song: String) -> bool:

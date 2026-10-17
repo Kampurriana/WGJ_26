@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://preview/preview_assets.gd" id="1_prev"]
+
+[node name="PreviewAssets" type="Node3D"]
+script = ExtResource("1_prev")
