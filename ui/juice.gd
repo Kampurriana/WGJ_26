@@ -66,6 +66,17 @@ static func stagger(parent: Node, step := 0.045, from := 0.9) -> void:
 			i += 1
 
 
+## Se despliega hacia abajo desde su borde de arriba (las tarjetas de una pestaña de opciones).
+static func unfold(c: Control, delay := 0.0, seconds := 0.32) -> void:
+	c.pivot_offset = Vector2(c.size.x * 0.5, 0.0)
+	c.scale = Vector2(1.0, 0.15)
+	c.modulate.a = 0.0
+	c.create_tween().tween_property(c, "modulate:a", 1.0, seconds * 0.6).set_delay(delay)
+	var tw := c.create_tween()
+	tw.tween_property(c, "scale", Vector2.ONE, seconds).set_delay(delay).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_callback(func() -> void: c.pivot_offset = c.size * 0.5)
+
+
 ## Un golpe de escala: crece de golpe y vuelve rebotando.
 static func bounce(c: Control, amount := 1.15) -> void:
 	_keep_centered(c)

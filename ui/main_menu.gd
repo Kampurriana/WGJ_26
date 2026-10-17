@@ -38,9 +38,9 @@ func _ready() -> void:
 	root.theme = UiTheme.get_floating_theme()    # sin recuadro: el logo y las opciones flotan
 	add_child(root)
 	_panel = PanelContainer.new()
-	_panel.set_anchors_preset(Control.PRESET_CENTER_LEFT)
-	_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_panel.offset_left = 48
+	_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)    # anclado arriba: lo de arriba no se mueve y
+	_panel.offset_left = 48                               # lo nuevo se despliega hacia abajo
+	_panel.offset_top = 110
 	_panel.custom_minimum_size = Vector2(WIDTH, 0)
 	root.add_child(_panel)
 	var v := VBoxContainer.new()

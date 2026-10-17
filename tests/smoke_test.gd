@@ -242,6 +242,20 @@ func _test_story(main: Node) -> void:
 	await get_tree().create_timer(2.5).timeout
 	check(is_equal_approx(hud_now._subtitle.visible_ratio, 1.0), "y acaba de escribirse")
 	hud_now._subtitle_box.hide()
+	var stars: EstrellasLogros = hud_now.stars
+	check(stars.bar.visible and stars.filled_count() == 0 and stars.slots.size() == Logros.LISTA.size(),
+		"arriba, junto a la tarjeta, la fila de estrellas de los logros (vacía al empezar)")
+	stars.celebrate("speedrunner")
+	await get_tree().create_timer(0.8).timeout
+	var banner_rect := stars.banner.get_global_rect()
+	check(stars.banner_text() == "Speedrunner" and absf(banner_rect.get_center().x - screen_w * 0.5) < 4.0 and banner_rect.position.y < 140.0,
+		"un logro sale en un aviso dorado arriba en el centro (%s)" % stars.banner_text())
+	await get_tree().create_timer(EstrellasLogros.HOLD + EstrellasLogros.FLIGHT * 0.5).timeout
+	check(is_instance_valid(stars.flying), "y su estrella sale volando del aviso...")
+	await get_tree().create_timer(EstrellasLogros.FLIGHT * 0.5 + 0.8).timeout
+	check(stars.filled_count() == 1 and stars.slots[Logros.LISTA.size() - 1].filled and not stars.is_busy() and stars.banner_text() == "",
+		"...hasta su hueco en la fila, que se queda con su estrella")
+	stars.refresh()
 	await _test_tray(d, shown)
 	# El suelo, a tablones de tres largos parecidos: cada uno vale en varios huecos, pero no en todos.
 	var planks := {}
@@ -848,6 +862,14 @@ func _test_title_menu(main: Node) -> bool:
 	check((bg.get_shader_parameter("color_forma") as Color).a > 0.0 and int(bg.get_shader_parameter("forma")) == 2,
 		"y «Corazones» pone corazones")
 	var opts: OptionsPanel = main.menu.options
+	var tabs_y := opts.tabs[0].get_global_rect().position.y
+	opts.show_tab(2)
+	for i in 3:
+		await get_tree().process_frame
+	check(absf(opts.tabs[0].get_global_rect().position.y - tabs_y) < 1.0, "las pestañas de Opciones no se mueven al cambiar de pestaña: lo de dentro se despliega hacia abajo")
+	opts.show_tab(0)
+	for i in 3:
+		await get_tree().process_frame
 	check(opts.tabs.size() == 3 and opts.pages[0].visible and not opts.pages[1].visible and swatch.is_visible_in_tree()
 		and not (opts.controls["volumen_voz"] as Control).is_visible_in_tree(),
 		"las opciones van por pestañas (Fondo, Sonido, Juego): se empieza en el fondo")

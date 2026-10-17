@@ -40,9 +40,9 @@ func _ready() -> void:
 	dim.color = Color(UiTheme.BLUE_DEEP, 0.5)
 	root.add_child(dim)                     # tapa el juego: los clics no pasan al diorama
 	var panel := PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)   # anclado arriba: el título y las pestañas no
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH   # se mueven al cambiar de página; crece hacia abajo
+	panel.offset_top = 70
 	panel.custom_minimum_size = Vector2(420, 0)
 	root.add_child(panel)
 	_panel = panel

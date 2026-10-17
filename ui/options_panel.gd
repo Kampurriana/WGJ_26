@@ -128,11 +128,18 @@ static func _pill_style(b: Button, font_size: int) -> void:
 
 
 ## Enseña una pestaña (0 Fondo, 1 Sonido, 2 Juego).
+## Las pestañas no se mueven; las tarjetas de la elegida se despliegan hacia abajo, una tras otra.
 func show_tab(i: int) -> void:
+	var changed := clampi(i, 0, pages.size() - 1) != tab
 	tab = clampi(i, 0, pages.size() - 1)
 	for k in pages.size():
 		pages[k].visible = k == tab
 		tabs[k].set_pressed_no_signal(k == tab)
+	if changed and is_inside_tree():
+		var n := 0
+		for card in pages[tab].get_children():
+			Juice.unfold(card as Control, n * 0.06)
+			n += 1
 
 
 ## Vuelve a leer los valores (por si cambiaron desde la otra pantalla de opciones).

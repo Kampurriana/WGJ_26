@@ -82,6 +82,7 @@ var _tip_box: PanelContainer                 ## consejo de juego (aviso abajo a 
 var _tip_tween: Tween
 var _tip: Label
 var _tip_left := 0.0
+var stars: EstrellasLogros                   ## la fila de estrellas de los logros y su aviso dorado
 var _tip_kicker: Label                       ## "CONSEJO" / "¡LOGRO!"
 var _tip_drag := false
 var _tip_dx := 0.0
@@ -113,8 +114,10 @@ func _ready() -> void:
 	Events.level_started.connect(func(_d: Node) -> void: _on_level_started())
 	Events.inventory_changed.connect(rebuild_inventory)
 	Events.inventory_changed.connect(_update_task)
-	Events.achievement_unlocked.connect(func(id: String) -> void:
-		show_tip(String(Logros.info(id).get("nombre", id)), 8.0, "¡LOGRO!"))
+	stars = EstrellasLogros.new()                # encima de todo lo del HUD: el aviso tiene que verse
+	_root.add_child(stars)
+	stars.place_bar(Vector2(MARGIN + 6.0 + TASK_WIDTH + 10.0, MARGIN + 4.0))   # junto a la tarjeta de tarea
+	Events.achievement_unlocked.connect(func(id: String) -> void: stars.celebrate(id))
 	Events.level_completed.connect(func(_d: Node) -> void: _update_task())
 	Events.focus_changed.connect(func(a: Node) -> void: _back_button.visible = a != null)
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
@@ -701,6 +704,7 @@ func set_game_ui_visible(on: bool) -> void:
 	_game_ui = on
 	_panel.visible = on
 	_task.visible = on
+	stars.set_bar_visible(on)
 	_controls.visible = on
 	_back_button.visible = on and GameState.diorama != null and GameState.diorama.focus != null
 	if not on:
@@ -713,6 +717,7 @@ func set_moment(on: bool) -> void:
 	if on == _moment:
 		return
 	_moment = on
+	stars.set_bar_visible(_game_ui and not on)    # en el primer plano, fuera (se asoma si llega una estrella)
 	_hide_info()
 	if on:
 		_tip_box.hide()                          # el consejo no tapa el primer plano
@@ -767,6 +772,8 @@ func _on_level_started() -> void:
 	_moment_hidden.clear()
 	for c: Control in [_panel, _controls, _task]:
 		c.modulate.a = 1.0
+	stars.refresh()
+	stars.set_bar_visible(_game_ui)
 	for f in _flights:
 		if is_instance_valid(f):
 			f.queue_free()

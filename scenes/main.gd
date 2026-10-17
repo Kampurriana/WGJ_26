@@ -19,6 +19,7 @@ extends Node3D
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
 ##   --inspeccion         (capturas) al segundo de empezar, el primer plano de un dibujo (como al encontrarlo)
+##   --logro=ID           (capturas) al segundo de empezar, el aviso de ese logro y su estrella volando
 ##   --fondo=C,M          (capturas) el fondo con el color C y el motivo M (ui/fondos.gd)
 ##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
@@ -53,6 +54,7 @@ var _zoom_steps := 0
 var _press_f9 := false
 var _roll_credits := false
 var _inspect := false
+var _celebrate := ""
 var _zoom_at := Vector2.ZERO
 var _capture_path := ""
 var _capture_after := 3.0
@@ -171,6 +173,8 @@ func _parse_args() -> void:
 			_roll_credits = true
 		elif a == "--inspeccion":
 			_inspect = true
+		elif a.begins_with("--logro="):
+			_celebrate = a.get_slice("=", 1)
 		elif a.begins_with("--fondo="):          # (capturas) color,motivo del fondo: --fondo=1,1
 			var v := a.get_slice("=", 1).split(",")
 			Settings.set_value("fondo_color", int(v[0]))
@@ -414,6 +418,9 @@ func _process(delta: float) -> void:
 		_menu_page = ""
 		open_pause()
 		pause.show_page("dibujos")
+	if _celebrate != "" and _elapsed > 1.0:
+		GameState.hud.stars.celebrate(_celebrate)
+		_celebrate = ""
 	if _inspect and _elapsed > 1.0:
 		_inspect = false
 		var d := GameState.diorama
