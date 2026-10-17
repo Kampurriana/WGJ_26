@@ -10,6 +10,9 @@ const EXTENSIONS := ["ogg", "wav", "mp3"]
 const POOL_SIZE := 8
 const MUSIC_FADE := 1.6                      ## segundos del fundido cruzado entre canciones
 const QUIT_WAIT := 0.2                       ## al salir, lo que se espera a que el audio suelte la música (s)
+const DUCK_DB := -6.0                        ## la música baja esto mientras suena una voz (guion v2)...
+const DUCK_IN := 0.3
+const DUCK_OUT := 1.0                        ## ...y vuelve en esto (s)
 
 var _pool: Array[AudioStreamPlayer] = []
 var _next := 0
@@ -19,6 +22,8 @@ var _music: AudioStreamPlayer                ## la canción que suena (la otra s
 var _music_old: AudioStreamPlayer
 var track := ""                               ## la canción pedida ("menu", "juego"; "" = ninguna)
 var _quitting := false
+var _duck: AudioEffectAmplify                ## en el bus Musica: lo que baja con las voces
+var ducked := false
 
 
 func _ready() -> void:
@@ -38,6 +43,10 @@ func _ready() -> void:
 		add_child(m)
 		_music_old = _music
 		_music = m
+	var bus := AudioServer.get_bus_index(&"Musica")   # (Settings crea los buses antes: va antes en autoload)
+	if bus >= 0:
+		_duck = AudioEffectAmplify.new()
+		AudioServer.add_bus_effect(bus, _duck)
 
 
 ## Salir del juego: antes se para el sonido y se le da un momento al servidor de audio para soltarlo
@@ -117,6 +126,26 @@ func _fade(p: AudioStreamPlayer, to: float, seconds: float) -> void:
 	tw.tween_property(p, "volume_linear", to, maxf(seconds, 0.01)).set_trans(Tween.TRANS_SINE)
 	if to <= 0.0:
 		tw.tween_callback(p.stop)
+
+
+## Lo que dura un efecto (0 si no hay fichero).
+func length(sound: String) -> float:
+	var stream := _find("sfx", sound)
+	return stream.get_length() if stream != null else 0.0
+
+
+## La música baja mientras habla una voz y vuelve despacio al callarse (lo llama el Narrador).
+func duck(on: bool) -> void:
+	ducked = on
+	if _duck == null:
+		return
+	if has_meta(&"duck"):
+		var old: Variant = get_meta(&"duck")
+		if old is Tween and (old as Tween).is_valid():
+			(old as Tween).kill()
+	var tw := create_tween()
+	set_meta(&"duck", tw)
+	tw.tween_property(_duck, "volume_db", DUCK_DB if on else 0.0, DUCK_IN if on else DUCK_OUT).set_trans(Tween.TRANS_SINE)
 
 
 func _find(folder: String, sound: String) -> AudioStream:

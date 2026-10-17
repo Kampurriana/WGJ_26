@@ -1,21 +1,35 @@
 extends Node
-## Narrador: subtítulo + voz opcional. Las frases viven en data/narracion_<idioma>.json
-## y la voz (si existe) en assets/audio/voz/<clave>.ogg. Sin audio, sale solo el subtítulo.
-## Una clave puede ser una frase o una LISTA de frases (se dicen seguidas; "" = un silencio).
+## Narrador: subtítulo + voz. Las frases viven en data/narracion_<idioma>.json y la voz (si existe)
+## en assets/audio/voz/<clave>.(ogg|wav|mp3) (tools/preparar_voces.sh las deja así). Sin audio, sale
+## solo el subtítulo. Una clave puede ser:
+##  - una frase;
+##  - una LISTA (se dicen seguidas; "" = un silencio; "sfx:x" = suena el efecto x entera, p. ej. las
+##    canciones que pasan entre los dos trozos del MP3). La voz de cada una: <clave>_1, <clave>_2...
+##  - un TROZO GRABADO {"frases": [...], "marcas": [...], "voz": "..."}: un solo audio (por defecto el
+##    de la clave) con su subtítulo partido en frases; "marcas" = el segundo del audio en que empieza
+##    cada frase después de la primera (las pausas de la grabación). Sin marcas, a partes iguales
+##    por letras. Si se pasa de frase, se salta el trozo entero (audio y subtítulos van juntos).
 ## Las frases van en COLA: una frase nueva espera a que acabe la anterior (nunca se pisan).
+## Mientras suena una voz, la música baja (Sfx.duck; guion v2: "ducking").
 
 signal subtitle(text: String, seconds: float)
 signal skipped                               ## el jugador ha pasado de frase (se quita el subtítulo)
 
 const GAP := 0.4                             ## silencio entre frases (s)
 const PAUSE := 1.6                           ## lo que dura un "" en una lista de frases
+const VOICE_TAIL := 0.5                      ## el subtítulo se queda esto tras acabar la voz (guion v2)
+const VOICE_EXTENSIONS := ["ogg", "wav", "mp3"]
+const SFX_PREFIX := "sfx:"
 
 var language := "es"
 var _lines: Dictionary = {}
 var _names: Dictionary = {}                 ## id de pieza -> nombre (data/piezas_<idioma>.json)
 var _player: AudioStreamPlayer
-var _queue: Array[Dictionary] = []          ## {text, voice} pendientes
+var _queue: Array[Dictionary] = []          ## {text, voice, seconds, group, last} o {sfx} pendientes
 var _left := 0.0                             ## lo que le queda a la frase de ahora (con su silencio)
+var _group := 0                              ## trozo grabado que suena ahora (0 = ninguno)
+var _groups := 0
+var _ducked := false
 
 
 func _ready() -> void:
@@ -63,15 +77,25 @@ func say_if_exists(key: String) -> void:
 
 ## El texto de una clave (para rótulos y consejos de la interfaz). "" si no existe.
 func text(key: String) -> String:
-	var v: Variant = _lines.get(key, "")
-	return " ".join(PackedStringArray(v)) if v is Array else String(v)
+	var out := PackedStringArray()
+	for seg: Variant in _segments(_lines.get(key, "")):
+		if seg is Dictionary:
+			out.append_array(PackedStringArray(_parts(seg as Dictionary)))
+		elif not String(seg).begins_with(SFX_PREFIX):
+			out.append(String(seg))
+	return " ".join(out).strip_edges()
+
+
+## Si suena una voz ahora mismo (la música está bajada).
+func voice_playing() -> bool:
+	return _player.playing
 
 
 ## Segundos hasta que se calle (lo de ahora + lo que espera en la cola).
 func remaining() -> float:
 	var total := maxf(_left, 0.0)
 	for e in _queue:
-		total += PAUSE if String(e.text) == "" else _seconds_for(String(e.text)) + GAP
+		total += _duration(e)
 	return total
 
 
@@ -81,6 +105,8 @@ func skip() -> bool:
 		return false
 	_player.stop()
 	_left = 0.0
+	while _group != 0 and not _queue.is_empty() and int(_queue[0].get("group", 0)) == _group:
+		_queue.pop_front()                   # el resto del trozo grabado se va con su voz
 	skipped.emit()                           # primero se quita el subtítulo de ahora...
 	_next()                                  # ...y luego sale el siguiente, si lo hay
 	return true
@@ -97,32 +123,102 @@ func clear() -> void:
 
 
 func _enqueue(key: String) -> void:
-	var v: Variant = _lines[key]
-	var texts: Array = v if v is Array else [v]
-	for i in texts.size():
-		var suffix := "" if texts.size() == 1 else "_%d" % (i + 1)
-		_queue.append({"text": String(texts[i]), "voice": "res://assets/audio/voz/%s%s.ogg" % [key, suffix]})
+	var segments := _segments(_lines[key])
+	for i in segments.size():
+		var seg: Variant = segments[i]
+		var voice := key + ("" if segments.size() == 1 else "_%d" % (i + 1))
+		if seg is Dictionary:
+			_enqueue_recorded(String((seg as Dictionary).get("voz", voice)), seg as Dictionary)
+		elif String(seg).begins_with(SFX_PREFIX):
+			_queue.append({"sfx": String(seg).trim_prefix(SFX_PREFIX)})
+		else:
+			var line := String(seg)
+			var path := _voice(voice) if line != "" else ""
+			var seconds := PAUSE if line == "" else _seconds_for(line)
+			if path != "":
+				seconds = maxf(seconds, (load(path) as AudioStream).get_length() + VOICE_TAIL)
+			_queue.append({"text": line, "voice": path, "seconds": seconds, "last": line != ""})
 	if _left <= 0.0:
 		_next()
 
 
+## Un trozo grabado: un audio, varias frases de subtítulo que cambian en sus marcas.
+func _enqueue_recorded(voice: String, seg: Dictionary) -> void:
+	var parts := _parts(seg)
+	var path := _voice(voice)
+	if path == "":                               # sin grabación: cada frase con su tiempo de lectura
+		for line: String in parts:
+			_queue.append({"text": line, "voice": "", "seconds": _seconds_for(line), "last": true})
+		return
+	var length := (load(path) as AudioStream).get_length()
+	var starts: Array[float] = [0.0]
+	var marks: Array = seg.get("marcas", [])
+	if marks.size() == parts.size() - 1:
+		for m: Variant in marks:
+			starts.append(clampf(float(m), starts[-1], length))
+	else:                                        # a partes iguales por letras
+		var total := 0
+		for line: String in parts:
+			total += line.length()
+		var acc := 0
+		for i in parts.size() - 1:
+			acc += parts[i].length()
+			starts.append(length * acc / maxf(total, 1.0))
+	_groups += 1
+	for i in parts.size():
+		var last := i == parts.size() - 1
+		var end := length + VOICE_TAIL if last else starts[i + 1]
+		_queue.append({"text": parts[i], "voice": path if i == 0 else "", "seconds": maxf(end - starts[i], 0.3),
+			"group": _groups, "last": last})
+
+
 func _next() -> void:
+	_group = 0
 	if _queue.is_empty():
 		_left = 0.0
 		return
 	var e: Dictionary = _queue.pop_front()
-	var line := String(e.text)
-	if line == "":
-		_left = PAUSE
+	if e.has("sfx"):
+		_left = _duration(e)
+		Sfx.play(String(e.sfx), 0.0)
 		return
-	var seconds := _seconds_for(line)
-	if ResourceLoader.exists(e.voice):
-		var stream: AudioStream = load(e.voice)
-		_player.stream = stream
+	var line := String(e.text)
+	_left = _duration(e)
+	if line == "":
+		return
+	_group = int(e.get("group", 0))
+	if String(e.voice) != "":
+		_player.stream = load(String(e.voice))
 		_player.play()
-		seconds = maxf(seconds, stream.get_length() + 0.5)
-	subtitle.emit(line, seconds)
-	_left = seconds + GAP
+	subtitle.emit(line, float(e.seconds))
+
+
+## Lo que ocupa una entrada de la cola (con su silencio detrás, salvo dentro de un trozo grabado).
+func _duration(e: Dictionary) -> float:
+	if e.has("sfx"):
+		var l := Sfx.length(String(e.sfx))
+		return l if l > 0.0 else PAUSE
+	return float(e.seconds) + (GAP if bool(e.get("last", true)) else 0.0)
+
+
+func _segments(v: Variant) -> Array:
+	return v if v is Array else [v]
+
+
+func _parts(seg: Dictionary) -> Array[String]:
+	var f: Variant = seg.get("frases", "")
+	var out: Array[String] = []
+	for line: Variant in (f if f is Array else [f]):
+		out.append(String(line))
+	return out
+
+
+func _voice(name: String) -> String:
+	for ext: String in VOICE_EXTENSIONS:
+		var path := "res://assets/audio/voz/%s.%s" % [name, ext]
+		if ResourceLoader.exists(path):
+			return path
+	return ""
 
 
 func _seconds_for(line: String) -> float:
@@ -130,6 +226,9 @@ func _seconds_for(line: String) -> float:
 
 
 func _process(delta: float) -> void:
+	if _player.playing != _ducked:                # la música baja mientras habla
+		_ducked = _player.playing
+		Sfx.duck(_ducked)
 	if _left > 0.0:
 		_left -= delta
 		if _left <= 0.0:

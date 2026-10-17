@@ -17,18 +17,104 @@
 	"pieza_hucha": "Mi hucha. Ahorraba para unas pinturas de verdad… Está vacía. ¿En qué me lo gasté?",
 	"titulo_desvan": "El desván",
 	"titulo_infancia": "I · Infancia",
-	"pieza_caja_musica": "La caja de la abuela. Bailaba hasta que nació mamá, y lo dejó. A mamá le pasó lo mismo con el ballet. En casa decían que por la familia una aprende a ceder. Yo aprendí rápido.",
-	"pieza_dibujo": "Para mamá pintaba bailarinas. Le gustaban más que mis monstruos… así que dejé de pintar monstruos.",
-	"pieza_peluche": "Mi nutria. Mi hermano la quería y lloró toda la tarde. Mamá me miró y yo dije “vale”. Todos sonrieron. Esa sonrisa me gustó demasiado.",
+	"pieza_caja_musica": {
+		"frases": [
+			"La caja de la abuela. Decían que era una gran bailarina, pero lo tuvo que dejar…",
+			"«Por la familia una aprende a ceder», solía decirle a mi madre, y ella a mí. Y yo lo aprendí rápido."
+		],
+		"marcas": [
+			5.95
+		]
+	},
+	"pieza_dibujo": "Las niñas no pintan monstruos, ¿no, mamá? Princesas, gatitos, la familia, bailarinas… pero monstruos no.",
+	"pieza_peluche": {
+		"frases": [
+			"¡Gatito! Ahora sé que eres una nutria…",
+			"Siempre te escondía de mi hermano, hasta que un día lloró tanto que te di para hacerle feliz."
+		],
+		"marcas": [
+			3.8
+		]
+	},
 	"titulo_adolescencia": "II · Adolescencia",
-	"pieza_mp3": "A los quince ya decía “vale” a todo. Sus canciones, sus planes, su ropa. Así cabía en el grupo.",
-	"pieza_camara": "La cámara fue mi forma de estar sin estar. Cumpleaños, viajes, amigos… cientos de fotos. En ninguna salgo yo.",
-	"pieza_solicitud": "La inscripción a Bellas Artes. La matrícula la iba a pagar con la hucha. Pero la tienda de papá necesitaba una furgoneta. Ahí acabó mi dinero. Y yo dije “vale”.",
-	"titulo_adultez": "III · Adultez",
-	"pieza_llaves": "Ahora soy yo quien abre la tienda cada mañana. Papá dice que algún día será mía. Nunca le he dicho que no la quiero.",
-	"pieza_caballete": "Lo compré con mi primer sueldo, para pintar los domingos. Pero los domingos también abre la tienda.",
-	"pieza_espejo": ["Y aquí está la que siempre dijo “vale”.", "La bailarina de la abuela, la nutria de mi hermano, la tienda de papá…", "¿Y yo? ¿Dónde estoy yo?"],
-	"seccion_epilogo": ["Nadie me enseñó a decir que no.", "No.", "…Qué fácil suena cuando lo dices en voz alta."],
+	"pieza_mp3": [
+		{
+			"voz": "pieza_mp3_a",
+			"frases": "¡Ostras! Siempre compartía mi MP3…"
+		},
+		"sfx:mp3_skip",
+		{
+			"voz": "pieza_mp3_b",
+			"frases": [
+				"Y no hay ninguna canción que me guste… Ahora que lo pienso…",
+				"Vestía como ellos, veía esos programas absurdos, escuchaba esta basura para encajar… y ser parte del grupo."
+			]
+		}
+	],
+	"pieza_camara": {
+		"frases": [
+			"¡Me encanta la fotografía! La usaba en nuestros viajes, en los cumpleaños, en las fiestas del pueblo…",
+			"Vaya, no salgo en ninguna…",
+			"Bueno, aquí, aunque me han cortado la cabeza y está un poco borrosa."
+		],
+		"marcas": [
+			6.85,
+			9.7
+		]
+	},
+	"pieza_solicitud": {
+		"frases": [
+			"Esto es lo que quería estudiar…",
+			"Ahorré mucho, jamás toqué el dinero de la hucha por ningún capricho tonto…",
+			"Pero la tienda de papá necesitaba una furgoneta…",
+			"Ya recuerdo por qué la hucha está vacía…"
+		],
+		"marcas": [
+			2.75,
+			8.4,
+			14.4
+		]
+	},
+	"titulo_adultez": "III · Profesión",
+	"pieza_llaves": {
+		"frases": [
+			"¡Ah! ¡Aquí están! Mi padre no pierde la cabeza porque la tiene pegada al cuerpo.",
+			"Quién iba a imaginar que sería yo quien abriría la tienda todas las mañanas. Y eso que dije que nunca lo haría."
+		],
+		"marcas": [
+			5.85
+		]
+	},
+	"pieza_caballete": {
+		"frases": [
+			"Lo compré con mi primer sueldo; no me daban mucho, porque casi todo iba para el bote familiar, aunque me dio para comprarlo…",
+			"Tenía el planazo perfecto: pintar todos los domingos…",
+			"Entonces subió el precio del alquiler, y adivina quién trabaja los domingos."
+		],
+		"marcas": [
+			8.1,
+			12.8
+		]
+	},
+	"pieza_espejo": {
+		"frases": [
+			"Y aquí estoy, la que siempre dice sí a todo lo que le piden…",
+			"la que evita el conflicto… la que prioriza a los demás…",
+			"Por la familia una cede… Adiós, gatito… Hola, tienda de papá…",
+			"¿Y yo…? ¿Y yo para cuándo?…"
+		],
+		"marcas": [
+			4.3,
+			7.8,
+			14.6
+		]
+	},
+	"seccion_epilogo": [
+		"Nadie me enseñó a decir que no.",
+		"",
+		"No.",
+		"…Qué fácil suena cuando lo dices en voz alta."
+	],
 	"pieza_moneda": "Para unas pinturas de verdad.",
 	"consejo_muebles": "Algo está guardado. Toca el mueble que brilla para abrirlo.",
 	"consejo_dentro": "¡Ahí está! Tócalo para llevártelo a la bandeja.",

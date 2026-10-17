@@ -32,6 +32,7 @@ func check(cond: bool, what: String) -> void:
 func _run() -> void:
 	_test_name_rules()
 	_test_narrator()
+	await _test_voices()
 	if GameState.RESET_ON_START:
 		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
 			"modo prototipo: al darle a Play no se carga progreso (título y niveles desde cero)")
@@ -191,9 +192,54 @@ func _test_narrator() -> void:
 	Narrator.clear()
 
 
+## Guion v2: cada objeto suena con su grabación (assets/audio/voz/<clave>.ogg) y su subtítulo, partido
+## en las pausas de la grabación; la música baja mientras habla; pasar de frase se lleva el trozo entero.
+func _test_voices() -> void:
+	Narrator.clear()
+	var got: Array = []
+	var listen := func(text: String, seconds: float) -> void: got.append([text, seconds])
+	Narrator.subtitle.connect(listen)
+	var lines: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/narracion_es.json"))
+	var voiced := 0
+	var marks_ok := true
+	for key: String in ["pieza_caja_musica", "pieza_dibujo", "pieza_peluche", "pieza_solicitud", "pieza_camara",
+			"pieza_llaves", "pieza_caballete", "pieza_espejo"]:
+		var path := "res://assets/audio/voz/%s.ogg" % key
+		if not ResourceLoader.exists(path) or not lines.has(key):
+			continue
+		voiced += 1
+		var v: Variant = lines[key]
+		if v is Dictionary:
+			var marks: Array = (v as Dictionary).get("marcas", [])
+			var length := (load(path) as AudioStream).get_length()
+			var prev := 0.0
+			marks_ok = marks_ok and marks.size() == ((v as Dictionary).frases as Array).size() - 1
+			for m: Variant in marks:
+				marks_ok = marks_ok and float(m) > prev and float(m) < length
+				prev = float(m)
+	check(voiced == 8 and marks_ok, "las 8 voces del guion v2 están, y sus frases partidas cambian dentro de la grabación (%d)" % voiced)
+	Narrator.say("pieza_peluche")
+	var voice_len := (load("res://assets/audio/voz/pieza_peluche.ogg") as AudioStream).get_length()
+	var left := Narrator.remaining()
+	check(got.size() == 1 and got[0][0] == "¡Gatito! Ahora sé que eres una nutria…" and is_equal_approx(float(got[0][1]), 3.8)
+		and Narrator.voice_playing() and absf(left - (voice_len + Narrator.VOICE_TAIL + Narrator.GAP)) < 0.05,
+		"una frase grabada suena con su voz y su subtítulo sale por trozos: el primero, hasta su pausa (%.2f s)" % left)
+	for i in 2:                                      # (process_frame llega antes del _process del Narrador)
+		await get_tree().process_frame
+	check(Sfx.ducked, "mientras habla una voz, la música baja (ducking)")
+	Narrator.skip()
+	for i in 3:
+		await get_tree().process_frame
+	check(got.size() == 1 and Narrator.remaining() <= 0.0 and not Narrator.voice_playing(),
+		"pasar de frase se lleva el trozo grabado entero: no sale el resto del subtítulo sin su voz")
+	check(not Sfx.ducked, "al callarse, la música vuelve")
+	Narrator.subtitle.disconnect(listen)
+	Narrator.clear()
+
+
 ## La historia del desván (docs/GUION.md): se monta por secciones en orden; en cada una los objetos
 ## de la historia aparecen de uno en uno y la clave al final; lo que está guardado en un mueble se
-## descubre porque el mueble brilla, y en la adolescencia primero la cámara y luego la inscripción.
+## descubre porque el mueble brilla, y en la adolescencia primero la solicitud y al final la cámara (guion v2).
 func _test_story(main: Node) -> void:
 	var attic := "res://levels/level_01_desvan.tscn"
 	GameState.levels = PackedStringArray([attic])
@@ -522,14 +568,24 @@ func _test_story(main: Node) -> void:
 	while not _slot(d, &"mp3").filled and steps < 40:
 		d.debug_solve_step()
 		steps += 1
-	check(camera_pick.available and not application.available and camera_pick.container != null and camera_pick.container.attention,
-		"con el MP3 puesto toca encontrar la cámara: el armario brilla (la inscripción aún no aparece)")
+	check(application.available and not camera_pick.available and application.container != null
+		and application.container.kind == NameRules.DRAWER and application.container.attention,
+		"con el MP3 puesto toca encontrar la solicitud de Bellas Artes: el cajón brilla (la cámara aún no aparece)")
+	steps = 0
+	while not camera_pick.available and steps < 80:
+		d.debug_solve_step()
+		steps += 1
+	var rest := s3.slots.filter(func(sl: PieceSlot) -> bool: return not sl.filled and sl.id != &"camara")
+	check(camera_pick.available and rest.is_empty() and camera_pick.container != null and camera_pick.container.attention,
+		"con todo lo demás puesto, toca encontrar la cámara (clave): el armario brilla")
 	var flashes_before: int = flashes[0]
 	steps = 0
 	while not _slot(d, &"camara").filled and steps < 40:
 		d.debug_solve_step()
 		steps += 1
 	check(flashes[0] > flashes_before, "al colocar la cámara, destello blanco (el flash)")
+	check(placed.find(&"mp3") < placed.find(&"solicitud") and placed.find(&"solicitud") < placed.find(&"camara"),
+		"adolescencia en el orden del guion v2: MP3, solicitud y la cámara (clave) la última")
 	var pink := _collectible(d, &"dibujo_rosa")
 	if not lamp.filled:
 		d.place(lamp)
@@ -551,14 +607,6 @@ func _test_story(main: Node) -> void:
 	await get_tree().process_frame
 	check(not look2.is_open() and not main.pause.is_open() and pink.target.get_parent() == d.clothesline,
 		"Esc también lo cierra (sin abrir la pausa) y el dibujo va a la cuerda")
-	steps = 0
-	while not application.available and steps < 60:
-		d.debug_solve_step()
-		steps += 1
-	var rest := s3.slots.filter(func(sl: PieceSlot) -> bool: return not sl.filled and sl.id != &"solicitud")
-	check(application.available and rest.is_empty() and application.container != null
-		and application.container.kind == NameRules.DRAWER and application.container.attention,
-		"después de la cámara y de todo lo demás, toca encontrar la inscripción a Bellas Artes: el cajón brilla")
 	steps = 0
 	while not _slot(d, &"lienzo").filled and steps < 120:
 		d.debug_solve_step()

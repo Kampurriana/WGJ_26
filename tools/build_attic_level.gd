@@ -4,9 +4,9 @@ extends "res://tools/build_room_level.gd"
 ##   S_1_desvan        el suelo (18 tablones de tres largos parecidos: cada uno vale en varios huecos,
 ##                     no en todos), paredes y tejado; al final, la hucha (prólogo, __clave)
 ##   S_2_infancia      zona izquierda: caja de música -> dibujo -> nutria (clave) + su dressing
-##   S_3_adolescencia  zona central: MP3 -> cámara (escondida en el armario, flash) -> inscripción
-##                     a Bellas Artes (escondida en el cajón, clave) + su dressing
-##   S_4_adultez       zona derecha: llaves -> caballete -> espejo (clave, __reflejo: su momento
+##   S_3_adolescencia  zona central (guion v2): MP3 -> solicitud de Bellas Artes (escondida en el
+##                     cajón) -> cámara (escondida en el armario, clave y flash) + su dressing
+##   S_4_adultez       zona derecha, la profesión: llaves -> caballete -> espejo (clave, __reflejo: su momento
 ##                     es de frente y con todo a negro) + su dressing
 ##   S_5_epilogo       la moneda (__ofrecida: aparece junto a la hucha y se arrastra a la ranura)
 ## Las tres zonas comparten suelo y tejado (integradas); cada una tiene su alfombra, su bombilla
@@ -365,7 +365,7 @@ func _build_teen(sec: Node3D) -> void:
 		_sphere(mp3, "Auricular%d" % int(x > 0), Vector3(x * 2.0, 0.01, 0.07), 0.01, Color(0.97, 0.97, 0.97))
 		var wire := _box(mp3, "Cable%d" % int(x > 0), Vector3(x, 0.004, 0.06), Vector3(0.004, 0.004, 0.06), Color(0.97, 0.97, 0.97))
 		wire.rotation_degrees.y = 30.0 if x > 0 else -30.0
-	var cam_piece := _node(sec, "P_camara__after-mp3__flash", desk + Vector3(0.2, DESK_TOP, 0.06))
+	var cam_piece := _node(sec, "P_camara__clave__flash", desk + Vector3(0.2, DESK_TOP, 0.06))
 	cam_piece.rotation_degrees.y = -20.0
 	_retro_camera(cam_piece)
 	# Debajo de la cámara, entre las fotos: un dibujo suyo (se encuentra solo al ponerla).
@@ -379,7 +379,7 @@ func _build_teen(sec: Node3D) -> void:
 	_box(corkboard, "Marco", Vector3(0, 0, -0.004), Vector3(0.5, 0.26, 0.015), WOOD)
 	for k in 3:
 		_box(corkboard, "Nota%d" % k, Vector3(-0.17 + k * 0.08, 0.04 - (k % 2) * 0.06, 0.012), Vector3(0.06, 0.06, 0.003), [PASTEL_YELLOW, PASTEL_PINK, PASTEL_BLUE][k])
-	var photos := _node(sec, "P_fotos__after-camara", _on_roof(-0.3, 1.5))
+	var photos := _node(sec, "P_fotos__after-mp3", _on_roof(-0.3, 1.5))
 	photos.rotation.x = -_slope
 	_box(photos, "Cordel", Vector3(0, -0.012, 0.05), Vector3(1.0, 0.004, 0.006), Color(0.9, 0.85, 0.75))
 	for k in 6:
@@ -408,8 +408,8 @@ func _build_teen(sec: Node3D) -> void:
 	hole.rotation_degrees.x = 90.0
 	_box(guitar, "Mastil", Vector3(0, 0.62, 0), Vector3(0.05, 0.42, 0.025), WOOD_DARK)
 	_box(guitar, "Pala", Vector3(0, 0.86, 0), Vector3(0.07, 0.1, 0.025), WOOD_DARK)
-	# La inscripción a Bellas Artes (clave): en el corcho, cuando se encuentra en el cajón.
-	_application(_node(sec, "P_solicitud__clave", Vector3(0.1, 0.86, WALL_IN + 0.035)), false)
+	# La solicitud de Bellas Artes (después del MP3): en el corcho, cuando se encuentra en el cajón.
+	_application(_node(sec, "P_solicitud__after-mp3", Vector3(0.1, 0.86, WALL_IN + 0.035)), false)
 
 
 func _retro_camera(n: Node3D) -> void:

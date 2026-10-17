@@ -11,7 +11,7 @@ const SPEEDRUN := 480.0                      ## 8 minutos
 const LISTA := [
 	{"id": "infancia", "nombre": "Recuerdos de la infancia", "texto": "Desbloquea los recuerdos de la infancia."},
 	{"id": "adolescencia", "nombre": "Recuerdos de la adolescencia", "texto": "Desbloquea los recuerdos de la adolescencia."},
-	{"id": "adultez", "nombre": "Recuerdos de la adultez", "texto": "Desbloquea los recuerdos de la adultez."},
+	{"id": "adultez", "nombre": "Recuerdos de la profesión", "texto": "Desbloquea los recuerdos de la profesión."},
 	{"id": "dibujos", "nombre": "Los siete dibujos", "texto": "Recupera los 7 dibujos de cuando era pequeña."},
 	{"id": "speedrunner", "nombre": "Speedrunner", "texto": "Acaba el juego en menos de 8 minutos."},
 ]
