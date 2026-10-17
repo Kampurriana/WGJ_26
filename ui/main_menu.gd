@@ -24,6 +24,9 @@ var _panel: PanelContainer
 var _pages: Dictionary = {}                 ## nombre -> Control
 var _level_list: VBoxContainer
 var _titles: Dictionary = {}                ## ruta de nivel -> título (leído de la escena sin instanciarla)
+var _logo: Label
+var _logros: LogrosLista
+var _t := 0.0
 
 
 func _ready() -> void:
@@ -32,7 +35,7 @@ func _ready() -> void:
 	var root := Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.theme = UiTheme.get_theme()
+	root.theme = UiTheme.get_floating_theme()    # sin recuadro: el logo y las opciones flotan
 	add_child(root)
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_CENTER_LEFT)
@@ -46,6 +49,7 @@ func _ready() -> void:
 	_build_main(v)
 	_build_levels(v)
 	_build_options(v)
+	_build_achievements(v)
 	_build_credits(v)
 	hide()
 
@@ -82,6 +86,8 @@ func show_page(p: String) -> void:
 		_fill_levels()
 	elif p == "opciones":
 		options.refresh()
+	elif p == "logros":
+		_logros.refresh()
 	Juice.stagger(_pages[p])                     # y lo de la página, uno tras otro
 	_focus_first(_pages[p])
 
@@ -91,16 +97,15 @@ func show_page(p: String) -> void:
 func _build_main(parent: Control) -> void:
 	var p := VBoxContainer.new()
 	p.add_theme_constant_override("separation", 10)
-	var logo := Label.new()                      # el nombre del juego, como el logo de la referencia
-	logo.text = GameState.game_title()
-	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.style_title(logo, 54)
-	logo.rotation_degrees = -3.0
-	logo.resized.connect(func() -> void: logo.pivot_offset = logo.size * 0.5)
-	p.add_child(logo)
+	_logo = Label.new()                          # el nombre del juego, flotando (como el logo de la referencia)
+	_logo.text = GameState.game_title()
+	UiTheme.style_title(_logo, 72)
+	_logo.resized.connect(func() -> void: _logo.pivot_offset = _logo.size * 0.5)
+	p.add_child(_logo)
 	_add_button(p, "jugar", "Jugar", func() -> void: play_requested.emit(GameState.next_level_to_play()))
 	_add_button(p, "elegir", "Elegir diorama", func() -> void: show_page("elegir"))
 	_add_button(p, "opciones", "Opciones", func() -> void: show_page("opciones"))
+	_add_button(p, "logros", "Logros", func() -> void: show_page("logros"))
 	_add_button(p, "creditos", "Créditos", func() -> void: show_page("creditos"))
 	var quit := _add_button(p, "salir", "Salir", func() -> void: get_tree().quit())
 	quit.visible = not OS.has_feature("web")     # en el navegador no hay "salir"
@@ -126,6 +131,16 @@ func _build_options(parent: Control) -> void:
 	p.add_child(_scroll(options))
 	_add_button(p, "opciones_volver", "Volver", func() -> void: show_page("principal"))
 	_add_page(parent, "opciones", p)
+
+
+func _build_achievements(parent: Control) -> void:
+	var p := VBoxContainer.new()
+	p.add_theme_constant_override("separation", 10)
+	p.add_child(_heading("Logros"))
+	_logros = LogrosLista.new()
+	p.add_child(_scroll(_logros))
+	_add_button(p, "logros_volver", "Volver", func() -> void: show_page("principal"))
+	_add_page(parent, "logros", p)
 
 
 func _build_credits(parent: Control) -> void:
@@ -188,7 +203,8 @@ func _add_page(parent: Control, p: String, node: Control) -> void:
 func _add_button(parent: Control, key: String, text: String, action: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(0, 50)
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT          # opciones en texto, alineadas bajo el logo
+	b.custom_minimum_size = Vector2(0, 46)
 	b.pressed.connect(func() -> void:
 		Sfx.play("click", 0.0)
 		action.call())
@@ -200,8 +216,7 @@ func _add_button(parent: Control, key: String, text: String, action: Callable) -
 func _heading(text: String) -> Label:
 	var l := Label.new()
 	l.text = text
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	UiTheme.style_title(l, 34)
+	UiTheme.style_title(l, 40)
 	return l
 
 
@@ -224,6 +239,15 @@ func _focus_first(node: Control) -> void:
 		if b.is_visible_in_tree() and not b.disabled:
 			b.grab_focus.call_deferred()
 			return
+
+
+## El logo flota: sube y baja despacio y se mece un poco.
+func _process(delta: float) -> void:
+	if not visible or _logo == null:
+		return
+	_t += delta
+	_logo.rotation_degrees = -3.0 + sin(_t * 1.1) * 1.5
+	_logo.scale = Vector2.ONE * (1.0 + 0.02 * sin(_t * 1.7))
 
 
 func _unhandled_input(e: InputEvent) -> void:

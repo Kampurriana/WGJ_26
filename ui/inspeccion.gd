@@ -2,7 +2,7 @@ class_name Inspeccion
 extends CanvasLayer
 ## Sexta nota: al encontrar un dibujo escondido (C_), un primer plano para inspeccionarlo, con la
 ## disposición del aviso de "badge" de la referencia: arriba, un título grande ("¡UN DIBUJO!") y,
-## montada sobre él, una cápsula con su nombre; en el centro, el dibujo en 3D, que se mece solo y se
+## debajo (sin solaparse), una cápsula con su nombre; en el centro, el dibujo en 3D, que se mece solo y se
 ## gira arrastrando; debajo, una barra con su texto y cuántos van (3 de 7, con puntos); y abajo, un
 ## botón grande para guardarlo. El juego queda detrás, apagado con un oscuro del tono del fondo, con
 ## un halo y rayos suaves detrás del dibujo (shaders/inspeccion.gdshader).
@@ -81,8 +81,8 @@ func _build() -> void:
 	column.add_theme_constant_override("separation", 8)
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(column)
-	var heading := VBoxContainer.new()               # el título y, montada encima, la cápsula
-	heading.add_theme_constant_override("separation", -22)
+	var heading := VBoxContainer.new()               # el título y, debajo, la cápsula
+	heading.add_theme_constant_override("separation", 6)    # sin solaparse (feedback)
 	heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(heading)
 	_title = Label.new()

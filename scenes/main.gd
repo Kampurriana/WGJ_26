@@ -37,6 +37,7 @@ var credits: Creditos
 var effects: Efectos
 var momentos: Momentos
 var inspeccion: Inspeccion                   ## el primer plano de un dibujo encontrado (sexta nota)
+var logros: Logros                           ## los logros (core/logros.gd)
 var enfoque: Enfoque
 var _level: Node
 var _lighting: Node
@@ -100,6 +101,9 @@ func _ready() -> void:
 	inspeccion.name = "Inspeccion"
 	inspeccion.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(inspeccion)
+	logros = Logros.new()
+	logros.name = "Logros"
+	add_child(logros)
 	add_child(GamepadCursor.new())
 	menu = MainMenu.new()
 	menu.name = "MainMenu"

@@ -13,11 +13,11 @@ extends CanvasLayer
 ## Lo que se encuentra guardado (H_) no aparece de golpe en la bandeja: su ficha sale de donde estaba
 ## el objeto y vuela en arco hasta su sitio (quinta nota: "que no se teletransporte").
 ##
-## Disposición (pulido con la referencia de Ooblets): arriba a la izquierda, la TARJETA DE TAREA
-## (dónde estás, qué toca ahora y una barra con lo que falta de la zona, como su panel de tareas);
-## arriba a la derecha, el contador de dibujos (como su contador de la esquina) y debajo la bandeja;
-## abajo en el centro, los subtítulos; abajo a la derecha, los consejos como avisos que entran desde
-## el borde (como su "New ooblet spotted"); abajo a la izquierda, Menú y Pista con su tecla.
+## Disposición (pulido con la referencia de Ooblets y el tablero de feedback): arriba a la izquierda,
+## la TARJETA DE TAREA, discreta y mona (dónde estás, qué toca y una barrita); a la derecha la bandeja,
+## translúcida, con fichas de borde blanco; abajo en el centro, el diálogo en una BURBUJA centrada que
+## se escribe letra a letra; a la derecha, encima, los consejos y logros como NOTIFICACIONES que se
+## quitan deslizándolas fuera de la pantalla; abajo a la izquierda, Menú y Pista con su tecla.
 ## Dibujos escondidos (C_): al encontrar uno, lo que se enseña es su primer plano (ui/inspeccion.gd).
 
 signal next_requested
@@ -33,8 +33,10 @@ const MARGIN := 10.0                         ## la bandeja flota: separada del b
 const LIP := 26.0                            ## lo que se ve de ella mientras se arrastra una pieza
 const SLIDE_TIME := 0.22
 const FLY_TIME := 0.8                        ## lo que tarda en volar a la bandeja lo que se recoge (s)
-const COUNTER_H := 42.0                      ## alto del contador de dibujos (la bandeja empieza debajo)
-const TASK_WIDTH := 300.0                    ## ancho de la tarjeta de tarea
+const TASK_WIDTH := 230.0                    ## ancho de la tarjeta de tarea (pequeña: no llama la atención)
+const TYPE_SPEED := 0.028                    ## la burbuja de diálogo escribe una letra cada esto (s)
+const TIP_SWIPE := 70.0                      ## lo que hay que deslizar una notificación para quitarla (px)
+const TIP_TIME := 30.0                       ## si nadie la quita, se va sola tras esto (s)
 const TIP_WIDTH := 300.0                     ## ancho de un aviso (consejo), abajo a la derecha
 const TIP_SLIDE := 60.0                      ## lo que entra deslizándose desde la derecha
 
@@ -80,9 +82,11 @@ var _tip_box: PanelContainer                 ## consejo de juego (aviso abajo a 
 var _tip_tween: Tween
 var _tip: Label
 var _tip_left := 0.0
-var _drawings: PanelContainer                ## contador de dibujos encontrados (arriba a la derecha)
-var _drawings_icon: DibujoIcono
-var _drawings_label: Label
+var _tip_kicker: Label                       ## "CONSEJO" / "¡LOGRO!"
+var _tip_drag := false
+var _tip_dx := 0.0
+var _type_tween: Tween
+var _tail: Control                           ## el piquito de la burbuja de diálogo
 var _done: PanelContainer
 var _done_button: Button
 var _controls: VBoxContainer
@@ -109,7 +113,8 @@ func _ready() -> void:
 	Events.level_started.connect(func(_d: Node) -> void: _on_level_started())
 	Events.inventory_changed.connect(rebuild_inventory)
 	Events.inventory_changed.connect(_update_task)
-	Events.inventory_changed.connect(_update_counter)
+	Events.achievement_unlocked.connect(func(id: String) -> void:
+		show_tip(String(Logros.info(id).get("nombre", id)), 8.0, "¡LOGRO!"))
 	Events.level_completed.connect(func(_d: Node) -> void: _update_task())
 	Events.focus_changed.connect(func(a: Node) -> void: _back_button.visible = a != null)
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
@@ -121,7 +126,6 @@ func _ready() -> void:
 	Narrator.subtitle.connect(_show_subtitle)
 	Events.section_opened.connect(func(sec: RefCounted) -> void: show_chapter(Narrator.text("titulo_" + (sec as Section).name)))
 	Events.tip_requested.connect(func(key: String) -> void: show_tip(Narrator.text(key)))
-	Events.collectible_found.connect(_on_collectible_found)
 	Events.piece_collected.connect(_on_piece_collected)
 	Events.piece_drag_started.connect(func(_id: StringName) -> void:
 		_hide_info()
@@ -174,7 +178,7 @@ func _set_slide(v: float) -> void:
 	var shift := v * (PANEL_WIDTH - LIP + MARGIN)
 	_panel.offset_left = -PANEL_WIDTH - MARGIN + shift
 	_panel.offset_right = -MARGIN + shift
-	_panel.offset_top = MARGIN + (COUNTER_H + GAP if _drawings != null and _drawings.visible else 0.0)
+	_panel.offset_top = MARGIN
 	_panel.offset_bottom = -MARGIN
 
 
@@ -240,25 +244,29 @@ func _build_controls() -> void:
 	_task = PanelContainer.new()
 	_task.position = Vector2(MARGIN + 6, MARGIN + 4)
 	_task.custom_minimum_size = Vector2(TASK_WIDTH, 0)
-	_task.theme_type_variation = &"Subtitulo"
+	_task.add_theme_stylebox_override("panel", UiTheme._box(Color(1, 1, 1, 0.42), 18, Color(1, 1, 1, 0.75), 0, 2, 14, 8))
 	_task.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(_task)
 	var task_col := VBoxContainer.new()
 	task_col.add_theme_constant_override("separation", 4)
 	_task.add_child(task_col)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 6)
+	task_col.add_child(head)
+	head.add_child(Estrellita.new())             # un detalle mono: una estrellita naranja
 	_title = Label.new()
 	var spaced := FontVariation.new()
 	spaced.base_font = UiTheme.FONT_BOLD
-	spaced.spacing_glyph = 2
+	spaced.spacing_glyph = 1
 	_title.add_theme_font_override("font", spaced)
-	_title.add_theme_font_size_override("font_size", 16)
-	_title.add_theme_color_override("font_color", UiTheme.ORANGE)
-	task_col.add_child(_title)
+	_title.add_theme_font_size_override("font_size", 13)
+	_title.add_theme_color_override("font_color", UiTheme.VIOLET)
+	head.add_child(_title)
 	_task_text = Label.new()
-	_task_text.theme_type_variation = &"SubtituloTexto"
 	_task_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_task_text.custom_minimum_size = Vector2(TASK_WIDTH - 36.0, 0)
-	_task_text.add_theme_font_size_override("font_size", 18)
+	_task_text.custom_minimum_size = Vector2(TASK_WIDTH - 28.0, 0)
+	_task_text.add_theme_font_size_override("font_size", 15)
+	_task_text.add_theme_color_override("font_color", UiTheme.BLUE_DEEP)
 	task_col.add_child(_task_text)
 	var task_row := HBoxContainer.new()
 	task_row.add_theme_constant_override("separation", 10)
@@ -268,9 +276,9 @@ func _build_controls() -> void:
 	_task_bar.max_value = 1.0
 	_task_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_task_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_task_bar.custom_minimum_size = Vector2(0, 10)
+	_task_bar.custom_minimum_size = Vector2(0, 6)
 	var bar_bg := StyleBoxFlat.new()
-	bar_bg.bg_color = Color(1, 1, 1, 0.14)
+	bar_bg.bg_color = Color(1, 1, 1, 0.6)
 	bar_bg.set_corner_radius_all(5)
 	var bar_fill := StyleBoxFlat.new()
 	bar_fill.bg_color = UiTheme.ORANGE
@@ -279,39 +287,12 @@ func _build_controls() -> void:
 	_task_bar.add_theme_stylebox_override("fill", bar_fill)
 	task_row.add_child(_task_bar)
 	_task_count = Label.new()
-	_task_count.theme_type_variation = &"SubtituloTexto"
-	_task_count.add_theme_font_size_override("font_size", 15)
+	_task_count.add_theme_font_size_override("font_size", 12)
+	_task_count.add_theme_color_override("font_color", UiTheme.VIOLET)
 	task_row.add_child(_task_count)
-	_drawings = PanelContainer.new()
-	_drawings.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_drawings.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_drawings.offset_right = -MARGIN
-	_drawings.offset_top = MARGIN
-	_drawings.custom_minimum_size = Vector2(PANEL_WIDTH, COUNTER_H)
-	_drawings.theme_type_variation = &"Subtitulo"
-	_drawings.add_theme_stylebox_override("panel", UiTheme._box(Color(0.14, 0.21, 0.52, 0.84), 21, Color(UiTheme.PALE, 0.25), 0, 2, 14, 5))
-	_drawings.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_drawings.hide()
-	_root.add_child(_drawings)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_drawings.add_child(row)
-	_drawings_icon = DibujoIcono.new(Vector2(18, 22))
-	row.add_child(_drawings_icon)
-	var drawings_word := Label.new()
-	drawings_word.text = "Dibujos"
-	drawings_word.theme_type_variation = &"SubtituloTexto"
-	drawings_word.add_theme_font_size_override("font_size", 15)
-	row.add_child(drawings_word)
-	_drawings_label = Label.new()
-	_drawings_label.theme_type_variation = &"SubtituloTexto"
-	_drawings_label.add_theme_font_size_override("font_size", 17)
-	_drawings_label.add_theme_color_override("font_color", UiTheme.ORANGE)
-	row.add_child(_drawings_label)
 	_back_button = Button.new()
 	_back_button.text = "Volver"
-	_back_button.position = Vector2(MARGIN + 6, 150)
+	_back_button.position = Vector2(MARGIN + 6, 120)
 	_back_button.hide()
 	_back_button.pressed.connect(_on_back)
 	_root.add_child(_back_button)
@@ -345,18 +326,23 @@ func _build_subtitle() -> void:
 	_subtitle_box.grow_vertical = Control.GROW_DIRECTION_BEGIN    # una frase larga crece hacia arriba
 	_subtitle_box.offset_top = -16
 	_subtitle_box.offset_bottom = -16
-	_subtitle_box.offset_left = -360
-	_subtitle_box.offset_right = 100.0           # centrados en lo que deja la bandeja; a su derecha, los avisos
+	_subtitle_box.offset_left = -330
+	_subtitle_box.offset_right = 330             # centrada en la pantalla (feedback: "una burbuja de diálogo común")
+	_subtitle_box.offset_top = -30
+	_subtitle_box.offset_bottom = -30
 	_subtitle_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_subtitle_box.theme_type_variation = &"Subtitulo"
+	_subtitle_box.add_theme_stylebox_override("panel", UiTheme._box(Color(UiTheme.PALE, 0.97), 26, Color.WHITE, 0, 3, 26, 14))
 	_subtitle_box.hide()
 	_root.add_child(_subtitle_box)
 	_subtitle = Label.new()
 	_subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_subtitle.theme_type_variation = &"SubtituloTexto"
-	_subtitle.add_theme_font_size_override("font_size", 22)
+	_subtitle.add_theme_font_size_override("font_size", 21)
+	_subtitle.add_theme_color_override("font_color", UiTheme.BLUE_DEEP)
 	_subtitle_box.add_child(_subtitle)
+	_tail = Piquito.new()
+	_tail.hide()
+	_root.add_child(_tail)
 
 
 ## Rótulo grande al abrirse una sección, y un consejo pequeño debajo cuando hace falta.
@@ -418,21 +404,31 @@ func _build_tip() -> void:
 	_tip_box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	_tip_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_tip_box.offset_right = -(PANEL_WIDTH + MARGIN * 2.0)
-	_tip_box.offset_bottom = -20
+	_tip_box.offset_bottom = -120                # encima de la burbuja de diálogo
 	_tip_box.custom_minimum_size = Vector2(TIP_WIDTH, 0)
-	_tip_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tip_box.mouse_filter = Control.MOUSE_FILTER_STOP     # se coge y se desliza fuera para quitarla
+	_tip_box.mouse_default_cursor_shape = Control.CURSOR_DRAG
+	_tip_box.gui_input.connect(_on_tip_input)
 	_tip_box.theme_type_variation = &"Subtitulo"
 	_tip_box.hide()
 	_root.add_child(_tip_box)
 	var tip_col := VBoxContainer.new()
 	tip_col.add_theme_constant_override("separation", 2)
 	_tip_box.add_child(tip_col)
-	var kicker := Label.new()
-	kicker.text = "CONSEJO"
-	kicker.add_theme_font_size_override("font_size", 13)
-	kicker.add_theme_font_override("font", UiTheme.FONT_BOLD)
-	kicker.add_theme_color_override("font_color", UiTheme.ORANGE)
-	tip_col.add_child(kicker)
+	var kicker_row := HBoxContainer.new()
+	tip_col.add_child(kicker_row)
+	_tip_kicker = Label.new()
+	_tip_kicker.text = "CONSEJO"
+	_tip_kicker.add_theme_font_size_override("font_size", 13)
+	_tip_kicker.add_theme_font_override("font", UiTheme.FONT_BOLD)
+	_tip_kicker.add_theme_color_override("font_color", UiTheme.ORANGE)
+	_tip_kicker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	kicker_row.add_child(_tip_kicker)
+	var swipe := Label.new()
+	swipe.text = "desliza  ›"
+	swipe.add_theme_font_size_override("font_size", 12)
+	swipe.add_theme_color_override("font_color", Color(UiTheme.CREAM, 0.55))
+	kicker_row.add_child(swipe)
 	_tip = Label.new()
 	_tip.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_tip.custom_minimum_size = Vector2(TIP_WIDTH - 36.0, 0)
@@ -469,15 +465,20 @@ func show_chapter(text: String) -> void:
 	_chapter_tween.chain().tween_property(_chapter, "modulate:a", 0.0, 1.1).set_trans(Tween.TRANS_SINE)
 
 
-func show_tip(text: String, seconds := 7.0) -> void:
+## Una notificación (abajo a la derecha): un consejo o un logro. Se queda hasta que el jugador la
+## desliza fuera de la pantalla (o hasta TIP_TIME).
+func show_tip(text: String, seconds := TIP_TIME, kicker := "CONSEJO") -> void:
 	if text == "":
 		return
 	if _chapter_showing() or _moment:            # no encima del rótulo de capítulo ni de un primer plano: espera
-		_tip_waiting = [text, seconds]
+		_tip_waiting = [text, seconds, kicker]
 		return
 	_tip.text = text
+	_tip_kicker.text = kicker
 	_tip_box.show()
 	_tip_left = seconds
+	_tip_drag = false
+	_tip_dx = 0.0
 	if _tip_tween != null:                       # entra deslizándose desde el borde, como un aviso
 		_tip_tween.kill()
 	_tip_box.modulate.a = 0.0
@@ -489,6 +490,45 @@ func show_tip(text: String, seconds := 7.0) -> void:
 
 func _chapter_showing() -> bool:
 	return _chapter.modulate.a > 0.01 or (_chapter_tween != null and _chapter_tween.is_running())
+
+
+## La notificación se coge y se desliza: lejos del sitio, se va; cerca, vuelve.
+func _on_tip_input(e: InputEvent) -> void:
+	var rest := -(PANEL_WIDTH + MARGIN * 2.0)
+	if e is InputEventMouseButton and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		if (e as InputEventMouseButton).pressed:
+			_tip_drag = true
+			_tip_dx = 0.0
+			if _tip_tween != null:
+				_tip_tween.kill()
+		elif _tip_drag:
+			_tip_drag = false
+			if absf(_tip_dx) >= TIP_SWIPE:
+				dismiss_tip(signf(_tip_dx))
+			else:
+				_tip_tween = create_tween().set_parallel().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				_tip_tween.tween_method(func(x: float) -> void: _tip_box.offset_right = x, _tip_box.offset_right, rest, 0.3)
+				_tip_tween.tween_property(_tip_box, "modulate:a", 1.0, 0.2)
+		_tip_box.accept_event()
+	elif e is InputEventMouseMotion and _tip_drag:
+		_tip_dx += (e as InputEventMouseMotion).relative.x
+		_tip_box.offset_right = rest + _tip_dx
+		_tip_box.modulate.a = clampf(1.0 - absf(_tip_dx) / (TIP_SWIPE * 2.5), 0.3, 1.0)
+		_tip_box.accept_event()
+
+
+## Quita la notificación deslizándola fuera (dir = 1 a la derecha, -1 a la izquierda).
+func dismiss_tip(dir := 1.0) -> void:
+	_tip_left = 0.0
+	if _tip_tween != null:
+		_tip_tween.kill()
+	_tip_tween = create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	_tip_tween.tween_method(func(x: float) -> void: _tip_box.offset_right = x, _tip_box.offset_right,
+		_tip_box.offset_right + dir * 420.0, 0.25)
+	_tip_tween.tween_property(_tip_box, "modulate:a", 0.0, 0.25)
+	_tip_tween.chain().tween_callback(func() -> void:
+		_tip_box.hide()
+		_tip_box.offset_right = -(PANEL_WIDTH + MARGIN * 2.0))
 
 
 ## (Tests) Lo que dicen ahora el rótulo y el consejo ("" = no se ven).
@@ -555,27 +595,6 @@ func _fly_to_tray(id: StringName, from: Vector2) -> void:
 ## (Tests) Fichas volando ahora hacia la bandeja.
 func flights() -> Array[Control]:
 	return _flights
-
-
-## Un dibujo encontrado: el contador (su primer plano lo enseña ui/inspeccion.gd).
-func _on_collectible_found(item: Node, found: int, total: int) -> void:
-	var it := item as Interactable
-	var color := drawing_color(it.target if it != null else null)
-	_drawings_label.text = "%d / %d" % [found, total]
-	_drawings_icon.color = color
-	_drawings_icon.faded = false
-	Juice.bounce(_drawings, 1.18)                # ¡uno más!
-	Juice.wiggle(_drawings_icon, 14.0)
-
-
-## El contador, al día con lo encontrado (F9 los cuelga todos sin avisar uno a uno).
-func _update_counter() -> void:
-	var d := GameState.diorama
-	if d == null or not is_instance_valid(d) or d.collectible_total() == 0:
-		return
-	var found := d.collectibles_found()
-	_drawings_label.text = "%d / %d" % [found, d.collectible_total()]
-	_drawings_icon.faded = found == 0
 
 
 ## El color de un dibujo (el de su papel, o el de su malla más grande), para pintar el icono igual.
@@ -645,9 +664,6 @@ func task_text() -> String:
 	return "%s | %s | %s" % [_title.text, _task_text.text, _task_count.text] if _task.visible else ""
 
 
-## (Tests) Lo que dice el contador de dibujos ("" = no se ve).
-func drawings_text() -> String:
-	return _drawings_label.text if _drawings.visible else ""
 
 
 ## Arriba y centrado: el diorama recién completado se tiene que ver entero (la cámara lo enseña).
@@ -685,9 +701,6 @@ func set_game_ui_visible(on: bool) -> void:
 	_game_ui = on
 	_panel.visible = on
 	_task.visible = on
-	_drawings.visible = on and GameState.diorama != null and is_instance_valid(GameState.diorama) \
-		and GameState.diorama.collectible_total() > 0
-	_set_slide(_slide)                           # la bandeja empieza debajo del contador, si lo hay
 	_controls.visible = on
 	_back_button.visible = on and GameState.diorama != null and GameState.diorama.focus != null
 	if not on:
@@ -708,7 +721,7 @@ func set_moment(on: bool) -> void:
 	_moment_tween = create_tween().set_parallel()
 	if on:
 		_moment_hidden.clear()
-		for c: Control in [_panel, _controls, _task, _drawings]:
+		for c: Control in [_panel, _controls, _task]:
 			if c.visible:
 				_moment_hidden.append(c)
 				_moment_tween.tween_property(c, "modulate:a", 0.0, 0.45)
@@ -752,13 +765,8 @@ func _on_level_started() -> void:
 	for c in _moment_hidden:
 		c.visible = _game_ui
 	_moment_hidden.clear()
-	for c: Control in [_panel, _controls, _task, _drawings]:
+	for c: Control in [_panel, _controls, _task]:
 		c.modulate.a = 1.0
-	var total := GameState.diorama.collectible_total()
-	_drawings.visible = _game_ui and total > 0      # desde el principio: "0 / 7" invita a buscar
-	_drawings_label.text = "%d / %d" % [0, total]
-	_drawings_icon.faded = true
-	_set_slide(0.0)
 	for f in _flights:
 		if is_instance_valid(f):
 			f.queue_free()
@@ -931,6 +939,11 @@ func _show_subtitle(text: String, seconds: float) -> void:
 		Juice.pop_in(_subtitle_box, 0.0, 0.94, 0.25)
 	_subtitle_box.show()
 	_subtitle_left = seconds
+	if _type_tween != null:                      # se escribe letra a letra (feedback: "efecto de escribir")
+		_type_tween.kill()
+	_subtitle.visible_ratio = 0.0
+	_type_tween = create_tween()
+	_type_tween.tween_property(_subtitle, "visible_ratio", 1.0, minf(text.length() * TYPE_SPEED, seconds * 0.7))
 
 
 func _process(delta: float) -> void:
@@ -944,6 +957,11 @@ func _process(delta: float) -> void:
 		Juice.bounce(_hint_button, 1.15)
 	_hint_button.disabled = _charge < 1.0
 	_hint_button.modulate = Color(1.2, 1.15, 0.7) if assist else Color.WHITE
+	_tail.visible = _subtitle_box.visible        # el piquito, bajo el centro de la burbuja
+	if _tail.visible:
+		var r := _subtitle_box.get_global_rect()
+		_tail.position = Vector2(r.get_center().x - _tail.size.x * 0.5, r.end.y - 3.0)
+		_tail.modulate.a = _subtitle_box.modulate.a
 	if _subtitle_left > 0.0:
 		_subtitle_left -= delta
 		if _subtitle_left <= 0.0:
@@ -955,7 +973,7 @@ func _process(delta: float) -> void:
 	if not _tip_waiting.is_empty() and not _chapter_showing() and not _moment:
 		var tip: Array = _tip_waiting
 		_tip_waiting = []
-		show_tip(tip[0], tip[1])
+		show_tip(tip[0], tip[1], tip[2] if tip.size() > 2 else "CONSEJO")
 	if _info_left > 0.0:
 		_info_left -= delta
 		if _info_left <= 0.0:
@@ -977,3 +995,31 @@ func _unhandled_input(e: InputEvent) -> void:
 		else:
 			pause_requested.emit()
 		get_viewport().set_input_as_handled()
+
+
+## La estrellita naranja de la tarjeta de tarea (un detalle mono).
+class Estrellita extends Control:
+	func _init() -> void:
+		custom_minimum_size = Vector2(14, 14)
+		size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var pts := PackedVector2Array()
+		for k in 10:
+			var r := 7.0 if k % 2 == 0 else 3.0
+			var a := -PI * 0.5 + k * PI / 5.0
+			pts.append(size * 0.5 + Vector2(cos(a), sin(a)) * r)
+		draw_colored_polygon(pts, UiTheme.ORANGE)
+
+
+## El piquito de la burbuja de diálogo: un triángulo del mismo color, debajo, en el centro.
+class Piquito extends Control:
+	func _init() -> void:
+		size = Vector2(26, 16)
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var pts := PackedVector2Array([Vector2(0, 0), Vector2(size.x, 0), Vector2(size.x * 0.5, size.y)])
+		draw_colored_polygon(pts, Color(UiTheme.PALE, 0.97))
+		draw_polyline(PackedVector2Array([Vector2(0, 0), Vector2(size.x * 0.5, size.y), Vector2(size.x, 0)]), Color.WHITE, 3.0, true)

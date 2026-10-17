@@ -17,6 +17,8 @@ var _panel: PanelContainer
 var _main_page: VBoxContainer
 var _options_page: VBoxContainer
 var _album_page: VBoxContainer
+var _achievements_page: VBoxContainer
+var logros: LogrosLista
 var _album_grid: GridContainer
 var _album_icon: DibujoIcono
 var _album_name: Label
@@ -57,6 +59,7 @@ func _ready() -> void:
 	v.add_child(_main_page)
 	_add_button(_main_page, "reanudar", "Reanudar", resume)
 	_add_button(_main_page, "dibujos", "Dibujos", func() -> void: show_page("dibujos"))
+	_add_button(_main_page, "logros", "Logros", func() -> void: show_page("logros"))
 	_add_button(_main_page, "opciones", "Opciones", func() -> void: show_page("opciones"))
 	_add_button(_main_page, "menu", "Menú principal", func() -> void:
 		close()
@@ -70,6 +73,12 @@ func _ready() -> void:
 	_options_page.add_child(options)
 	_add_button(_options_page, "opciones_volver", "Volver", func() -> void: show_page("principal"))
 	_build_album(v)
+	_achievements_page = VBoxContainer.new()
+	_achievements_page.add_theme_constant_override("separation", 10)
+	v.add_child(_achievements_page)
+	logros = LogrosLista.new()
+	_achievements_page.add_child(logros)
+	_add_button(_achievements_page, "logros_volver", "Volver", func() -> void: show_page("principal"))
 	hide()
 
 
@@ -216,11 +225,15 @@ func show_page(p: String) -> void:
 	_main_page.visible = p == "principal"
 	_options_page.visible = p == "opciones"
 	_album_page.visible = p == "dibujos"
+	_achievements_page.visible = p == "logros"
+	if p == "logros":
+		logros.refresh()
 	if p == "opciones":
 		options.refresh()
 	if p == "dibujos":
 		_fill_album()
-	var shown: Control = {"principal": _main_page, "opciones": _options_page, "dibujos": _album_page}.get(p, _main_page)
+	var shown: Control = {"principal": _main_page, "opciones": _options_page, "dibujos": _album_page,
+		"logros": _achievements_page}.get(p, _main_page)
 	Juice.stagger(shown)
 	for c in shown.find_children("*", "Button", true, false):
 		if (c as Button).is_visible_in_tree():
@@ -244,7 +257,7 @@ func _unhandled_input(e: InputEvent) -> void:
 	if not visible:
 		return
 	if e.is_action_pressed("back"):
-		if page == "opciones" or page == "dibujos":
+		if page != "principal":
 			show_page("principal")
 		else:
 			resume()

@@ -230,9 +230,18 @@ func _test_story(main: Node) -> void:
 	check(hud_now.task_text().begins_with("EL DESVÁN | ") and hud_now.task_text().ends_with("| 0 / %d" % s1.slots.size())
 		and hud_now._task.get_global_rect().position.x < 60.0 and hud_now._task.get_global_rect().position.y < 60.0,
 		"arriba a la izquierda, la tarjeta de tarea: la zona, qué toca y cuánto falta (%s)" % hud_now.task_text())
-	check(hud_now.drawings_text() == "0 / 7" and hud_now._drawings.get_global_rect().position.x > get_viewport().get_visible_rect().size.x * 0.7
-		and hud_now._panel.get_global_rect().position.y >= hud_now._drawings.get_global_rect().end.y,
-		"arriba a la derecha, el contador de dibujos desde el principio (0 / 7), y la bandeja debajo")
+	check(hud_now._panel.get_global_rect().position.y < 30.0 and hud_now._task.size.x < 260.0,
+		"sin contador de dibujos: la bandeja empieza arriba; y la tarjeta de tarea es pequeña, que no llame la atención")
+	var screen_w := get_viewport().get_visible_rect().size.x
+	hud_now._show_subtitle("Una frase de prueba, bastante larga, para ver cómo se escribe letra a letra.", 4.0)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var typing := hud_now._subtitle.visible_ratio
+	check(typing < 0.5 and absf(hud_now._subtitle_box.get_global_rect().get_center().x - screen_w * 0.5) < 4.0 and hud_now._tail.visible,
+		"el diálogo es una burbuja centrada en la pantalla, con su piquito, que se escribe letra a letra (%.2f)" % typing)
+	await get_tree().create_timer(2.5).timeout
+	check(is_equal_approx(hud_now._subtitle.visible_ratio, 1.0), "y acaba de escribirse")
+	hud_now._subtitle_box.hide()
 	await _test_tray(d, shown)
 	# El suelo, a tablones de tres largos parecidos: cada uno vale en varios huecos, pero no en todos.
 	var planks := {}
@@ -396,6 +405,18 @@ func _test_story(main: Node) -> void:
 		await get_tree().process_frame
 		check(not chest.attention and blocks.attention and GameState.hud.tip_text() == Narrator.text("consejo_dentro"),
 			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo)")
+		await get_tree().create_timer(0.5).timeout
+		var tip_at: Vector2 = GameState.hud._tip_box.get_global_rect().get_center()
+		_mouse_button(tip_at, true)
+		var swipe := InputEventMouseMotion.new()
+		swipe.position = tip_at + Vector2(140, 0)
+		swipe.global_position = swipe.position
+		swipe.relative = Vector2(140, 0)
+		swipe.button_mask = MOUSE_BUTTON_MASK_LEFT
+		get_viewport().push_input(swipe, true)
+		_mouse_button(tip_at + Vector2(140, 0), false)
+		await get_tree().create_timer(0.4).timeout
+		check(GameState.hud.tip_text() == "", "el consejo es una notificación: deslizándolo fuera de la pantalla, se va")
 		d.collect(blocks)
 		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
 		await get_tree().process_frame
@@ -416,7 +437,8 @@ func _test_story(main: Node) -> void:
 			and look.is_open() and look.item == green and d.is_held(green) and green.target.get_parent() != d.clothesline,
 			"tocar el dibujo lo encuentra (1 de 7) y sale su primer plano para mirarlo (aún no vuela a la cuerda)")
 		check(look.title_text() == Inspeccion.TITLE and look.name_text() == Narrator.piece_name(&"dibujo_verde").to_upper()
-			and look.count_text() == "1 DE 7" and is_instance_valid(look.copy) and GameState.hud.drawings_text() == "1 / 7",
+			and look.count_text() == "1 DE 7" and is_instance_valid(look.copy)
+			and (look._pill_label.get_parent() as Control).get_global_rect().position.y >= look._title.get_global_rect().end.y - 2.0,
 			"como en la referencia: título grande, su nombre en una cápsula, el dibujo en 3D, «1 DE 7» y el contador (%s · %s)"
 			% [look.title_text(), look.name_text()])
 		for i in 2:                                # el visor se maqueta un fotograma después
@@ -537,6 +559,9 @@ func _test_story(main: Node) -> void:
 	while not s4.completed and steps < 120:
 		d.debug_solve_step()
 		steps += 1
+	check(Logros.is_unlocked("infancia") and Logros.is_unlocked("adolescencia") and Logros.is_unlocked("adultez")
+		and not Logros.is_unlocked("dibujos"),
+		"logros: al completar cada acto se desbloquean sus recuerdos (infancia, adolescencia, adultez)")
 	check(s4.completed and placed.find(&"llaves") < placed.find(&"caballete") and placed.find(&"caballete") < placed.find(&"espejo"),
 		"adultez en el orden del guion: llaves, caballete y el espejo (clave) el último")
 	var mirror := _slot(d, &"espejo")
@@ -614,6 +639,13 @@ func _test_story(main: Node) -> void:
 	_mouse_button(m.slot_screen_position(), false)
 	await get_tree().create_timer(0.8).timeout
 	check(d.completed and _slot(d, &"moneda").filled, "arrastrar la moneda hasta la ranura la mete en la hucha y completa el desván")
+	var lista := LogrosLista.new()
+	add_child(lista)
+	lista.refresh()
+	var got := lista.rows.filter(func(r: Control) -> bool: return bool(r.get_meta(&"conseguido")))
+	check(Logros.is_unlocked("speedrunner") and lista.rows.size() == Logros.LISTA.size() and got.size() == 4,
+		"acabar el desván en menos de 8 minutos da «Speedrunner»; la lista de logros enseña los 5 (4 conseguidos)")
+	lista.queue_free()
 	check(d.find_child("ChispasMoneda", false, false) != null and float(m._cozy_mat.get_shader_parameter("brillo")) > 1.2,
 		"al entrar la moneda: golpe de luz, chispas doradas y el fondo se aviva")
 	Events.piece_placed.disconnect(record)
@@ -767,6 +799,9 @@ func _test_title_menu(main: Node) -> bool:
 	while not main.menu.is_open() and menu_wait < 12.0:
 		await get_tree().create_timer(0.25).timeout
 		menu_wait += 0.25
+	check(main.menu._panel.get_theme_stylebox("panel") is StyleBoxEmpty and main.menu.buttons.jugar.get_theme_stylebox("normal") is StyleBoxEmpty
+		and main.pause._panel.get_theme_stylebox("panel") is StyleBoxFlat and main.menu.buttons.has("logros"),
+		"el menú de inicio flota (sin recuadro, opciones en texto, con Logros); la pausa conserva su recuadro")
 	check(main.menu.is_open() and Narrator.remaining() <= 0.0 and not GameState.hud._subtitle_box.visible,
 		"el menú sale cuando el cerdito ha acabado de hablar, y sin frases encima")
 	check(main.menu.is_open() and main.menu.page == "principal", "tras la onda de color se abre el menú")

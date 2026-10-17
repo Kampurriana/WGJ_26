@@ -30,6 +30,7 @@ var levels: PackedStringArray = []
 var progress_path := "user://progreso.cfg"   ## "" = solo en memoria
 var menu_unlocked := false
 var completed_levels: PackedStringArray = []
+var achievements: PackedStringArray = []     ## logros conseguidos (core/logros.gd)
 
 
 func _ready() -> void:
@@ -61,6 +62,7 @@ func load_progress(file: String) -> void:
 	progress_path = file
 	menu_unlocked = false
 	completed_levels = PackedStringArray()
+	achievements = PackedStringArray()
 	if file == "" or not FileAccess.file_exists(file):
 		return
 	var cfg := ConfigFile.new()
@@ -71,6 +73,8 @@ func load_progress(file: String) -> void:
 	menu_unlocked = bool(cfg.get_value(SECTION, "menu_desbloqueado", false))
 	for p: Variant in cfg.get_value(SECTION, "completados", []):
 		completed_levels.append(String(p))
+	for a: Variant in cfg.get_value(SECTION, "logros", []):
+		achievements.append(String(a))
 
 
 func save_progress() -> int:
@@ -79,6 +83,7 @@ func save_progress() -> int:
 	var cfg := ConfigFile.new()
 	cfg.set_value(SECTION, "menu_desbloqueado", menu_unlocked)
 	cfg.set_value(SECTION, "completados", Array(completed_levels))
+	cfg.set_value(SECTION, "logros", Array(achievements))
 	var err := cfg.save(progress_path)
 	if err != OK:
 		push_warning("GameState: no puedo guardar %s (err %d)" % [progress_path, err])
@@ -97,9 +102,19 @@ func mark_completed(level_path: String) -> void:
 		save_progress()
 
 
+## Un logro conseguido; true si es nuevo (se guarda).
+func unlock_achievement(id: String) -> bool:
+	if achievements.has(id):
+		return false
+	achievements.append(id)
+	save_progress()
+	return true
+
+
 func reset_progress() -> void:
 	menu_unlocked = false
 	completed_levels = PackedStringArray()
+	achievements = PackedStringArray()
 	save_progress()
 
 
