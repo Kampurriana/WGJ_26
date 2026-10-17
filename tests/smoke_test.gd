@@ -215,12 +215,17 @@ func _test_story(main: Node) -> void:
 		and not shown.has(&"tejado") and not shown.has(&"hucha"),
 		"al empezar, la bandeja solo trae paredes: ni el tejado (va después) ni la hucha (la clave) ni nada de otra zona")
 	var otter_slot := _slot(d, &"peluche")
-	check(otter_slot.ghost_visible() and otter_slot.looks_locked() and not otter_slot.available and s2.decor_is_ghost()
-		and s2.decor[0].visible and not (s2.lights()[0] as Light3D).visible,
-		"las zonas cerradas se ven en modo fantasma (siluetas y muebles), tenues y con su luz apagada")
-	check(s2.tint != s3.tint and s3.tint != s4.tint and s2.tint != s4.tint and otter_slot._ghost.get_shader_parameter("tint") == s2.tint
-		and s2.label != null and s2.label.visible and s2.label.text == Narrator.text("titulo_infancia"),
-		"cada acto tiene su color y su letrero: infancia, adolescencia y adultez se distinguen")
+	check(not otter_slot.shown and not otter_slot.ghost_visible() and not s2.decor[0].visible and not (s2.lights()[0] as Light3D).visible
+		and d.find_children("*", "Label3D", true, false).is_empty(),
+		"los actos cerrados no se ven: ni sus siluetas, ni sus muebles, ni su luz, ni su nombre en la escena")
+	var wall := _slot(d, &"pared_fondo")
+	var roof := _slot(d, &"tejado")
+	check(wall.ghost_visible() and not wall.looks_locked() and roof.ghost_visible() and roof.looks_locked()
+		and not wall._ghost.shader.code.contains("ALPHA"),
+		"en el acto abierto se ven todas sus siluetas (opacas, como en Woodo): blancas las que ya van, grises las que esperan")
+	var fx_focus: Dictionary = GameState.enfoque.state()
+	check(GameState.enfoque._rect.visible and absf(float(fx_focus.fuera) - Enfoque.PLAY_BLUR) < 0.3,
+		"todo se ve un poco desdibujado, más lejos del foco (enfoque de cine: %.1f px)" % float(fx_focus.fuera))
 	await _test_tray(d, shown)
 	var solid := 0
 	for dec in s2.decor:
@@ -245,6 +250,24 @@ func _test_story(main: Node) -> void:
 	check(m.active and m.target == _slot(d, &"hucha").node and cam_ctl.in_moment and GameState.hud.in_moment()
 		and cam_ctl.distance < d.camera_distance * 0.6 + 0.01,
 		"al poner la hucha (tiene frase), momento: la cámara se le acerca, la pantalla se enmarca y la bandeja se aparta")
+	# Algo que se cruce entre la cámara y la hucha se esconde mientras dura el plano.
+	var pig_node := _slot(d, &"hucha").node
+	var blocker := MeshInstance3D.new()
+	var blocker_mesh := BoxMesh.new()
+	blocker_mesh.size = Vector3(0.25, 0.25, 0.25)
+	blocker.mesh = blocker_mesh
+	d.add_child(blocker)
+	blocker.global_position = cam_ctl.goal_position().lerp(Visuals.global_aabb(pig_node).get_center(), 0.5)
+	Visuals.add_surface(blocker)
+	await get_tree().physics_frame               # que la física ya lo tenga en cuenta
+	m.start(pig_node, "normal", "hucha")
+	check(m.hidden_for_shot.has(blocker) and not m.hidden_for_shot.any(func(g: Node) -> bool: return pig_node.is_ancestor_of(g)),
+		"lo que se cruza delante del objeto del primer plano se esconde (y el objeto no)")
+	await get_tree().create_timer(0.8).timeout
+	var pig_px := GameState.camera.cam.unproject_position(Visuals.global_aabb(pig_node).get_center())
+	fx_focus = GameState.enfoque.state()
+	check(float(fx_focus.fuera) > Enfoque.PLAY_BLUR + 0.5 and (fx_focus.centro as Vector2).distance_to(pig_px) < 120.0,
+		"en un momento, el enfoque se va al objeto y lo demás se desenfoca más")
 	await get_tree().process_frame
 	check(d.is_opening() and not GameState.hud.says_nothing_left(),
 		"entre una sección y la siguiente, la bandeja espera: no dice que aquí no queda nada")
@@ -255,9 +278,15 @@ func _test_story(main: Node) -> void:
 	check(s2.opened and waited >= Diorama.SECTION_PAUSE - 0.3, "al completarla, la infancia se abre sola tras una pausa (%.1f s)" % waited)
 	check(not m.active and not cam_ctl.in_moment and not GameState.hud.in_moment(),
 		"al callarse, el momento acaba: la cámara vuelve al jugador y la bandeja vuelve")
+	await get_tree().create_timer(Momentos.HIDE_TIME + 0.1).timeout
+	check(blocker.visible and is_zero_approx(blocker.transparency), "y lo que se había escondido vuelve")
+	blocker.queue_free()
 	await get_tree().create_timer(0.3).timeout
 	check(GameState.hud.chapter_text() == Narrator.text("titulo_infancia") and s2.decor[0].visible and (s2.lights()[0] as Light3D).visible,
 		"al abrirse la infancia: su rótulo, sus muebles y su luz")
+	check(GameState.hud._chapter_kicker.text == "CAPÍTULO I" and GameState.hud._chapter_title.text == "Infancia"
+		and otter_slot.shown and otter_slot.ghost_visible(),
+		"el rótulo es de nuevo capítulo (CAPÍTULO I / Infancia) y las siluetas del acto aparecen")
 	shown = d.visible_inventory()
 	check(shown.has(&"comoda_infantil") and not shown.has(&"caja_musica") and not shown.has(&"dibujo") and not shown.has(&"peluche"),
 		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
@@ -268,7 +297,12 @@ func _test_story(main: Node) -> void:
 	check(chest != null and chest.attention and chest.glow_count() > 0 and main.effects.is_calling(chest),
 		"el baúl que guarda lo que toca encontrar brilla, se mueve y echa motas")
 	check(chest != null and chest.outline_count() > 0, "y lleva un contorno dorado (lo que se ve de lejos)")
-	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles"), "la primera vez sale el consejo de tocar el mueble que brilla")
+	var tip_wait := 0.0
+	while GameState.hud.tip_text() == "" and tip_wait < 6.0:      # sale cuando se va el rótulo de capítulo
+		await get_tree().create_timer(0.25).timeout
+		tip_wait += 0.25
+	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles") and tip_wait > 1.0,
+		"la primera vez sale el consejo de tocar el mueble que brilla (cuando se va el rótulo de capítulo: %.1f s)" % tip_wait)
 	steps = 0
 	while steps < 30:                              # todo lo que se pueda colocar sin buscar
 		var h := d.hint_target()
@@ -290,6 +324,14 @@ func _test_story(main: Node) -> void:
 	d.place(_slot(d, &"peluche"))
 	check(s2.completed and placed.find(&"caja_musica") < placed.find(&"dibujo") and placed.find(&"dibujo") < placed.find(&"peluche"),
 		"infancia completa en el orden del guion: caja de música, dibujo, nutria")
+	# El dibujo es plano y está en la pared: su primer plano es de frente.
+	var drawing := _slot(d, &"dibujo").node
+	var face := drawing.global_basis.z
+	m.start(drawing, "normal", "dibujo")
+	check(absf(wrapf(cam_ctl.yaw - rad_to_deg(atan2(face.x, face.z)), -180.0, 180.0)) < 1.0 and absf(cam_ctl.pitch - 8.0) < 0.5
+		and m._flat_front(_slot(d, &"hucha").node) == Vector3.ZERO,
+		"los objetos planos de pared (el dibujo) se ven de frente en su primer plano")
+	m.finish()
 	d.debug_solve_step()                           # abre la adolescencia sin esperar (la espera ya se probó)
 	var camera_pick := _pickup(d, &"camara")
 	var application := _pickup(d, &"solicitud")
@@ -337,18 +379,31 @@ func _test_story(main: Node) -> void:
 	d._open_pending(s5)
 	check(not s5.opened and Narrator.remaining() > 3.0 and not _slot(d, &"moneda").available,
 		"el epílogo habla antes de enseñar la moneda")
+	await get_tree().create_timer(Momentos.CUT_TIME + 0.05).timeout
+	var pig := _slot(d, &"hucha").node
 	check(m.kind == "ofrecida" and cam_ctl.in_moment and cam_ctl.center.distance_to(_slot(d, &"hucha").center()) < 0.2
 		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"moneda"),
 		"el epílogo es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja")
+	check(m.is_isolated() and m.is_in_isolation(Visuals.meshes_under(pig)[0]) and not m.is_in_isolation(Visuals.meshes_under(_slot(d, &"escritorio").node)[0])
+		and absf(cam_ctl.pitch - Momentos.ZENITH) < 0.5 and absf(cam_ctl._cur_pitch - cam_ctl.pitch) < 0.5 and m._gesture == "",
+		"el epílogo: corte a la hucha sola, vista un poco desde arriba, quieta y sin vueltas")
 	await get_tree().create_timer(1.4).timeout
 	check(is_instance_valid(m.coin), "mientras habla, la moneda aparece flotando junto a la hucha")
 	d.debug_solve_step()
 	check(s5.opened and _slot(d, &"moneda").available, "después aparece la moneda, sobre la hucha")
 	Narrator.clear()
 	await get_tree().process_frame
-	_click(m.coin_screen_position())
-	await get_tree().create_timer(1.0).timeout
-	check(d.completed and _slot(d, &"moneda").filled, "un clic en la moneda la mete sola en la hucha y completa el desván")
+	_click(m.coin_screen_position())               # un clic sin arrastrar no la mete: vuelve a flotar
+	await get_tree().create_timer(0.6).timeout
+	check(not _slot(d, &"moneda").filled and is_instance_valid(m.coin) and m._coin_state == "",
+		"soltar la moneda lejos de la ranura no la mete: vuelve a flotar")
+	_mouse_button(m.coin_screen_position(), true)
+	await get_tree().process_frame
+	_mouse_move(m.slot_screen_position())
+	await get_tree().process_frame
+	_mouse_button(m.slot_screen_position(), false)
+	await get_tree().create_timer(0.8).timeout
+	check(d.completed and _slot(d, &"moneda").filled, "arrastrar la moneda hasta la ranura la mete en la hucha y completa el desván")
 	Events.piece_placed.disconnect(record)
 	Events.flash_requested.disconnect(count_flash)
 	await get_tree().create_timer(2.0).timeout

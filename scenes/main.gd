@@ -27,6 +27,7 @@ var menu: MainMenu
 var pause: PauseMenu
 var effects: Efectos
 var momentos: Momentos
+var enfoque: Enfoque
 var _level: Node
 var _lighting: Node
 var _fade: ColorRect
@@ -69,6 +70,11 @@ func _ready() -> void:
 	hud.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(hud)
 	GameState.hud = hud
+	enfoque = Enfoque.new()                     # antes que Momentos: el desenfoque va debajo de su foco
+	enfoque.name = "Enfoque"
+	enfoque.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(enfoque)
+	GameState.enfoque = enfoque
 	momentos = Momentos.new()
 	momentos.name = "Momentos"
 	momentos.process_mode = Node.PROCESS_MODE_PAUSABLE

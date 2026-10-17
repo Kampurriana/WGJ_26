@@ -27,7 +27,7 @@ El **nombre del objeto** en Blender (no el de la malla) empieza por un prefijo:
 | `OD_` | Cajón: se desliza hacia fuera al pulsarlo | `OD_cajon_arriba` |
 | `OR_` | Puerta o tapa: gira 90º sobre su **origen** (poned el origen en la bisagra) | `OR_armario` |
 | `Z_` | Rincón con zoom (una escena dentro de la escena). Sus `P_` se hacen dentro | `Z_ratonera` |
-| `S_` | **Sección**: una zona que se monta entera antes de pasar a la siguiente. `S_<orden>_<nombre>`. Todo lo de la zona (piezas, muebles, su bombilla) cuelga de ella. Mientras está cerrada se ve en modo fantasma, del color de su acto, con un letrero con su nombre | `S_2_infancia` |
+| `S_` | **Sección**: una zona que se monta entera antes de pasar a la siguiente. `S_<orden>_<nombre>`. Todo lo de la zona (piezas, muebles, su bombilla) cuelga de ella. Mientras está cerrada no se ve nada suyo; al abrirse sale el rótulo de capítulo y aparece | `S_2_infancia` |
 | (otro) | Decorado: se queda en la escena, empieza en madera sin pintar y se pinta al completar piezas cerca | `Arbol`, `Pared` |
 
 Detrás del nombre, opciones con **doble guion bajo**:
@@ -38,7 +38,7 @@ Detrás del nombre, opciones con **doble guion bajo**:
 | `__clave` | en un `P_` | va **la última** de su sección y la cierra (la nutria, el espejo...) |
 | `__flash` | en un `P_` | destello blanco al colocarla (la cámara de fotos) |
 | `__reflejo` | en un `P_` | su momento es de frente y con todo lo demás a negro, con una silueta en la luna (el espejo). **La cara del espejo mira hacia su +Z local** (hacia delante en Blender, -Y; el exportador lo convierte) y la malla del cristal se llama `Luna`, `Cristal` o `Espejo` |
-| `__ofrecida` | en un `P_` | no va a la bandeja: cuando toca, aparece flotando junto a su hueco y un clic la mete (la moneda en la hucha). La sección que la tiene se abre con un primer plano de lo que la sostiene |
+| `__ofrecida` | en un `P_` | no va a la bandeja: cuando toca, aparece flotando junto a su hueco y el jugador la arrastra hasta él (la moneda en la hucha). La sección que la tiene se abre con un corte a lo que la sostiene, solo y visto un poco desde arriba |
 | `__reward-cuadro` | en un `Z_` | al completar el rincón, el jugador recibe la pieza `cuadro` (hace falta un `P_cuadro`) |
 | `__x` `__nx` `__z` `__nz` `__y` `__ny` | en un `OD_` | eje por el que sale el cajón si no sale bien por defecto |
 | `__n` | en un `OR_` | la puerta abre hacia el otro lado |
@@ -58,6 +58,8 @@ Reglas de los nombres:
 - Mientras no toca encontrarlo, un `H_` no se ve (su silueta, donde va, sí); cuando toca, su mueble
   brilla con un contorno dorado y se mueve un poco.
 - Las piezas de un `Z_` son hijas del `Z_`.
+- **Objetos planos de pared con frase** (un dibujo, un tablero de llaves): su cara mira hacia su +Z
+  local (hacia delante en Blender, -Y); su momento los enseña de frente.
 - **Cajones:** con el diorama visto en vista frontal de Blender (tecla 1 del teclado numérico), el
   frente del cajón mira hacia vosotras. Si al probar sale hacia otro lado, añadid `__x`, `__nx`…
   o decídselo a Claude.

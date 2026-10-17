@@ -5,10 +5,11 @@ extends Node3D
 ## Un nivel = una escena con este script en la raíz y el .glb de las artistas dentro, o con la
 ## ruta del .glb en `modelo` (se carga al empezar: cambiar el arte = dejar el fichero en su sitio).
 ##
-## Secciones (S_<orden>_<nombre>): el diorama se monta por zonas. Todo se ve desde el principio en
-## modo fantasma, cada zona del color de su acto; solo la sección abierta deja poner sus piezas. Al
-## completarla se pinta entera, se dice su frase si la tiene, y tras una pausa se abre la siguiente
-## (su decorado se vuelve de verdad, se encienden sus luces, sale su rótulo, la cámara la encuadra).
+## Secciones (S_<orden>_<nombre>): el diorama se monta por zonas. Solo se ve la sección abierta (y
+## las ya hechas): de las demás no se ve nada, ni siluetas ni muebles. Al completarla se pinta
+## entera, se dice su frase si la tiene, y tras una pausa se abre la siguiente (aparecen sus
+## muebles, se encienden sus luces, sale el rótulo de capítulo, la cámara la encuadra y sus
+## siluetas se materializan).
 ## Desbloqueo: una pieza se puede poner (silueta clara, ficha activa en la bandeja) cuando su
 ## sección está abierta, sus __after-x están puestas y, si es __clave, todas las demás de su sección
 ## también. Mientras no, su silueta va tenue y su ficha, con candado y el porqué (lock_reason).
@@ -175,55 +176,18 @@ func _scan(n: Node, scope: Interactable, section: Section) -> void:
 		_scan(c, next_scope, next_section)
 
 
-## La primera sección empieza abierta (sin rótulo ni frases); las demás, cerradas: a oscuras y en
-## modo fantasma del color de su acto, con un letrero con su nombre.
+## La primera sección empieza abierta (sin rótulo ni frases); las demás, cerradas: ocultas y a oscuras.
 func _setup_sections() -> void:
 	sections.sort_custom(func(a: Section, b: Section) -> bool: return a.order < b.order)
-	var skip: Dictionary = {}                   # no es decorado: lo escondido y las piezas
-	for it in interactables:
-		if it.kind == NameRules.PICKUP:
-			for m in Visuals.meshes_under(it.target):
-				skip[m] = true
-	for s in slots:
-		for m in s.meshes():
-			skip[m] = true
 	for i in sections.size():
 		var sec := sections[i]
-		sec.tint = Section.tint_for(i)
-		for s in sec.slots:
-			s.set_tint(sec.tint)
 		sec.collect_lights()
 		sec.opened = i == 0
-		if not sec.opened and not sec.decor.is_empty():
-			_make_section_label(sec)
 		sec.set_lights(sec.opened)
-		sec.set_decor(sec.opened, false, skip)
+		sec.set_decor(sec.opened)
 		for it in sec.interactables:
 			if it.kind != NameRules.PICKUP:
 				it.set_clickable(sec.opened)
-
-
-## Letrero flotante con el nombre del acto sobre su zona mientras está cerrada.
-func _make_section_label(sec: Section) -> void:
-	var text := Narrator.text("titulo_" + sec.name)
-	if text == "":
-		return
-	var l := Label3D.new()
-	l.name = "Letrero_" + sec.name
-	l.text = text
-	l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	l.no_depth_test = true
-	l.pixel_size = 0.0032
-	l.font_size = 64
-	l.outline_size = 16
-	l.modulate = Color(sec.tint, 0.92)
-	l.outline_modulate = Color(0.12, 0.08, 0.05, 0.85)
-	l.render_priority = Visuals.GHOST_RENDER_PRIORITY + 2
-	l.outline_render_priority = Visuals.GHOST_RENDER_PRIORITY + 1
-	add_child(l)
-	var box := sec.box()
-	l.global_position = Vector3(box.get_center().x, box.position.y + box.size.y * 0.78, box.get_center().z)
-	sec.label = l
 
 
 ## Cada H_ sabe en qué mueble (OD_/OR_) está guardado:
@@ -704,11 +668,13 @@ func _reveal_pending(sec: Section) -> void:
 	Events.inventory_changed.emit()
 
 
-## Pone al día lo que se ve: siluetas de las piezas que ya tocan (con fundido si animate), los
-## objetos escondidos que ya toca encontrar y qué mueble u objeto llama la atención.
+## Pone al día lo que se ve: las siluetas de las secciones abiertas (se materializan si animate),
+## cuáles ya se pueden poner (claras) y cuáles aún no (grises), los objetos escondidos que ya toca
+## encontrar y qué mueble u objeto llama la atención.
 func _refresh(animate: bool) -> void:
 	for s in slots:
 		if not s.filled:
+			s.set_shown(s.section == null or s.section.opened, animate)
 			s.set_available(is_unlocked(s), animate)
 	var calling: Dictionary = {}                # mueble -> guarda algo que ya toca encontrar
 	for it in interactables:

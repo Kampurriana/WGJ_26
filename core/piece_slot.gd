@@ -1,14 +1,15 @@
 class_name PieceSlot
 extends RefCounted
-## Un hueco del diorama: el nodo P_ del modelo, pintado como silueta blanca hasta que se coloca.
+## Un hueco del diorama: el nodo P_ del modelo, que se ve como una VERSIÓN BLANCA de la pieza hasta
+## que se coloca (como en Woodo: blanca y opaca, iluminada; se lee aunque varias se solapen).
 ## Lo que cuelga de la pieza y no es malla (luces, textos) está apagado hasta colocarla; las luces
 ## se encienden entonces con un fundido ("colocar enciende las luces", como en Woodo).
-## Todas las siluetas se ven desde el principio. Mientras la pieza no está disponible (sección
-## cerrada, o le falta una anterior) su silueta va tenue y del color de su acto (tint); al
-## desbloquearse se aclara con un fundido (set_available).
+## shown: la silueta se ve (su sección está abierta); al abrirse se materializa (set_shown).
+## available: ya se puede poner (blanca); si no (le falta una anterior), gris (set_available).
 
 const LIGHT_FADE := 0.8
 const UNLOCK_TIME := 0.7
+const APPEAR_TIME := 0.9
 
 var id: StringName
 var node: Node3D
@@ -19,8 +20,8 @@ var is_key := false              # token clave: va la última de su sección
 var flash := false               # token flash: destello blanco al colocarla
 var reflejo := false             # token reflejo: su momento es de frente, todo a negro, con un reflejo (el espejo)
 var offered := false             # token ofrecida: no va a la bandeja; aparece flotando junto a su hueco (la moneda)
-var available := true            # ya toca: silueta clara y se puede poner (si no, tenue y bloqueada)
-var tint := Color.WHITE          # color del acto al que pertenece (lo lleva la silueta)
+var available := true            # ya toca: silueta blanca y se puede poner (si no, gris y bloqueada)
+var shown := true                # se ve la silueta (su sección está abierta)
 var filled := false
 var prototype: Node3D            # copia limpia: vista previa del inventario y pieza en mano
 
@@ -29,6 +30,7 @@ var _meshes: Array[MeshInstance3D] = []
 var _extras: Array[VisualInstance3D] = []   ## lo visible que no es malla (luces, Label3D...): oculto hasta colocar
 var _light_energy: Dictionary = {}          ## Light3D -> energía con la que vino del modelo
 var _tween: Tween
+var _appear: Tween
 
 
 func setup(p_id: StringName, p_node: Node3D, p_scope: Interactable) -> void:
@@ -38,6 +40,8 @@ func setup(p_id: StringName, p_node: Node3D, p_scope: Interactable) -> void:
 	prototype = Visuals.clean_copy(node)
 	_meshes = Visuals.meshes_under(node)
 	_ghost = Visuals.make_ghost_material()
+	_ghost.set_shader_parameter("bloqueada", 0.0)
+	_ghost.set_shader_parameter("aparicion", 1.0)
 	for m in _meshes:
 		m.material_override = _ghost
 	for v in node.find_children("*", "VisualInstance3D", true, false):
@@ -56,13 +60,23 @@ func center() -> Vector3:
 	return Visuals.global_aabb(node).get_center()
 
 
-## Color del acto (lo pone el Diorama según la sección).
-func set_tint(c: Color) -> void:
-	tint = c
-	_ghost.set_shader_parameter("tint", c)
+## Silueta a la vista o no. animate = se materializa (disolución con trama) al abrirse su sección.
+func set_shown(on: bool, animate := false) -> void:
+	if filled or on == shown:
+		return
+	shown = on
+	for m in _meshes:
+		m.visible = on
+	if _appear != null:
+		_appear.kill()
+	if on and animate and node.is_inside_tree():
+		_appear = node.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_appear.tween_method(func(a: float) -> void: _ghost.set_shader_parameter("aparicion", a), 0.0, 1.0, APPEAR_TIME)
+	else:
+		_ghost.set_shader_parameter("aparicion", 1.0)
 
 
-## Disponible o no. La silueta se ve siempre: bloqueada va tenue y del color de su acto.
+## Disponible o no: blanca si ya se puede poner, gris si le falta una anterior.
 ## animate = al desbloquearse durante la partida, se aclara poco a poco.
 func set_available(on: bool, animate := false) -> void:
 	if filled or on == available:
@@ -83,7 +97,8 @@ func ghost_visible() -> bool:
 
 
 func looks_locked() -> bool:
-	return float(_ghost.get_shader_parameter("bloqueada")) > 0.5
+	var v: Variant = _ghost.get_shader_parameter("bloqueada")
+	return v != null and float(v) > 0.5
 
 
 func set_pulse(on: bool) -> void:
@@ -98,8 +113,11 @@ func is_ghost() -> bool:
 func fill(fade := true) -> void:
 	filled = true
 	available = true
+	shown = true
 	if _tween != null:
 		_tween.kill()
+	if _appear != null:
+		_appear.kill()
 	for m in _meshes:
 		m.material_override = null
 		m.visible = true

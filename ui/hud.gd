@@ -44,7 +44,15 @@ var _back_button: Button
 var _title: Label
 var _subtitle_box: PanelContainer
 var _subtitle: Label
-var _chapter: Label                          ## rótulo de sección ("I · Infancia")
+var _chapter: Control                        ## rótulo de capítulo a toda pantalla (al empezar un acto)
+var _chapter_dim: ColorRect
+var _chapter_kicker: Label                   ## "CAPÍTULO II"
+var _chapter_title: Label                    ## "Adolescencia"
+var _chapter_line: ColorRect
+var _chapter_spacing: FontVariation          ## el título se abre letra a letra al aparecer
+var _chapter_text := ""                      ## el rótulo entero ("II · Adolescencia"), para los tests
+var _chapter_tween: Tween
+var _tip_waiting: Array = []                 ## consejo que espera a que acabe el rótulo de capítulo
 var _tip_box: PanelContainer                 ## consejo de juego (arriba)
 var _tip: Label
 var _tip_left := 0.0
@@ -59,6 +67,7 @@ var _hinted: PieceSlot
 
 
 func _ready() -> void:
+	layer = 2                                    # encima del enfoque (0) y de los momentos (1): nunca se desenfoca
 	_root = Control.new()
 	_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -66,8 +75,9 @@ func _ready() -> void:
 	add_child(_root)
 	_build_panel()
 	_build_controls()
+	_build_chapter()                             # debajo de los subtítulos: el rótulo no los apaga
 	_build_subtitle()
-	_build_chapter()
+	_build_tip()
 	_build_done()
 	Events.level_started.connect(func(_d: Node) -> void: _on_level_started())
 	Events.inventory_changed.connect(rebuild_inventory)
@@ -253,20 +263,57 @@ func _build_subtitle() -> void:
 
 ## Rótulo grande al abrirse una sección, y un consejo pequeño debajo cuando hace falta.
 func _build_chapter() -> void:
-	_chapter = Label.new()
-	_chapter.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_chapter.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_chapter.offset_top = 70
-	_chapter.offset_left = -400
-	_chapter.offset_right = 400 - PANEL_WIDTH
-	_chapter.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_chapter = Control.new()
+	_chapter.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_chapter.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_chapter.add_theme_font_size_override("font_size", 44)
-	_chapter.add_theme_constant_override("outline_size", 12)
-	_chapter.add_theme_color_override("font_color", UiTheme.CREAM)
-	_chapter.add_theme_color_override("font_outline_color", Color(0.12, 0.08, 0.05, 0.9))
 	_chapter.modulate.a = 0.0
 	_root.add_child(_chapter)
+	_chapter_dim = ColorRect.new()
+	_chapter_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_chapter_dim.color = Color(0.03, 0.02, 0.01, 0.5)
+	_chapter_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chapter.add_child(_chapter_dim)
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_CENTER)
+	box.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	box.grow_vertical = Control.GROW_DIRECTION_BOTH
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 10)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_chapter.add_child(box)
+	_chapter_kicker = _chapter_label(20, Color(UiTheme.CREAM, 0.75))
+	var kicker_font := FontVariation.new()
+	kicker_font.base_font = ThemeDB.fallback_font
+	kicker_font.spacing_glyph = 6
+	_chapter_kicker.add_theme_font_override("font", kicker_font)
+	box.add_child(_chapter_kicker)
+	_chapter_title = _chapter_label(68, UiTheme.CREAM)
+	_chapter_spacing = FontVariation.new()
+	_chapter_spacing.base_font = ThemeDB.fallback_font
+	_chapter_title.add_theme_font_override("font", _chapter_spacing)
+	box.add_child(_chapter_title)
+	var line_holder := CenterContainer.new()
+	line_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(line_holder)
+	_chapter_line = ColorRect.new()
+	_chapter_line.color = Color(UiTheme.CREAM, 0.8)
+	_chapter_line.custom_minimum_size = Vector2(0, 2)
+	_chapter_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line_holder.add_child(_chapter_line)
+
+
+func _chapter_label(font_size: int, color: Color) -> Label:
+	var l := Label.new()
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.add_theme_font_size_override("font_size", font_size)
+	l.add_theme_constant_override("outline_size", 10)
+	l.add_theme_color_override("font_color", color)
+	l.add_theme_color_override("font_outline_color", Color(0.08, 0.05, 0.03, 0.85))
+	return l
+
+
+func _build_tip() -> void:
 	_tip_box = PanelContainer.new()
 	_tip_box.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	_tip_box.grow_horizontal = Control.GROW_DIRECTION_BOTH
@@ -285,27 +332,52 @@ func _build_chapter() -> void:
 	_tip_box.add_child(_tip)
 
 
+## Rótulo de "nuevo capítulo" al empezar un acto: la escena se oscurece un poco, sale "CAPÍTULO II"
+## y el nombre del acto, que se abre letra a letra y sube un poco, con una línea que crece desde el
+## centro; se queda un momento y se va despacio. "II · Adolescencia" -> CAPÍTULO II / Adolescencia;
+## sin número ("Epílogo") solo el nombre.
 func show_chapter(text: String) -> void:
 	if text == "":
 		return
-	_chapter.text = text
-	var tw := _chapter.create_tween()
-	tw.tween_property(_chapter, "modulate:a", 1.0, 0.8).from(0.0)
-	tw.tween_interval(2.4)
-	tw.tween_property(_chapter, "modulate:a", 0.0, 1.0)
+	_chapter_text = text
+	var parts := text.split(" · ", false, 1)
+	_chapter_kicker.text = ("CAPÍTULO " + parts[0]) if parts.size() == 2 else ""
+	_chapter_kicker.visible = parts.size() == 2
+	_chapter_title.text = parts[parts.size() - 1]
+	if _chapter_tween != null:
+		_chapter_tween.kill()
+	_chapter.modulate.a = 0.0
+	_chapter_line.custom_minimum_size.x = 0.0
+	Sfx.play("capitulo")
+	_chapter_tween = create_tween()
+	_chapter_tween.set_parallel()
+	_chapter_tween.tween_property(_chapter, "modulate:a", 1.0, 0.9).set_trans(Tween.TRANS_SINE)
+	_chapter_tween.tween_method(func(v: float) -> void: _chapter_spacing.spacing_glyph = int(v), 22.0, 3.0, 1.6) \
+		.set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+	_chapter_tween.tween_property(_chapter_line, "custom_minimum_size:x", 340.0, 1.4).set_delay(0.4) \
+		.set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+	_chapter_tween.chain().tween_interval(2.0)
+	_chapter_tween.chain().tween_property(_chapter, "modulate:a", 0.0, 1.1).set_trans(Tween.TRANS_SINE)
 
 
 func show_tip(text: String, seconds := 7.0) -> void:
 	if text == "":
+		return
+	if _chapter_showing():                       # no encima del rótulo de capítulo: espera a que se vaya
+		_tip_waiting = [text, seconds]
 		return
 	_tip.text = text
 	_tip_box.show()
 	_tip_left = seconds
 
 
+func _chapter_showing() -> bool:
+	return _chapter.modulate.a > 0.01 or (_chapter_tween != null and _chapter_tween.is_running())
+
+
 ## (Tests) Lo que dicen ahora el rótulo y el consejo ("" = no se ven).
 func chapter_text() -> String:
-	return _chapter.text if _chapter.modulate.a > 0.01 else ""
+	return _chapter_text if _chapter.modulate.a > 0.01 else ""
 
 
 func tip_text() -> String:
@@ -359,6 +431,8 @@ func set_moment(on: bool) -> void:
 		return
 	_moment = on
 	_hide_info()
+	if on:
+		_tip_box.hide()                          # el consejo no tapa el primer plano
 	if _moment_tween != null:
 		_moment_tween.kill()
 	_moment_tween = create_tween().set_parallel()
@@ -417,6 +491,7 @@ func _on_level_started() -> void:
 	_cards.clear()
 	_title.text = GameState.diorama.level_title
 	_chapter.modulate.a = 0.0
+	_tip_waiting = []
 	_tip_box.hide()
 	_done.hide()
 	_back_button.hide()
@@ -499,7 +574,7 @@ func _group(d: Diorama, k: int) -> Dictionary:
 	var sec: Section = d.sections[k] if k >= 0 else null
 	header.text = d.section_title(sec) if sec != null else ""
 	header.visible = sec != null
-	header.add_theme_color_override("font_color", sec.tint.lerp(UiTheme.CREAM, 0.35) if sec != null else UiTheme.CREAM)
+	header.add_theme_color_override("font_color", UiTheme.CREAM)
 	box.add_child(header)
 	var grid := GridContainer.new()
 	grid.columns = COLUMNS
@@ -590,6 +665,10 @@ func _process(delta: float) -> void:
 		_tip_left -= delta
 		if _tip_left <= 0.0:
 			_tip_box.hide()
+	if not _tip_waiting.is_empty() and not _chapter_showing():
+		var tip: Array = _tip_waiting
+		_tip_waiting = []
+		show_tip(tip[0], tip[1])
 	if _info_left > 0.0:
 		_info_left -= delta
 		if _info_left <= 0.0:

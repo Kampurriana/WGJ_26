@@ -23,9 +23,11 @@ y tejado, pero **se montan por secciones, en orden**:
 | 5 · Epílogo | **La moneda**, en la hucha | Rótulo «Epílogo»; primero se dicen sus frases, luego aparece la moneda | Fundido a negro y créditos |
 
 Reglas (las hace el código, no hay que pensarlas al montar el arte):
-- **Todo se ve desde el principio en modo fantasma**: las siluetas de todas las piezas y los
-  muebles de las zonas cerradas, cada acto de su color (infancia rosa, adolescencia azul, adultez
-  verde) y con un letrero flotante con su nombre. Lo que ya se puede poner se ve más claro.
+- **Un acto cerrado no se ve** (ni sus siluetas ni sus muebles; tercera nota: los colores por acto
+  no gustaron). Al abrirse sale el rótulo de **nuevo capítulo** a toda pantalla ("CAPÍTULO II /
+  Adolescencia", con una línea que crece, y se va despacio) y sus siluetas se materializan.
+- En el acto abierto se ven **todas** sus siluetas, como la **versión blanca** de cada pieza (opaca,
+  como en Woodo): blancas las que ya se pueden poner, grises las que esperan a otra.
 - **La bandeja enseña todas las piezas**, agrupadas por acto. Las que aún no van llevan candado y
   dicen por qué al pasar el ratón o tocarlas ("Es de «II · Adolescencia». Se abre al terminar
   «I · Infancia».", "Antes tiene que estar la cómoda.", "Va la última de «I · Infancia»...").
@@ -37,10 +39,12 @@ Reglas (las hace el código, no hay que pensarlas al montar el arte):
 
 ## Momentos (las secuencias)
 
-Cada objeto con frase tiene su **momento** al colocarlo: la cámara se le acerca despacio, entran
-dos bandas negras de cine y un foco que oscurece alrededor, la bandeja y los botones se apartan,
-el objeto hace **su gesto** y suena su frase. Un clic pasa a la siguiente frase; al callarse, todo
-vuelve a como estaba. Los gestos (personalidad de cada objeto, `core/momentos.gd`):
+Cada objeto con frase tiene su **momento** al colocarlo: la cámara avanza despacio hacia él desde
+donde miraba el jugador (sin dar vueltas; un dibujo o un tablero de pared, de frente), **lo que se
+cruce por delante se desvanece** mientras dura el plano, entran dos bandas negras de cine y un
+foco que oscurece alrededor, el enfoque se va al objeto (lo demás, más borroso), la bandeja y los
+botones se apartan, el objeto hace **su gesto** y suena su frase. Un clic pasa a la siguiente frase;
+al callarse, todo vuelve a como estaba. Los gestos (personalidad de cada objeto, `core/momentos.gd`):
 
 | Objeto | Gesto |
 |---|---|
@@ -58,9 +62,11 @@ Dos momentos especiales:
   luna aparece un vaho y, con la primera frase, **la silueta de ella**. Las tres frases salen de una
   en una, y con la última ("¿Y yo? ¿Dónde estoy yo?") la silueta se desvanece: el espejo se queda
   vacío.
-- **El epílogo**: **primer plano de la hucha** mientras se dicen sus frases; a la vez aparece **la
-  moneda flotando** a su lado, brillando. Cuando acaban las frases, un clic en la moneda la hace
-  volar hasta la ranura y entrar; suena "Para unas pinturas de verdad." y **fundido a negro**.
+- **El epílogo**: fundido y **corte** a la **hucha sola** (no se ve nada más), quieta, vista un poco
+  desde arriba, con una luz cálida encima, mientras se dicen sus frases; a la vez aparece **la
+  moneda flotando** a su lado, brillando. Cuando acaban las frases, el jugador **coge la moneda y la
+  arrastra hasta la ranura** (si la suelta lejos, vuelve a flotar); entra, suena "Para unas pinturas
+  de verdad." y **fundido a negro**.
 
 ## El título: la hucha de cerdito
 
@@ -118,8 +124,9 @@ cámara (así no se adelanta la historia).
 4. **Se empieza montando las paredes y el tejado**; la hucha cierra esa fase y abre la historia.
 5. Rótulos de capítulo (I · Infancia, II · Adolescencia, III · Adultez, Epílogo) para que se note
    que se va por secciones.
-6. **La moneda no se arrastra desde la bandeja**: aparece flotando junto a la hucha y se toca
-   (segunda nota: "close up de ese asset y que se vea la secuencia de diálogos y la moneda").
+6. **La moneda no sale en la bandeja**: aparece flotando junto a la hucha y se arrastra a mano hasta
+   la ranura (segunda y tercera nota: "que se vea la moneda en ese momento"; "permíteme poner la
+   moneda dentro del cerdito, que no sea darle click").
 7. La frase del espejo se parte en tres, para que el momento respire.
 
 Pendiente de decidir (no bloquea): el oficio familiar sigue siendo «la tienda»; la música de la

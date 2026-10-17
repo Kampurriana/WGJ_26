@@ -19,6 +19,7 @@ var diorama: Diorama
 var camera: DioramaCamera
 var hud: Hud
 var drag: DragController
+var enfoque: Enfoque                         ## el postproceso de enfoque (core/enfoque.gd)
 
 var mode := Mode.PLAYING
 var is_dragging := false

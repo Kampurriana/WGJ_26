@@ -37,6 +37,7 @@ const NUDGE_HOLD := 1.1                      ## lo que se queda ahí antes de vo
 const HINT_ZOOM := 0.5                       ## la pista acerca hasta medio camino del zoom máximo
 const SHOWCASE_DEG := 18.0                   ## al completar, se mece así de un lado a otro
 const CLOSE_UP_TIME := 2.4                   ## lo que tarda en llegar al primer plano (muy blando)
+const BREATH_DEG := Vector2(0.35, 0.22)      ## "respiración" de cámara de cine: giro e inclinación (grados)
 const CLOSE_UP_SMOOTH := 0.95
 
 var cam: Camera3D
@@ -82,6 +83,7 @@ var _v_nudge_zoom := 0.0
 var _nudge_left := 0.0
 var showcasing := false                      ## vaivén de diorama completado
 var in_moment := false                       ## primer plano de un momento de la historia
+var _breath_t := 0.0
 var _saved_view := {}                        ## a dónde vuelve al acabar el momento
 var hovered: Interactable                    ## lo que se puede tocar bajo el ratón (null = nada)
 var _showcase_base := 0.0
@@ -259,9 +261,10 @@ func frame_box(box: AABB) -> void:
 
 
 ## Primer plano de un momento de la historia: se acerca despacio a `box` y se queda ahí; el jugador
-## no la mueve. frontal = hacia dónde mira el objeto: la cámara se pone delante, a su altura (el
-## espejo); si no, gira un poco hacia él sin salirse de los límites y baja un poco.
-func close_up(box: AABB, frontal := Vector3.ZERO) -> void:
+## no la mueve. frontal = hacia dónde mira el objeto: la cámara se pone delante, a esa inclinación
+## (el espejo, un dibujo en la pared); si no, avanza hacia él desde donde miraba el jugador (sin
+## dar vueltas). Lo que se cruce por delante lo esconde Momentos.
+func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin := 1.5) -> void:
 	if not in_moment:
 		_saved_view = {"yaw": yaw, "pitch": pitch, "distance": distance, "center": center}
 	in_moment = true
@@ -275,19 +278,18 @@ func close_up(box: AABB, frontal := Vector3.ZERO) -> void:
 	flat.y = 0.0
 	if flat.length() > 0.01:
 		yaw = rad_to_deg(atan2(flat.x, flat.z))
-		pitch = 3.0
-		distance = maxf(box.size.y, box.size.x * 0.6) / fit * 1.5
+		pitch = frontal_pitch
+		distance = maxf(maxf(box.size.y, box.size.x * 0.6), 0.2) / fit * margin
 	else:
-		var from_yaw: float = _saved_view.get("yaw", yaw)            # la vista del jugador, no la del momento anterior
-		var from_pitch: float = _saved_view.get("pitch", pitch)
-		var to := box.get_center() - home_center()
-		to.y = 0.0
-		yaw = from_yaw
-		if to.length() > 0.05:
-			yaw = clampf(lerpf(from_yaw, rad_to_deg(atan2(to.x, to.z)), 0.35), yaw_min, yaw_max)
-		pitch = clampf(from_pitch - 6.0, 10.0, 60.0)
+		yaw = _saved_view.get("yaw", yaw)                  # la vista del jugador, no la del momento anterior
+		pitch = clampf(float(_saved_view.get("pitch", pitch)) - 4.0, 10.0, 60.0)
 		distance = clampf(box.size.length() / fit * 2.2, 0.7, float(_home.get("distance", distance)) * 0.6)
 	_cine(CLOSE_UP_TIME, CLOSE_UP_SMOOTH)
+
+
+## Dónde acabará la cámara con los objetivos de ahora (para saber qué tapará el plano antes de llegar).
+func goal_position() -> Vector3:
+	return center + Basis.from_euler(Vector3(deg_to_rad(-pitch), deg_to_rad(yaw), 0.0)) * Vector3(0.0, 0.0, distance)
 
 
 ## Fin del momento: vuelve a donde estaba y el jugador recupera la cámara.
@@ -305,6 +307,7 @@ func end_close_up() -> void:
 
 
 func _process(delta: float) -> void:
+	_breath_t += delta
 	if _input_enabled:
 		var v := Input.get_vector("cam_left", "cam_right", "cam_up", "cam_down")
 		if v != Vector2.ZERO:
@@ -361,7 +364,9 @@ func _process(delta: float) -> void:
 
 func _apply() -> void:
 	global_position = _cur_center + _nudge
-	rotation = Vector3(deg_to_rad(-_cur_pitch), deg_to_rad(_cur_yaw), 0.0)
+	# Una respiración lentísima (como una cámara de cine en mano muy quieta): el plano está vivo.
+	var breath := Vector2(sin(_breath_t * 0.17) * BREATH_DEG.x, sin(_breath_t * 0.23 + 1.3) * BREATH_DEG.y)
+	rotation = Vector3(deg_to_rad(-_cur_pitch + breath.y), deg_to_rad(_cur_yaw + breath.x), 0.0)
 	cam.position = Vector3(0.0, 0.0, _cur_distance * (1.0 - _nudge_zoom))
 	cam.h_offset = _cur_h_offset
 

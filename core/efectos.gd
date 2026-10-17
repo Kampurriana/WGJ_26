@@ -12,6 +12,7 @@ extends Node3D
 ## Texturas: si existe assets/texturas/particulas/<polvo|chispa|luz|viruta>.png se usa esa (así
 ## las artistas las cambian sin tocar código); si no, se dibujan aquí.
 
+const STAR := 0.5                            ## las estrellas (chispas, destellos, motas) a la mitad: el equipo las quería más pequeñitas
 const TEXTURE_DIR := "res://assets/texturas/particulas/"
 const DUST_COLOR := Color(1.0, 0.86, 0.62, 0.55)
 const SAWDUST_COLOR := Color(0.86, 0.68, 0.46)
@@ -120,8 +121,8 @@ func placed_at(box: AABB) -> void:
 	sparks.gravity = Vector3(0.0, 0.25 * s, 0.0)
 	sparks.damping_min = 0.3
 	sparks.damping_max = 0.6
-	sparks.scale_amount_min = 0.05 * s
-	sparks.scale_amount_max = 0.11 * s
+	sparks.scale_amount_min = 0.05 * s * STAR
+	sparks.scale_amount_max = 0.11 * s * STAR
 	sparks.color = SPARK_COLOR
 	sparks.color_ramp = _fade(0.05, 0.5)
 	sparks.emitting = true
@@ -185,8 +186,8 @@ func _hint(box: AABB) -> void:
 	p.spread = 20.0
 	p.initial_velocity_min = 0.1
 	p.initial_velocity_max = 0.3
-	p.scale_amount_min = 0.05 * s
-	p.scale_amount_max = 0.09 * s
+	p.scale_amount_min = 0.05 * s * STAR
+	p.scale_amount_max = 0.09 * s * STAR
 	p.color = Color(1.0, 0.95, 0.75)
 	p.color_ramp = _fade(0.2, 0.6)
 	p.emitting = true
@@ -240,8 +241,8 @@ func glow_up(box: AABB, power: float) -> void:
 	twinkles.spread = 20.0
 	twinkles.initial_velocity_min = 0.03
 	twinkles.initial_velocity_max = 0.1
-	twinkles.scale_amount_min = dot * 0.6
-	twinkles.scale_amount_max = dot * 1.1
+	twinkles.scale_amount_min = dot * 0.6 * STAR
+	twinkles.scale_amount_max = dot * 1.1 * STAR
 	twinkles.color = Color(1.0, 0.9, 0.72, 0.8)
 	twinkles.color_ramp = _fade(0.3, 0.6)
 	twinkles.emitting = true
@@ -270,8 +271,8 @@ func _on_attention(target: Node, on: bool) -> void:
 	p.spread = 15.0
 	p.initial_velocity_min = 0.05
 	p.initial_velocity_max = 0.15
-	p.scale_amount_min = maxf(0.06 * s, 0.04)
-	p.scale_amount_max = maxf(0.12 * s, 0.08)
+	p.scale_amount_min = maxf(0.06 * s, 0.04) * STAR
+	p.scale_amount_max = maxf(0.12 * s, 0.08) * STAR
 	p.color = Color(1.0, 0.72, 0.3, 1.0)
 	p.color_ramp = _fade(0.25, 0.6)
 	p.emitting = true

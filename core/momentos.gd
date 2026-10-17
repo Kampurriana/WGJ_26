@@ -1,61 +1,70 @@
 class_name Momentos
 extends Node
 ## Las secuencias de la historia ("momentos"), en los dioramas con `momentos = true` (el desván).
-## Al colocar un objeto con frase (pieza_<id> en narracion_es.json): la cámara se le acerca despacio,
-## entran dos bandas negras de cine y un foco que oscurece alrededor del objeto, el objeto hace su
-## gesto (la bailarina gira, la nutria se achucha, las llaves tintinean...) y suena su frase. La
-## bandeja y los botones se apartan; un clic pasa a la siguiente frase. Al callarse, todo vuelve.
+## Al colocar un objeto con frase (pieza_<id> en narracion_es.json): la cámara avanza despacio hacia
+## él desde donde miraba el jugador (los objetos planos de pared, como el dibujo, se ven de frente),
+## lo que se cruce por delante se desvanece, entran dos bandas negras de cine y un foco, el enfoque
+## se va al objeto, el objeto hace su gesto (la bailarina gira, la nutria se achucha...) y suena su
+## frase. La bandeja y los botones se apartan; un clic pasa a la siguiente frase. Al callarse, todo
+## vuelve.
 ## Dos momentos especiales, por nombre en el modelo (core/name_rules.gd):
 ##   __reflejo  (el espejo): la cámara se pone delante, todo lo demás se va a negro y en la luna
 ##              aparece una silueta que se desvanece con la última frase ("¿Dónde estoy yo?").
-##   __ofrecida (la moneda): su sección se abre con un primer plano de su hueco (la hucha); la
-##              moneda aparece flotando mientras se dicen las frases y, cuando acaban, un clic en
-##              ella la mete sola. Después, el final de siempre (fundido a negro).
+##   __ofrecida (la moneda): su sección se abre con un corte (fundido a negro y vuelta) a un primer
+##              plano ligeramente cenital de lo que la sostiene (la hucha), SOLA en la escena y quieta.
+##              La moneda aparece flotando mientras se dicen las frases; cuando acaban, el jugador la
+##              ARRASTRA hasta la ranura. Después, el final de siempre (fundido a negro).
 
 const MIN_TIME := 2.0                        ## un momento dura al menos esto (s)
 const IRIS := 0.62                           ## lo oscuro alrededor del objeto en un momento normal
 const BARS := 54.0                           ## alto de las bandas de cine (px a 720)
 const FADE := 0.9
-const REFLECTION_LAYER := 20                 ## capa de render del espejo aislado (el resto, a negro)
-const COIN_CLICK_PX := 70.0                  ## lo cerca que hay que tocar la moneda
+const CUT_TIME := 0.45                       ## (ofrecida) fundido a negro antes del corte, y vuelta
+const ZENITH := 38.0                         ## (ofrecida) inclinación del primer plano de la hucha
+const ISOLATE_LAYER := 20                    ## capa de render de lo aislado (el resto no se ve)
+const COIN_GRAB_PX := 70.0                   ## lo cerca que hay que coger la moneda
+const COIN_SNAP_PX := 80.0                   ## y lo cerca de la ranura que hay que soltarla
+const HIDE_TIME := 0.35                      ## lo que tarda en desvanecerse lo que tapa el plano
 
 ## Gesto de cada objeto mientras habla (lo que le da personalidad). Sin entrada = flota un poco.
 const GESTURES := {
 	"hucha": "sacudir", "caja_musica": "bailarina", "dibujo": "aletear", "peluche": "achuchar",
 	"mp3": "latir", "camara": "disparar", "solicitud": "aletear", "llaves": "sacudir",
-	"caballete": "balancear", "espejo": "", "moneda": "girar",
+	"caballete": "balancear", "espejo": "",
 }
 
 var active := false
 var kind := ""                               ## "" / "normal" / "reflejo" / "ofrecida"
 var target: Node3D                           ## el objeto del momento
-var coin: Node3D                             ## (ofrecida) la pieza flotando, lista para el clic
+var coin: Node3D                             ## (ofrecida) la pieza flotando, lista para arrastrarla
 var reflection: Node3D                       ## (reflejo) vaho en la luna + la silueta de ella + su luz
+var hidden_for_shot: Array = []              ## lo que tapaba el plano (GeometryInstance3D escondidos mientras dura)
 var _figure: Sprite3D                        ## la silueta (aparece con la primera frase, se va con la última)
+var _spot: SpotLight3D                       ## (ofrecida) la luz de arriba sobre la hucha sola
 
 var _layer: CanvasLayer
 var _iris: ColorRect
 var _black: ColorRect                        ## (reflejo) fondo negro de verdad detrás del 3D
+var _curtain: ColorRect                      ## (ofrecida) fundido a negro del corte
 var _iris_mat: ShaderMaterial
 var _bars: Array[ColorRect] = []
 var _prompt: Label
 var _elapsed := 0.0
 var _iris_tween: Tween
-var _bars_tween: Tween
 var _base: Transform3D                       ## transformación del objeto antes del gesto
 var _base_valid := false                     ## se toma al acabar el "pop" de encajar (si no, saldría más grande)
 var _gesture := ""
 var _t := 0.0
 var _offered: PieceSlot
-var _isolated: Dictionary = {}               ## VisualInstance3D -> capas de antes (reflejo)
+var _isolated: Dictionary = {}               ## VisualInstance3D -> capas de antes
 var _lines_seen := 0
-var _coin_flying := false
-var _coin_y := 0.0
+var _coin_rest := Vector3.ZERO               ## dónde flota la moneda cuando no se arrastra
+var _coin_state := ""                        ## "" flotando · "arrastrando" · "volviendo" · "entrando"
 
 
 func _ready() -> void:
 	_layer = CanvasLayer.new()
-	_layer.layer = 0                         # encima del 3D y por debajo de la interfaz (subtítulos)
+	_layer.layer = 1                         # encima del enfoque (0) y por debajo de la interfaz (2)
 	add_child(_layer)
 	var back := CanvasLayer.new()
 	back.layer = -5                          # parte del fondo (background_canvas_max_layer = -1), sobre el degradado
@@ -82,6 +91,11 @@ func _ready() -> void:
 		bar.offset_bottom = 0.0
 		_layer.add_child(bar)
 		_bars.append(bar)
+	_curtain = ColorRect.new()
+	_curtain.color = Color(0, 0, 0, 0)
+	_curtain.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_layer.add_child(_curtain)
 	_prompt = Label.new()
 	_prompt.text = "clic para seguir  ›"
 	_prompt.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -108,20 +122,27 @@ func _ready() -> void:
 func reset() -> void:
 	_restore_target()
 	_unisolate()
+	_show_hidden(false)
 	if is_instance_valid(coin):
 		coin.queue_free()
 	if is_instance_valid(reflection):
 		reflection.queue_free()
+	if is_instance_valid(_spot):
+		_spot.queue_free()
 	coin = null
 	reflection = null
 	_figure = null
+	_spot = null
 	_offered = null
-	_coin_flying = false
+	_coin_state = ""
 	active = false
 	kind = ""
 	target = null
 	_set_frame(0.0, 0.0, 0.0)
 	_black.color.a = 0.0
+	_curtain.color.a = 0.0
+	if GameState.enfoque != null:
+		GameState.enfoque.reset()
 	if GameState.hud != null:
 		GameState.hud.set_moment(false)
 
@@ -148,8 +169,8 @@ func _on_piece_placed(id: StringName, node: Node3D) -> void:
 	start(node, "reflejo" if slot != null and slot.reflejo else "normal", String(id))
 
 
-## Al abrirse una sección con una pieza ofrecida (el epílogo): primer plano de su hueco (la hucha)
-## mientras se dicen sus frases, y la moneda flotando.
+## Al abrirse una sección con una pieza ofrecida (el epílogo): corte a un primer plano de lo que la
+## sostiene (la hucha), sola, mientras se dicen sus frases; y la moneda flotando a su lado.
 func _on_section_opened(sec: RefCounted) -> void:
 	var d := _diorama()
 	if d == null:
@@ -157,15 +178,14 @@ func _on_section_opened(sec: RefCounted) -> void:
 	for s in (sec as Section).slots:
 		if s.offered and not s.filled:
 			_offered = s
-			var around := _what_holds(d, s)
-			start(around, "ofrecida", String(s.id))
-			get_tree().create_timer(1.2, false).timeout.connect(_spawn_coin)
+			start(_what_holds(d, s), "ofrecida", String(s.id))
 			return
 
 
 func start(node: Node3D, p_kind: String, id: String) -> void:
 	_restore_target()
 	_clear_extras()                              # si venía de otro momento (el espejo), fuera lo suyo
+	_show_hidden(true)
 	active = true
 	kind = p_kind
 	target = node
@@ -173,23 +193,93 @@ func start(node: Node3D, p_kind: String, id: String) -> void:
 	_t = 0.0
 	_lines_seen = 0
 	_base_valid = false
-	_gesture = String(GESTURES.get(id, "flotar"))
+	_gesture = "" if kind == "ofrecida" else String(GESTURES.get(id, "flotar"))   # la hucha del final, quieta
 	var cam := GameState.camera
 	var box := Visuals.global_aabb(node)
-	if kind == "reflejo":
-		cam.close_up(_glass_box(node), node.global_basis.z)
-		_frame_to(1.0, 0.0, 1.2)
-		_black.create_tween().tween_property(_black, "color:a", 1.0, 1.2)
-		get_tree().create_timer(1.3, false).timeout.connect(_isolate.bind(node))
-		get_tree().create_timer(Diorama.POP_TIME + 0.05, false).timeout.connect(_make_reflection.bind(node))
-	elif kind == "ofrecida":
-		cam.close_up(box.grow(0.08))
-		_frame_to(0.82, BARS, FADE)
-	else:
-		cam.close_up(box)
-		_frame_to(IRIS, BARS, FADE)
+	match kind:
+		"reflejo":
+			cam.close_up(_glass_box(node), node.global_basis.z)
+			_frame_to(1.0, 0.0, 1.2)
+			_black.create_tween().tween_property(_black, "color:a", 1.0, 1.2)
+			get_tree().create_timer(1.3, false).timeout.connect(func() -> void:
+				if active and kind == "reflejo" and is_instance_valid(node):
+					_isolate([node, reflection]))
+			get_tree().create_timer(Diorama.POP_TIME + 0.05, false).timeout.connect(_make_reflection.bind(node))
+		"ofrecida":
+			_cut_to_offered(node)
+		_:
+			var front := _flat_front(node)
+			cam.close_up(box, front, 8.0)
+			_hide_occluders(node)
+			_frame_to(IRIS, BARS, FADE)
 	GameState.hud.set_moment(true)
 	Sfx.play("momento")
+
+
+## Un objeto plano y de pie (un dibujo en la pared, un tablero de llaves) se ve mejor de frente:
+## su cara mira hacia su +Z local. ZERO = no es plano (se ve desde donde miraba el jugador).
+func _flat_front(node: Node3D) -> Vector3:
+	var lb := Visuals.local_aabb(node)
+	if lb.size.z < 0.2 * maxf(lb.size.x, lb.size.y) and lb.size.y > lb.size.z * 3.0:
+		return node.global_basis.z.normalized()
+	return Vector3.ZERO
+
+
+## Lo que se cruza entre la cámara (donde va a acabar) y el objeto se desvanece mientras dura el
+## plano: rayos desde la cámara a varios puntos del objeto contra las superficies (lo que se ve).
+func _hide_occluders(node: Node3D) -> void:
+	var d := GameState.diorama
+	var from := GameState.camera.goal_position()
+	var box := Visuals.global_aabb(node)
+	var targets: Array[Vector3] = [box.get_center()]
+	for i in 8:
+		targets.append(box.get_center().lerp(box.get_endpoint(i), 0.7))
+	var space := d.get_world_3d().direct_space_state
+	var mine: Dictionary = {}
+	for m in Visuals.meshes_under(node):
+		mine[m] = true
+	var found: Dictionary = {}
+	for p in targets:
+		var exclude: Array[RID] = []
+		for k in 6:
+			var q := PhysicsRayQueryParameters3D.create(from, from.lerp(p, 0.97), Visuals.SURFACE_LAYER)
+			q.exclude = exclude
+			var r := space.intersect_ray(q)
+			if r.is_empty():
+				break
+			exclude.append(r.rid)
+			var mesh := (r.collider as Node).get_parent() as GeometryInstance3D
+			if mesh != null and not mine.has(mesh) and mesh.is_visible_in_tree():
+				found[mesh] = true
+	for s in d.slots:                            # siluetas que se cruzan (no tienen superficie)
+		if s.filled or not s.shown or s.node == node:
+			continue
+		for m in s.meshes():
+			var mb: AABB = m.global_transform * m.get_aabb()
+			for p in targets:
+				if mb.intersects_segment(from, from.lerp(p, 0.97)):
+					found[m] = true
+					break
+	for g in found.keys():
+		var geo := g as GeometryInstance3D
+		hidden_for_shot.append(geo)
+		var tw := geo.create_tween()
+		tw.tween_property(geo, "transparency", 1.0, HIDE_TIME)
+		tw.tween_callback(geo.hide)
+
+
+## Vuelve lo que se escondió para el plano. fade = poco a poco.
+func _show_hidden(fade := true) -> void:
+	for g in hidden_for_shot.duplicate():
+		if not is_instance_valid(g):
+			continue
+		var geo := g as GeometryInstance3D
+		geo.show()
+		if fade:
+			geo.create_tween().tween_property(geo, "transparency", 0.0, HIDE_TIME)
+		else:
+			geo.transparency = 0.0
+	hidden_for_shot.clear()
 
 
 # --- Durante ---------------------------------------------------------------------------------
@@ -201,11 +291,14 @@ func _process(delta: float) -> void:
 	_t += delta
 	_follow_iris()
 	_gesture_step(delta)
-	if is_instance_valid(coin) and not _coin_flying:
+	if is_instance_valid(coin) and _coin_state == "":
 		_present_coin()
 	var talking := Narrator.remaining() > 0.0
-	_prompt.modulate.a = move_toward(_prompt.modulate.a, 1.0 if talking or _coin_ready() else 0.0, delta * 2.0)
-	_prompt.text = "toca la moneda" if _coin_ready() and not talking else "clic para seguir  ›"
+	var coin_turn := _coin_ready() and not talking
+	_prompt.modulate.a = move_toward(_prompt.modulate.a, 1.0 if talking or coin_turn else 0.0, delta * 2.0)
+	_prompt.text = "arrastra la moneda hasta la hucha" if coin_turn else "clic para seguir  ›"
+	if _offered != null and not _offered.filled:
+		_offered.set_pulse(coin_turn)
 	if kind == "ofrecida":
 		return                                   # el final no se acaba solo: lo cierra el fundido
 	if not talking and _elapsed >= MIN_TIME:
@@ -213,19 +306,28 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if not active or not (e is InputEventMouseButton):
+	if not active:
+		return
+	if e is InputEventMouseMotion and _coin_state == "arrastrando":
+		_drag_coin((e as InputEventMouseMotion).position)
+		get_viewport().set_input_as_handled()
+		return
+	if not (e is InputEventMouseButton) or (e as InputEventMouseButton).button_index != MOUSE_BUTTON_LEFT:
 		return
 	var mb := e as InputEventMouseButton
-	if mb.button_index != MOUSE_BUTTON_LEFT or not mb.pressed:
-		return
 	get_viewport().set_input_as_handled()
+	if not mb.pressed:
+		if _coin_state == "arrastrando":
+			_release_coin(mb.position)
+		return
 	if _coin_ready() and _near_coin(mb.position):
-		_drop_coin()
+		_coin_state = "arrastrando"               # se coge: ahora hay que llevarla hasta la ranura
+		Sfx.play("pickup")
 	elif not Narrator.skip() and kind != "ofrecida":
 		finish()
 
 
-## El foco sigue al objeto en pantalla (la cámara se mueve) y lo rodea con holgura.
+## El foco sigue al objeto en pantalla (la cámara se mueve) y lo rodea con holgura; el enfoque, igual.
 func _follow_iris() -> void:
 	if not is_instance_valid(target):
 		return
@@ -252,9 +354,11 @@ func _follow_iris() -> void:
 	_iris_mat.set_shader_parameter("radio", r)
 	_iris_mat.set_shader_parameter("suave", 0.12 if kind == "reflejo" else 0.45)
 	_iris_mat.set_shader_parameter("tam", _iris.size)
+	if GameState.enfoque != null:
+		GameState.enfoque.focus_on((lo + hi) * 0.5, r * 1.1, 1.0)
 
 
-## Las frases del espejo: con la primera aparece la silueta en la luna; con la última se va.
+## Las frases del espejo: con la última, la silueta se va.
 func _on_subtitle(_text: String, seconds: float) -> void:
 	if not active or kind != "reflejo" or not is_instance_valid(_figure):
 		return
@@ -267,7 +371,7 @@ func _on_subtitle(_text: String, seconds: float) -> void:
 # --- Gestos ----------------------------------------------------------------------------------
 
 func _gesture_step(delta: float) -> void:
-	if not is_instance_valid(target) or _t < Diorama.POP_TIME + 0.05:   # primero, el "pop" de encajar
+	if _gesture == "" or not is_instance_valid(target) or _t < Diorama.POP_TIME + 0.05:   # primero, el "pop"
 		return
 	if not _base_valid:
 		_base = target.transform
@@ -290,8 +394,6 @@ func _gesture_step(delta: float) -> void:
 			xf.origin = _base.origin - _base.basis.z.normalized() * 0.03 * exp(-t * 6.0)
 		"balancear":
 			xf.basis = _base.basis * Basis(Vector3.FORWARD, sin(t * 1.6) * 0.05)
-		"girar":
-			xf.basis = _base.basis * Basis(Vector3.UP, t * 2.0)
 		"bailarina":
 			for n in target.find_children("*", "MeshInstance3D", true, false):
 				if String(n.name).to_lower().contains("bailarina") or String(n.name).to_lower().contains("tutu") \
@@ -299,7 +401,7 @@ func _gesture_step(delta: float) -> void:
 					(n as Node3D).rotate_y(delta * 3.0)
 		"flotar":
 			xf.origin = _base.origin + Vector3.UP * sin(t * 2.4) * 0.015
-	if _gesture != "" and _gesture != "bailarina":
+	if _gesture != "bailarina":
 		target.transform = xf
 
 
@@ -309,43 +411,49 @@ func _restore_target() -> void:
 	_base_valid = false
 
 
-# --- Reflejo ---------------------------------------------------------------------------------
+# --- Aislar: solo se ve lo que importa ---------------------------------------------------------
 
-## La luna del espejo (la malla que se llame Luna, Cristal o Espejo); si no hay, el objeto entero.
-func _glass_box(node: Node3D) -> AABB:
-	for m in Visuals.meshes_under(node):
-		var n := String(m.name).to_lower()
-		if n.contains("luna") or n.contains("cristal") or n.contains("espejo"):
-			return Visuals.global_aabb(m)
-	return Visuals.global_aabb(node)
-
-
-## Todo a negro menos el espejo: la cámara solo ve su capa, y el fondo se va al negro del foco.
-func _isolate(node: Node3D) -> void:
-	if not active or kind != "reflejo" or not is_instance_valid(node):
-		return
-	for v in node.find_children("*", "VisualInstance3D", true, false):
-		_isolated[v] = (v as VisualInstance3D).layers
-		(v as VisualInstance3D).layers = 1 << (REFLECTION_LAYER - 1)
-	if is_instance_valid(reflection):
-		for v in reflection.find_children("*", "VisualInstance3D", true, false):
-			(v as VisualInstance3D).layers = 1 << (REFLECTION_LAYER - 1)
-	get_viewport().get_camera_3d().cull_mask = 1 << (REFLECTION_LAYER - 1)
+## Solo se ve lo que cuelga de `nodes`: la cámara pasa a ver únicamente su capa.
+func _isolate(nodes: Array) -> void:
+	for n in nodes:
+		if not is_instance_valid(n):
+			continue
+		var all: Array = (n as Node).find_children("*", "VisualInstance3D", true, false)
+		if n is VisualInstance3D:
+			all.append(n)
+		for v in all:
+			if not _isolated.has(v):
+				_isolated[v] = (v as VisualInstance3D).layers
+			(v as VisualInstance3D).layers = 1 << (ISOLATE_LAYER - 1)
+	get_viewport().get_camera_3d().cull_mask = 1 << (ISOLATE_LAYER - 1)
 
 
 func _unisolate() -> void:
-	for v: VisualInstance3D in _isolated:
+	for v in _isolated.keys():
 		if is_instance_valid(v):
-			v.layers = _isolated[v]
+			(v as VisualInstance3D).layers = _isolated[v]
 	_isolated.clear()
 	var cam := get_viewport().get_camera_3d() if is_inside_tree() else null
 	if cam != null:
 		cam.cull_mask = 0xFFFFF
 
 
-## (Tests) ¿Solo se ve el espejo?
+## (Tests) ¿Solo se ve lo aislado?
 func is_isolated() -> bool:
 	return not _isolated.is_empty()
+
+
+## (Tests) ¿Está este nodo entre lo que se ve en el aislamiento?
+func is_in_isolation(n: Node) -> bool:
+	return _isolated.has(n)
+
+
+# --- Reflejo ---------------------------------------------------------------------------------
+
+## La luna del espejo (la malla que se llame Luna, Cristal o Espejo); si no hay, el objeto entero.
+func _glass_box(node: Node3D) -> AABB:
+	var glass := _glass_mesh(node)
+	return Visuals.global_aabb(glass) if glass != null else Visuals.global_aabb(node)
 
 
 ## En la luna del espejo: un vaho claro (la luna se ve aunque refleje negro), la silueta de ella
@@ -367,12 +475,9 @@ func _make_reflection(node: Node3D) -> void:
 	mist.create_tween().tween_property(mist, "modulate:a", 0.42, 1.4)
 	_figure = _sprite(_silhouette_texture(), Vector3(lb.size.x * 0.82, lb.size.y * 0.78, 1.0), Color(0.07, 0.06, 0.09, 0.0))
 	_figure.position = Vector3(0, -lb.size.y * 0.07, 0.004)
-	_figure.render_priority = 6                  # encima del vaho (los dos sin profundidad)
+	_figure.render_priority = 6                  # encima del vaho
 	reflection.add_child(_figure)
 	_figure.create_tween().tween_property(_figure, "modulate:a", 0.85, 2.0).set_delay(0.6)
-	if _isolated.size() > 0:
-		for v in reflection.find_children("*", "VisualInstance3D", true, false):
-			(v as VisualInstance3D).layers = 1 << (REFLECTION_LAYER - 1)
 	var spot := SpotLight3D.new()
 	spot.light_color = Color(1.0, 0.86, 0.68)
 	spot.light_energy = 1.6
@@ -381,6 +486,8 @@ func _make_reflection(node: Node3D) -> void:
 	reflection.add_child(spot)
 	spot.global_position = reflection.global_position + front * 1.3 + Vector3.UP * 0.9
 	spot.look_at(reflection.global_position, Vector3.UP)
+	if not _isolated.is_empty():
+		_isolate([reflection])
 
 
 func _sprite(tex: Texture2D, size: Vector3, color: Color) -> Sprite3D:
@@ -428,9 +535,37 @@ static func _mist_texture() -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 
-# --- Ofrecida (la moneda) ---------------------------------------------------------------------
+# --- Ofrecida (la moneda en la hucha) ----------------------------------------------------------
 
-## La moneda flotando se enseña de cara a la cámara, meciéndose un poco (girando entera se veía de canto).
+## Fundido a negro, corte al primer plano (la hucha sola, vista un poco desde arriba, sin moverse
+## alrededor) y vuelta. La moneda aparece a su lado poco después.
+func _cut_to_offered(node: Node3D) -> void:
+	var tw := _curtain.create_tween()
+	tw.tween_property(_curtain, "color:a", 1.0, CUT_TIME)
+	tw.tween_callback(func() -> void:
+		if not active or kind != "ofrecida" or not is_instance_valid(node):
+			return
+		var cam := GameState.camera
+		var flat := cam.goal_position() - Visuals.global_aabb(node).get_center()
+		flat.y = 0.0
+		cam.close_up(Visuals.global_aabb(node).grow(0.06), flat.normalized() if flat.length() > 0.01 else Vector3.BACK, ZENITH, 2.6)
+		cam.snap()                               # un corte, no un viaje: la cámara no da vueltas
+		_spot = SpotLight3D.new()
+		_spot.light_color = Color(1.0, 0.88, 0.72)
+		_spot.light_energy = 1.4
+		_spot.spot_range = 3.0
+		_spot.spot_angle = 30.0
+		node.get_parent().add_child(_spot)
+		var top := Visuals.global_aabb(node).get_center()
+		_spot.global_position = top + Vector3.UP * 1.4 + (cam.global_position - top).normalized() * 0.4
+		_spot.look_at(top, Vector3.UP)
+		_isolate([node, _offered.node, _spot])
+		_frame_to(0.55, BARS, 0.01)
+		get_tree().create_timer(1.0, false).timeout.connect(_spawn_coin))
+	tw.tween_property(_curtain, "color:a", 0.0, CUT_TIME * 1.6)
+
+
+## La moneda flotando se enseña de cara a la cámara, meciéndose apenas.
 func _present_coin() -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
@@ -439,8 +574,8 @@ func _present_coin() -> void:
 	if to.length() < 0.01:
 		return
 	var face := Basis.looking_at(to, Vector3.UP, true)
-	coin.global_basis = (face * Basis(Vector3.UP, sin(_t * 1.8) * 0.45)).scaled(Vector3.ONE * coin.scale.x)
-	coin.global_position.y = _coin_y + sin(_t * 2.2) * 0.012
+	coin.global_basis = (face * Basis(Vector3.UP, sin(_t * 1.6) * 0.18)).scaled(Vector3.ONE * coin.scale.x)
+	coin.global_position = _coin_rest + Vector3.UP * sin(_t * 2.2) * 0.01
 
 
 ## Lo que sostiene a la pieza ofrecida (la hucha donde va la moneda): la pieza puesta más cercana.
@@ -465,10 +600,10 @@ func _spawn_coin() -> void:
 	var cam := get_viewport().get_camera_3d()
 	var side := cam.global_basis.x.normalized() if cam != null else Vector3.RIGHT
 	coin.global_transform = _offered.node.global_transform
-	coin.global_position = _offered.center() + side * 0.26 + Vector3.UP * 0.1
-	_coin_y = coin.global_position.y
+	_coin_rest = _offered.center() + side * 0.2 + Vector3.UP * 0.08
+	coin.global_position = _coin_rest
 	coin.scale = Vector3.ONE * 0.01
-	var glow := ShaderMaterial.new()             # brilla y late: es lo que hay que tocar
+	var glow := ShaderMaterial.new()             # brilla y late: es lo que hay que coger
 	glow.shader = Interactable.GLOW_SHADER
 	glow.set_shader_parameter("fuerza", 1.4)
 	for m in Visuals.meshes_under(coin):
@@ -478,40 +613,68 @@ func _spawn_coin() -> void:
 	glint.light_energy = 0.8
 	glint.omni_range = 0.45
 	coin.add_child(glint)
+	_isolate([coin])
 	var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(coin, "scale", Vector3.ONE * 1.6, 0.7)
+	tw.tween_property(coin, "scale", Vector3.ONE * 1.15, 0.7)
 	Sfx.play("brillo")
 
 
 func _coin_ready() -> bool:
-	return kind == "ofrecida" and is_instance_valid(coin) and not _coin_flying and _offered != null \
+	return kind == "ofrecida" and is_instance_valid(coin) and _coin_state != "entrando" and _offered != null \
 		and _offered.available and GameState.diorama.inventory.has(_offered.id) and Narrator.remaining() <= 0.0
 
 
 func _near_coin(pos: Vector2) -> bool:
 	var cam := get_viewport().get_camera_3d()
-	return cam != null and cam.unproject_position(coin.global_position).distance_to(pos) <= COIN_CLICK_PX
+	return cam != null and cam.unproject_position(coin.global_position).distance_to(pos) <= COIN_GRAB_PX
 
 
-## Un clic en la moneda: vuela en arco hasta la ranura y entra (y se coloca de verdad).
-func _drop_coin() -> void:
-	_coin_flying = true
-	var from := coin.global_position
-	var to := _offered.center()
-	var tw := coin.create_tween()
-	tw.tween_method(func(t: float) -> void:
-		coin.global_position = from.lerp(to, t) + Vector3.UP * sin(t * PI) * 0.18
-		coin.scale = Vector3.ONE * lerpf(1.6, 1.0, t), 0.0, 1.0, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.tween_callback(func() -> void:
-		var d := GameState.diorama
-		if is_instance_valid(d) and _offered != null and not _offered.filled:
-			d.place(_offered))
+## La moneda en la mano sigue al cursor, en un plano que pasa por la ranura y mira a la cámara.
+func _drag_coin(pos: Vector2) -> void:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null or not is_instance_valid(coin):
+		return
+	var plane := Plane(cam.global_basis.z, _offered.center())
+	var hit: Variant = plane.intersects_ray(cam.project_ray_origin(pos), cam.project_ray_normal(pos))
+	if hit != null:
+		coin.global_position = hit
 
 
-## (Tests) Dónde está la moneda en pantalla (para tocarla).
+## Soltarla con la moneda cerca de la ranura: entra sola el último tramo (y se coloca de verdad).
+## Lejos: vuelve a flotar.
+func _release_coin(_pos: Vector2) -> void:
+	var cam := get_viewport().get_camera_3d()
+	var slot_px := cam.unproject_position(_offered.center()) if cam != null else Vector2(INF, INF)
+	var coin_px := cam.unproject_position(coin.global_position) if cam != null else Vector2(-INF, -INF)
+	if slot_px.distance_to(coin_px) <= COIN_SNAP_PX * GameState.diorama._snap_scale():
+		_coin_state = "entrando"
+		var from := coin.global_position
+		var to := _offered.center()
+		var tw := coin.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		tw.tween_method(func(t: float) -> void:
+			coin.global_position = from.lerp(to, t)
+			coin.scale = Vector3.ONE * lerpf(1.15, 1.0, t), 0.0, 1.0, 0.35)
+		tw.tween_callback(func() -> void:
+			var d := GameState.diorama
+			if is_instance_valid(d) and _offered != null and not _offered.filled:
+				d.place(_offered))
+	else:
+		_coin_state = "volviendo"
+		Sfx.play("reject")
+		var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(coin, "global_position", _coin_rest, 0.35)
+		tw.tween_callback(func() -> void: _coin_state = "")
+
+
+## (Tests) Dónde está la moneda en pantalla (para cogerla) y dónde su ranura (para soltarla).
 func coin_screen_position() -> Vector2:
 	var cam := get_viewport().get_camera_3d()
 	return cam.unproject_position(coin.global_position) if is_instance_valid(coin) and cam != null else Vector2(-1, -1)
+
+
+func slot_screen_position() -> Vector2:
+	var cam := get_viewport().get_camera_3d()
+	return cam.unproject_position(_offered.center()) if _offered != null and cam != null else Vector2(-1, -1)
 
 
 # --- Acabar ----------------------------------------------------------------------------------
@@ -521,21 +684,27 @@ func finish() -> void:
 		return
 	_restore_target()
 	_clear_extras()
+	_show_hidden(true)
 	active = false
 	kind = ""
 	target = null
 	GameState.camera.end_close_up()
 	_frame_to(0.0, 0.0, FADE)
+	if GameState.enfoque != null:
+		GameState.enfoque.reset()
 	GameState.hud.set_moment(false)
 
 
-## Lo que pone un momento especial (espejo aislado, su reflejo, el fondo negro) se quita.
+## Lo que pone un momento especial (lo aislado, el reflejo, la luz de arriba, el fondo negro) se quita.
 func _clear_extras() -> void:
 	_unisolate()
 	if is_instance_valid(reflection):
 		reflection.queue_free()
 	reflection = null
 	_figure = null
+	if is_instance_valid(_spot):
+		_spot.queue_free()
+	_spot = null
 	if _black.color.a > 0.0:
 		_black.create_tween().tween_property(_black, "color:a", 0.0, FADE)
 
