@@ -20,7 +20,7 @@ y tejado, pero **se montan por secciones, en orden**:
 | 2 · Infancia | Dressing (alfombra, cama, cómoda, caballito, pelota, tren, estante de cuentos, cubos) y la historia: **caja de música → dibujo → nutria** (clave) | Rótulo «I · Infancia», se enciende su bombilla, aparecen sus muebles | Se pintan sus muebles; luces cálidas |
 | 3 · Adolescencia | Dressing (alfombra, escritorio, silla, lámpara, altavoz, libros, pósters, corcho, puf, guitarra, fotos) y la historia: **MP3 → cámara → inscripción a Bellas Artes** (clave) | Rótulo «II · Adolescencia», bombilla, muebles | Ídem |
 | 4 · Adultez | Dressing (alfombra, cajas de la tienda, taza, reloj, planta, perchero, abrigo, lienzo, pinceles) y la historia: **llaves → caballete → espejo** (clave) | Rótulo «III · Adultez», bombilla, muebles | Ídem |
-| 5 · Epílogo | **La moneda**, en la hucha | Rótulo «Epílogo»; primero se dicen sus frases, luego aparece la moneda | Fundido a negro y créditos |
+| 5 · El final | **La moneda**, en la hucha | Sin rótulo: **transición** desde el espejo (se queda vacío, en silencio, y fundido lento a negro) y corte a la hucha; primero sus frases, luego la moneda | Fundido a negro (segunda transición) y **créditos**; después, el menú |
 
 Reglas (las hace el código, no hay que pensarlas al montar el arte):
 - **Un acto cerrado no se ve** (ni sus siluetas ni sus muebles; tercera nota: los colores por acto
@@ -37,36 +37,45 @@ Reglas (las hace el código, no hay que pensarlas al montar el arte):
 - **La clave va la última** de su sección y la cierra.
 - **Las frases nunca se pisan**: si se coloca otro objeto mientras uno habla, su frase espera.
 
+## El orden del juego (cuarta nota)
+
+1. **Al arrancar:** el puzle del cerdito (la hucha) y sus frases.
+2. **El menú**, con el cerdito montado detrás y **sin frases**: sale cuando el cerdito ha acabado de
+   hablar (y al volver al menú, el cerdito ya está montado y no dice nada).
+3. **Jugar:** el desván. Se monta la estructura (paredes, tejado, la hucha) y luego los tres actos,
+   cada uno con todas sus frases: I · Infancia, II · Adolescencia, III · Adultez.
+4. **El espejo** (la clave de la adultez) y sus tres frases.
+5. — Transición — el espejo vacío se queda un momento en silencio y todo se funde a negro despacio.
+6. **La hucha**, en primer plano, con la reflexión final y la moneda (ver «Momentos»).
+7. — Transición — fundido a negro.
+8. **Créditos** (con los dibujos encontrados); al acabar, o con un clic, el menú.
+
 ## Momentos (las secuencias)
 
 Cada objeto con frase tiene su **momento** al colocarlo: la cámara avanza despacio hacia él desde
 donde miraba el jugador (sin dar vueltas; un dibujo o un tablero de pared, de frente), **lo que se
 cruce por delante se desvanece** mientras dura el plano, entran dos bandas negras de cine y un
 foco que oscurece alrededor, el enfoque se va al objeto (lo demás, más borroso), la bandeja y los
-botones se apartan, el objeto hace **su gesto** y suena su frase. Un clic pasa a la siguiente frase;
-al callarse, todo vuelve a como estaba. Los gestos (personalidad de cada objeto, `core/momentos.gd`):
-
-| Objeto | Gesto |
-|---|---|
-| Hucha, llaves | Tintinea (se sacude a golpecitos) |
-| Caja de música | La bailarina gira |
-| Dibujo, inscripción | El papel aletea |
-| Nutria | Se achucha (se aplasta y se estira) |
-| MP3 | Late al ritmo |
-| Cámara | Dispara: retrocede un poco (y el flash) |
-| Caballete | Se balancea |
-| El resto | Flota un poco |
+botones se apartan y suena su frase. **El objeto se queda quieto** y la cámara deja de "respirar"
+(cuarta nota: nada de gestos en los primeros planos). Un clic pasa a la siguiente frase; al
+callarse, todo vuelve a como estaba. Los consejos y los avisos de logro esperan a que acabe.
 
 Dos momentos especiales:
 - **El espejo**: la cámara se pone **delante**, a su altura; **todo lo demás se va a negro**; en la
   luna aparece un vaho y, con la primera frase, **la silueta de ella**. Las tres frases salen de una
   en una, y con la última ("¿Y yo? ¿Dónde estoy yo?") la silueta se desvanece: el espejo se queda
   vacío.
-- **El epílogo**: fundido y **corte** a la **hucha sola** (no se ve nada más), quieta, vista un poco
-  desde arriba, con una luz cálida encima, mientras se dicen sus frases; a la vez aparece **la
-  moneda flotando** a su lado, brillando. Cuando acaban las frases, el jugador **coge la moneda y la
-  arrastra hasta la ranura** (si la suelta lejos, vuelve a flotar); entra, suena "Para unas pinturas
-  de verdad." y **fundido a negro**.
+  Al callarse no se vuelve al desván: **transición** (el espejo vacío unos segundos, en silencio, y
+  fundido lento a negro).
+- **La hucha (el final)**: desde el negro, **corte** a la **hucha sola** sobre su baúl (no se ve
+  nada más), quieta, vista un poco desde arriba y de tres cuartos, en una escena **acogedora**: luz
+  cálida de lámpara que parpadea un pelín, un contraluz naranja que le dibuja el borde, motas de polvo
+  flotando en la luz y, detrás, un fondo cálido con **luces desenfocadas** (como una guirnalda).
+  Mientras se dicen sus frases (empiezan tras un silencio) aparece **la moneda** a su lado, quieta y
+  con un destello. Cuando acaban, el jugador **coge la moneda y la arrastra hasta la ranura** (cerca,
+  la ranura la atrae; si la suelta lejos, vuelve a su sitio); se endereza, entra con **un golpe de
+  luz dorada, chispas y luces que suben**, el fondo se aviva, suena "Para unas pinturas de verdad." y
+  **fundido a negro** hacia los créditos.
 
 ## El título: la hucha de cerdito
 
@@ -74,6 +83,31 @@ El puzle que desbloquea el menú es **la hucha de ella**, sobre un cojín (la mi
 la historia): 21 piezas. Primero el cuerpo; luego patas, hocico, orejas, cola, ranura, ojos,
 coloretes y lazo; y sobre todo **pegatinas**: una estrella que brilla en la oscuridad, corazón,
 flor, luna, rayo, arcoíris y la del nombre del juego, en el cartel de delante.
+
+## Los dibujos escondidos (cuarta nota)
+
+Por el desván hay **7 dibujos de cuando ella era pequeña**, escondidos. No hacen falta para acabar:
+son coleccionables. De momento cada uno es **un folio de un color** (verde, naranja, morado, azul,
+rosa, rojo, amarillo); las artistas pondrán el dibujo de verdad (`C_` en `docs/ARTE-PIPELINE.md`).
+
+| Dibujo | Dónde | Cuándo está |
+|---|---|---|
+| Verde | Dentro del baúl de juguetes, apoyado en el fondo | Infancia (se ve al abrir el baúl) |
+| Naranja | Asomando por debajo de la cama | En cuanto la cama está puesta |
+| Rosa | Debajo de la cámara, entre las fotos | **Viene con la cámara**: al ponerla en la mesa aparece y, al acabar su momento, se encuentra solo (el primer logro) |
+| Morado | Encima del armario, asomando por el borde | Adolescencia |
+| Azul | En el cajón de la cajonera (con la inscripción) | Adolescencia (se ve al abrir el cajón) |
+| Rojo | En el cajón de la mesita (con los pinceles) | Adultez |
+| Amarillo | Encima de las cajas de la tienda | En cuanto las cajas están puestas |
+
+Al tocar uno, se levanta, **vuela en arco hasta su cuerda** (la de la infancia, **distinta de la de
+las fotos de encima del escritorio**), se engancha en la siguiente pinza y se balancea hasta quedarse
+quieto; baja **un aviso de logro** ("DIBUJO ENCONTRADO · 3 DE 7", su nombre y una fila de puntos) y
+bajo el título queda el contador. El primero trae un consejo: *«Hay 7 dibujos de cuando era pequeña
+escondidos por el desván. Cada uno que encuentres se cuelga en su cuerda.»* Los que esperan echan un
+**destello pequeño** de vez en cuando; los de dentro de un mueble cerrado no se pueden coger hasta
+abrirlo. Con los 7: *«¡Todos mis dibujos! La cuerda está completa.»* Los créditos dicen cuántos se
+encontraron.
 
 ## Objetos escondidos en muebles
 
@@ -108,7 +142,7 @@ cámara (así no se adelanta la historia).
 | Llaves | «Ahora soy yo quien abre la tienda cada mañana. Papá dice que algún día será mía. Nunca le he dicho que no la quiero.» |
 | Caballete | «Lo compré con mi primer sueldo, para pintar los domingos. Pero los domingos también abre la tienda.» |
 | Espejo (clave) | «Y aquí está la que siempre dijo “vale”.» / «La bailarina de la abuela, la nutria de mi hermano, la tienda de papá…» / «¿Y yo? ¿Dónde estoy yo?» (tres frases, para el momento del espejo) |
-| Epílogo | «Nadie me enseñó a decir que no.» (silencio) «No.» «…Qué fácil suena cuando lo dices en voz alta.» |
+| La hucha (final) | (silencio) «Nadie me enseñó a decir que no.» (silencio) «No.» «…Qué fácil suena cuando lo dices en voz alta.» |
 | Moneda | «Para unas pinturas de verdad.» → fundido a negro |
 
 ## Cambios respecto al documento original (y por qué)
@@ -122,12 +156,16 @@ cámara (así no se adelanta la historia).
    entonces» (antes venía después de la inscripción y ya no). El **flash** que el documento ponía
    en la transición sale ahora **al colocar la cámara**.
 4. **Se empieza montando las paredes y el tejado**; la hucha cierra esa fase y abre la historia.
-5. Rótulos de capítulo (I · Infancia, II · Adolescencia, III · Adultez, Epílogo) para que se note
-   que se va por secciones.
+5. Rótulos de capítulo (I · Infancia, II · Adolescencia, III · Adultez) para que se note que se va
+   por secciones. El final no lleva rótulo: lleva transición (cuarta nota).
 6. **La moneda no sale en la bandeja**: aparece flotando junto a la hucha y se arrastra a mano hasta
    la ranura (segunda y tercera nota: "que se vea la moneda en ese momento"; "permíteme poner la
    moneda dentro del cerdito, que no sea darle click").
 7. La frase del espejo se parte en tres, para que el momento respire.
+8. **Cuarta nota:** primeros planos quietos (sin gestos); orden título → menú sin frases → actos →
+   espejo → transición → hucha → transición → créditos; la escena de la hucha, mucho más acogedora;
+   7 dibujos escondidos que se cuelgan en su cuerda (el primero, con la cámara). El menú ya no dice
+   «Gracias por jugar»: eso va al final de los créditos.
 
 Pendiente de decidir (no bloquea): el oficio familiar sigue siendo «la tienda»; la música de la
 caja (sonido `caja_musica` y que se apague al cerrar la infancia) está por hacer cuando haya audio.

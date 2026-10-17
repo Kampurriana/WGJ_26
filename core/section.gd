@@ -16,7 +16,7 @@ var opening := false             ## abriéndose: luces, rótulo y frases en marc
 var opened := false
 var completed := false
 
-var decor: Array[Node3D] = []    ## lo que cuelga de la sección y no es pieza (muebles, bombillas...)
+var decor: Array[Node3D] = []    ## lo que cuelga de la sección y no es pieza (muebles, bombillas, la cuerda...)
 var _lights: Dictionary = {}     ## Light3D -> energía con la que vino del modelo
 
 
@@ -44,7 +44,9 @@ func collect_lights() -> void:
 			if s.node == c:
 				is_piece = true
 				break
-		if not is_piece and c is Node3D:
+		# Un dibujo escondido (C_) no es decorado: se ve cuando toca encontrarlo (lo decide el Diorama).
+		var collectible: bool = NameRules.parse(c.name).get("kind", "") == NameRules.COLLECTIBLE
+		if not is_piece and not collectible and c is Node3D:
 			decor.append(c)
 
 

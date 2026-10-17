@@ -28,6 +28,8 @@ El **nombre del objeto** en Blender (no el de la malla) empieza por un prefijo:
 | `OR_` | Puerta o tapa: gira 90º sobre su **origen** (poned el origen en la bisagra) | `OR_armario` |
 | `Z_` | Rincón con zoom (una escena dentro de la escena). Sus `P_` se hacen dentro | `Z_ratonera` |
 | `S_` | **Sección**: una zona que se monta entera antes de pasar a la siguiente. `S_<orden>_<nombre>`. Todo lo de la zona (piezas, muebles, su bombilla) cuelga de ella. Mientras está cerrada no se ve nada suyo; al abrirse sale el rótulo de capítulo y aparece | `S_2_infancia` |
+| `C_` | **Dibujo escondido** (coleccionable, no hace falta para acabar): al tocarlo vuela a la cuerda `T_` y sale un aviso de logro ("3 de 7"). Puede ir dentro de un mueble, como un `H_`. **Su origen, en el borde de arriba del papel** (ahí lo coge la pinza) y su cara mirando a su +Z local | `C_dibujo_verde` |
+| `T_` | **La cuerda** donde se cuelgan los `C_`. Sus hijos vacíos `Pinza1`, `Pinza2`… marcan dónde va cada dibujo (por orden de nombre; el dibujo toma la posición y el giro de la pinza). Cuelga de su sección, como un mueble | `T_dibujos` |
 | (otro) | Decorado: se queda en la escena, empieza en madera sin pintar y se pinta al completar piezas cerca | `Arbol`, `Pared` |
 
 Detrás del nombre, opciones con **doble guion bajo**:
@@ -38,7 +40,9 @@ Detrás del nombre, opciones con **doble guion bajo**:
 | `__clave` | en un `P_` | va **la última** de su sección y la cierra (la nutria, el espejo...) |
 | `__flash` | en un `P_` | destello blanco al colocarla (la cámara de fotos) |
 | `__reflejo` | en un `P_` | su momento es de frente y con todo lo demás a negro, con una silueta en la luna (el espejo). **La cara del espejo mira hacia su +Z local** (hacia delante en Blender, -Y; el exportador lo convierte) y la malla del cristal se llama `Luna`, `Cristal` o `Espejo` |
-| `__ofrecida` | en un `P_` | no va a la bandeja: cuando toca, aparece flotando junto a su hueco y el jugador la arrastra hasta él (la moneda en la hucha). La sección que la tiene se abre con un corte a lo que la sostiene, solo y visto un poco desde arriba |
+| `__ofrecida` | en un `P_` | no va a la bandeja: cuando toca, aparece junto a su hueco y el jugador la arrastra hasta él (la moneda en la hucha). La sección que la tiene es el final: tras el espejo, transición y corte a lo que la sostiene (con lo que tiene justo debajo, su baúl), sola, vista un poco desde arriba y con una luz acogedora. **La moneda, de canto a lo largo de la ranura**, en la posición en la que acaba metida |
+| `__after-cama` | en un `C_` | el dibujo no está hasta que esa pieza está puesta (el de debajo de la cama) |
+| `__con-camara` | en un `C_` | el dibujo viene con esa pieza: al ponerla aparece y, al acabar su momento, se encuentra solo |
 | `__reward-cuadro` | en un `Z_` | al completar el rincón, el jugador recibe la pieza `cuadro` (hace falta un `P_cuadro`) |
 | `__x` `__nx` `__z` `__nz` `__y` `__ny` | en un `OD_` | eje por el que sale el cajón si no sale bien por defecto |
 | `__n` | en un `OR_` | la puerta abre hacia el otro lado |
@@ -58,6 +62,10 @@ Reglas de los nombres:
 - Mientras no toca encontrarlo, un `H_` no se ve (su silueta, donde va, sí); cuando toca, su mueble
   brilla con un contorno dorado y se mueve un poco.
 - Las piezas de un `Z_` son hijas del `Z_`.
+- Un `C_` (dibujo) **no** es decorado: aunque cuelgue de una sección, el juego decide cuándo se ve.
+  Si va dentro de un mueble, mismas reglas que un `H_` (hijo del cajón; hermano de la puerta o la
+  tapa). Que se vea desde la cámara del nivel: el fondo de un baúl bajo no se ve (el lado de delante
+  lo tapa); mejor apoyado en la pared del fondo o asomando.
 - **Objetos planos de pared con frase** (un dibujo, un tablero de llaves): su cara mira hacia su +Z
   local (hacia delante en Blender, -Y); su momento los enseña de frente.
 - **Cajones:** con el diorama visto en vista frontal de Blender (tecla 1 del teclado numérico), el
@@ -75,12 +83,14 @@ Desvan
 ├─ suelo, peana y trastos (decorado, siempre a la vista)
 ├─ S_1_desvan        P_pared_fondo, P_pared_izquierda, P_pared_derecha, P_cumbrera__after-..., P_tejado__after-cumbrera (x3),
 │                    P_viga__after-cumbrera (x2), P_ventana__after-pared_derecha, P_hucha__clave
-├─ S_2_infancia      Bombilla (con su luz), BaulJuguetes (OR_tapa_baul__x + H_cubos), P_cama_infantil, ...,
-│                    P_caja_musica__after-comoda_infantil, P_dibujo__after-caja_musica, P_peluche__clave
-├─ S_3_adolescencia  Bombilla, Armario (OR_puerta_armario__n + H_camara), Cajonera (OD_cajon_cajonera > H_solicitud), ...,
-│                    P_mp3__after-escritorio, P_camara__after-mp3__flash, P_solicitud__clave
-├─ S_4_adultez       Bombilla, Mesita (OD_cajon_mesita__nx > H_pinceles), ..., P_llaves, P_caballete__after-llaves,
-│                    P_espejo__clave__reflejo (con su malla Luna)
+├─ S_2_infancia      Bombilla (con su luz), BaulJuguetes (OR_tapa_baul__x + H_cubos + C_dibujo_verde), P_cama_infantil, ...,
+│                    P_caja_musica__after-comoda_infantil, P_dibujo__after-caja_musica, P_peluche__clave,
+│                    T_dibujos (cordel + Pinza1..7), C_dibujo_naranja__after-cama_infantil (debajo de la cama)
+├─ S_3_adolescencia  Bombilla, Armario (OR_puerta_armario__n + H_camara), Cajonera (OD_cajon_cajonera > H_solicitud + C_dibujo_azul), ...,
+│                    P_mp3__after-escritorio, P_camara__after-mp3__flash, P_solicitud__clave,
+│                    C_dibujo_rosa__con-camara (debajo de la cámara), C_dibujo_morado (encima del armario)
+├─ S_4_adultez       Bombilla, Mesita (OD_cajon_mesita__nx > H_pinceles + C_dibujo_rojo), ..., P_llaves, P_caballete__after-llaves,
+│                    P_espejo__clave__reflejo (con su malla Luna), C_dibujo_amarillo__after-cajas_tienda (encima de las cajas)
 └─ S_5_epilogo       P_moneda__ofrecida (encima de la hucha)
 ```
 

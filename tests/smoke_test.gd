@@ -238,6 +238,12 @@ func _test_story(main: Node) -> void:
 	var flashes := [0]
 	var count_flash := func() -> void: flashes[0] += 1
 	Events.flash_requested.connect(count_flash)
+	var found_events: Array = []
+	var record_found := func(item: Node, n: int, total: int) -> void: found_events.append([item, n, total])
+	Events.collectible_found.connect(record_found)
+	var hung := [0]
+	var count_hung := func(_item: Node) -> void: hung[0] += 1
+	Events.collectible_hung.connect(count_hung)
 	Narrator.clear()
 	var steps := 0
 	while not s1.completed and steps < 40:
@@ -268,6 +274,13 @@ func _test_story(main: Node) -> void:
 	fx_focus = GameState.enfoque.state()
 	check(float(fx_focus.fuera) > Enfoque.PLAY_BLUR + 0.5 and (fx_focus.centro as Vector2).distance_to(pig_px) < 120.0,
 		"en un momento, el enfoque se va al objeto y lo demás se desenfoca más")
+	var still := pig_node.global_transform
+	await get_tree().create_timer(0.5).timeout
+	check(pig_node.global_transform.is_equal_approx(still) and cam_ctl.breath_amount() < 0.01,
+		"en el primer plano el objeto se queda quieto (sin gesto) y la cámara deja de respirar")
+	GameState.hud.show_tip("(prueba)")
+	check(GameState.hud.tip_text() == "", "un consejo no sale encima de un primer plano: espera a que acabe")
+	GameState.hud._tip_waiting = []
 	await get_tree().process_frame
 	check(d.is_opening() and not GameState.hud.says_nothing_left(),
 		"entre una sección y la siguiente, la bandeja espera: no dice que aquí no queda nada")
@@ -290,6 +303,9 @@ func _test_story(main: Node) -> void:
 	shown = d.visible_inventory()
 	check(shown.has(&"comoda_infantil") and not shown.has(&"caja_musica") and not shown.has(&"dibujo") and not shown.has(&"peluche"),
 		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
+	var orange := _collectible(d, &"dibujo_naranja")
+	check(orange != null and not orange.available and not orange.target.visible and d.clothesline != null and d.clothesline.is_visible_in_tree(),
+		"al abrirse la infancia aparece la cuerda de los dibujos; el de debajo de la cama aún no está (after-cama_infantil)")
 	var blocks := _pickup(d, &"cubos")
 	var chest: Interactable = blocks.container if blocks != null else null
 	check(chest != null and chest.kind == NameRules.DOOR and not chest.target.is_ancestor_of(blocks.target),
@@ -312,6 +328,12 @@ func _test_story(main: Node) -> void:
 		steps += 1
 	check(d.hint_target().get("container") == chest, "cuando solo falta buscar, la pista señala el mueble (no lo escondido)")
 	check(not _slot(d, &"peluche").available, "(control) la nutria no aparece mientras falten los cubos")
+	var green := _collectible(d, &"dibujo_verde")
+	check(d.collectible_total() == 7 and green != null and green.available and green.container == chest and not green.is_clickable(),
+		"hay 7 dibujos escondidos; uno está en el baúl y, con el baúl cerrado, no se puede coger")
+	check(orange.available and orange.target.visible and orange.is_clickable(), "con la cama puesta, asoma el dibujo de debajo y se puede coger")
+	Narrator.clear()                           # sin primer plano encima: consejos y avisos esperan a que acabe
+	m.finish()
 	if chest != null:
 		chest.set_open(true)
 		await get_tree().process_frame
@@ -319,6 +341,23 @@ func _test_story(main: Node) -> void:
 			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo)")
 		d.collect(blocks)
 		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
+		check(green.is_clickable(), "con el baúl abierto, el dibujo de dentro se puede coger")
+		green.activate()
+		await get_tree().process_frame
+		await get_tree().process_frame
+		check(green.collected and found_events.size() == 1 and found_events[0][1] == 1 and found_events[0][2] == 7
+			and green.target.get_parent() == d.clothesline,
+			"tocar el dibujo lo encuentra (1 de 7) y se va hacia la cuerda")
+		check(GameState.hud.award_text().contains("1 DE 7") and GameState.hud.award_text().contains(Narrator.piece_name(&"dibujo_verde", true))
+			and GameState.hud.drawings_text() == "1 / 7",
+			"sale el aviso de logro (%s) y el contador de dibujos" % GameState.hud.award_text())
+		await get_tree().create_timer(Diorama.LIFT_TIME + 0.15 + Diorama.HANG_TIME + 0.25).timeout
+		check(green.target.global_position.distance_to(d.spot(0).global_position) < 0.02 and hung[0] == 1,
+			"el dibujo vuela hasta la primera pinza de la cuerda y se cuelga")
+		check(GameState.hud.tip_text().contains("%d dibujos" % d.collectible_total()),
+			"la primera vez, un consejo dice cuántos dibujos hay escondidos (%s)" % GameState.hud.tip_text())
+		await get_tree().create_timer(Efectos.GLINT_EVERY + 0.3).timeout
+		check(main.effects.glints > 0, "los dibujos que esperan echan un destello de vez en cuando (%d)" % main.effects.glints)
 		d.place(_slot(d, &"cubos"))
 	check(_slot(d, &"peluche").available and d.visible_inventory().has(&"peluche"), "con todo lo demás puesto aparece la nutria (clave)")
 	d.place(_slot(d, &"peluche"))
@@ -349,6 +388,15 @@ func _test_story(main: Node) -> void:
 		d.debug_solve_step()
 		steps += 1
 	check(flashes[0] > flashes_before, "al colocar la cámara, destello blanco (el flash)")
+	var pink := _collectible(d, &"dibujo_rosa")
+	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
+	check(pink != null and pink.comes_with == &"camara" and pink.available and pink.target.visible and not pink.collected and m.active,
+		"al poner la cámara aparece su dibujo, y espera quieto mientras dura su momento")
+	Narrator.clear()
+	m.finish()
+	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
+	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and pink.target.get_parent() == d.clothesline,
+		"al acabar el momento de la cámara, su dibujo se encuentra solo: logro (2 de 7) y a la cuerda")
 	steps = 0
 	while not application.available and steps < 60:
 		d.debug_solve_step()
@@ -371,32 +419,49 @@ func _test_story(main: Node) -> void:
 		"al poner el espejo, la cámara se pone delante de él (giro %.0f, quiere %.0f)" % [cam_ctl.yaw, want_yaw])
 	check(m.is_isolated() and cam_ctl.cam.cull_mask != 0xFFFFF and m.iris_strength() > 0.95 and is_instance_valid(m.reflection),
 		"espejo: todo lo demás a negro y en la luna aparece su reflejo")
+	d._open_when_free(s5)                        # lo que hace la pausa entre secciones al acabar
+	check(d.hold_sections and d.opening_section() == s5 and not s5.opening,
+		"mientras dura el espejo, el final espera: no se abre encima")
 	Narrator.clear()
 	await get_tree().create_timer(Momentos.MIN_TIME * 0.5).timeout     # un momento dura al menos MIN_TIME
-	check(not m.active and not m.is_isolated() and cam_ctl.cam.cull_mask == 0xFFFFF and not is_instance_valid(m.reflection),
-		"al acabar el espejo, todo vuelve a verse")
-	Narrator.clear()
-	d._open_pending(s5)
+	check(m.active and m.kind == "transicion" and m.is_isolated() and cam_ctl.in_moment and not s5.opening,
+		"al callarse el espejo no se vuelve al desván: transición (el espejo vacío, en silencio)")
+	var cut_wait := 0.0
+	while m.kind == "transicion" and cut_wait < 6.0:
+		await get_tree().process_frame
+		cut_wait += get_process_delta_time()
+	check(cut_wait > Momentos.TRANSITION_HOLD and s5.opening and m.kind == "ofrecida" and m._curtain.color.a > 0.95 and not is_instance_valid(m.reflection)
+		and GameState.hud.chapter_text() == "",
+		"después, fundido lento a negro y, ya a oscuras, empieza el final (sin rótulo de capítulo)")
 	check(not s5.opened and Narrator.remaining() > 3.0 and not _slot(d, &"moneda").available,
-		"el epílogo habla antes de enseñar la moneda")
-	await get_tree().create_timer(Momentos.CUT_TIME + 0.05).timeout
+		"el final habla antes de enseñar la moneda")
+	await get_tree().create_timer(0.3).timeout
 	var pig := _slot(d, &"hucha").node
 	check(m.kind == "ofrecida" and cam_ctl.in_moment and cam_ctl.center.distance_to(_slot(d, &"hucha").center()) < 0.2
 		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"moneda"),
-		"el epílogo es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja")
-	check(m.is_isolated() and m.is_in_isolation(Visuals.meshes_under(pig)[0]) and not m.is_in_isolation(Visuals.meshes_under(_slot(d, &"escritorio").node)[0])
-		and absf(cam_ctl.pitch - Momentos.ZENITH) < 0.5 and absf(cam_ctl._cur_pitch - cam_ctl.pitch) < 0.5 and m._gesture == "",
-		"el epílogo: corte a la hucha sola, vista un poco desde arriba, quieta y sin vueltas")
-	await get_tree().create_timer(1.4).timeout
-	check(is_instance_valid(m.coin), "mientras habla, la moneda aparece flotando junto a la hucha")
+		"el final es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja")
+	var trunk := d.find_child("BaulViejo", true, false)
+	check(m.is_isolated() and m.is_in_isolation(Visuals.meshes_under(pig)[0]) and m.is_in_isolation(trunk)
+		and not m.is_in_isolation(Visuals.meshes_under(_slot(d, &"escritorio").node)[0])
+		and absf(cam_ctl.pitch - Momentos.ZENITH) < 0.5 and absf(cam_ctl._cur_pitch - cam_ctl.pitch) < 0.5,
+		"corte a la hucha sola (sobre su baúl), vista un poco desde arriba, quieta y sin vueltas")
+	check(m.cozy_shown() and is_instance_valid(m._rim) and is_instance_valid(m._motes) and m.is_in_isolation(m._motes),
+		"la escena del final es acogedora: fondo cálido con luces desenfocadas, contraluz y motas en la luz")
+	await get_tree().create_timer(Momentos.COIN_DELAY + 0.9).timeout
+	check(is_instance_valid(m.coin), "mientras habla, la moneda aparece junto a la hucha")
+	var coin_xf: Transform3D = m.coin.global_transform if is_instance_valid(m.coin) else Transform3D()
+	var pig_xf := pig.global_transform
+	await get_tree().create_timer(0.5).timeout
+	check(is_instance_valid(m.coin) and m.coin.global_transform.is_equal_approx(coin_xf) and pig.global_transform.is_equal_approx(pig_xf),
+		"la moneda y la hucha se quedan quietas (lo que se mueve es la luz)")
 	d.debug_solve_step()
 	check(s5.opened and _slot(d, &"moneda").available, "después aparece la moneda, sobre la hucha")
 	Narrator.clear()
 	await get_tree().process_frame
-	_click(m.coin_screen_position())               # un clic sin arrastrar no la mete: vuelve a flotar
+	_click(m.coin_screen_position())               # un clic sin arrastrar no la mete: vuelve a su sitio
 	await get_tree().create_timer(0.6).timeout
 	check(not _slot(d, &"moneda").filled and is_instance_valid(m.coin) and m._coin_state == "",
-		"soltar la moneda lejos de la ranura no la mete: vuelve a flotar")
+		"soltar la moneda lejos de la ranura no la mete: vuelve a su sitio")
 	_mouse_button(m.coin_screen_position(), true)
 	await get_tree().process_frame
 	_mouse_move(m.slot_screen_position())
@@ -404,12 +469,29 @@ func _test_story(main: Node) -> void:
 	_mouse_button(m.slot_screen_position(), false)
 	await get_tree().create_timer(0.8).timeout
 	check(d.completed and _slot(d, &"moneda").filled, "arrastrar la moneda hasta la ranura la mete en la hucha y completa el desván")
+	check(d.find_child("ChispasMoneda", false, false) != null and float(m._cozy_mat.get_shader_parameter("brillo")) > 1.2,
+		"al entrar la moneda: golpe de luz, chispas doradas y el fondo se aviva")
 	Events.piece_placed.disconnect(record)
 	Events.flash_requested.disconnect(count_flash)
+	Events.collectible_found.disconnect(record_found)
+	Events.collectible_hung.disconnect(count_hung)
 	await get_tree().create_timer(2.0).timeout
 	check(not GameState.hud._done.visible, "el final de la historia no enseña el aviso de «completado»")
 	await get_tree().create_timer(3.0).timeout
 	check(main._fade.color.a > 0.05, "el final funde a negro (hacia los créditos) (%.2f)" % main._fade.color.a)
+	var credits: Creditos = main.credits
+	var wait_credits := 0.0
+	while not credits.rolling and wait_credits < 8.0:
+		await get_tree().create_timer(0.25).timeout
+		wait_credits += 0.25
+	check(credits.rolling and credits.lines().has("DIBUJOS ENCONTRADOS") and credits.lines().has("2 de 7"),
+		"tras el fundido pasan los créditos, con los dibujos encontrados (2 de 7)")
+	await get_tree().create_timer(1.2).timeout
+	_click(Vector2(640, 360))
+	await get_tree().create_timer(Creditos.FADE + 0.4).timeout
+	check(not credits.visible and GameState.diorama.scene_file_path == GameState.MENU_LEVEL
+		and main.menu.is_open() == GameState.menu_unlocked,
+		"y después de los créditos, el menú (con el cerdito)")
 
 
 ## La bandeja enseña todas las piezas (las que aún no van, con candado y el porqué), se aparta al
@@ -447,6 +529,13 @@ func _test_tray(d: Diorama, shown: Array[StringName]) -> void:
 	await get_tree().create_timer(Hud.SLIDE_TIME + 0.15).timeout
 	check(not GameState.is_dragging and not hud.tray_is_away() and not _slot(d, &"pared_fondo").filled,
 		"al soltar en el borde de la bandeja no se pone nada, y la bandeja vuelve")
+
+
+func _collectible(d: Diorama, id: StringName) -> Interactable:
+	for it in d.interactables:
+		if it.kind == NameRules.COLLECTIBLE and it.id == id:
+			return it
+	return null
 
 
 func _pickup(d: Diorama, id: StringName) -> Interactable:
@@ -519,7 +608,16 @@ func _test_title_menu(main: Node) -> bool:
 		await get_tree().process_frame
 	check(t.completed, "el título se completa (%d pasos)" % steps)
 	check(GameState.menu_unlocked and _saved(TEST_PROGRESS, "menu_desbloqueado") == true, "resolver el título desbloquea el menú y se guarda")
+	var talk := Narrator.remaining()
 	await get_tree().create_timer(main.MENU_DELAY + 0.3).timeout
+	check(talk > main.MENU_DELAY + 0.6 and not main.menu.is_open(),
+		"el menú no sale mientras el cerdito habla (le quedaban %.1f s de frases)" % talk)
+	var menu_wait := 0.0
+	while not main.menu.is_open() and menu_wait < 12.0:
+		await get_tree().create_timer(0.25).timeout
+		menu_wait += 0.25
+	check(main.menu.is_open() and Narrator.remaining() <= 0.0 and not GameState.hud._subtitle_box.visible,
+		"el menú sale cuando el cerdito ha acabado de hablar, y sin frases encima")
 	if not lights.is_empty():
 		var lamp: Light3D = lights[0][0]
 		check(lamp.visible and is_equal_approx(lamp.light_energy, float(lights[0][1])),
@@ -583,10 +681,21 @@ func _test_back_to_menu(main: Node) -> void:
 	await get_tree().process_frame
 	_click(done.get_global_rect().get_center())
 	await get_tree().process_frame
+	var credits: Creditos = main.credits
+	check(credits.rolling and credits.visible and credits.lines().has(GameState.game_title())
+		and credits.lines()[credits.lines().size() - 1] == "¡Gracias por jugar!" and not main.menu.is_open(),
+		"al acabar el juego pasan los créditos (del nombre del juego a «¡Gracias por jugar!»)")
+	await get_tree().create_timer(1.2).timeout
+	var y0 := credits._roll.position.y
+	await get_tree().create_timer(0.5).timeout
+	check(credits._roll.position.y < y0 - 5.0, "los créditos suben despacio (%.0f px en medio segundo)" % (y0 - credits._roll.position.y))
+	_click(Vector2(640, 360))                      # un clic los acaba
+	await get_tree().create_timer(Creditos.FADE + 0.4).timeout
 	var t := GameState.diorama
-	check(t != null and t.scene_file_path == GameState.MENU_LEVEL and t.completed, "al volver, el título sale ya montado")
-	check(main.menu.is_open() and main.menu.page == "creditos", "al acabar el juego se ven los créditos")
-	main.menu.show_page("principal")
+	check(not credits.visible and t != null and t.scene_file_path == GameState.MENU_LEVEL and t.completed,
+		"después de los créditos, el menú: el título sale ya montado")
+	check(main.menu.is_open() and main.menu.page == "principal" and Narrator.remaining() <= 0.0,
+		"y el menú se abre en su página principal, sin frases")
 	check(main.menu.buttons.jugar.text == "Continuar", "con progreso, el botón dice Continuar")
 	main.menu.show_page("elegir")
 	check(main.menu.buttons.nivel_0.text.contains("✓"), "Elegir diorama marca el nivel completado")
@@ -617,6 +726,12 @@ func _test_complete_shortcut(main: Node) -> void:
 	var all_placed := d.slots.all(func(s: PieceSlot) -> bool: return s.filled)
 	check(d.completed and ended[0] and all_open and all_placed and d.visible_inventory().is_empty(),
 		"F9 monta el desván entero de golpe: todas las zonas abiertas y cada pieza en su sitio")
+	var on_line := 0
+	for k in d.collectible_total():
+		for it in d.interactables:
+			if it.kind == NameRules.COLLECTIBLE and it.target.visible and it.target.global_position.distance_to(d.spot(k).global_position) < 0.01:
+				on_line += 1
+	check(d.collectibles_found() == 7 and on_line == 7, "y con F9 los 7 dibujos están colgados en la cuerda (%d)" % on_line)
 	await get_tree().create_timer(4.0).timeout
 	check(GameState.diorama == d and GameState.hud._done.visible and main._fade.color.a < 0.1,
 		"tras F9 el desván se queda a la vista (panel de fin, sin fundido a negro)")

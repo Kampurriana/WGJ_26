@@ -3,12 +3,16 @@ tools/check.sh falle justo en la comprobación que lo vigila (y no en otra cosa)
 Si un mutante sale "VERDE: EL TEST NO LO VIGILA", ese test no sirve: arreglar el test (o el mutante).
 Si sale "NO APLICADO", el código cambió: actualizar el texto del mutante.
 
-Uso (desde la raíz del proyecto; tarda ~25 s por mutante):
+Uso (desde la raíz del proyecto; tarda ~2-3 min por mutante: córrelo en dos tandas, DESDE=50):
     python3 -I tools/mutantes.py . build/mutantes "$GODOT"
     SOLO=M17 python3 -I tools/mutantes.py . build/mutantes "$GODOT"     # solo uno
+    DESDE=50 python3 -I tools/mutantes.py . build/mutantes "$GODOT"     # del M50 en adelante
+    PARALELO=3 python3 -I tools/mutantes.py . build/mutantes "$GODOT"   # tres copias a la vez (cada una con su user://)
 Al añadir una mecánica con su test, añadir aquí su mutante y verlo en ROJO BIEN.
 """
+import concurrent.futures
 import os
+import queue
 import shutil
 import subprocess
 import sys
@@ -32,7 +36,7 @@ MUTANTES = [
 	("M6 el título no sale montado al volver", "core/diorama.gd",
 		"\tfor s in slots:\n\t\tif not s.filled:\n\t\t\ts.fill(false)",
 		"\treturn\n\tfor s in slots:\n\t\tif not s.filled:\n\t\t\ts.fill(false)",
-		"al volver, el título sale ya montado"),
+		"después de los créditos, el menú: el título sale ya montado"),
 	("M7 el último nivel dice Siguiente", "ui/hud.gd",
 		'\t_done_button.text = "Volver al menú" if last else "Siguiente"', '\t_done_button.text = "Siguiente"',
 		"tras el último nivel, el panel ofrece volver al menú"),
@@ -205,7 +209,7 @@ MUTANTES = [
 		"\tstart(node, \"reflejo\" if slot != null and slot.reflejo else \"normal\", String(id))", "\tpass",
 		"al poner la hucha (tiene frase), momento"),
 	("M61 el momento no se acaba", "core/momentos.gd",
-		"\tif not talking and _elapsed >= MIN_TIME:\n\t\tfinish()", "\tif false:\n\t\tfinish()",
+		"\tif not talking and _elapsed >= MIN_TIME:\n\t\t_end_moment()", "\tif false:\n\t\t_end_moment()",
 		"al callarse, el momento acaba"),
 	("M62 el espejo no deja el resto a negro", "core/momentos.gd",
 		"\t\t\t\t\t_isolate([node, reflection]))", "\t\t\t\t\tpass)",
@@ -215,13 +219,13 @@ MUTANTES = [
 		"al poner el espejo, la cámara se pone delante"),
 	("M64 la moneda va a la bandeja", "core/diorama.gd",
 		"\t\tif s.filled or s.scope != focus or seen.has(s.id) or s.offered:", "\t\tif s.filled or s.scope != focus or seen.has(s.id):",
-		"el epílogo es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja"),
+		"el final es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja"),
 	("M65 la moneda no se puede arrastrar", "core/momentos.gd",
 		"\t\t_drag_coin((e as InputEventMouseMotion).position)", "\t\tpass",
 		"arrastrar la moneda hasta la ranura la mete"),
 	("M66 el epílogo sin primer plano de la hucha", "core/momentos.gd",
 		"\t\t\tstart(_what_holds(d, s), \"ofrecida\", String(s.id))", "\t\t\tpass",
-		"el epílogo es un primer plano"),
+		"el final es un primer plano"),
 	("M67 la interfaz no se aparta en un momento", "core/momentos.gd",
 		"\tGameState.hud.set_moment(true)", "\tpass",
 		"al poner la hucha (tiene frase), momento"),
@@ -232,7 +236,7 @@ MUTANTES = [
 		"\t\t\t_hide_occluders(node)\n", "",
 		"lo que se cruza delante del objeto del primer plano se esconde"),
 	("M70 lo escondido para el plano no vuelve", "core/momentos.gd",
-		"\t_clear_extras()\n\t_show_hidden(true)\n\tactive = false", "\t_clear_extras()\n\tactive = false",
+		"\t_clear_extras()\n\t_show_hidden(true)\n\t_hold_sections(false)\n\tactive = false", "\t_clear_extras()\n\t_hold_sections(false)\n\tactive = false",
 		"y lo que se había escondido vuelve"),
 	("M71 los objetos planos no se ven de frente", "core/momentos.gd",
 		"\t\t\tvar front := _flat_front(node)", "\t\t\tvar front := Vector3.ZERO",
@@ -244,11 +248,11 @@ MUTANTES = [
 		"\t_rect.visible = enabled", "\t_rect.visible = false",
 		"todo se ve un poco desdibujado"),
 	("M74 el epílogo no aísla la hucha", "core/momentos.gd",
-		"\t\t_isolate([node, _offered.node, _spot])", "\t\tpass",
-		"el epílogo: corte a la hucha sola"),
+		"\t\t_isolate(shown)", "\t\tpass",
+		"corte a la hucha sola"),
 	("M75 el epílogo viaja en vez de cortar", "core/momentos.gd",
 		"\t\tcam.snap()                               # un corte, no un viaje: la cámara no da vueltas\n", "",
-		"el epílogo: corte a la hucha sola"),
+		"corte a la hucha sola"),
 	("M76 la moneda entra aunque se suelte lejos", "core/momentos.gd",
 		"\tif slot_px.distance_to(coin_px) <= COIN_SNAP_PX * GameState.diorama._snap_scale():", "\tif true:",
 		"soltar la moneda lejos de la ranura no la mete"),
@@ -256,31 +260,126 @@ MUTANTES = [
 		"\t_chapter_kicker.text = (\"CAPÍTULO \" + parts[0]) if parts.size() == 2 else \"\"", "\t_chapter_kicker.text = \"\"",
 		"el rótulo es de nuevo capítulo"),
 	("M78 el consejo sale encima del rótulo de capítulo", "ui/hud.gd",
-		"\tif _chapter_showing():                       # no encima del rótulo de capítulo: espera a que se vaya", "\tif false:",
+		"\tif _chapter_showing() or _moment:            # no encima del rótulo de capítulo ni de un primer plano: espera", "\tif _moment:",
 		"la primera vez sale el consejo de tocar el mueble que brilla"),
+	# --- Cuarta nota (lote 5) ---
+	("M79 el objeto se mueve en su primer plano", "core/momentos.gd",
+		"\t_follow_iris()\n\tif kind == \"transicion\":",
+		"\t_follow_iris()\n\tif is_instance_valid(target) and kind == \"normal\":\n\t\ttarget.rotate_y(delta)\n\tif kind == \"transicion\":",
+		"en el primer plano el objeto se queda quieto"),
+	("M80 la cámara respira en el primer plano", "camera/diorama_camera.gd",
+		"\t_breath_k = move_toward(_breath_k, 0.0 if in_moment else 1.0, delta / BREATH_FADE)", "\t_breath_k = 1.0",
+		"en el primer plano el objeto se queda quieto"),
+	("M81 un dibujo en un mueble cerrado se puede coger", "core/diorama.gd",
+		"\t\tit.set_clickable(ready and it.comes_with == &\"\" and (it.container == null or it.container.is_open))",
+		"\t\tit.set_clickable(ready and it.comes_with == &\"\")",
+		"hay 7 dibujos escondidos; uno está en el baúl"),
+	("M82 el dibujo de debajo de la cama está sin la cama", "core/diorama.gd",
+		"\tvar need: Array[StringName] = it.prereqs.duplicate()", "\tvar need: Array[StringName] = []",
+		"al abrirse la infancia aparece la cuerda de los dibujos"),
+	("M83 el dibujo encontrado no se cuelga en la cuerda", "core/diorama.gd",
+		"\tt.reparent(clothesline, true)", "\tpass",
+		"tocar el dibujo lo encuentra"),
+	("M84 el dibujo no vuela hasta su pinza", "core/diorama.gd",
+		"\tvar goal := Transform3D(spot.global_basis.orthonormalized().scaled(size), spot.global_position)",
+		"\tvar goal := Transform3D(spot.global_basis.orthonormalized().scaled(size), t.global_position)",
+		"el dibujo vuela hasta la primera pinza"),
+	("M85 sin aviso de logro", "ui/hud.gd",
+		"\t_award_queue.append({\"title\": title, \"found\": found, \"total\": total, \"color\": color})", "\tpass",
+		"sale el aviso de logro"),
+	("M86 el dibujo de la cámara no se encuentra solo", "core/diorama.gd",
+		"\t\tif ready and it.comes_with != &\"\" and not _given.has(it):", "\t\tif false:",
+		"al acabar el momento de la cámara, su dibujo se encuentra solo"),
+	("M87 el dibujo de la cámara se encuentra encima de su momento", "core/diorama.gd",
+		"\t\tif GameState.camera != null and is_instance_valid(GameState.camera) and GameState.camera.in_moment:", "\t\tif false:",
+		"al poner la cámara aparece su dibujo, y espera quieto mientras dura su momento"),
+	("M88 los dibujos no echan destellos", "core/efectos.gd",
+		"\tif waiting.is_empty():\n\t\treturn\n\t_glint_i", "\tif true:\n\t\treturn\n\t_glint_i",
+		"los dibujos que esperan echan un destello"),
+	("M89 el consejo de los dibujos no dice cuántos hay", "ui/hud.gd",
+		"\treturn text.replace(\"{total}\", str(d.collectible_total()) if d != null and is_instance_valid(d) else \"\")", "\treturn text",
+		"la primera vez, un consejo dice cuántos dibujos hay escondidos"),
+	("M90 F9 no cuelga los dibujos", "core/diorama.gd",
+		"\t\t\t_hang(it, collectibles_found() - 1, false)", "\t\t\tpass",
+		"y con F9 los 7 dibujos están colgados"),
+	("M91 el menú sale mientras habla el cerdito", "scenes/main.gd",
+		"maxf(MENU_DELAY, Narrator.remaining() + 0.4)", "MENU_DELAY",
+		"el menú no sale mientras el cerdito habla"),
+	("M92 al acabar el juego no hay créditos", "scenes/main.gd",
+		"\telse:\n\t\troll_credits()", "\telse:\n\t\tshow_title()",
+		"al acabar el juego pasan los créditos"),
+	("M93 después de los créditos no vuelve el menú", "scenes/main.gd",
+		"\t_fade.color.a = 1.0                          # el menú aparece desde negro (show_title funde)\n\tshow_title()",
+		"\t_fade.color.a = 1.0",
+		"después de los créditos, el menú: el título sale ya montado"),
+	("M94 los créditos no cuentan los dibujos", "ui/creditos.gd",
+		"\tif total > 0:", "\tif false:",
+		"tras el fundido pasan los créditos, con los dibujos encontrados"),
+	("M95 el espejo vuelve al desván antes del final", "core/momentos.gd",
+		"\tif kind == \"reflejo\" and _ending_follows():", "\tif false:",
+		"al callarse el espejo no se vuelve al desván"),
+	("M96 el final se abre encima del espejo", "core/diorama.gd",
+		"\tif hold_sections and sec == _pending:", "\tif false:",
+		"mientras dura el espejo, el final espera"),
+	("M97 el final sin su escena acogedora", "core/momentos.gd",
+		"\t_set_cozy(1.0, 0.0)\n", "",
+		"la escena del final es acogedora"),
+	("M98 la moneda se mece", "core/momentos.gd",
+		"\tcoin.global_transform = Transform3D(face.scaled(Vector3.ONE * coin.scale.x), _coin_rest)",
+		"\tcoin.global_transform = Transform3D(face.scaled(Vector3.ONE * coin.scale.x), _coin_rest + Vector3.UP * sin(_t * 2.2) * 0.01)",
+		"la moneda y la hucha se quedan quietas"),
+	("M99 la moneda entra sin golpe de luz", "core/momentos.gd",
+		"\t\t\t_coin_in_fx(goal.origin)\n", "",
+		"al entrar la moneda: golpe de luz"),
+	("M100 el consejo sale encima de un primer plano", "ui/hud.gd",
+		"\tif _chapter_showing() or _moment:            # no encima del rótulo de capítulo ni de un primer plano: espera",
+		"\tif _chapter_showing():",
+		"un consejo no sale encima de un primer plano"),
 ]
 
 solo = os.environ.get("SOLO")
+desde = int(os.environ.get("DESDE", "0"))      # DESDE=50: del M50 en adelante (para partir la tanda)
+paralelo = max(1, int(os.environ.get("PARALELO", "1")))   # PARALELO=3: tres copias a la vez
 os.makedirs(trabajo, exist_ok=True)
-for nombre, fichero, viejo, nuevo, esperado in MUTANTES:
-	if solo and not nombre.startswith(solo + " "):
-		continue
-	copia = os.path.join(trabajo, "proj")
-	shutil.rmtree(copia, ignore_errors=True)
-	shutil.copytree(proyecto, copia, ignore=shutil.ignore_patterns("build", ".git", ".claude"))
-	ruta = os.path.join(copia, fichero)
-	src = open(ruta, encoding="utf-8").read()
-	n = src.count(viejo)
-	if n != 1:
-		print(f"{nombre}: NO APLICADO (el texto aparece {n} veces)")
-		continue
-	open(ruta, "w", encoding="utf-8").write(src.replace(viejo, nuevo))
-	r = subprocess.run(["bash", "tools/check.sh"], cwd=copia, env=dict(os.environ, GODOT=godot),
-		capture_output=True, text=True, timeout=600)
-	log = open(os.path.join(copia, "build", "check.log"), encoding="utf-8", errors="replace").read()
-	fallos = [l[6:].strip() for l in log.splitlines() if l.startswith("FALLO ")]
-	errores = [l for l in log.splitlines() if "SCRIPT ERROR" in l or "Parse Error" in l]
-	acierta = any(f.startswith(esperado) for f in fallos)
-	veredicto = "ROJO BIEN" if acierta else ("VERDE: EL TEST NO LO VIGILA" if not fallos and r.returncode == 0 else "ROJO POR OTRO MOTIVO")
-	print(f"{nombre}: {veredicto}  | fallos={fallos[:3]} errores_script={len(errores)}")
-shutil.rmtree(os.path.join(trabajo, "proj"), ignore_errors=True)
+huecos = queue.Queue()
+for k in range(paralelo):
+	huecos.put(k)
+
+
+def probar(mutante):
+	nombre, fichero, viejo, nuevo, esperado = mutante
+	k = huecos.get()
+	copia = os.path.join(trabajo, f"proj{k}")
+	try:
+		shutil.rmtree(copia, ignore_errors=True)
+		shutil.copytree(proyecto, copia, ignore=shutil.ignore_patterns("build", ".git", ".claude"))
+		# Cada copia con su propio user:// (si no, dos tests a la vez se pisan el progreso: trampa 25).
+		ajustes = os.path.join(copia, "project.godot")
+		texto = open(ajustes, encoding="utf-8").read()
+		texto = texto.replace("[application]\n", "[application]\n\nconfig/use_custom_user_dir=true\n"
+			f"config/custom_user_dir_name=\"wgj_mutante_{k}\"\n", 1)
+		open(ajustes, "w", encoding="utf-8").write(texto)
+		ruta = os.path.join(copia, fichero)
+		src = open(ruta, encoding="utf-8").read()
+		n = src.count(viejo)
+		if n != 1:
+			return f"{nombre}: NO APLICADO (el texto aparece {n} veces)"
+		open(ruta, "w", encoding="utf-8").write(src.replace(viejo, nuevo))
+		r = subprocess.run(["bash", "tools/check.sh"], cwd=copia, env=dict(os.environ, GODOT=godot),
+			capture_output=True, text=True, timeout=900)
+		log = open(os.path.join(copia, "build", "check.log"), encoding="utf-8", errors="replace").read()
+		fallos = [l[6:].strip() for l in log.splitlines() if l.startswith("FALLO ")]
+		errores = [l for l in log.splitlines() if "SCRIPT ERROR" in l or "Parse Error" in l]
+		acierta = any(f.startswith(esperado) for f in fallos)
+		veredicto = "ROJO BIEN" if acierta else ("VERDE: EL TEST NO LO VIGILA" if not fallos and r.returncode == 0 else "ROJO POR OTRO MOTIVO")
+		return f"{nombre}: {veredicto}  | fallos={fallos[:3]} errores_script={len(errores)}"
+	finally:
+		huecos.put(k)
+
+
+elegidos = [m for m in MUTANTES if (not solo or m[0].startswith(solo + " ")) and int(m[0].split()[0][1:]) >= desde]
+with concurrent.futures.ThreadPoolExecutor(max_workers=paralelo) as pool:
+	for linea in pool.map(probar, elegidos):
+		print(linea)
+for k in range(paralelo):
+	shutil.rmtree(os.path.join(trabajo, f"proj{k}"), ignore_errors=True)

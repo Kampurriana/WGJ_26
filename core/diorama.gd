@@ -15,6 +15,10 @@ extends Node3D
 ## también. Mientras no, su silueta va tenue y su ficha, con candado y el porqué (lock_reason).
 ## Objetos escondidos (H_): solo aparecen cuando toca encontrarlos; entonces su mueble brilla y se
 ## mueve (Interactable.set_attention) y la primera vez sale un consejo.
+## Dibujos escondidos (C_, cuarta nota): coleccionables que no hacen falta para acabar. Están por el
+## desván (dentro de muebles, debajo de la cama...) desde que se abre su zona; al tocar uno se
+## levanta, vuela hasta la cuerda (T_) y se cuelga en la siguiente pinza, y sale un aviso de logro
+## ("3 de 7"). El que viene con una pieza (con-camara) se encuentra solo al acabar su momento.
 
 const PAINT_TIME := 0.9                     ## lo que tarda en extenderse la pintura de una pieza (s)
 const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al completarlo
@@ -22,6 +26,10 @@ const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
 const LIGHT_FADE := 1.6                     ## lo que tardan en encenderse las luces de una sección
 const POP_TIME := 0.35                      ## el saltito de una pieza al encajar (crece y vuelve)
+const LIFT_TIME := 0.45                     ## un dibujo encontrado se levanta de donde estaba...
+const HANG_TIME := 1.3                      ## ...vuela en arco hasta su pinza...
+const SWING_TIME := 2.4                     ## ...y se balancea en la cuerda hasta quedarse quieto (s)
+const GIVEN_DELAY := 0.7                    ## lo que espera el dibujo que viene con una pieza tras su momento (s)
 
 @export var level_title := "Diorama"
 ## Modelo del diorama: un .glb (o escena) con la convención de nombres. Si el fichero existe, se
@@ -73,6 +81,13 @@ var _all_painted := false
 var _base_scale: Dictionary = {}            ## Node3D -> Vector3
 var _pending: Section                       ## sección que se va a abrir (esperando la pausa o sus frases)
 var _tips_shown: Dictionary = {}            ## consejos ya dados en este diorama
+var clothesline: Node3D                     ## la cuerda de los dibujos (T_); null = no hay
+var _spots: Array[Node3D] = []              ## sus pinzas, en orden: el n-ésimo dibujo encontrado va a la n-ésima
+var _given: Array[Interactable] = []        ## dibujos que vienen con una pieza, esperando a que acabe su momento
+var _given_wait := 0.0
+## (Momentos) Mientras sea true, la sección siguiente no se abre sola al acabar la pausa: espera
+## (el final no se abre encima del espejo; lo abre la transición con open_pending_now).
+var hold_sections := false
 
 
 func _ready() -> void:
@@ -150,6 +165,14 @@ func _scan(n: Node, scope: Interactable, section: Section) -> void:
 				sections.append(next_section)
 				_scan(c, scope, next_section)
 				continue
+			if info.kind == NameRules.LINE:
+				clothesline = c as Node3D
+				_spots.clear()
+				for k in c.get_children():
+					if k is Node3D and String(k.name).begins_with("Pinza"):
+						_spots.append(k)
+				_spots.sort_custom(func(a: Node3D, b: Node3D) -> bool: return String(a.name).naturalnocasecmp_to(String(b.name)) < 0)
+				continue
 			if info.kind == NameRules.PIECE:
 				var s := PieceSlot.new()
 				s.setup(info.id, c as Node3D, scope)
@@ -169,7 +192,7 @@ func _scan(n: Node, scope: Interactable, section: Section) -> void:
 			if section != null:
 				section.interactables.append(it)
 			interactables.append(it)
-			if info.kind == NameRules.PICKUP:
+			if it.is_hidden_item():
 				continue
 			if info.kind == NameRules.ZOOM:
 				next_scope = it
@@ -186,7 +209,7 @@ func _setup_sections() -> void:
 		sec.set_lights(sec.opened)
 		sec.set_decor(sec.opened)
 		for it in sec.interactables:
-			if it.kind != NameRules.PICKUP:
+			if not it.is_hidden_item():
 				it.set_clickable(sec.opened)
 
 
@@ -197,7 +220,7 @@ func _setup_sections() -> void:
 ## Se busca hacia arriba; no se mira entre los hijos de una sección ni de la raíz (ahí todo es hermano).
 func _link_containers() -> void:
 	for it in interactables:
-		if it.kind != NameRules.PICKUP:
+		if not it.is_hidden_item():
 			continue
 		var n := it.target.get_parent()
 		while n != null and n != self:
@@ -246,7 +269,7 @@ func _apply_clay() -> void:
 		for m in s.meshes():
 			skip[m] = true
 	for it in interactables:
-		if it.kind == NameRules.PICKUP:      # lo escondido se queda en color: es lo que se busca
+		if it.is_hidden_item():              # lo escondido se queda en color: es lo que se busca
 			for m in Visuals.meshes_under(it.target):
 				skip[m] = true
 	_paint_mat = Visuals.make_clay_overlay()
@@ -265,7 +288,7 @@ func _build_surfaces() -> void:
 		for m in s.meshes():
 			skip[m] = true
 	for it in interactables:
-		if it.kind == NameRules.PICKUP:
+		if it.is_hidden_item():
 			for m in Visuals.meshes_under(it.target):
 				skip[m] = true
 	for m in Visuals.meshes_under(self):
@@ -468,7 +491,8 @@ func place(slot: PieceSlot) -> void:
 	for m in slot.meshes():
 		Visuals.add_surface(m)
 	inventory.erase(slot.id)
-	_pop(slot.node)
+	if not slot.offered:                        # la moneda entra en la hucha sin saltito: el final es quieto
+		_pop(slot.node)
 	_reveal_around(slot.center())
 	_play_animation(String(slot.id) + "_placed")
 	Sfx.play("snap")
@@ -547,8 +571,8 @@ func _on_world_clicked(screen_pos: Vector2) -> void:
 		it.activate()
 
 
-## Rayo desde la cámara. Si el primer impacto es un cajón ABIERTO y detrás hay una pieza
-## escondida que vive dentro de él, gana la pieza (si no, nunca se podría coger).
+## Rayo desde la cámara. Si el primer impacto es un cajón ABIERTO y detrás hay una pieza o un dibujo
+## escondido que vive dentro de él, gana lo de dentro (si no, nunca se podría coger).
 func pick_interactable(screen_pos: Vector2, cam: Camera3D) -> Interactable:
 	var space := get_world_3d().direct_space_state
 	var from := cam.project_ray_origin(screen_pos)
@@ -569,7 +593,7 @@ func pick_interactable(screen_pos: Vector2, cam: Camera3D) -> Interactable:
 	var first := hits[0]
 	if first.is_openable() and first.is_open:
 		for h in hits.slice(1):
-			if h.kind == NameRules.PICKUP and first.target.is_ancestor_of(h.target):
+			if h.is_hidden_item() and (h.container == first or first.target.is_ancestor_of(h.target)):
 				return h
 	return first
 
@@ -618,6 +642,90 @@ func _check_scope(scope: Interactable) -> void:
 			exit_focus())
 
 
+# --- Dibujos escondidos (C_) -----------------------------------------------------------
+
+## ¿Está ya este dibujo? Su zona abierta y sus after-x (y la pieza con la que viene) puestas.
+func collectible_ready(it: Interactable) -> bool:
+	if it.section != null and not it.section.opened:
+		return false
+	var need: Array[StringName] = it.prereqs.duplicate()
+	if it.comes_with != &"":
+		need.append(it.comes_with)
+	for p in need:
+		for s in slots:
+			if s.id == p and not s.filled:
+				return false
+	return true
+
+
+func collectible_total() -> int:
+	return interactables.filter(func(it: Interactable) -> bool: return it.kind == NameRules.COLLECTIBLE).size()
+
+
+func collectibles_found() -> int:
+	return interactables.filter(func(it: Interactable) -> bool: return it.kind == NameRules.COLLECTIBLE and it.collected).size()
+
+
+## Un dibujo encontrado: se levanta, vuela a la siguiente pinza de la cuerda y sale el logro.
+func find_collectible(it: Interactable) -> void:
+	if it.kind != NameRules.COLLECTIBLE or it.collected or not it.available:
+		return
+	it.collected = true
+	it.set_clickable(false)
+	_given.erase(it)
+	var found := collectibles_found()
+	Sfx.play("logro")
+	Events.collectible_found.emit(it, found, collectible_total())
+	_hang(it, found - 1, true)
+	if found == 1:
+		_tip_once("consejo_dibujos")
+
+
+## Lo cuelga en la pinza `index` (animate = en vuelo y balanceándose; si no, ya colgado). Sin cuerda
+## o sin pinza libre, se va como lo escondido.
+func _hang(it: Interactable, index: int, animate: bool) -> void:
+	var t := it.target
+	if clothesline == null or index < 0 or index >= _spots.size():
+		push_warning("Diorama '%s': el dibujo %s no tiene pinza en la cuerda (T_ con hijos Pinza…)" % [name, t.name])
+		t.hide()
+		return
+	var spot := _spots[index]
+	t.reparent(clothesline, true)
+	t.show()
+	var size := t.global_basis.get_scale()
+	var goal := Transform3D(spot.global_basis.orthonormalized().scaled(size), spot.global_position)
+	if not animate:
+		t.global_transform = goal
+		return
+	var from := t.global_transform
+	var lift := from.origin + Vector3.UP * 0.18
+	var peak := lift.lerp(goal.origin, 0.5) + Vector3.UP * (0.25 + lift.distance_to(goal.origin) * 0.15)
+	var q0 := from.basis.get_rotation_quaternion()
+	var q1 := goal.basis.get_rotation_quaternion()
+	var tw := t.create_tween()
+	tw.tween_method(func(k: float) -> void:              # ¡aquí está!: se levanta y crece un poco
+		t.global_transform = Transform3D(Basis(q0.slerp(q1, k * 0.25)).scaled(size * (1.0 + 0.25 * k)),
+			from.origin.lerp(lift, k)), 0.0, 1.0, LIFT_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_interval(0.15)
+	tw.tween_method(func(k: float) -> void:              # vuela en arco hasta su pinza
+		var a := lift.lerp(peak, k)
+		var b := peak.lerp(goal.origin, k)
+		t.global_transform = Transform3D(Basis(q0.slerp(q1, 0.25 + 0.75 * k)).scaled(size * (1.25 - 0.25 * k)),
+			a.lerp(b, k)), 0.0, 1.0, HANG_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func() -> void:
+		Sfx.play("pinza")
+		Events.collectible_hung.emit(it))
+	tw.tween_method(func(k: float) -> void:              # se engancha y se balancea hasta quedarse quieto
+		var e := k * SWING_TIME
+		t.global_transform = Transform3D(goal.basis * Basis(Vector3.RIGHT, 0.5 * exp(-e * 2.2) * sin(e * 8.0)), goal.origin), \
+		0.0, 1.0, SWING_TIME)
+
+
+## (Tests) La pinza donde va el n-ésimo dibujo (desde 0); null si no hay.
+func spot(index: int) -> Node3D:
+	return _spots[index] if index >= 0 and index < _spots.size() else null
+
+
 # --- Secciones -------------------------------------------------------------------------
 
 ## ¿Se ha llenado la sección abierta? Se pinta entera y, tras una pausa (o cuando acabe de hablar
@@ -635,8 +743,26 @@ func _check_sections() -> void:
 		if i + 1 < sections.size() and _pending == null:
 			_pending = sections[i + 1]
 			var wait := maxf(SECTION_PAUSE, Narrator.remaining() + 0.3)
-			get_tree().create_timer(wait, false).timeout.connect(_open_pending.bind(_pending))
+			get_tree().create_timer(wait, false).timeout.connect(_open_when_free.bind(_pending))
 			Events.inventory_changed.emit()       # la bandeja espera a la sección nueva (no está "vacía")
+
+
+func _open_when_free(sec: Section) -> void:
+	if hold_sections and sec == _pending:
+		get_tree().create_timer(0.2, false).timeout.connect(_open_when_free.bind(sec))
+		return
+	_open_pending(sec)
+
+
+## (Momentos) Abre ya la sección que esperaba (al acabar la transición del espejo al final).
+func open_pending_now() -> void:
+	if _pending != null:
+		_open_pending(_pending)
+
+
+## La sección que se está abriendo (o esperando para abrirse); null si ninguna.
+func opening_section() -> Section:
+	return _pending
 
 
 ## Abre la sección que esperaba: luces de la zona, rótulo, cámara y sus frases (si las tiene).
@@ -648,7 +774,7 @@ func _open_pending(sec: Section) -> void:
 	sec.set_lights(true, LIGHT_FADE)
 	sec.set_decor(true, true)
 	for it in sec.interactables:
-		if it.kind != NameRules.PICKUP:
+		if not it.is_hidden_item():
 			it.set_clickable(true)
 	Events.section_opened.emit(sec)
 	Narrator.say_if_exists("seccion_" + sec.name)
@@ -699,6 +825,17 @@ func _refresh(animate: bool) -> void:
 			_tip_once("consejo_dentro")
 	for c: Interactable in calling:
 		c.set_attention(calling[c])
+	# Los dibujos escondidos: están en cuanto se abre su zona (y su after-x está puesta); dentro de un
+	# mueble cerrado no se pueden coger. El que viene con una pieza espera a que acabe su momento.
+	for it in interactables:
+		if it.kind != NameRules.COLLECTIBLE or it.collected:
+			continue
+		var ready := collectible_ready(it)
+		it.set_available(ready)
+		it.set_clickable(ready and it.comes_with == &"" and (it.container == null or it.container.is_open))
+		if ready and it.comes_with != &"" and not _given.has(it):
+			_given.append(it)
+			_given_wait = GIVEN_DELAY
 
 
 func _tip_once(key: String) -> void:
@@ -781,7 +918,15 @@ func _finish_paint() -> void:
 		_paint_mat.set_shader_parameter("todo_pintado", 1.0)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if not _given.is_empty():                    # el dibujo que viene con una pieza, cuando acaba su momento
+		if GameState.camera != null and is_instance_valid(GameState.camera) and GameState.camera.in_moment:
+			_given_wait = GIVEN_DELAY
+		else:
+			_given_wait -= delta
+			if _given_wait <= 0.0:
+				_given_wait = GIVEN_DELAY
+				find_collectible(_given.pop_front())
 	if _paint_dirty:
 		_paint_dirty = false
 		var packed := PackedVector4Array()
@@ -842,7 +987,7 @@ func _play_animation(anim: String) -> void:
 # --- Para tests y capturas: un paso de "jugador automático" ------------------------------
 
 ## (Atajo F9) Lo monta entero de golpe: todas las zonas abiertas, cada pieza en su sitio (lo
-## escondido ya no hace falta buscarlo), sin frases. Luego el final de siempre (onda de color,
+## escondido ya no hace falta buscarlo; los dibujos, ya en su cuerda), sin frases. Luego el final de siempre (onda de color,
 ## luces, cámara que se mece) pero sin fundido a negro: se queda a la vista con el panel de fin.
 func debug_complete() -> void:
 	if completed:
@@ -866,6 +1011,12 @@ func debug_complete() -> void:
 				Visuals.add_surface(m)
 	inventory.clear()
 	_refresh(false)
+	_given.clear()
+	for it in interactables:                    # los dibujos, ya colgados en su cuerda
+		if it.kind == NameRules.COLLECTIBLE and not it.collected:
+			it.collected = true
+			it.set_clickable(false)
+			_hang(it, collectibles_found() - 1, false)
 	Events.inventory_changed.emit()
 	_check_completed()
 

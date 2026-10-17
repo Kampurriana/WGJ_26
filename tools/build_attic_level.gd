@@ -7,9 +7,13 @@ extends "res://tools/build_room_level.gd"
 ##                     a Bellas Artes (escondida en el cajón, clave) + su dressing
 ##   S_4_adultez       zona derecha: llaves -> caballete -> espejo (clave, __reflejo: su momento
 ##                     es de frente y con todo a negro) + su dressing
-##   S_5_epilogo       la moneda (__ofrecida: aparece flotando junto a la hucha y un clic la mete)
+##   S_5_epilogo       la moneda (__ofrecida: aparece junto a la hucha y se arrastra a la ranura)
 ## Las tres zonas comparten suelo y tejado (integradas); cada una tiene su alfombra, su bombilla
 ## (se enciende al abrirse) y muebles que se abren con algo dentro (baúl, armario, cajones).
+## Dibujos escondidos (C_, cuarta nota): siete dibujos de cuando era pequeña (de momento, folios de
+## colores), por el desván; cada uno que se encuentra se cuelga en la cuerda de la infancia (T_):
+##   baúl de juguetes · debajo de la cama · con la cámara (con-camara) · encima del armario ·
+##   cajón de la cajonera · cajón de la mesita · encima de las cajas de la tienda
 ## Ejecutar:
 ##   godot --headless --path . --script res://tools/build_attic_level.gd
 ## Escribe:
@@ -43,6 +47,12 @@ const TEEN_TEAL := Color(0.25, 0.58, 0.6)
 const ADULT_GREY := Color(0.48, 0.52, 0.58)
 const ADULT_OLIVE := Color(0.5, 0.52, 0.36)
 const WARM_BULB := Color(1.0, 0.76, 0.48)
+const DRAWING_W := 0.17                      ## un folio de dibujo (m)
+const DRAWING_H := 0.21
+const LINE_Z := -1.15                        ## la cuerda de los dibujos: delante del faldón, encima de la cama
+const LINE_X := Vector2(-2.6, -0.98)         ## de la pared izquierda hasta casi el escritorio
+const LINE_Y := 1.42                         ## altura de sus extremos
+const LINE_SAG := 0.09                       ## lo que cuelga en el centro
 
 
 func _initialize() -> void:
@@ -57,7 +67,7 @@ func _initialize() -> void:
 	var epilogue := _node(model, "S_5_epilogo", Vector3.ZERO)
 	var coin := _node(epilogue, "P_moneda__ofrecida", Vector3(0.0, 0.62, 1.12))
 	var c := _cyl(coin, "Moneda", Vector3.ZERO, 0.045, 0.012, Color(0.95, 0.76, 0.3))
-	c.rotation_degrees = Vector3(90, 0, 0)
+	c.rotation_degrees = Vector3(0, 0, 90)          # de canto, a lo largo de la ranura
 	_shiny(c, 0.85, 0.3)
 	_own(model)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ATTIC_MODEL_OUT.get_base_dir()))
@@ -161,7 +171,7 @@ func _build_structure(sec: Node3D) -> void:
 		_sphere(pig, "Oreja%d" % int(z > 0), Vector3(0.08, 0.21, z), 0.03, pink.darkened(0.05))
 		for x in [-0.08, 0.08]:
 			_cyl(pig, "Pata%d%d" % [int(x > 0), int(z > 0)], Vector3(x, 0.025, z), 0.025, 0.05, pink.darkened(0.1))
-	_box(pig, "Ranura", Vector3(0, 0.225, 0), Vector3(0.012, 0.01, 0.07), Color(0.25, 0.15, 0.15))
+	_box(pig, "Ranura", Vector3(0, 0.225, 0), Vector3(0.016, 0.01, 0.1), Color(0.25, 0.15, 0.15))
 
 
 # --- Sección 2: la infancia (izquierda) -------------------------------------------------------
@@ -182,6 +192,14 @@ func _build_childhood(sec: Node3D) -> void:
 	_box(lid, "Estrella", Vector3(0, 0.035, 0.17), Vector3(0.1, 0.01, 0.1), PASTEL_YELLOW)
 	var hidden_blocks := _node(chest, "H_cubos", Vector3(0, 0.08, 0))
 	_blocks(hidden_blocks)
+	# Apoyado en el fondo del baúl (tumbado no se vería desde la cámara: el lado de delante lo tapa).
+	var leaning := _node(chest, "C_dibujo_verde", Vector3(0.235, 0.24, 0.0))
+	leaning.rotation_degrees = Vector3(-20.0, -90.0, 0.0)
+	_kid_drawing(leaning, 0)
+	# La cuerda de los dibujos (distinta de la de las fotos, encima del escritorio).
+	_clothesline(sec)
+	# Debajo de la cama asoma otro (está desde que la cama está puesta).
+	_kid_drawing(_lying(sec, "C_dibujo_naranja__after-cama_infantil", Vector3(-2.08, 0.013, -0.43), 160.0), 2)
 	# Piezas.
 	var rug := _node(sec, "P_alfombra_infancia", Vector3(-1.75, 0.012, 0.45))
 	_cyl(rug, "Alfombra", Vector3.ZERO, 0.62, 0.015, PASTEL_PINK)
@@ -291,6 +309,8 @@ func _build_teen(sec: Node3D) -> void:
 	_sphere(door, "Tirador", Vector3(ww - 0.06, 0.55, 0.02), 0.018, Color(0.85, 0.75, 0.5))
 	_box(door, "Pegatina", Vector3(ww * 0.5, 0.82, 0.012), Vector3(0.12, 0.12, 0.004), Color(0.98, 0.85, 0.35))
 	_retro_camera(_node(wardrobe, "H_camara", Vector3(0, 0.63, 0.0)))
+	# Encima del armario, asomando por el borde (no es del armario: no se abre con él).
+	_kid_drawing(_lying(sec, "C_dibujo_morado", Vector3(0.5, 1.118, -1.27), -12.0), 1)
 	# Cajonera bajo el escritorio: en el cajón de arriba, la inscripción a Bellas Artes.
 	var drawers := _node(sec, "Cajonera", Vector3(-0.7, 0, -1.25))
 	_box(drawers, "Cuerpo", Vector3(0, 0.25, 0), Vector3(0.3, 0.5, 0.42), Color(0.92, 0.9, 0.86))
@@ -298,6 +318,7 @@ func _build_teen(sec: Node3D) -> void:
 	_box(drawer, "Frente", Vector3(0, 0, 0.0), Vector3(0.27, 0.12, 0.42), Color(0.86, 0.84, 0.8))
 	_box(drawer, "Tirador", Vector3(0, 0, 0.215), Vector3(0.1, 0.015, 0.012), Color(0.3, 0.3, 0.32))
 	_application(_node(drawer, "H_solicitud", Vector3(0, 0.065, 0.0)), true)
+	_kid_drawing(_lying(drawer, "C_dibujo_azul", Vector3(-0.05, 0.062, -0.1), 6.0), 3)
 	# Piezas.
 	var rug := _node(sec, "P_alfombra_adolescencia", Vector3(0.0, 0.012, 0.35))
 	_box(rug, "Alfombra", Vector3.ZERO, Vector3(1.3, 0.015, 0.9), TEEN_PURPLE)
@@ -322,6 +343,8 @@ func _build_teen(sec: Node3D) -> void:
 	var cam_piece := _node(sec, "P_camara__after-mp3__flash", desk + Vector3(0.2, DESK_TOP, 0.06))
 	cam_piece.rotation_degrees.y = -20.0
 	_retro_camera(cam_piece)
+	# Debajo de la cámara, entre las fotos: un dibujo suyo (se encuentra solo al ponerla).
+	_kid_drawing(_lying(sec, "C_dibujo_rosa__con-camara", desk + Vector3(0.1, DESK_TOP + 0.008, -0.04), -10.0), 6)
 	for k in 3:                                   # las fotos, en abanico junto a la cámara
 		var photo := _box(cam_piece, "Foto%d" % k, Vector3(-0.16 + k * 0.02, 0.003 + k * 0.002, 0.06), Vector3(0.07, 0.003, 0.085), Color(0.97, 0.97, 0.95))
 		photo.rotation_degrees.y = -15.0 + k * 15.0
@@ -413,6 +436,7 @@ func _build_adult(sec: Node3D) -> void:
 	_box(side_drawer, "Cajon", Vector3(0, 0, 0), Vector3(0.36, 0.1, 0.32), WOOD.lightened(0.1))
 	_box(side_drawer, "Tirador", Vector3(-0.185, 0, 0), Vector3(0.012, 0.02, 0.08), Color(0.3, 0.3, 0.32))
 	_brushes(_node(side_drawer, "H_pinceles", Vector3(0.02, 0.05, 0)), true)
+	_kid_drawing(_lying(side_drawer, "C_dibujo_rojo", Vector3(-0.09, 0.052, -0.155), 0.0), 4)
 	# Piezas.
 	var rug := _node(sec, "P_alfombra_adultez", Vector3(1.75, 0.012, 0.35))
 	_box(rug, "Alfombra", Vector3.ZERO, Vector3(1.25, 0.015, 0.9), ADULT_GREY)
@@ -465,6 +489,7 @@ func _build_adult(sec: Node3D) -> void:
 	for k in 3:
 		var bx := _box(boxes, "Caja%d" % k, Vector3(0.02 * (k % 2), 0.16 + k * 0.3, 0), Vector3(0.42 - k * 0.05, 0.3, 0.36 - k * 0.04), CARDBOARD.darkened(0.04 * k))
 		bx.rotation_degrees.y = k * 5.0
+	_kid_drawing(_lying(sec, "C_dibujo_amarillo__after-cajas_tienda", Vector3(1.0, 0.913, -1.33), 20.0), 5)
 	var label := MeshInstance3D.new()
 	label.name = "Rotulo"
 	var tm := TextMesh.new()
@@ -496,6 +521,52 @@ func _brushes(n: Node3D, lying: bool) -> void:
 		var brush := _cyl(jar, "Pincel%d" % k, Vector3(-0.015 + k * 0.015, 0.16, 0), 0.005, 0.18, WOOD_LIGHT)
 		brush.rotation_degrees.z = -8.0 + k * 8.0
 		_sphere(jar, "Punta%d" % k, Vector3(-0.025 + k * 0.025, 0.25, 0), 0.01, [Color(0.85, 0.3, 0.3), Color(0.3, 0.5, 0.85), Color(0.95, 0.8, 0.3)][k])
+
+
+# --- Dibujos escondidos y su cuerda -----------------------------------------------------------
+
+## Un nodo con un dibujo tumbado (la cara pintada hacia arriba), girado `yaw` grados: el papel se
+## extiende desde `pos` (su borde de arriba) hacia delante.
+func _lying(parent: Node3D, n: String, pos: Vector3, yaw: float) -> Node3D:
+	var d := _node(parent, n, pos)
+	d.rotation_degrees = Vector3(-90.0, yaw, 0.0)
+	return d
+
+
+## Un dibujo de cuando era pequeña. De momento, un folio de color (cada uno el suyo: así se
+## distinguen; las artistas pondrán el dibujo de verdad). El origen es el borde de arriba, donde lo
+## coge la pinza; la cara mira a +Z. `variant` elige el color (0..6).
+func _kid_drawing(n: Node3D, variant: int) -> void:
+	var colors := [Color(0.35, 0.72, 0.32), Color(0.58, 0.38, 0.78), Color(0.95, 0.55, 0.2), Color(0.3, 0.5, 0.9),
+		Color(0.88, 0.3, 0.3), Color(0.98, 0.82, 0.25), Color(0.95, 0.55, 0.72)]
+	_box(n, "Papel", Vector3(0, -DRAWING_H * 0.5, 0), Vector3(DRAWING_W, DRAWING_H, 0.004), colors[variant % colors.size()])
+	_box(n, "Celo", Vector3(0, -0.006, 0.0025), Vector3(0.04, 0.012, 0.002), Color(0.92, 0.9, 0.8))
+
+
+## La cuerda de los dibujos (T_): un cordel que cuelga de la pared izquierda hasta el faldón, con
+## siete pinzas vacías (Pinza1..7) esperando su dibujo.
+func _clothesline(sec: Node3D) -> void:
+	var line := _node(sec, "T_dibujos", Vector3(0, 0, LINE_Z))
+	var height := func(x: float) -> float:
+		var k := (x - (LINE_X.x + LINE_X.y) * 0.5) / ((LINE_X.y - LINE_X.x) * 0.5)
+		return LINE_Y - LINE_SAG * (1.0 - k * k)
+	var twine := Color(0.9, 0.84, 0.7)
+	var steps := 12
+	for i in steps:
+		var x0 := lerpf(LINE_X.x, LINE_X.y, float(i) / steps)
+		var x1 := lerpf(LINE_X.x, LINE_X.y, float(i + 1) / steps)
+		var a := Vector3(x0, height.call(x0), 0)
+		var b := Vector3(x1, height.call(x1), 0)
+		var seg := _box(line, "Cordel%d" % i, (a + b) * 0.5, Vector3(a.distance_to(b) + 0.002, 0.004, 0.004), twine)
+		seg.rotation.z = atan2(b.y - a.y, b.x - a.x)
+	for x in [LINE_X.x, LINE_X.y]:
+		_sphere(line, "Clavo%d" % int(x > -2.0), Vector3(x, height.call(x), 0), 0.008, Color(0.35, 0.33, 0.3))
+	var tilts := [-4.0, 3.0, -2.0, 5.0, -3.0, 2.0, -5.0]
+	for k in 7:
+		var x := -2.45 + k * 0.22
+		var pin := _node(line, "Pinza%d" % (k + 1), Vector3(x, height.call(x) - 0.006, 0))
+		pin.rotation_degrees.z = tilts[k]
+		_box(pin, "Pinza", Vector3(0, 0.004, 0.006), Vector3(0.012, 0.04, 0.008), WOOD_LIGHT)
 
 
 # --- Utilidades -------------------------------------------------------------------------------

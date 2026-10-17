@@ -86,11 +86,14 @@ func skip() -> bool:
 	return true
 
 
-## Se calla y olvida la cola (al cambiar de diorama).
+## Se calla y olvida la cola (al cambiar de diorama, al abrirse el menú). El subtítulo se quita.
 func clear() -> void:
+	var talking := _left > 0.0 or not _queue.is_empty()
 	_queue.clear()
 	_left = 0.0
 	_player.stop()
+	if talking:
+		skipped.emit()
 
 
 func _enqueue(key: String) -> void:

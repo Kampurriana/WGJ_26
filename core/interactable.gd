@@ -1,7 +1,7 @@
 class_name Interactable
 extends StaticBody3D
-## Todo lo que se pulsa en el diorama: cajones (OD_), puertas (OR_), piezas escondidas (H_)
-## y sub-dioramas con zoom (Z_). Se cuelga como hijo del nodo del modelo, con una caja de
+## Todo lo que se pulsa en el diorama: cajones (OD_), puertas (OR_), piezas escondidas (H_),
+## dibujos escondidos que se cuelgan en la cuerda (C_) y sub-dioramas con zoom (Z_). Se cuelga como hijo del nodo del modelo, con una caja de
 ## colisión calculada de sus mallas, para que el rayo del clic lo encuentre.
 ## "Atención" (set_attention): cuando un mueble guarda el siguiente objeto que hace falta, brilla
 ## (borde cálido que late) y cada poco se mueve un pelín (el cajón asoma, la puerta se entreabre)
@@ -26,6 +26,8 @@ var completed := false
 var available := true            # (H_) se ve y se puede coger (si no, aún no toca encontrarlo)
 var attention := false
 var reward: StringName = &""
+var prereqs: Array[StringName] = []          ## (C_) no está hasta que estas piezas estén puestas
+var comes_with: StringName = &""             ## (C_) viene con esa pieza: al ponerla, se encuentra solo
 
 var _closed: Transform3D
 var _open: Transform3D
@@ -73,6 +75,10 @@ func setup(p_diorama: Diorama, p_target: Node3D, info: Dictionary, p_scope: Inte
 		NameRules.ZOOM:
 			var r := NameRules.values(tokens, "reward")
 			reward = r[0] if not r.is_empty() else &""
+		NameRules.COLLECTIBLE:
+			prereqs = NameRules.values(tokens, "after")
+			var with := NameRules.values(tokens, "con")
+			comes_with = with[0] if not with.is_empty() else &""
 
 
 static func _axis_from_tokens(tokens: PackedStringArray, fallback: Vector3) -> Vector3:
@@ -88,12 +94,19 @@ func is_openable() -> bool:
 	return kind == NameRules.DRAWER or kind == NameRules.DOOR
 
 
+## Lo que se encuentra (una pieza H_ o un dibujo C_): puede estar guardado en un mueble.
+func is_hidden_item() -> bool:
+	return kind == NameRules.PICKUP or kind == NameRules.COLLECTIBLE
+
+
 func activate() -> void:
 	match kind:
 		NameRules.DRAWER, NameRules.DOOR:
 			set_open(not is_open)
 		NameRules.PICKUP:
 			diorama.collect(self)
+		NameRules.COLLECTIBLE:
+			diorama.find_collectible(self)
 		NameRules.ZOOM:
 			diorama.enter_focus(self)
 
@@ -123,7 +136,7 @@ func is_clickable() -> bool:
 	return _clickable and is_visible_in_tree()
 
 
-## (H_) Si toca encontrarlo ya: se ve y se puede coger. Si no, ni se ve (no estropea la historia).
+## (H_, C_) Si toca encontrarlo ya: se ve y se puede coger. Si no, ni se ve (no estropea la historia).
 func set_available(on: bool) -> void:
 	available = on
 	if collected:

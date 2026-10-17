@@ -9,10 +9,13 @@ extends Node3D
 ##   mueble que llama  -> motas doradas que suben despacio a su alrededor (mientras guarde algo)
 ##   sección completa  -> unas luces cálidas que suben (glow_up, más flojo)
 ##   diorama completo  -> luces cálidas que suben despacio, como luciérnagas, y destellos suaves
+##   dibujo escondido  -> un destello pequeño de vez en cuando donde espera (C_ que se puede coger);
+##                        al encontrarlo, un soplo; al colgarse en la cuerda, unos destellos
 ## Texturas: si existe assets/texturas/particulas/<polvo|chispa|luz|viruta>.png se usa esa (así
 ## las artistas las cambian sin tocar código); si no, se dibujan aquí.
 
 const STAR := 0.5                            ## las estrellas (chispas, destellos, motas) a la mitad: el equipo las quería más pequeñitas
+const GLINT_EVERY := 2.2                     ## cada cuánto brilla uno de los dibujos que esperan (s; van por turnos)
 const TEXTURE_DIR := "res://assets/texturas/particulas/"
 const DUST_COLOR := Color(1.0, 0.86, 0.62, 0.55)
 const SAWDUST_COLOR := Color(0.86, 0.68, 0.46)
@@ -23,10 +26,13 @@ const WARM_LIGHTS := [Color(1.0, 0.72, 0.3, 0.9), Color(1.0, 0.84, 0.45, 0.9), C
 
 var dust: CPUParticles3D                     ## (tests) el polvo del nivel actual
 var bursts := 0                              ## (tests) ráfagas lanzadas en este nivel
+var glints := 0                              ## (tests) destellos de dibujos escondidos en este nivel
 
 var _textures: Dictionary = {}
 var _calling: Dictionary = {}                ## Interactable -> sus motas (mientras llama la atención)
 var _ring_shader := preload("res://shaders/anillo.gdshader")
+var _glint_t := 0.0
+var _glint_i := 0
 
 
 func _ready() -> void:
@@ -37,6 +43,10 @@ func _ready() -> void:
 	Events.level_completed.connect(func(d: Node) -> void: _celebrate(Visuals.global_aabb(d as Node3D)))
 	Events.section_completed.connect(func(sec: RefCounted) -> void: glow_up((sec as Section).box(), 0.4))
 	Events.attention_changed.connect(_on_attention)
+	Events.collectible_found.connect(func(item: Node, _f: int, _t: int) -> void:
+		_puff(Visuals.global_aabb((item as Interactable).target)))
+	Events.collectible_hung.connect(func(item: Node) -> void:
+		glow_up(Visuals.global_aabb((item as Interactable).target).grow(0.08), 0.12))
 
 
 func _on_level_started(d: Node) -> void:
@@ -44,6 +54,7 @@ func _on_level_started(d: Node) -> void:
 		c.queue_free()
 	_calling.clear()
 	bursts = 0
+	glints = 0
 	var box := Visuals.global_aabb(d as Node3D)
 	dust = _dust(box)
 
@@ -282,6 +293,48 @@ func _on_attention(target: Node, on: bool) -> void:
 ## (Tests) ¿Hay motas alrededor de este mueble u objeto?
 func is_calling(it: Interactable) -> bool:
 	return _calling.has(it) and is_instance_valid(_calling[it])
+
+
+# --- Dibujos escondidos: un destello de vez en cuando ------------------------------------------
+
+func _process(delta: float) -> void:
+	_glint_t += delta
+	if _glint_t < GLINT_EVERY:
+		return
+	_glint_t = 0.0
+	var d := GameState.diorama
+	if d == null or not is_instance_valid(d) or (GameState.camera != null and GameState.camera.in_moment):
+		return
+	var waiting := d.interactables.filter(func(it: Interactable) -> bool:
+		return it.kind == NameRules.COLLECTIBLE and it.is_clickable() and not it.collected)
+	if waiting.is_empty():
+		return
+	_glint_i = (_glint_i + 1) % waiting.size()
+	glint(Visuals.global_aabb((waiting[_glint_i] as Interactable).target))
+
+
+## Un destello pequeño que se enciende y se apaga (algo brilla ahí).
+func glint(box: AABB) -> void:
+	glints += 1
+	var p := _particles("Destello", 1, _texture("chispa"), true)
+	p.position = box.get_center() + Vector3.UP * 0.02
+	p.one_shot = true
+	p.lifetime = 0.9
+	p.gravity = Vector3.ZERO
+	p.initial_velocity_min = 0.0
+	p.initial_velocity_max = 0.0
+	p.angle_min = 0.0
+	p.angle_max = 45.0
+	p.scale_amount_min = 0.11 * STAR
+	p.scale_amount_max = 0.11 * STAR
+	var grow := Curve.new()
+	grow.add_point(Vector2(0.0, 0.0))
+	grow.add_point(Vector2(0.35, 1.0))
+	grow.add_point(Vector2(1.0, 0.0))
+	p.scale_amount_curve = grow
+	p.color = Color(1.0, 0.95, 0.8)
+	p.emitting = true
+	_free_later(p)
 
 
 # --- Piezas ----------------------------------------------------------------------------------

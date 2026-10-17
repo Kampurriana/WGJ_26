@@ -1,7 +1,8 @@
 extends Node3D
 ## Escena principal: monta cámara, arrastre, interfaz, menús, mando y la luz de cada nivel.
-## Arranca en el menú de inicio: el diorama del título (levels/menu_titulo.tscn), cuyo puzle
-## desbloquea el menú. Una vez resuelto, en las siguientes partidas sale ya montado.
+## Orden (cuarta nota): el puzle del título (el cerdito, con sus frases) → el menú, con el cerdito y
+## sin frases (se abre cuando acaban) → los actos → el espejo → transición → la hucha → fundido →
+## créditos (ui/creditos.gd) → el menú otra vez. Una vez resuelto el título, sale ya montado.
 ## Los niveles jugables vienen de data/levels.json; el progreso se guarda en GameState.
 ##
 ## Argumentos para Claude (después de "--" en la línea de comandos):
@@ -15,6 +16,7 @@ extends Node3D
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
+##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
 ##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
@@ -25,6 +27,7 @@ const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var menu: MainMenu
 var pause: PauseMenu
+var credits: Creditos
 var effects: Efectos
 var momentos: Momentos
 var enfoque: Enfoque
@@ -39,6 +42,7 @@ var _menu_page := ""
 var _hold := Vector2(-1, -1)
 var _zoom_steps := 0
 var _press_f9 := false
+var _roll_credits := false
 var _zoom_at := Vector2.ZERO
 var _capture_path := ""
 var _capture_after := 3.0
@@ -86,6 +90,10 @@ func _ready() -> void:
 	pause = PauseMenu.new()
 	pause.name = "PauseMenu"
 	add_child(pause)
+	credits = Creditos.new()
+	credits.name = "Creditos"
+	add_child(credits)
+	credits.finished.connect(_after_credits)
 	_build_fade()
 	hud.next_requested.connect(next_level)
 	Events.flash_requested.connect(flash)
@@ -133,6 +141,8 @@ func _parse_args() -> void:
 			_only_background = true
 		elif a == "--f9":
 			_press_f9 = true
+		elif a == "--creditos":
+			_roll_credits = true
 
 
 ## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
@@ -222,9 +232,35 @@ func next_level() -> void:
 	if GameState.level_index + 1 < GameState.levels.size():
 		load_level(GameState.level_index + 1)
 	else:
-		show_title()
-		menu.show_page("creditos")
-		Narrator.say_if_exists("fin_juego")
+		roll_credits()
+
+
+## Fin del juego: pasan los créditos (con los dibujos encontrados) y luego, el menú.
+func roll_credits() -> void:
+	var d := GameState.diorama
+	var found: Array = []
+	var total := 0
+	if d != null and is_instance_valid(d):
+		total = d.collectible_total()
+		for it in d.interactables:
+			if it.kind == NameRules.COLLECTIBLE and it.collected:
+				found.append(Hud.drawing_color(it.target))
+	Narrator.clear()
+	momentos.reset()
+	GameState.drag.cancel()
+	GameState.hud.set_game_ui_visible(false)
+	credits.play(found, total)
+	if _fade_tween != null:
+		_fade_tween.kill()
+	_fade_tween = _fade.create_tween()           # los créditos aparecen desde el negro del final
+	_fade_tween.tween_property(_fade, "color:a", 0.0, 1.2).set_trans(Tween.TRANS_SINE)
+
+
+func _after_credits() -> void:
+	if _fade_tween != null:
+		_fade_tween.kill()
+	_fade.color.a = 1.0                          # el menú aparece desde negro (show_title funde)
+	show_title()
 
 
 func open_pause() -> void:
@@ -234,6 +270,7 @@ func open_pause() -> void:
 
 
 func _open_menu() -> void:
+	Narrator.clear()                             # el menú, sin frases
 	GameState.hud.set_game_ui_visible(false)
 	GameState.camera.set_menu_view(true)
 	menu.open()
@@ -242,14 +279,16 @@ func _open_menu() -> void:
 func _on_level_completed(d: Node) -> void:
 	if GameState.mode == GameState.Mode.MENU:
 		GameState.unlock_menu()
-		get_tree().create_timer(MENU_DELAY).timeout.connect(func() -> void:
+		# El menú sale cuando el cerdito ha acabado de hablar (y ha pasado la onda de color).
+		get_tree().create_timer(maxf(MENU_DELAY, Narrator.remaining() + 0.4)).timeout.connect(func() -> void:
 			if GameState.diorama == d and GameState.mode == GameState.Mode.MENU and not menu.is_open():
 				_open_menu())
 	else:
 		GameState.mark_completed(GameState.levels[GameState.level_index])
 		var ending := d as Diorama
 		if ending != null and ending.fundido_final:
-			# Final de la historia: deja que acabe la última frase y funde a negro hacia los créditos.
+			# Final de la historia: deja que acabe la última frase y funde a negro hacia los créditos
+			# (la segunda transición de la cuarta nota).
 			var wait := maxf(Narrator.remaining() + 1.2, 3.0)
 			get_tree().create_timer(wait).timeout.connect(func() -> void:
 				if GameState.diorama != ending:
@@ -260,11 +299,12 @@ func _on_level_completed(d: Node) -> void:
 				_fade_tween.tween_property(_fade, "color:a", 1.0, END_FADE_TIME).set_trans(Tween.TRANS_SINE)
 				_fade_tween.tween_callback(func() -> void:
 					if GameState.diorama == ending:
-						next_level()))
+						roll_credits()))
 
 
 ## silent = sin la frase de entrada (el título ya montado no tiene que explicar nada).
 func _load(path: String, silent := false) -> void:
+	credits.cancel()
 	if _level != null:
 		GameState.drag.cancel()
 		remove_child(_level)
@@ -301,6 +341,9 @@ func _process(delta: float) -> void:
 		key.physical_keycode = KEY_F9
 		key.pressed = true
 		Input.parse_input_event(key)         # por el mismo camino que la tecla de verdad
+	if _roll_credits and _elapsed > 1.0:
+		_roll_credits = false
+		roll_credits()
 	if _zoom_steps > 0 and _elapsed > 0.5:
 		_zoom_steps -= 1
 		GameState.camera.zoom_at(1.0 - GameState.camera.zoom_step, _zoom_at)

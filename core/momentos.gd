@@ -4,16 +4,20 @@ extends Node
 ## Al colocar un objeto con frase (pieza_<id> en narracion_es.json): la cámara avanza despacio hacia
 ## él desde donde miraba el jugador (los objetos planos de pared, como el dibujo, se ven de frente),
 ## lo que se cruce por delante se desvanece, entran dos bandas negras de cine y un foco, el enfoque
-## se va al objeto, el objeto hace su gesto (la bailarina gira, la nutria se achucha...) y suena su
-## frase. La bandeja y los botones se apartan; un clic pasa a la siguiente frase. Al callarse, todo
-## vuelve.
+## se va al objeto y suena su frase. El objeto se queda QUIETO (cuarta nota: sin gestos) y la cámara
+## deja de respirar. La bandeja y los botones se apartan; un clic pasa a la siguiente frase. Al
+## callarse, todo vuelve.
 ## Dos momentos especiales, por nombre en el modelo (core/name_rules.gd):
 ##   __reflejo  (el espejo): la cámara se pone delante, todo lo demás se va a negro y en la luna
 ##              aparece una silueta que se desvanece con la última frase ("¿Dónde estoy yo?").
-##   __ofrecida (la moneda): su sección se abre con un corte (fundido a negro y vuelta) a un primer
-##              plano ligeramente cenital de lo que la sostiene (la hucha), SOLA en la escena y quieta.
-##              La moneda aparece flotando mientras se dicen las frases; cuando acaban, el jugador la
-##              ARRASTRA hasta la ranura. Después, el final de siempre (fundido a negro).
+##   __ofrecida (la moneda): el final. Si viene del espejo, primero una transición (el espejo vacío
+##              en silencio y un fundido lento a negro); luego, corte a un primer plano ligeramente
+##              cenital de lo que la sostiene (la hucha), SOLA y quieta, en una escena acogedora: luz
+##              cálida de lámpara que parpadea un pelín, un contraluz, motas de polvo y, detrás, un
+##              fondo cálido con luces desenfocadas (shaders/acogedor.gdshader). Mientras se dicen sus
+##              frases aparece la moneda a su lado, quieta y con un destello; cuando acaban, el jugador
+##              la ARRASTRA hasta la ranura (cerca, la ranura la atrae) y entra con un golpe de luz y
+##              chispas doradas. Después, fundido a negro y créditos (main.gd).
 
 const MIN_TIME := 2.0                        ## un momento dura al menos esto (s)
 const IRIS := 0.62                           ## lo oscuro alrededor del objeto en un momento normal
@@ -21,26 +25,35 @@ const BARS := 54.0                           ## alto de las bandas de cine (px a
 const FADE := 0.9
 const CUT_TIME := 0.45                       ## (ofrecida) fundido a negro antes del corte, y vuelta
 const ZENITH := 38.0                         ## (ofrecida) inclinación del primer plano de la hucha
+const ENDING_YAW := 22.0                     ## (ofrecida) giro sobre la vista del nivel: tres cuartos, se le ve la cara
 const ISOLATE_LAYER := 20                    ## capa de render de lo aislado (el resto no se ve)
 const COIN_GRAB_PX := 70.0                   ## lo cerca que hay que coger la moneda
 const COIN_SNAP_PX := 80.0                   ## y lo cerca de la ranura que hay que soltarla
 const HIDE_TIME := 0.35                      ## lo que tarda en desvanecerse lo que tapa el plano
-
-## Gesto de cada objeto mientras habla (lo que le da personalidad). Sin entrada = flota un poco.
-const GESTURES := {
-	"hucha": "sacudir", "caja_musica": "bailarina", "dibujo": "aletear", "peluche": "achuchar",
-	"mp3": "latir", "camara": "disparar", "solicitud": "aletear", "llaves": "sacudir",
-	"caballete": "balancear", "espejo": "",
-}
+const TRANSITION_HOLD := 1.4                 ## (espejo → final) el espejo vacío, en silencio...
+const TRANSITION_FADE := 1.8                 ## ...y el fundido lento a negro (s)
+const CUT_IN := 1.8                          ## (ofrecida) lo que tarda en verse la escena tras el corte
+const COIN_DELAY := 1.6                      ## (ofrecida) lo que tarda en aparecer la moneda tras el corte
+const COIN_SCALE := 1.15                     ## la moneda que espera, un poco más grande (se lee mejor)
+const COIN_MAGNET := 1.8                     ## la ranura atrae la moneda desde COIN_SNAP_PX × esto
+const COZY_IRIS := 0.3                       ## (ofrecida) poco foco: el fondo cálido tiene que verse
 
 var active := false
-var kind := ""                               ## "" / "normal" / "reflejo" / "ofrecida"
+var kind := ""                               ## "" / "normal" / "reflejo" / "transicion" / "ofrecida"
 var target: Node3D                           ## el objeto del momento
 var coin: Node3D                             ## (ofrecida) la pieza flotando, lista para arrastrarla
 var reflection: Node3D                       ## (reflejo) vaho en la luna + la silueta de ella + su luz
 var hidden_for_shot: Array = []              ## lo que tapaba el plano (GeometryInstance3D escondidos mientras dura)
 var _figure: Sprite3D                        ## la silueta (aparece con la primera frase, se va con la última)
 var _spot: SpotLight3D                       ## (ofrecida) la luz de arriba sobre la hucha sola
+var _rim: OmniLight3D                        ## (ofrecida) contraluz cálido detrás de la hucha
+var _motes: CPUParticles3D                   ## (ofrecida) motas de polvo en la luz
+var _spot_energy := 0.0                      ## (ofrecida) la del foco (parpadea un pelín, como una lámpara vieja)
+var _cozy: ColorRect                         ## (ofrecida) fondo acogedor detrás del 3D
+var _cozy_mat: ShaderMaterial
+var _cozy_tween: Tween
+var _textures: Dictionary = {}               ## texturas de partículas (las de Efectos)
+var _bloom: TextureRect                      ## (ofrecida) destello cálido en pantalla cuando entra la moneda
 
 var _layer: CanvasLayer
 var _iris: ColorRect
@@ -51,9 +64,6 @@ var _bars: Array[ColorRect] = []
 var _prompt: Label
 var _elapsed := 0.0
 var _iris_tween: Tween
-var _base: Transform3D                       ## transformación del objeto antes del gesto
-var _base_valid := false                     ## se toma al acabar el "pop" de encajar (si no, saldría más grande)
-var _gesture := ""
 var _t := 0.0
 var _offered: PieceSlot
 var _isolated: Dictionary = {}               ## VisualInstance3D -> capas de antes
@@ -74,6 +84,19 @@ func _ready() -> void:
 	_black.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_black.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	back.add_child(_black)
+	var cozy_layer := CanvasLayer.new()
+	cozy_layer.layer = -4                    # también fondo, encima del negro
+	add_child(cozy_layer)
+	_cozy = ColorRect.new()
+	_cozy.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_cozy.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cozy_mat = ShaderMaterial.new()
+	_cozy_mat.shader = preload("res://shaders/acogedor.gdshader")
+	_cozy_mat.set_shader_parameter("alpha", 0.0)
+	_cozy_mat.set_shader_parameter("brillo", 1.0)
+	_cozy.material = _cozy_mat
+	_cozy.hide()
+	cozy_layer.add_child(_cozy)
 	_iris = ColorRect.new()
 	_iris.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_iris.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -96,6 +119,25 @@ func _ready() -> void:
 	_curtain.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_layer.add_child(_curtain)
+	_bloom = TextureRect.new()
+	_bloom.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bloom.size = Vector2(560, 560)
+	_bloom.pivot_offset = _bloom.size * 0.5
+	var glow_grad := Gradient.new()
+	glow_grad.set_color(0, Color(1.0, 0.82, 0.5, 1.0))
+	glow_grad.set_color(1, Color(1.0, 0.6, 0.25, 0.0))
+	var glow_tex := GradientTexture2D.new()
+	glow_tex.gradient = glow_grad
+	glow_tex.fill = GradientTexture2D.FILL_RADIAL
+	glow_tex.fill_from = Vector2(0.5, 0.5)
+	glow_tex.fill_to = Vector2(0.5, 0.0)
+	_bloom.texture = glow_tex
+	var add := CanvasItemMaterial.new()
+	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	_bloom.material = add
+	_bloom.modulate.a = 0.0
+	_bloom.hide()
+	_layer.add_child(_bloom)
 	_prompt = Label.new()
 	_prompt.text = "clic para seguir  ›"
 	_prompt.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -120,19 +162,16 @@ func _ready() -> void:
 
 ## Corta lo que hubiera (al cambiar de diorama) sin animación.
 func reset() -> void:
-	_restore_target()
 	_unisolate()
 	_show_hidden(false)
 	if is_instance_valid(coin):
 		coin.queue_free()
 	if is_instance_valid(reflection):
 		reflection.queue_free()
-	if is_instance_valid(_spot):
-		_spot.queue_free()
+	_free_ending_lights()
 	coin = null
 	reflection = null
 	_figure = null
-	_spot = null
 	_offered = null
 	_coin_state = ""
 	active = false
@@ -141,10 +180,20 @@ func reset() -> void:
 	_set_frame(0.0, 0.0, 0.0)
 	_black.color.a = 0.0
 	_curtain.color.a = 0.0
+	_bloom.hide()
+	_set_cozy(0.0, 0.0)
+	_hold_sections(false)
 	if GameState.enfoque != null:
 		GameState.enfoque.reset()
 	if GameState.hud != null:
 		GameState.hud.set_moment(false)
+
+
+## Mientras dura el espejo, la sección siguiente (el final) no se abre sola: la abre la transición.
+func _hold_sections(on: bool) -> void:
+	var d := GameState.diorama
+	if d != null and is_instance_valid(d):
+		d.hold_sections = on
 
 
 func _diorama() -> Diorama:
@@ -182,8 +231,7 @@ func _on_section_opened(sec: RefCounted) -> void:
 			return
 
 
-func start(node: Node3D, p_kind: String, id: String) -> void:
-	_restore_target()
+func start(node: Node3D, p_kind: String, _id: String) -> void:
 	_clear_extras()                              # si venía de otro momento (el espejo), fuera lo suyo
 	_show_hidden(true)
 	active = true
@@ -192,8 +240,7 @@ func start(node: Node3D, p_kind: String, id: String) -> void:
 	_elapsed = 0.0
 	_t = 0.0
 	_lines_seen = 0
-	_base_valid = false
-	_gesture = "" if kind == "ofrecida" else String(GESTURES.get(id, "flotar"))   # la hucha del final, quieta
+	_hold_sections(kind == "reflejo")           # tras el espejo, el final espera a su transición
 	var cam := GameState.camera
 	var box := Visuals.global_aabb(node)
 	match kind:
@@ -290,7 +337,8 @@ func _process(delta: float) -> void:
 	_elapsed += delta
 	_t += delta
 	_follow_iris()
-	_gesture_step(delta)
+	if kind == "transicion":
+		return
 	if is_instance_valid(coin) and _coin_state == "":
 		_present_coin()
 	var talking := Narrator.remaining() > 0.0
@@ -300,9 +348,10 @@ func _process(delta: float) -> void:
 	if _offered != null and not _offered.filled:
 		_offered.set_pulse(coin_turn)
 	if kind == "ofrecida":
+		_cozy_step()
 		return                                   # el final no se acaba solo: lo cierra el fundido
 	if not talking and _elapsed >= MIN_TIME:
-		finish()
+		_end_moment()
 
 
 func _unhandled_input(e: InputEvent) -> void:
@@ -323,8 +372,49 @@ func _unhandled_input(e: InputEvent) -> void:
 	if _coin_ready() and _near_coin(mb.position):
 		_coin_state = "arrastrando"               # se coge: ahora hay que llevarla hasta la ranura
 		Sfx.play("pickup")
+	elif kind == "transicion":
+		pass                                     # la transición no se salta: dura lo que dura
 	elif not Narrator.skip() and kind != "ofrecida":
+		_end_moment()
+
+
+## Al callarse (o con un clic sin frases): se acaba; si después viene el final (el espejo), transición.
+func _end_moment() -> void:
+	if kind == "reflejo" and _ending_follows():
+		_transition_to_ending()
+	else:
 		finish()
+
+
+## ¿Lo siguiente es el final? (la sección que se está abriendo trae una pieza ofrecida: la moneda)
+func _ending_follows() -> bool:
+	var d := _diorama()
+	var sec := d.opening_section() if d != null else null
+	if sec == null:
+		return false
+	for sl in sec.slots:
+		if sl.offered and not sl.filled:
+			return true
+	return false
+
+
+## Del espejo al final: el espejo vacío se queda un momento en silencio, fundido lento a negro y,
+## ya a oscuras, se abre la sección del final (su corte empieza desde el negro).
+func _transition_to_ending() -> void:
+	kind = "transicion"
+	_prompt.create_tween().tween_property(_prompt, "modulate:a", 0.0, 0.4)
+	var tw := create_tween()
+	tw.tween_interval(TRANSITION_HOLD)
+	tw.tween_property(_curtain, "color:a", 1.0, TRANSITION_FADE).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func() -> void:
+		if not active or kind != "transicion":
+			return
+		_clear_extras()
+		_show_hidden(false)
+		_hold_sections(false)
+		var d := _diorama()
+		if d != null:
+			d.open_pending_now())
 
 
 ## El foco sigue al objeto en pantalla (la cámara se mueve) y lo rodea con holgura; el enfoque, igual.
@@ -366,49 +456,6 @@ func _on_subtitle(_text: String, seconds: float) -> void:
 	if Narrator.remaining() <= seconds + Narrator.GAP + 0.05:       # la última frase: ya no está
 		var tw := _figure.create_tween().set_trans(Tween.TRANS_SINE)
 		tw.tween_property(_figure, "modulate:a", 0.0, seconds * 0.9)
-
-
-# --- Gestos ----------------------------------------------------------------------------------
-
-func _gesture_step(delta: float) -> void:
-	if _gesture == "" or not is_instance_valid(target) or _t < Diorama.POP_TIME + 0.05:   # primero, el "pop"
-		return
-	if not _base_valid:
-		_base = target.transform
-		_base_valid = true
-	var t := _t - Diorama.POP_TIME - 0.05
-	var xf := _base
-	match _gesture:
-		"sacudir":
-			var shake := sin(t * 30.0) * 0.12 * maxf(0.0, 1.0 - fmod(t, 1.6) * 1.6)
-			xf.basis = _base.basis * Basis(Vector3.FORWARD, shake)
-		"aletear":
-			xf.basis = _base.basis * Basis(Vector3.RIGHT, sin(t * 7.0) * 0.08)
-		"achuchar":
-			var k := 1.0 + sin(t * 5.0) * 0.08 * exp(-fmod(t, 2.0) * 1.2)
-			xf.basis = _base.basis * Basis.from_scale(Vector3(k, 2.0 - k, k))
-		"latir":
-			var beat := 1.0 + 0.07 * pow(maxf(0.0, sin(t * 7.5)), 8.0)
-			xf.basis = _base.basis * Basis.from_scale(Vector3.ONE * beat)
-		"disparar":
-			xf.origin = _base.origin - _base.basis.z.normalized() * 0.03 * exp(-t * 6.0)
-		"balancear":
-			xf.basis = _base.basis * Basis(Vector3.FORWARD, sin(t * 1.6) * 0.05)
-		"bailarina":
-			for n in target.find_children("*", "MeshInstance3D", true, false):
-				if String(n.name).to_lower().contains("bailarina") or String(n.name).to_lower().contains("tutu") \
-						or String(n.name).to_lower().contains("cabeza"):
-					(n as Node3D).rotate_y(delta * 3.0)
-		"flotar":
-			xf.origin = _base.origin + Vector3.UP * sin(t * 2.4) * 0.015
-	if _gesture != "bailarina":
-		target.transform = xf
-
-
-func _restore_target() -> void:
-	if active and _base_valid and is_instance_valid(target) and _gesture != "" and _gesture != "bailarina":
-		target.transform = _base
-	_base_valid = false
 
 
 # --- Aislar: solo se ve lo que importa ---------------------------------------------------------
@@ -535,47 +582,159 @@ static func _mist_texture() -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 
-# --- Ofrecida (la moneda en la hucha) ----------------------------------------------------------
+# --- Ofrecida (la moneda en la hucha): el final ------------------------------------------------
 
-## Fundido a negro, corte al primer plano (la hucha sola, vista un poco desde arriba, sin moverse
-## alrededor) y vuelta. La moneda aparece a su lado poco después.
+## Corte al primer plano (la hucha sola, vista un poco desde arriba, sin moverse alrededor) en su
+## escena acogedora. Si la pantalla ya está a negro (viene de la transición del espejo), el corte
+## se hace ahí mismo; si no, primero un fundido a negro corto. La moneda aparece poco después.
 func _cut_to_offered(node: Node3D) -> void:
 	var tw := _curtain.create_tween()
-	tw.tween_property(_curtain, "color:a", 1.0, CUT_TIME)
+	if _curtain.color.a < 0.99:
+		tw.tween_property(_curtain, "color:a", 1.0, CUT_TIME)
 	tw.tween_callback(func() -> void:
 		if not active or kind != "ofrecida" or not is_instance_valid(node):
 			return
 		var cam := GameState.camera
-		var flat := cam.goal_position() - Visuals.global_aabb(node).get_center()
-		flat.y = 0.0
-		cam.close_up(Visuals.global_aabb(node).grow(0.06), flat.normalized() if flat.length() > 0.01 else Vector3.BACK, ZENITH, 2.6)
+		# Desde donde la ve el jugador en el desván, un poco girada para verle la cara (venimos del
+		# espejo: su vista no sirve).
+		var yaw := deg_to_rad(GameState.diorama.camera_yaw_deg + ENDING_YAW)
+		cam.close_up(Visuals.global_aabb(node).grow(0.06), Vector3(sin(yaw), 0.0, cos(yaw)), ZENITH, 2.6)
 		cam.snap()                               # un corte, no un viaje: la cámara no da vueltas
-		_spot = SpotLight3D.new()
-		_spot.light_color = Color(1.0, 0.88, 0.72)
-		_spot.light_energy = 1.4
-		_spot.spot_range = 3.0
-		_spot.spot_angle = 30.0
-		node.get_parent().add_child(_spot)
-		var top := Visuals.global_aabb(node).get_center()
-		_spot.global_position = top + Vector3.UP * 1.4 + (cam.global_position - top).normalized() * 0.4
-		_spot.look_at(top, Vector3.UP)
-		_isolate([node, _offered.node, _spot])
-		_frame_to(0.55, BARS, 0.01)
-		get_tree().create_timer(1.0, false).timeout.connect(_spawn_coin))
-	tw.tween_property(_curtain, "color:a", 0.0, CUT_TIME * 1.6)
+		_light_ending(node)
+		var shown: Array = [node, _offered.node, _spot, _rim, _motes]
+		shown.append_array(_support_under(node))
+		_isolate(shown)
+		_frame_to(COZY_IRIS, BARS, 0.01)
+		get_tree().create_timer(COIN_DELAY, false).timeout.connect(_spawn_coin))
+	tw.tween_interval(0.5)
+	tw.tween_property(_curtain, "color:a", 0.0, CUT_IN).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 
-## La moneda flotando se enseña de cara a la cámara, meciéndose apenas.
+## La escena acogedora: un foco cálido desde arriba (como una lámpara), un contraluz naranja detrás
+## que le dibuja el borde, motas de polvo flotando en la luz y el fondo cálido con luces desenfocadas.
+func _light_ending(node: Node3D) -> void:
+	_free_ending_lights()
+	var cam := GameState.camera.cam
+	var box := Visuals.global_aabb(node)
+	var top := box.get_center()
+	var toward := cam.global_position - top
+	toward.y = 0.0
+	toward = toward.normalized() if toward.length() > 0.01 else Vector3.BACK
+	var side := toward.cross(Vector3.UP)
+	_spot = SpotLight3D.new()
+	_spot.name = "LuzFinal"
+	_spot.light_color = Color(1.0, 0.8, 0.58)
+	_spot.light_energy = 1.6
+	_spot.spot_range = 3.2
+	_spot.spot_angle = 30.0
+	_spot.spot_angle_attenuation = 0.8
+	_spot.shadow_enabled = true
+	node.get_parent().add_child(_spot)
+	_spot.global_position = top + Vector3.UP * 1.3 + toward * 0.55 + side * 0.3
+	_spot.look_at(top, Vector3.UP)
+	_spot_energy = _spot.light_energy
+	_rim = OmniLight3D.new()
+	_rim.name = "Contraluz"
+	_rim.light_color = Color(1.0, 0.55, 0.25)
+	_rim.light_energy = 1.8
+	_rim.omni_range = 0.85
+	node.get_parent().add_child(_rim)
+	_rim.global_position = top - toward * 0.38 + Vector3.UP * 0.22
+	_motes = _particles("Motas", 24, "polvo", true)
+	node.get_parent().add_child(_motes)
+	_motes.global_position = top + Vector3.UP * 0.15
+	_motes.lifetime = 7.0
+	_motes.preprocess = 7.0                      # ya flotan al verse la escena
+	_motes.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	_motes.emission_box_extents = Vector3(0.5, 0.35, 0.5)
+	_motes.direction = Vector3.UP
+	_motes.spread = 180.0
+	_motes.initial_velocity_min = 0.005
+	_motes.initial_velocity_max = 0.025
+	_motes.gravity = Vector3(0.0, 0.006, 0.0)
+	_motes.scale_amount_min = 0.006
+	_motes.scale_amount_max = 0.016
+	_motes.color = Color(1.0, 0.84, 0.6, 0.8)
+	_motes.color_ramp = _fade_ramp(0.25, 0.7)
+	_motes.emitting = true
+	_set_cozy(1.0, 0.0)
+
+
+## Lo que está justo debajo de la hucha (el baúl donde descansa): también se ve, para que no flote.
+func _support_under(node: Node3D) -> Array:
+	var box := Visuals.global_aabb(node)
+	var out: Array = []
+	for m in Visuals.meshes_under(GameState.diorama):
+		if node.is_ancestor_of(m) or not m.is_visible_in_tree():
+			continue
+		var mb := Visuals.global_aabb(m)
+		var overlaps := mb.position.x < box.end.x and mb.end.x > box.position.x \
+			and mb.position.z < box.end.z and mb.end.z > box.position.z
+		if overlaps and absf(mb.end.y - box.position.y) < 0.04:
+			out.append(m)
+	return out
+
+
+## Cada fotograma del final: el foco parpadea un pelín (lámpara vieja) y el fondo sabe su tamaño.
+func _cozy_step() -> void:
+	if is_instance_valid(_spot):
+		_spot.light_energy = _spot_energy * (1.0 + 0.035 * sin(_t * 7.3) * sin(_t * 2.9 + 1.0) + 0.02 * sin(_t * 13.1))
+	_cozy_mat.set_shader_parameter("tam", _cozy.size)
+
+
+## El fondo acogedor: alpha 0 = no se ve. seconds = 0, de golpe.
+func _set_cozy(alpha: float, seconds: float) -> void:
+	if _cozy_tween != null:
+		_cozy_tween.kill()
+	if alpha > 0.0:
+		_cozy.show()
+	if seconds <= 0.0:
+		_cozy_mat.set_shader_parameter("alpha", alpha)
+		_cozy_mat.set_shader_parameter("brillo", 1.0)
+		_cozy.visible = alpha > 0.0
+		return
+	_cozy_tween = create_tween()
+	_cozy_tween.tween_method(func(v: float) -> void: _cozy_mat.set_shader_parameter("alpha", v),
+		float(_cozy_mat.get_shader_parameter("alpha")), alpha, seconds)
+	if alpha <= 0.0:
+		_cozy_tween.tween_callback(_cozy.hide)
+
+
+## (Tests) ¿Se ve el fondo acogedor del final?
+func cozy_shown() -> bool:
+	return _cozy.visible and float(_cozy_mat.get_shader_parameter("alpha")) > 0.5
+
+
+func _free_ending_lights() -> void:
+	for n in [_spot, _rim, _motes]:
+		if is_instance_valid(n):
+			(n as Node).queue_free()
+	_spot = null
+	_rim = null
+	_motes = null
+
+
+## La moneda espera quieta junto a la hucha, de cara a la cámara (un poco girada, para que se lea
+## que es una moneda). Lo que se mueve es su brillo, no ella.
 func _present_coin() -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return
-	var to := cam.global_position - coin.global_position
+	var to := cam.global_position - _coin_rest
 	if to.length() < 0.01:
 		return
-	var face := Basis.looking_at(to, Vector3.UP, true)
-	coin.global_basis = (face * Basis(Vector3.UP, sin(_t * 1.6) * 0.18)).scaled(Vector3.ONE * coin.scale.x)
-	coin.global_position = _coin_rest + Vector3.UP * sin(_t * 2.2) * 0.01
+	var face := Basis.looking_at(to, Vector3.UP, true) * Basis(Vector3.UP, 0.35) * _face_to_z(coin)
+	coin.global_transform = Transform3D(face.scaled(Vector3.ONE * coin.scale.x), _coin_rest)
+
+
+## Giro que lleva la cara de la moneda (su eje más fino) a +Z.
+static func _face_to_z(n: Node3D) -> Basis:
+	var size := Visuals.local_aabb(n).size
+	if size.x <= size.y and size.x <= size.z:
+		return Basis(Vector3.UP, -PI * 0.5)
+	if size.y <= size.z:
+		return Basis(Vector3.RIGHT, PI * 0.5)
+	return Basis.IDENTITY
 
 
 ## Lo que sostiene a la pieza ofrecida (la hucha donde va la moneda): la pieza puesta más cercana.
@@ -600,7 +759,7 @@ func _spawn_coin() -> void:
 	var cam := get_viewport().get_camera_3d()
 	var side := cam.global_basis.x.normalized() if cam != null else Vector3.RIGHT
 	coin.global_transform = _offered.node.global_transform
-	_coin_rest = _offered.center() + side * 0.2 + Vector3.UP * 0.08
+	_coin_rest = _offered.center() + side * 0.2 + Vector3.UP * 0.06
 	coin.global_position = _coin_rest
 	coin.scale = Vector3.ONE * 0.01
 	var glow := ShaderMaterial.new()             # brilla y late: es lo que hay que coger
@@ -613,9 +772,23 @@ func _spawn_coin() -> void:
 	glint.light_energy = 0.8
 	glint.omni_range = 0.45
 	coin.add_child(glint)
+	var sparkle := _particles("Destello", 1, "chispa", true)   # un destello que se enciende y se apaga
+	sparkle.lifetime = 1.8
+	sparkle.local_coords = true
+	sparkle.gravity = Vector3.ZERO
+	sparkle.initial_velocity_min = 0.0
+	sparkle.initial_velocity_max = 0.0
+	sparkle.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE_SURFACE
+	sparkle.emission_sphere_radius = 0.035
+	sparkle.scale_amount_min = 0.05
+	sparkle.scale_amount_max = 0.05
+	sparkle.scale_amount_curve = _pop_curve()
+	sparkle.color = Color(1.0, 0.95, 0.8)
+	sparkle.emitting = true
+	coin.add_child(sparkle)
 	_isolate([coin])
 	var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(coin, "scale", Vector3.ONE * 1.15, 0.7)
+	tw.tween_property(coin, "scale", Vector3.ONE * COIN_SCALE, 0.7)
 	Sfx.play("brillo")
 
 
@@ -629,32 +802,47 @@ func _near_coin(pos: Vector2) -> bool:
 	return cam != null and cam.unproject_position(coin.global_position).distance_to(pos) <= COIN_GRAB_PX
 
 
-## La moneda en la mano sigue al cursor, en un plano que pasa por la ranura y mira a la cámara.
+## La moneda en la mano sigue al cursor, en un plano que pasa por la ranura y mira a la cámara. Cerca
+## de la ranura, la ranura la atrae (se nota que ahí va).
 func _drag_coin(pos: Vector2) -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null or not is_instance_valid(coin):
 		return
 	var plane := Plane(cam.global_basis.z, _offered.center())
 	var hit: Variant = plane.intersects_ray(cam.project_ray_origin(pos), cam.project_ray_normal(pos))
-	if hit != null:
-		coin.global_position = hit
+	if hit == null:
+		return
+	var p: Vector3 = hit
+	var reach := COIN_SNAP_PX * COIN_MAGNET * GameState.diorama._snap_scale()
+	var d := pos.distance_to(cam.unproject_position(_offered.center()))
+	if d < reach:
+		p = p.lerp(_offered.center() + Vector3.UP * 0.05, (1.0 - d / reach) * 0.65)
+	coin.global_position = p
 
 
-## Soltarla con la moneda cerca de la ranura: entra sola el último tramo (y se coloca de verdad).
-## Lejos: vuelve a flotar.
+## Soltarla con la moneda cerca de la ranura: se endereza, se pone encima y entra (y se coloca de
+## verdad, con su golpe de luz). Lejos: vuelve a su sitio.
 func _release_coin(_pos: Vector2) -> void:
 	var cam := get_viewport().get_camera_3d()
 	var slot_px := cam.unproject_position(_offered.center()) if cam != null else Vector2(INF, INF)
 	var coin_px := cam.unproject_position(coin.global_position) if cam != null else Vector2(-INF, -INF)
 	if slot_px.distance_to(coin_px) <= COIN_SNAP_PX * GameState.diorama._snap_scale():
 		_coin_state = "entrando"
-		var from := coin.global_position
-		var to := _offered.center()
-		var tw := coin.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+		var from := coin.global_transform
+		var goal := _offered.node.global_transform
+		var above := goal.origin + Vector3.UP * 0.07
+		var q0 := from.basis.get_rotation_quaternion()
+		var q1 := goal.basis.get_rotation_quaternion()
+		var s0 := from.basis.get_scale().x
+		var tw := coin.create_tween()
 		tw.tween_method(func(t: float) -> void:
-			coin.global_position = from.lerp(to, t)
-			coin.scale = Vector3.ONE * lerpf(1.15, 1.0, t), 0.0, 1.0, 0.35)
+			coin.global_transform = Transform3D(Basis(q0.slerp(q1, t)).scaled(Vector3.ONE * lerpf(s0, 1.0, t)), from.origin.lerp(above, t)),
+			0.0, 1.0, 0.28).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tw.tween_method(func(t: float) -> void:
+			coin.global_transform = Transform3D(goal.basis, above.lerp(goal.origin, t)), 0.0, 1.0, 0.16) \
+			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		tw.tween_callback(func() -> void:
+			_coin_in_fx(goal.origin)
 			var d := GameState.diorama
 			if is_instance_valid(d) and _offered != null and not _offered.filled:
 				d.place(_offered))
@@ -664,6 +852,122 @@ func _release_coin(_pos: Vector2) -> void:
 		var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tw.tween_property(coin, "global_position", _coin_rest, 0.35)
 		tw.tween_callback(func() -> void: _coin_state = "")
+
+
+## La moneda entra: un golpe de luz cálida desde la ranura, chispas doradas que saltan, luces que
+## suben despacio, y el fondo se aviva un momento.
+func _coin_in_fx(at: Vector3) -> void:
+	Sfx.play("moneda")
+	var d := GameState.diorama
+	var flash := OmniLight3D.new()
+	flash.light_color = Color(1.0, 0.78, 0.4)
+	flash.omni_range = 1.4
+	flash.light_energy = 0.0
+	d.add_child(flash)
+	flash.global_position = at + Vector3.UP * 0.08
+	var tw := flash.create_tween()
+	tw.tween_property(flash, "light_energy", 2.4, 0.08)
+	tw.tween_property(flash, "light_energy", 0.0, 1.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_callback(flash.queue_free)
+	var sparks := _particles("ChispasMoneda", 36, "chispa", true)
+	d.add_child(sparks)
+	sparks.global_position = at + Vector3.UP * 0.03
+	sparks.one_shot = true
+	sparks.explosiveness = 0.9
+	sparks.lifetime = 1.4
+	sparks.direction = Vector3.UP
+	sparks.spread = 50.0
+	sparks.initial_velocity_min = 0.35
+	sparks.initial_velocity_max = 0.8
+	sparks.gravity = Vector3(0.0, -0.9, 0.0)
+	sparks.damping_min = 0.4
+	sparks.damping_max = 0.9
+	sparks.scale_amount_min = 0.03
+	sparks.scale_amount_max = 0.055
+	sparks.color = Color(1.0, 0.86, 0.5)
+	sparks.color_ramp = _fade_ramp(0.0, 0.55)
+	sparks.emitting = true
+	var lights := _particles("LucesMoneda", 16, "luz", true)
+	d.add_child(lights)
+	lights.global_position = at + Vector3.UP * 0.05
+	lights.one_shot = true
+	lights.explosiveness = 0.5
+	lights.lifetime = 3.5
+	lights.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
+	lights.emission_sphere_radius = 0.12
+	lights.direction = Vector3.UP
+	lights.spread = 25.0
+	lights.initial_velocity_min = 0.06
+	lights.initial_velocity_max = 0.16
+	lights.gravity = Vector3(0.0, 0.02, 0.0)
+	lights.scale_amount_min = 0.03
+	lights.scale_amount_max = 0.06
+	lights.color = Color(1.0, 0.72, 0.38, 0.9)
+	lights.color_ramp = _fade_ramp(0.15, 0.6)
+	lights.emitting = true
+	_isolate([flash, sparks, lights])
+	var cam := get_viewport().get_camera_3d()
+	if cam != null:                              # y en pantalla, un destello cálido que se abre desde la ranura
+		_bloom.position = cam.unproject_position(at) - _bloom.size * 0.5
+		_bloom.scale = Vector2.ONE * 0.25
+		_bloom.modulate.a = 0.0
+		_bloom.show()
+		var bt := _bloom.create_tween().set_parallel()
+		bt.tween_property(_bloom, "scale", Vector2.ONE * 1.6, 1.3).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+		bt.tween_property(_bloom, "modulate:a", 0.4, 0.12)
+		bt.chain().tween_property(_bloom, "modulate:a", 0.0, 1.1).set_trans(Tween.TRANS_SINE)
+		bt.chain().tween_callback(_bloom.hide)
+	for p in [sparks, lights]:
+		get_tree().create_timer((p as CPUParticles3D).lifetime + 0.5, false).timeout.connect((p as Node).queue_free)
+	var glow := create_tween()
+	glow.tween_method(func(v: float) -> void: _cozy_mat.set_shader_parameter("brillo", v), 1.0, 1.8, 0.25)
+	glow.tween_method(func(v: float) -> void: _cozy_mat.set_shader_parameter("brillo", v), 1.8, 1.3, 2.2) \
+		.set_trans(Tween.TRANS_SINE)
+	_spot_energy *= 1.15                         # y la luz se queda un poco más cálida
+
+
+# --- Partículas del final (texturas de Efectos) ----------------------------------------------
+
+func _particles(n: String, amount: int, tex: String, glow: bool) -> CPUParticles3D:
+	var p := CPUParticles3D.new()
+	p.name = n
+	p.amount = amount
+	p.local_coords = false
+	var quad := QuadMesh.new()
+	quad.size = Vector2.ONE
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
+	mat.billboard_keep_scale = true
+	mat.vertex_color_use_as_albedo = true
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD if glow else BaseMaterial3D.BLEND_MODE_MIX
+	if not _textures.has(tex):
+		_textures[tex] = Efectos._draw(tex)
+	mat.albedo_texture = _textures[tex]
+	quad.material = mat
+	p.mesh = quad
+	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	return p
+
+
+static func _fade_ramp(fade_in: float, fade_out: float) -> Gradient:
+	var g := Gradient.new()
+	g.set_color(0, Color(1, 1, 1, 0))
+	g.set_color(1, Color(1, 1, 1, 0))
+	g.add_point(maxf(fade_in, 0.001), Color(1, 1, 1, 1))
+	g.add_point(clampf(fade_out, fade_in + 0.01, 0.999), Color(1, 1, 1, 1))
+	return g
+
+
+## Crece de la nada, brilla y se apaga (un destello).
+static func _pop_curve() -> Curve:
+	var c := Curve.new()
+	c.add_point(Vector2(0.0, 0.0))
+	c.add_point(Vector2(0.3, 1.0))
+	c.add_point(Vector2(0.6, 0.0))
+	c.add_point(Vector2(1.0, 0.0))
+	return c
 
 
 ## (Tests) Dónde está la moneda en pantalla (para cogerla) y dónde su ranura (para soltarla).
@@ -682,9 +986,9 @@ func slot_screen_position() -> Vector2:
 func finish() -> void:
 	if not active:
 		return
-	_restore_target()
 	_clear_extras()
 	_show_hidden(true)
+	_hold_sections(false)
 	active = false
 	kind = ""
 	target = null
@@ -702,9 +1006,9 @@ func _clear_extras() -> void:
 		reflection.queue_free()
 	reflection = null
 	_figure = null
-	if is_instance_valid(_spot):
-		_spot.queue_free()
-	_spot = null
+	_free_ending_lights()
+	if _cozy.visible:
+		_set_cozy(0.0, FADE)
 	if _black.color.a > 0.0:
 		_black.create_tween().tween_property(_black, "color:a", 0.0, FADE)
 

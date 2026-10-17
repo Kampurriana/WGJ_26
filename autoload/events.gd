@@ -12,6 +12,8 @@ signal piece_drag_ended(piece_id: StringName, placed: bool)
 signal piece_placed(piece_id: StringName, node: Node3D)
 signal piece_rejected(piece_id: StringName, reason: String)
 signal piece_collected(piece_id: StringName, node: Node3D)   # una pieza escondida (H_) encontrada
+signal collectible_found(item: Node, found: int, total: int)  # un dibujo escondido (C_): sale de su sitio hacia la cuerda
+signal collectible_hung(item: Node)           # y ya está colgado en la cuerda (T_)
 
 signal world_clicked(screen_pos: Vector2)     # clic sin arrastre sobre el 3D
 signal hint_shown(target: Node3D)

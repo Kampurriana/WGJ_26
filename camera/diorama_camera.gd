@@ -38,6 +38,7 @@ const HINT_ZOOM := 0.5                       ## la pista acerca hasta medio cami
 const SHOWCASE_DEG := 18.0                   ## al completar, se mece así de un lado a otro
 const CLOSE_UP_TIME := 2.4                   ## lo que tarda en llegar al primer plano (muy blando)
 const BREATH_DEG := Vector2(0.35, 0.22)      ## "respiración" de cámara de cine: giro e inclinación (grados)
+const BREATH_FADE := 0.8                     ## lo que tarda en dejar de respirar al entrar en un primer plano (s)
 const CLOSE_UP_SMOOTH := 0.95
 
 var cam: Camera3D
@@ -84,6 +85,7 @@ var _nudge_left := 0.0
 var showcasing := false                      ## vaivén de diorama completado
 var in_moment := false                       ## primer plano de un momento de la historia
 var _breath_t := 0.0
+var _breath_k := 1.0                         ## cuánto respira (0 en un primer plano: el objeto se queda quieto)
 var _saved_view := {}                        ## a dónde vuelve al acabar el momento
 var hovered: Interactable                    ## lo que se puede tocar bajo el ratón (null = nada)
 var _showcase_base := 0.0
@@ -308,6 +310,7 @@ func end_close_up() -> void:
 
 func _process(delta: float) -> void:
 	_breath_t += delta
+	_breath_k = move_toward(_breath_k, 0.0 if in_moment else 1.0, delta / BREATH_FADE)
 	if _input_enabled:
 		var v := Input.get_vector("cam_left", "cam_right", "cam_up", "cam_down")
 		if v != Vector2.ZERO:
@@ -364,11 +367,17 @@ func _process(delta: float) -> void:
 
 func _apply() -> void:
 	global_position = _cur_center + _nudge
-	# Una respiración lentísima (como una cámara de cine en mano muy quieta): el plano está vivo.
-	var breath := Vector2(sin(_breath_t * 0.17) * BREATH_DEG.x, sin(_breath_t * 0.23 + 1.3) * BREATH_DEG.y)
+	# Una respiración lentísima (como una cámara de cine en mano muy quieta): el plano está vivo. En
+	# un primer plano no: el objeto tiene que verse quieto (cuarta nota).
+	var breath := Vector2(sin(_breath_t * 0.17) * BREATH_DEG.x, sin(_breath_t * 0.23 + 1.3) * BREATH_DEG.y) * _breath_k
 	rotation = Vector3(deg_to_rad(-_cur_pitch + breath.y), deg_to_rad(_cur_yaw + breath.x), 0.0)
 	cam.position = Vector3(0.0, 0.0, _cur_distance * (1.0 - _nudge_zoom))
 	cam.h_offset = _cur_h_offset
+
+
+## (Tests) Cuánto respira la cámara ahora (0 = quieta).
+func breath_amount() -> float:
+	return _breath_k
 
 
 ## Muelle críticamente amortiguado (como SmoothDamp): va hacia `goal` sin arrancar ni frenar de
