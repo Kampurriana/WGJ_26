@@ -13,7 +13,7 @@
 	"recogido_cuchara": "¡Una cuchara! Estaba escondida en el cajón.",
 	"pieza_cuadro": "El cuadro de la familia, por fin colgado.",
 	"fin_juego": "Gracias por jugar.",
-	"intro_desvan": "El desván, a oscuras. Antes de ordenarlo hay que ponerlo en pie: primero las paredes y el tejado.",
+	"intro_desvan": "El desván, a oscuras. Antes de ordenarlo hay que ponerlo en pie: primero el suelo, las paredes y el tejado.",
 	"pieza_hucha": "Mi hucha. Ahorraba para unas pinturas de verdad… Está vacía. ¿En qué me lo gasté?",
 	"titulo_desvan": "El desván",
 	"titulo_infancia": "I · Infancia",
@@ -33,6 +33,5 @@
 	"consejo_muebles": "Algo está guardado. Toca el mueble que brilla para abrirlo.",
 	"consejo_dentro": "¡Ahí está! Tócalo para llevártelo a la bandeja.",
 	"logro_dibujo": "Uno de mis dibujos de cuando era pequeña",
-	"logro_dibujos_todos": "¡Todos mis dibujos! La cuerda está completa.",
-	"consejo_dibujos": "Hay {total} dibujos de cuando era pequeña escondidos por el desván. Cada uno que encuentres se cuelga en su cuerda."
+	"logro_dibujos_todos": "¡Todos mis dibujos! La cuerda está completa."
 }

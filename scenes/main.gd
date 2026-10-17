@@ -17,6 +17,7 @@ extends Node3D
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
+##   --fondo=C,M          (capturas) el fondo con el color C y el motivo M (ui/fondos.gd)
 ##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
 const MENU_DELAY := 1.6                      ## tras resolver el título, lo que dura la onda de color
@@ -54,6 +55,9 @@ var _elapsed := 0.0
 func _ready() -> void:
 	# main sigue viva en pausa (capturas, menús, mando); lo que es "juego" se pausa.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	# El fondo pastel pasa por el tonemap del 3D: sin HDR en 2D, el lienzo se corta en 1,0 y no sale
+	# de un gris apagado (medido: tope 208/255). Con HDR sale el color calibrado (iluminacion/fondo.gdshader).
+	get_viewport().use_hdr_2d = true
 	_parse_args()
 	var cam := DioramaCamera.new()
 	cam.name = "Camera"
@@ -104,6 +108,9 @@ func _ready() -> void:
 	menu.play_requested.connect(play_level)
 	pause.main_menu_requested.connect(show_title)
 	Events.level_completed.connect(_on_level_completed)
+	Settings.changed.connect(func(key: String) -> void:
+		if key.begins_with("fondo_"):
+			_apply_background())
 	if start_in_menu:
 		show_title()
 	else:
@@ -143,6 +150,10 @@ func _parse_args() -> void:
 			_press_f9 = true
 		elif a == "--creditos":
 			_roll_credits = true
+		elif a.begins_with("--fondo="):          # (capturas) color,motivo del fondo: --fondo=1,1
+			var v := a.get_slice("=", 1).split(",")
+			Settings.set_value("fondo_color", int(v[0]))
+			Settings.set_value("fondo_motivo", int(v[1]) if v.size() > 1 else 0)
 
 
 ## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
@@ -197,6 +208,14 @@ func _apply_lighting(path: String) -> void:
 	_lighting.name = "Iluminacion"
 	add_child(_lighting)
 	_lighting_path = path
+	_apply_background()
+
+
+## El fondo que eligió el jugador en Opciones (ui/fondos.gd), en el de la escena de luz.
+func _apply_background() -> void:
+	var rect := _lighting.get_node_or_null("Fondo/Degradado") as CanvasItem if _lighting != null else null
+	if rect != null:
+		Fondos.apply(rect.material as ShaderMaterial, true, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))
 
 
 func load_level(index: int) -> void:

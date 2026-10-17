@@ -34,7 +34,7 @@ bandeja de piezas, título) y no solo las mecánicas (esas están en `GDD-WOODO.
 | Luz **suave** y cálida; "la luz hace que cada diorama parezca un objeto físico" | visto (Noisy Pixel, TheGamer, Indie Games Plus) |
 | **Colocar piezas enciende animaciones y luces al instante**, sin pulsar nada más | una fuente, textual (Indie Games Plus) |
 | Colores vivos una vez pintado; paleta cálida | visto |
-| Fondo oscuro | **petición del equipo** (ninguna fuente lo describe) |
+| Fondo pastel con motivo (antes oscuro) | **petición del equipo** (ninguna fuente lo describe) |
 
 ### Partículas
 
@@ -83,7 +83,7 @@ Godot 4.7.2 con el renderer **Compatibility** (el único que exporta a navegador
 |---|---|---|
 | Luces en tiempo real con sombras: direccional, foco (SpotLight3D) y puntual (OmniLight3D) | sí | sol, contraluz, faroles y lámparas de las piezas |
 | Glow (resplandor) | sí | brillo de las luces y de las chispas |
-| Fondo hecho con una capa 2D detrás del 3D (degradado radial) | sí | fondo oscuro con halo cálido |
+| Fondo hecho con una capa 2D detrás del 3D (degradado radial) | sí (con HDR 2D, para que salga el pastel) | fondo pastel con motivo en diagonal |
 | CPUParticles3D | sí | todas las partículas (las de GPU no se usan: en navegador fallan más) |
 | Shader con un array de esferas (pintura que se extiende por píxel) | sí | la onda de pintura |
 | Exportar a `.glb` desde Godot y volver a importarlo con nombres, letras 3D y luces | sí | el diorama del título como asset |
@@ -100,7 +100,7 @@ Godot 4.7.2 con el renderer **Compatibility** (el único que exporta a navegador
 | Luz en tiempo real | La luz **gira con la cámara**: al girar el diorama las sombras se mueven sobre él (como una maqueta en un plato giratorio bajo un flexo). La pieza en mano proyecta sombra | petición + supuesto | `iluminacion/rig_luz.gd` (`seguir_camara`) |
 | La luz despierta con el diorama | La luz va de **fría y tenue** (escena congelada) a **cálida y plena** según el porcentaje de piezas puestas | supuesto (a partir de "escena congelada" que "se calienta") | `rig_luz.gd` (`color_inicio`, `color_final`) |
 | Colocar enciende luces | Toda luz que cuelga de una pieza `P_` está apagada hasta colocarla y entonces **se enciende con un fundido** | una fuente, textual | `PieceSlot.fill` |
-| Fondo oscuro | Degradado radial casi negro con un halo cálido detrás del diorama + viñeta suave | petición | `iluminacion/fondo.gdshader` |
+| Fondo | Pastel con un halo más claro detrás del diorama y un motivo suave (estrellas por defecto) en filas diagonales que se desplazan despacio; el jugador elige color y motivo en Opciones; viñeta casi nula. Antes era casi negro (la quinta nota lo cambió) | petición | `iluminacion/fondo.gdshader`, `ui/fondos.gd` |
 | Partículas | **Polvo en suspensión** que brilla en la luz; al encajar, **serrín** que salta y **chispas** que suben + un **anillo** en el suelo; al recoger algo escondido, un soplo; en la pista, chispas que giran; al completar una sección o el diorama, **luces cálidas que suben despacio** (luciérnagas; las hojas se quitaron: el equipo las quería más cozy) | supuesto (Noisy Pixel solo dice que hay partículas) | `core/efectos.gd` |
 | Cámara suave | Todo con **muelles amortiguados** (nada arranca ni frena de golpe); giro con **inercia**, zoom hacia el cursor, límites por nivel | visto + decisión del equipo | `camera/diorama_camera.gd` (`_spring`) |
 | La pista mueve la cámara | La pista **gira y acerca** la cámara hasta el hueco | una fuente, textual | `DioramaCamera.look_at_point` |

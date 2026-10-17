@@ -1,9 +1,8 @@
 extends "res://tools/build_sample_level.gd"
 ## Genera el diorama del título: la HUCHA DE CERDITO de la protagonista, sobre un cojín, hecha
 ## piezas. Se monta como todo el juego (bandeja de la derecha, siluetas): primero el cuerpo; luego
-## patas, hocico, orejas, cola, ojos, ranura, coloretes y lazo; y sobre todo PEGATINAS (estrella que
-## brilla en la oscuridad, corazón, flor, luna, rayo, arcoíris y la del nombre del juego, en el
-## cartel de delante). 21 piezas. Al acabar sale el menú. Ejecutar:
+## patas, hocico, orejas, cola, ojos, ranura, coloretes y lazo; y sobre todo PEGATINAS (estrella,
+## corazón, flor, luna, rayo, arcoíris y la del nombre del juego, en el cartel de delante). 21 piezas. Al acabar sale el menú. Ejecutar:
 ##   godot --headless --path . --script res://tools/build_title_level.gd
 ##
 ## Escribe DOS ficheros:
@@ -163,15 +162,7 @@ func _on_body(x: float, y: float, side := 1.0) -> Array:
 
 func _build_stickers(pig: Node3D) -> void:
 	var star := _sticker(pig, "P_pegatina_estrella__after-cuerpo", -0.38, 0.86, 12.0)
-	_flat(star, "Estrella", _star(0.1, 0.045), Color(1.0, 0.84, 0.25), true)
-	var luz := OmniLight3D.new()                     # fosforito: brilla en la oscuridad (se enciende al pegarla)
-	luz.name = "Luz"
-	luz.position = Vector3(0, 0, 0.06)
-	luz.light_color = Color(1.0, 0.9, 0.55)
-	luz.light_energy = 0.22
-	luz.omni_range = 0.4
-	luz.omni_attenuation = 1.4
-	star.add_child(luz)
+	_flat(star, "Estrella", _star(0.1, 0.045), Color(1.0, 0.84, 0.25))   # solo una pegatina: no brilla (quinta nota)
 	_flat(_sticker(pig, "P_pegatina_corazon__after-cuerpo", 0.18, 0.9, -10.0), "Corazon", _heart(0.085), Color(0.95, 0.3, 0.42))
 	var flower := _sticker(pig, "P_pegatina_flor__after-cuerpo", -0.5, 0.48, 6.0)
 	for i in 5:

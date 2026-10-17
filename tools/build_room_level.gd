@@ -134,7 +134,7 @@ func _lamp_light(lamp: Node3D) -> void:
 	luz.position = Vector3(box.get_center().x, box.end.y - 0.04, box.get_center().z)
 	luz.rotation_degrees = Vector3(-90, 0, 0)
 	luz.light_color = Color(1.0, 0.8, 0.55)
-	luz.light_energy = 2.0
+	luz.light_energy = 1.1                         # quinta nota: quemaba la mesa (medido)
 	luz.spot_range = 1.2
 	luz.spot_angle = 55.0
 	luz.spot_attenuation = 1.2

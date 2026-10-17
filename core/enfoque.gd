@@ -3,7 +3,8 @@ extends CanvasLayer
 ## Enfoque de cine (postproceso, shaders/desenfoque.gdshader): todo un poco desdibujado y, fuera de
 ## la zona de foco, más; como la maqueta de Woodo, que parece fotografiada con poca profundidad de
 ## campo. El foco no está quieto: va a lo importante con un "cambio de foco" suave (nada salta):
-##  - jugando: el diorama (su centro en pantalla); al arrastrar una pieza, donde está la mano;
+##  - jugando: el centro de la pantalla (los bordes, desenfocados; al hacer zoom, la cámara lleva la
+##    zona hacia el centro: quinta nota); al arrastrar una pieza, donde está la mano;
 ##  - en un momento de la historia: el objeto (lo pide Momentos con focus_on), y fuera más borroso.
 ## Va en la capa 0, por encima del 3D y por debajo de la interfaz (que nunca se desenfoca).
 
@@ -23,8 +24,6 @@ var _goal_center := Vector2(640, 380)
 var _goal_radius := Vector2(480, 245)
 var _goal_blur := PLAY_BLUR
 var _moment_left := 0.0                      ## mientras > 0, manda el foco que pidió el momento
-var _d_ref: Node                             ## diorama del que se guardó el centro (no se mide cada fotograma)
-var _d_center := Vector3.ZERO
 
 
 func _ready() -> void:
@@ -73,19 +72,11 @@ func _process(delta: float) -> void:
 	_mat.set_shader_parameter("tam", size)
 
 
-## Al jugar, el foco está en el diorama; al arrastrar una pieza, en la mano.
+## Al jugar, el foco está en el centro de la pantalla; al arrastrar una pieza, en la mano.
 func _play_center(size: Vector2) -> Vector2:
 	if GameState.is_dragging:
 		return _rect.get_local_mouse_position()
-	var cam := get_viewport().get_camera_3d()
-	var d := GameState.diorama
-	if cam != null and is_instance_valid(d):
-		if d != _d_ref:
-			_d_ref = d
-			_d_center = Visuals.global_aabb(d).get_center()
-		if not cam.is_position_behind(_d_center):
-			return cam.unproject_position(_d_center)
-	return size * Vector2(0.5, 0.53)
+	return size * 0.5
 
 
 ## (Tests) El foco de ahora: centro, radio y desenfoque fuera.

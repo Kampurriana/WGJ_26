@@ -517,8 +517,9 @@ func collect(it: Interactable) -> void:
 	Sfx.play("pickup")
 	Events.piece_collected.emit(it.id, it.target)
 	Narrator.say_if_exists("recogido_" + String(it.id))
+	# El objeto se encoge donde estaba y su ficha vuela por la pantalla hasta la bandeja (Hud).
 	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-	tw.tween_property(it.target, "scale", Vector3.ONE * 0.01, 0.3)
+	tw.tween_property(it.target, "scale", Vector3.ONE * 0.01, 0.25)
 	tw.tween_callback(it.target.hide)
 	_refresh(true)
 	Events.inventory_changed.emit()
@@ -556,10 +557,13 @@ func exit_focus() -> void:
 
 
 ## Mientras se arrastra una pieza, laten las siluetas donde puede ir ("aquí"). &"" = ninguna.
+## Las piezas repetidas (un tablón vale en varios huecos, no en todos) no laten: encontrar dónde va
+## cada una es el reto (quinta nota: "crea una cierta complejidad, ahora es muy intuitivo").
 func _pulse_slots_for(id: StringName) -> void:
+	var guide := id != &"" and slots.filter(func(o: PieceSlot) -> bool: return o.id == id).size() == 1
 	for s in slots:
 		if not s.filled:
-			s.set_pulse(id != &"" and s.id == id and s.scope == focus and is_unlocked(s))
+			s.set_pulse(guide and s.id == id and s.scope == focus and is_unlocked(s))
 
 
 func _on_world_clicked(screen_pos: Vector2) -> void:
@@ -676,9 +680,7 @@ func find_collectible(it: Interactable) -> void:
 	var found := collectibles_found()
 	Sfx.play("logro")
 	Events.collectible_found.emit(it, found, collectible_total())
-	_hang(it, found - 1, true)
-	if found == 1:
-		_tip_once("consejo_dibujos")
+	_hang(it, found - 1, true)                  # sin frase ni consejo: los encuentra el jugador (quinta nota)
 
 
 ## Lo cuelga en la pinza `index` (animate = en vuelo y balanceándose; si no, ya colgado). Sin cuerda

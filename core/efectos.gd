@@ -9,6 +9,7 @@ extends Node3D
 ##   mueble que llama  -> motas doradas que suben despacio a su alrededor (mientras guarde algo)
 ##   sección completa  -> unas luces cálidas que suben (glow_up, más flojo)
 ##   diorama completo  -> luces cálidas que suben despacio, como luciérnagas, y destellos suaves
+##                        (no en el título: se corre al menú limpio)
 ##   dibujo escondido  -> un destello pequeño de vez en cuando donde espera (C_ que se puede coger);
 ##                        al encontrarlo, un soplo; al colgarse en la cuerda, unos destellos
 ## Texturas: si existe assets/texturas/particulas/<polvo|chispa|luz|viruta>.png se usa esa (así
@@ -209,6 +210,8 @@ func _hint(box: AABB) -> void:
 
 
 func _celebrate(box: AABB) -> void:
+	if GameState.mode == GameState.Mode.MENU:    # el cerdito del título se corre al menú sin luces delante (quinta nota)
+		return
 	bursts += 1
 	glow_up(box, 1.0)
 

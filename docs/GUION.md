@@ -16,7 +16,7 @@ y tejado, pero **se montan por secciones, en orden**:
 
 | Sección | Qué se monta | Cómo se abre | Al completarla |
 |---|---|---|---|
-| 1 · El desván | Las paredes, la cumbrera, el tejado, las vigas y la ventana. Al final, **la hucha** (clave) | Abierta desde el principio | La hucha habla; se abre la infancia |
+| 1 · El desván | **El suelo, a tablones** (18, de tres largos parecidos: 2,0 / 1,8 / 1,6 m; un tablón vale en cualquier hueco de su largo, no en los otros, y al cogerlo no late ninguna silueta: hay que encontrarle el sitio), las paredes, la cumbrera, el tejado, las vigas y la ventana. Al final, **la hucha** (clave) | Abierta desde el principio | La hucha habla; se abre la infancia |
 | 2 · Infancia | Dressing (alfombra, cama, cómoda, caballito, pelota, tren, estante de cuentos, cubos) y la historia: **caja de música → dibujo → nutria** (clave) | Rótulo «I · Infancia», se enciende su bombilla, aparecen sus muebles | Se pintan sus muebles; luces cálidas |
 | 3 · Adolescencia | Dressing (alfombra, escritorio, silla, lámpara, altavoz, libros, pósters, corcho, puf, guitarra, fotos) y la historia: **MP3 → cámara → inscripción a Bellas Artes** (clave) | Rótulo «II · Adolescencia», bombilla, muebles | Ídem |
 | 4 · Adultez | Dressing (alfombra, cajas de la tienda, taza, reloj, planta, perchero, abrigo, lienzo, pinceles) y la historia: **llaves → caballete → espejo** (clave) | Rótulo «III · Adultez», bombilla, muebles | Ídem |
@@ -81,7 +81,7 @@ Dos momentos especiales:
 
 El puzle que desbloquea el menú es **la hucha de ella**, sobre un cojín (la misma que luego cierra
 la historia): 21 piezas. Primero el cuerpo; luego patas, hocico, orejas, cola, ranura, ojos,
-coloretes y lazo; y sobre todo **pegatinas**: una estrella que brilla en la oscuridad, corazón,
+coloretes y lazo; y sobre todo **pegatinas**: una estrella, corazón,
 flor, luna, rayo, arcoíris y la del nombre del juego, en el cartel de delante.
 
 ## Los dibujos escondidos (cuarta nota)
@@ -100,11 +100,11 @@ rosa, rojo, amarillo); las artistas pondrán el dibujo de verdad (`C_` en `docs/
 | Rojo | En el cajón de la mesita (con los pinceles) | Adultez |
 | Amarillo | Encima de las cajas de la tienda | En cuanto las cajas están puestas |
 
+Nadie dice nada de ellos (quinta nota: "que los encuentre el jugador"): ni frase ni consejo.
 Al tocar uno, se levanta, **vuela en arco hasta su cuerda** (la de la infancia, **distinta de la de
 las fotos de encima del escritorio**), se engancha en la siguiente pinza y se balancea hasta quedarse
 quieto; baja **un aviso de logro** ("DIBUJO ENCONTRADO · 3 DE 7", su nombre y una fila de puntos) y
-bajo el título queda el contador. El primero trae un consejo: *«Hay 7 dibujos de cuando era pequeña
-escondidos por el desván. Cada uno que encuentres se cuelga en su cuerda.»* Los que esperan echan un
+bajo el título queda el contador. Los que esperan echan un
 **destello pequeño** de vez en cuando; los de dentro de un mueble cerrado no se pueden coger hasta
 abrirlo. Con los 7: *«¡Todos mis dibujos! La cuerda está completa.»* Los créditos dicen cuántos se
 encontraron.
@@ -131,7 +131,7 @@ cámara (así no se adelanta la historia).
 
 | Objeto | Frase |
 |---|---|
-| (al empezar) | «El desván, a oscuras. Antes de ordenarlo hay que ponerlo en pie: primero las paredes y el tejado.» |
+| (al empezar) | «El desván, a oscuras. Antes de ordenarlo hay que ponerlo en pie: primero el suelo, las paredes y el tejado.» |
 | Hucha | «Mi hucha. Ahorraba para unas pinturas de verdad… Está vacía. ¿En qué me lo gasté?» |
 | Caja de música | «La caja de la abuela. Bailaba hasta que nació mamá, y lo dejó. A mamá le pasó lo mismo con el ballet. En casa decían que por la familia una aprende a ceder. Yo aprendí rápido.» |
 | Dibujo | «Para mamá pintaba bailarinas. Le gustaban más que mis monstruos… así que dejé de pintar monstruos.» |
@@ -162,6 +162,8 @@ cámara (así no se adelanta la historia).
    la ranura (segunda y tercera nota: "que se vea la moneda en ese momento"; "permíteme poner la
    moneda dentro del cerdito, que no sea darle click").
 7. La frase del espejo se parte en tres, para que el momento respire.
+9. **Quinta nota:** el suelo, a tablones-pieza (más difícil saber dónde va cada uno); la estrella
+   del cerdito ya no brilla; sin consejo sobre los dibujos; lo que se recoge vuela a la bandeja.
 8. **Cuarta nota:** primeros planos quietos (sin gestos); orden título → menú sin frases → actos →
    espejo → transición → hucha → transición → créditos; la escena de la hucha, mucho más acogedora;
    7 dibujos escondidos que se cuelgan en su cuerda (el primero, con la cámara). El menú ya no dice

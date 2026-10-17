@@ -39,6 +39,7 @@ const SHOWCASE_DEG := 18.0                   ## al completar, se mece así de un
 const CLOSE_UP_TIME := 2.4                   ## lo que tarda en llegar al primer plano (muy blando)
 const BREATH_DEG := Vector2(0.35, 0.22)      ## "respiración" de cámara de cine: giro e inclinación (grados)
 const BREATH_FADE := 0.8                     ## lo que tarda en dejar de respirar al entrar en un primer plano (s)
+const ZOOM_CENTER_PULL := 2.2                ## al acercar, lo de bajo el cursor se desliza hacia el centro (1 = se queda bajo el cursor)
 const CLOSE_UP_SMOOTH := 0.95
 
 var cam: Camera3D
@@ -427,14 +428,15 @@ func zoom_at(factor: float, screen_pos: Vector2) -> void:
 	_zoom(factor, screen_pos)
 
 
-## Zoom limitado. Al acercar hacia un punto de la pantalla, ese punto se queda bajo el cursor; al
-## alejar, el centro vuelve al del encuadre inicial. Nunca hay desplazamiento libre.
+## Zoom limitado. Al acercar hacia un punto de la pantalla, la cámara va hacia él y lo lleva hacia el
+## centro (donde está el foco del enfoque de cine: quinta nota, "que se enfoque la zona a la que se
+## hace zoom"); al alejar, el centro vuelve al del encuadre inicial. Nunca hay desplazamiento libre.
 func _zoom(factor: float, screen_pos := Vector2(-1, -1)) -> void:
 	var old := distance
 	distance = clampf(distance * factor, min_distance, max_distance)
 	if factor < 1.0 and screen_pos.x >= 0.0 and distance < old:
 		var p := _point_under(screen_pos)
-		center += (p - center) * (1.0 - distance / old)
+		center += (p - center) * minf(1.0, (1.0 - distance / old) * ZOOM_CENTER_PULL)
 	_clamp_center()
 
 

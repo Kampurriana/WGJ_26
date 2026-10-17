@@ -10,6 +10,9 @@ extends CanvasLayer
 ## hacia la derecha (queda solo su borde, para soltar ahí y no poner nada) y deja colocar lo que
 ## tapaba; al soltar, vuelve. Al completar el diorama se recoge, como en Woodo.
 ##
+## Lo que se encuentra guardado (H_) no aparece de golpe en la bandeja: su ficha sale de donde estaba
+## el objeto y vuela en arco hasta su sitio (quinta nota: "que no se teletransporte").
+##
 ## Dibujos escondidos (C_): al encontrar uno baja un aviso de logro (el dibujo en pequeño, su nombre
 ## y "3 de 7" con una fila de puntos) y bajo el título queda el contador de dibujos.
 
@@ -28,10 +31,13 @@ const SLIDE_TIME := 0.22
 const AWARD_Y := 14.0                        ## el aviso de logro, arriba en el centro...
 const AWARD_HIDDEN_Y := -170.0               ## ...y escondido por encima de la pantalla
 const AWARD_TIME := 3.8                      ## lo que se queda a la vista (s)
+const FLY_TIME := 0.8                        ## lo que tarda en volar a la bandeja lo que se recoge (s)
 
 var _root: Control
 var _panel: PanelContainer
 var _list: VBoxContainer                     ## un grupo por acto: rótulo + rejilla de fichas
+var _scroll: ScrollContainer
+var _flights: Array[Control] = []            ## fichas volando hacia la bandeja (lo recogido)
 var _groups: Dictionary = {}                 ## índice de sección (-1 = sin sección) -> {box, header, grid}
 var _cards: Dictionary = {}                  ## id de pieza -> InventoryItem
 var _empty: Label
@@ -109,8 +115,9 @@ func _ready() -> void:
 			get_tree().create_timer(1.6).timeout.connect(_show_done))
 	Narrator.subtitle.connect(_show_subtitle)
 	Events.section_opened.connect(func(sec: RefCounted) -> void: show_chapter(Narrator.text("titulo_" + (sec as Section).name)))
-	Events.tip_requested.connect(func(key: String) -> void: show_tip(_fill(Narrator.text(key))))
+	Events.tip_requested.connect(func(key: String) -> void: show_tip(Narrator.text(key)))
 	Events.collectible_found.connect(_on_collectible_found)
+	Events.piece_collected.connect(_on_piece_collected)
 	Events.piece_drag_started.connect(func(_id: StringName) -> void:
 		_hide_info()
 		_slide_to(1.0))
@@ -127,6 +134,7 @@ func _build_panel() -> void:
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_panel.add_child(scroll)
+	_scroll = scroll
 	var column := VBoxContainer.new()
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(column)
@@ -419,6 +427,63 @@ func tip_text() -> String:
 	return _tip.text if _tip_box.visible else ""
 
 
+## Algo guardado se ha recogido: su ficha vuela desde el objeto hasta su sitio en la bandeja.
+func _on_piece_collected(id: StringName, node: Node3D) -> void:
+	var cam := get_viewport().get_camera_3d()
+	if cam == null or not is_instance_valid(node) or not _panel.visible:
+		return
+	var center := Visuals.global_aabb(node).get_center()
+	if cam.is_position_behind(center):
+		return
+	_fly_to_tray.call_deferred(id, cam.unproject_position(center))   # la bandeja ya sabe que la tiene
+
+
+func _fly_to_tray(id: StringName, from: Vector2) -> void:
+	var card := item_for(id)
+	if card == null:
+		return
+	_scroll.ensure_control_visible(card)
+	var icon := TextureRect.new()
+	icon.name = "Vuelo"
+	# Una foto de la vista de la ficha (no su textura viva: la ficha puede rehacerse mientras vuela).
+	var can_read := card.texture() != null and DisplayServer.get_name() != "headless"   # sin pantalla no hay imagen que leer
+	var img := card.texture().get_image() if can_read else null
+	icon.texture = ImageTexture.create_from_image(img) if img != null and not img.is_empty() else null
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.size = InventoryItem.SIZE
+	icon.pivot_offset = icon.size * 0.5
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.modulate = Color(1.15, 1.1, 0.95)
+	_root.add_child(icon)
+	_flights.append(icon)
+	var start := from
+	var state := {"goal": card.get_global_rect().get_center()}   # dónde está la ficha (se pone al día al volar)
+	var tw := icon.create_tween()
+	tw.tween_method(func(t: float) -> void:
+		var target := item_for(id)                   # la ficha puede moverse (o rehacerse) mientras vuela
+		if target != null:
+			state.goal = target.get_global_rect().get_center()
+		var goal: Vector2 = state.goal
+		var peak := start.lerp(goal, 0.5) + Vector2(0, -150)
+		var p := start.lerp(peak, t).lerp(peak.lerp(goal, t), t)
+		icon.position = p - icon.size * 0.5
+		icon.scale = Vector2.ONE * (0.55 + 0.6 * sin(t * PI) * (1.0 - t) + 0.45 * t)
+		icon.rotation = sin(t * PI) * 0.25, 0.0, 1.0, FLY_TIME).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func() -> void:
+		_flights.erase(icon)
+		icon.queue_free()
+		var target := item_for(id)
+		if target != null:
+			target.celebrate_unlock()
+		Sfx.play("bandeja"))
+
+
+## (Tests) Fichas volando ahora hacia la bandeja.
+func flights() -> Array[Control]:
+	return _flights
+
+
 ## Aviso de logro (arriba, en el centro): baja, se queda un poco y vuelve a subir.
 func _build_award() -> void:
 	_award = PanelContainer.new()
@@ -536,12 +601,6 @@ static func drawing_color(n: Node) -> Color:
 	return best
 
 
-## Rellena los huecos de un texto: {total} = dibujos escondidos en este diorama.
-func _fill(text: String) -> String:
-	var d := GameState.diorama
-	return text.replace("{total}", str(d.collectible_total()) if d != null and is_instance_valid(d) else "")
-
-
 ## (Tests) Lo que dice el aviso de logro ahora ("" = no se ve).
 func award_text() -> String:
 	return "%s | %s" % [_award_kicker.text, _award_title.text] if _award_showing else ""
@@ -655,6 +714,10 @@ func _on_level_started() -> void:
 	for c: Control in [_panel, _controls, _title]:
 		c.modulate.a = 1.0
 	_drawings.hide()
+	for f in _flights:
+		if is_instance_valid(f):
+			f.queue_free()
+	_flights.clear()
 	_award_queue.clear()
 	if _award_tween != null:
 		_award_tween.kill()

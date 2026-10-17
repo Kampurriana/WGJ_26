@@ -1,6 +1,9 @@
 {
 	"_info": "Nombre de cada pieza para la bandeja (al pasar el ratón y en los avisos de bloqueo). Clave = id de la pieza (P_<id>). Si falta, se usa el id sin guiones bajos.",
 
+	"tablon_largo": "el tablón largo",
+	"tablon_medio": "el tablón mediano",
+	"tablon_corto": "el tablón corto",
 	"pared_fondo": "la pared del fondo",
 	"pared_izquierda": "la pared izquierda",
 	"pared_derecha": "la pared derecha",

@@ -19,6 +19,8 @@ const DEFAULTS := {
 	"sensibilidad_camara": 1.0,
 	"invertir_y": false,
 	"ayuda_automatica": true,
+	"fondo_color": 0,                    # ui/fondos.gd: qué color pastel tiene el fondo
+	"fondo_motivo": 0,                   # y qué motivo se repite en él
 }
 const VOLUME_BUS := {
 	"volumen_general": "Master",
@@ -110,6 +112,8 @@ func _process(delta: float) -> void:
 func _coerce(key: String, value: Variant) -> Variant:
 	if DEFAULTS[key] is bool:
 		return bool(value)
+	if DEFAULTS[key] is int:
+		return clampi(int(value), 0, 15)
 	return clampf(float(value), 0.0, 2.0)
 
 

@@ -9,11 +9,11 @@ extends Node
 const SAMPLE_LEVEL := "res://levels/level_00_muestra.tscn"
 const TEST_SETTINGS := "user://test_ajustes.cfg"     ## nunca los ficheros de verdad del jugador
 const TEST_PROGRESS := "user://test_progreso.cfg"
-const TITLE_LIGHT := &"pegatina_estrella"            ## la pieza del título que lleva luz (brilla en la oscuridad)
+const LAMP := &"lampara"                             ## la pieza del desván que lleva luz (la lámpara del escritorio)
 
 var _fails := 0
 var _completed := false
-var _farol_energy := 0.0                             ## la luz de la estrella del título, tal como viene del modelo
+var _farol_energy := 0.0                             ## la luz de la lámpara del desván, tal como viene del modelo
 
 
 func _ready() -> void:
@@ -213,7 +213,7 @@ func _test_story(main: Node) -> void:
 	var shown := d.visible_inventory()
 	check(not shown.is_empty() and shown.all(func(id: StringName) -> bool: return _slot(d, id).section == s1)
 		and not shown.has(&"tejado") and not shown.has(&"hucha"),
-		"al empezar, la bandeja solo trae paredes: ni el tejado (va después) ni la hucha (la clave) ni nada de otra zona")
+		"al empezar, la bandeja trae el suelo y las paredes: ni el tejado (va después) ni la hucha (la clave) ni nada de otra zona")
 	var otter_slot := _slot(d, &"peluche")
 	check(not otter_slot.shown and not otter_slot.ghost_visible() and not s2.decor[0].visible and not (s2.lights()[0] as Light3D).visible
 		and d.find_children("*", "Label3D", true, false).is_empty(),
@@ -227,6 +227,25 @@ func _test_story(main: Node) -> void:
 	check(GameState.enfoque._rect.visible and absf(float(fx_focus.fuera) - Enfoque.PLAY_BLUR) < 0.3,
 		"todo se ve un poco desdibujado, más lejos del foco (enfoque de cine: %.1f px)" % float(fx_focus.fuera))
 	await _test_tray(d, shown)
+	# El suelo, a tablones de tres largos parecidos: cada uno vale en varios huecos, pero no en todos.
+	var planks := {}
+	for sl in s1.slots:
+		if String(sl.id).begins_with("tablon_"):
+			planks[sl.id] = planks.get(sl.id, 0) + 1
+	check(planks.size() == 3 and planks.values().all(func(n: int) -> bool: return n == 6),
+		"el suelo son 18 tablones de tres largos (%s)" % planks)
+	var cam3 := GameState.camera.cam
+	var mid_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_medio")[0]
+	var long_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")[0]
+	d.try_place(&"tablon_largo", cam3.unproject_position(mid_plank.center()), cam3)
+	check(not mid_plank.filled, "un tablón largo no entra en el hueco de uno mediano")
+	check(d.try_place(&"tablon_largo", cam3.unproject_position(long_plank.center()), cam3) and long_plank.filled,
+		"y en el de uno largo, sí (cualquiera de los largos)")
+	GameState.drag.begin(&"tablon_corto", GameState.hud.item_for(&"tablon_corto"))
+	check(GameState.is_dragging and not d.slots.any(func(sl: PieceSlot) -> bool:
+		return float(sl._ghost.get_shader_parameter("pulse")) > 0.0 if sl._ghost != null else false),
+		"al coger un tablón no late ninguna silueta: encontrar dónde va es el reto")
+	GameState.drag.cancel()
 	var solid := 0
 	for dec in s2.decor:
 		for body in dec.find_children("Superficie", "StaticBody3D", true, false):
@@ -246,7 +265,7 @@ func _test_story(main: Node) -> void:
 	Events.collectible_hung.connect(count_hung)
 	Narrator.clear()
 	var steps := 0
-	while not s1.completed and steps < 40:
+	while not s1.completed and steps < 80:
 		d.debug_solve_step()
 		steps += 1
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
@@ -341,6 +360,15 @@ func _test_story(main: Node) -> void:
 			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo)")
 		d.collect(blocks)
 		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var flying := GameState.hud.flights()
+		var cubes_card := GameState.hud.item_for(&"cubos")
+		var fly_from: Vector2 = flying[0].get_global_rect().get_center() if not flying.is_empty() else Vector2.ZERO
+		check(flying.size() == 1 and cubes_card != null and fly_from.distance_to(cubes_card.get_global_rect().get_center()) > 150.0,
+			"al coger lo guardado, su ficha sale de donde estaba y vuela por la pantalla (no aparece de golpe en la bandeja)")
+		await get_tree().create_timer(Hud.FLY_TIME + 0.15).timeout
+		check(GameState.hud.flights().is_empty(), "y llega a su sitio en la bandeja")
 		check(green.is_clickable(), "con el baúl abierto, el dibujo de dentro se puede coger")
 		green.activate()
 		await get_tree().process_frame
@@ -354,8 +382,8 @@ func _test_story(main: Node) -> void:
 		await get_tree().create_timer(Diorama.LIFT_TIME + 0.15 + Diorama.HANG_TIME + 0.25).timeout
 		check(green.target.global_position.distance_to(d.spot(0).global_position) < 0.02 and hung[0] == 1,
 			"el dibujo vuela hasta la primera pinza de la cuerda y se cuelga")
-		check(GameState.hud.tip_text().contains("%d dibujos" % d.collectible_total()),
-			"la primera vez, un consejo dice cuántos dibujos hay escondidos (%s)" % GameState.hud.tip_text())
+		check(not GameState.hud.tip_text().contains("dibujo") and not Narrator.has_line("consejo_dibujos"),
+			"no hay frases ni consejos sobre los dibujos escondidos: los encuentra el jugador")
 		await get_tree().create_timer(Efectos.GLINT_EVERY + 0.3).timeout
 		check(main.effects.glints > 0, "los dibujos que esperan echan un destello de vez en cuando (%d)" % main.effects.glints)
 		d.place(_slot(d, &"cubos"))
@@ -376,6 +404,11 @@ func _test_story(main: Node) -> void:
 	var application := _pickup(d, &"solicitud")
 	check(s3.opened and camera_pick != null and application != null and not camera_pick.available and not application.available,
 		"al abrirse la adolescencia, ni la cámara ni la inscripción se ven todavía")
+	var lamp := _slot(d, LAMP)
+	var lamp_lights: Array = lamp.lights() if lamp != null else []
+	check(not lamp_lights.is_empty() and not lamp.filled and not (lamp_lights[0][0] as Light3D).visible,
+		"la luz de una pieza (la lámpara del escritorio) está apagada mientras es silueta")
+	_farol_energy = float(lamp_lights[0][1]) if not lamp_lights.is_empty() else 0.0
 	steps = 0
 	while not _slot(d, &"mp3").filled and steps < 40:
 		d.debug_solve_step()
@@ -389,7 +422,13 @@ func _test_story(main: Node) -> void:
 		steps += 1
 	check(flashes[0] > flashes_before, "al colocar la cámara, destello blanco (el flash)")
 	var pink := _collectible(d, &"dibujo_rosa")
-	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
+	if not lamp.filled:
+		d.place(lamp)
+	await get_tree().create_timer(maxf(Diorama.GIVEN_DELAY + 0.3, PieceSlot.LIGHT_FADE + 0.1)).timeout
+	if not lamp_lights.is_empty():
+		var bulb: Light3D = lamp_lights[0][0]
+		check(bulb.visible and is_equal_approx(bulb.light_energy, float(lamp_lights[0][1])),
+			"al colocar la lámpara, su luz se enciende con un fundido (%.2f de %.2f)" % [bulb.light_energy, float(lamp_lights[0][1])])
 	check(pink != null and pink.comes_with == &"camara" and pink.available and pink.target.visible and not pink.collected and m.active,
 		"al poner la cámara aparece su dibujo, y espera quieto mientras dura su momento")
 	Narrator.clear()
@@ -406,6 +445,16 @@ func _test_story(main: Node) -> void:
 		and application.container.kind == NameRules.DRAWER and application.container.attention,
 		"después de la cámara y de todo lo demás, toca encontrar la inscripción a Bellas Artes: el cajón brilla")
 	steps = 0
+	while not _slot(d, &"lienzo").filled and steps < 120:
+		d.debug_solve_step()
+		steps += 1
+	var easel := _slot(d, &"caballete").node
+	var canvas := _slot(d, &"lienzo").node
+	m.start(easel, "normal", "caballete")
+	check(_slot(d, &"lienzo").filled and not m.hidden_for_shot.any(func(g: Node) -> bool: return canvas.is_ancestor_of(g)),
+		"en el primer plano del caballete no se quita el cuadro que lleva encima")
+	Narrator.clear()
+	m.finish()
 	while not s4.completed and steps < 120:
 		d.debug_solve_step()
 		steps += 1
@@ -548,10 +597,10 @@ func _pickup(d: Diorama, id: StringName) -> Interactable:
 ## escala_luces: las luces que trae un modelo (de Blender llegan con otras unidades) se ajustan
 ## para todo el nivel con un número, sin reexportar.
 func _test_light_scale() -> void:
-	var probe := (load(GameState.MENU_LEVEL) as PackedScene).instantiate() as Diorama
+	var probe := (load("res://levels/level_01_desvan.tscn") as PackedScene).instantiate() as Diorama
 	probe.escala_luces = 2.0
 	add_child(probe)
-	var farol := _slot(probe, TITLE_LIGHT)
+	var farol := _slot(probe, LAMP)
 	var lights: Array = farol.lights() if farol != null else []
 	var got := float(lights[0][1]) if not lights.is_empty() else -1.0
 	check(_farol_energy > 0.0 and is_equal_approx(got, _farol_energy * 2.0),
@@ -595,10 +644,13 @@ func _test_title_menu(main: Node) -> bool:
 		"el título es la hucha de cerdito, con pegatinas para decorarla (%d pegatinas)" % stickers)
 	check(_title_name(t) == GameState.game_title().to_upper().replace(" ", "_"), "la pegatina del cartel lleva el nombre del juego (%s)" % _title_name(t))
 	check(t.count_of(&"pata") == 4 and _slots_with(t, &"pata") == 4, "las patas repetidas son la misma pieza: cuatro que valen en cualquier hueco de pata")
-	var farol := _slot(t, TITLE_LIGHT)
-	var lights: Array = farol.lights() if farol != null else []
-	check(not lights.is_empty() and not (lights[0][0] as Light3D).visible, "la luz de una pieza del título (la estrella que brilla) está apagada mientras es silueta")
-	_farol_energy = float(lights[0][1]) if not lights.is_empty() else 0.0
+	var star := _slot(t, &"pegatina_estrella")
+	var star_glows := star == null or not star.lights().is_empty()
+	for m in (Visuals.meshes_under(star.prototype) if star != null else []):
+		var mat := m.get_active_material(0) as StandardMaterial3D
+		star_glows = star_glows or (mat != null and mat.emission_enabled)
+	check(not star_glows, "la estrella del cerdito es solo una pegatina: ni luz ni brillo propio")
+	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	_check_lighting(main, "res://iluminacion/menu.tscn", "el título")
 	var steps := 0
@@ -607,6 +659,9 @@ func _test_title_menu(main: Node) -> bool:
 		steps += 1
 		await get_tree().process_frame
 	check(t.completed, "el título se completa (%d pasos)" % steps)
+	await get_tree().process_frame
+	check(not (main.effects as Efectos).get_children().any(func(c: Node) -> bool: return c.name == "Luces" or c.name == "Destellos"),
+		"al completar el cerdito y pasar al menú, no salen partículas por delante")
 	check(GameState.menu_unlocked and _saved(TEST_PROGRESS, "menu_desbloqueado") == true, "resolver el título desbloquea el menú y se guarda")
 	var talk := Narrator.remaining()
 	await get_tree().create_timer(main.MENU_DELAY + 0.3).timeout
@@ -618,10 +673,6 @@ func _test_title_menu(main: Node) -> bool:
 		menu_wait += 0.25
 	check(main.menu.is_open() and Narrator.remaining() <= 0.0 and not GameState.hud._subtitle_box.visible,
 		"el menú sale cuando el cerdito ha acabado de hablar, y sin frases encima")
-	if not lights.is_empty():
-		var lamp: Light3D = lights[0][0]
-		check(lamp.visible and is_equal_approx(lamp.light_energy, float(lights[0][1])),
-			"al colocar la estrella, su luz se enciende con un fundido (%.2f de %.2f)" % [lamp.light_energy, float(lights[0][1])])
 	check(main.menu.is_open() and main.menu.page == "principal", "tras la onda de color se abre el menú")
 	if not main.menu.is_open():
 		return false
@@ -636,6 +687,19 @@ func _test_title_menu(main: Node) -> bool:
 	var slider := main.menu.options.controls["volumen_voz"] as HSlider
 	slider.value = 0.35
 	check(is_equal_approx(Settings.get_value("volumen_voz"), 0.35), "mover el deslizador de voz cambia el ajuste")
+	for i in 2:                                      # la página se maqueta un fotograma después
+		await get_tree().process_frame
+	var swatch: Button = main.menu.options.swatches[3]
+	_click(swatch.get_global_rect().get_center())
+	await get_tree().process_frame
+	var bg := (main.get_node("Iluminacion/Fondo/Degradado") as CanvasItem).material as ShaderMaterial
+	check(int(Settings.get_value("fondo_color")) == 3 and bg.get_shader_parameter("color_centro") == Fondos.COLORES[3].centro_3d,
+		"en Opciones, tocar un color cambia el fondo al momento (%s)" % Fondos.COLORES[3].nombre)
+	main.menu.options.motifs[3].pressed.emit()
+	check((bg.get_shader_parameter("color_forma") as Color).a == 0.0, "y el motivo «Liso» quita las figuras del fondo")
+	main.menu.options.motifs[1].pressed.emit()
+	check((bg.get_shader_parameter("color_forma") as Color).a > 0.0 and int(bg.get_shader_parameter("forma")) == 2,
+		"y «Corazones» pone corazones")
 	_key(KEY_ESCAPE)
 	await get_tree().process_frame
 	check(main.menu.page == "principal", "Esc en una página vuelve a la principal")
@@ -682,6 +746,10 @@ func _test_back_to_menu(main: Node) -> void:
 	_click(done.get_global_rect().get_center())
 	await get_tree().process_frame
 	var credits: Creditos = main.credits
+	check(credits._bg_mat.get_shader_parameter("color_centro") == Fondos.color(Settings.get_value("fondo_color")).centro,
+		"los créditos llevan el mismo fondo que eligió el jugador")
+	Settings.set_value("fondo_color", 0)
+	Settings.set_value("fondo_motivo", 0)
 	check(credits.rolling and credits.visible and credits.lines().has(GameState.game_title())
 		and credits.lines()[credits.lines().size() - 1] == "¡Gracias por jugar!" and not main.menu.is_open(),
 		"al acabar el juego pasan los créditos (del nombre del juego a «¡Gracias por jugar!»)")
@@ -819,9 +887,10 @@ func _check_sweep(who: String) -> void:
 	var inside := 0
 	var rested := 0
 	var piece := String(GameState.drag.piece_id)
-	for x in range(140, 1000, 110):
-		for y in range(110, 650, 90):
-			_mouse_move(Vector2(x, y))
+	var view := get_viewport().get_visible_rect().size     # sin pantalla mide 1280x1280: la rejilla, a su medida
+	for i in 8:
+		for j in 6:
+			_mouse_move(Vector2(view.x * (0.11 + i * 0.086), view.y * (0.15 + j * 0.14)))
 			var n := GameState.drag.held_overlaps()
 			if n < 0:
 				continue
@@ -852,6 +921,21 @@ func _test_camera(d: Diorama) -> void:
 	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(500, 100), Vector2(500, 650))
 	_drag_mouse(MOUSE_BUTTON_LEFT, Vector2(500, 100), Vector2(500, 650))
 	check(c.pitch >= c.pitch_min and c.pitch <= c.pitch_max, "la inclinación se queda en sus límites (%.0f)" % c.pitch)
+	c.configure(d)
+	c.snap()
+	var aim := Vector2(420, 300)
+	var mid := get_viewport().get_visible_rect().size * 0.5
+	var aimed := c._point_under(aim)
+	for i in 6:
+		_wheel(MOUSE_BUTTON_WHEEL_UP, aim)
+	c.snap()
+	await get_tree().process_frame
+	var aimed_px := c.cam.unproject_position(aimed)
+	check(aimed_px.distance_to(mid) < aim.distance_to(mid) * 0.75,
+		"al hacer zoom, la zona señalada se va hacia el centro de la pantalla (%.0f px del centro, antes %.0f)" % [aimed_px.distance_to(mid), aim.distance_to(mid)])
+	await get_tree().create_timer(0.6).timeout
+	check((GameState.enfoque.state().centro as Vector2).distance_to(mid) < 20.0,
+		"y el enfoque está en el centro de la pantalla: lo acercado, nítido; los bordes, desenfocados")
 	c.configure(d)
 	for i in 30:
 		_wheel(MOUSE_BUTTON_WHEEL_UP, Vector2(420, 300))

@@ -274,6 +274,8 @@ func _flat_front(node: Node3D) -> Vector3:
 
 ## Lo que se cruza entre la cámara (donde va a acabar) y el objeto se desvanece mientras dura el
 ## plano: rayos desde la cámara a varios puntos del objeto contra las superficies (lo que se ve).
+## Lo que está PEGADO al objeto (su caja toca la suya: el cuadro en el caballete, la cama bajo la
+## nutria) no se esconde: es parte de lo que se enseña (quinta nota).
 func _hide_occluders(node: Node3D) -> void:
 	var d := GameState.diorama
 	var from := GameState.camera.goal_position()
@@ -285,6 +287,7 @@ func _hide_occluders(node: Node3D) -> void:
 	var mine: Dictionary = {}
 	for m in Visuals.meshes_under(node):
 		mine[m] = true
+	var near := box.grow(0.02)                   # lo que toca esta caja va con el objeto
 	var found: Dictionary = {}
 	for p in targets:
 		var exclude: Array[RID] = []
@@ -296,13 +299,15 @@ func _hide_occluders(node: Node3D) -> void:
 				break
 			exclude.append(r.rid)
 			var mesh := (r.collider as Node).get_parent() as GeometryInstance3D
-			if mesh != null and not mine.has(mesh) and mesh.is_visible_in_tree():
+			if mesh != null and not mine.has(mesh) and mesh.is_visible_in_tree() and not _touches(mesh, near):
 				found[mesh] = true
 	for s in d.slots:                            # siluetas que se cruzan (no tienen superficie)
 		if s.filled or not s.shown or s.node == node:
 			continue
 		for m in s.meshes():
 			var mb: AABB = m.global_transform * m.get_aabb()
+			if mb.intersects(near):
+				continue
 			for p in targets:
 				if mb.intersects_segment(from, from.lerp(p, 0.97)):
 					found[m] = true
@@ -313,6 +318,10 @@ func _hide_occluders(node: Node3D) -> void:
 		var tw := geo.create_tween()
 		tw.tween_property(geo, "transparency", 1.0, HIDE_TIME)
 		tw.tween_callback(geo.hide)
+
+
+static func _touches(m: GeometryInstance3D, near: AABB) -> bool:
+	return (m.global_transform * m.get_aabb()).intersects(near)
 
 
 ## Vuelve lo que se escondió para el plano. fade = poco a poco.
@@ -527,7 +536,7 @@ func _make_reflection(node: Node3D) -> void:
 	_figure.create_tween().tween_property(_figure, "modulate:a", 0.85, 2.0).set_delay(0.6)
 	var spot := SpotLight3D.new()
 	spot.light_color = Color(1.0, 0.86, 0.68)
-	spot.light_energy = 1.6
+	spot.light_energy = 1.2                      # quinta nota: las luces de los efectos quemaban
 	spot.spot_range = 3.5
 	spot.spot_angle = 26.0
 	reflection.add_child(spot)
@@ -624,7 +633,7 @@ func _light_ending(node: Node3D) -> void:
 	_spot = SpotLight3D.new()
 	_spot.name = "LuzFinal"
 	_spot.light_color = Color(1.0, 0.8, 0.58)
-	_spot.light_energy = 1.6
+	_spot.light_energy = 1.2
 	_spot.spot_range = 3.2
 	_spot.spot_angle = 30.0
 	_spot.spot_angle_attenuation = 0.8
@@ -636,7 +645,7 @@ func _light_ending(node: Node3D) -> void:
 	_rim = OmniLight3D.new()
 	_rim.name = "Contraluz"
 	_rim.light_color = Color(1.0, 0.55, 0.25)
-	_rim.light_energy = 1.8
+	_rim.light_energy = 1.3
 	_rim.omni_range = 0.85
 	node.get_parent().add_child(_rim)
 	_rim.global_position = top - toward * 0.38 + Vector3.UP * 0.22
@@ -769,7 +778,7 @@ func _spawn_coin() -> void:
 		m.material_overlay = glow
 	var glint := OmniLight3D.new()
 	glint.light_color = Color(1.0, 0.82, 0.45)
-	glint.light_energy = 0.8
+	glint.light_energy = 0.5
 	glint.omni_range = 0.45
 	coin.add_child(glint)
 	var sparkle := _particles("Destello", 1, "chispa", true)   # un destello que se enciende y se apaga
@@ -866,7 +875,7 @@ func _coin_in_fx(at: Vector3) -> void:
 	d.add_child(flash)
 	flash.global_position = at + Vector3.UP * 0.08
 	var tw := flash.create_tween()
-	tw.tween_property(flash, "light_energy", 2.4, 0.08)
+	tw.tween_property(flash, "light_energy", 1.5, 0.08)
 	tw.tween_property(flash, "light_energy", 0.0, 1.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tw.tween_callback(flash.queue_free)
 	var sparks := _particles("ChispasMoneda", 36, "chispa", true)

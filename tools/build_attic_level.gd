@@ -1,7 +1,8 @@
 extends "res://tools/build_room_level.gd"
 ## Genera el diorama principal: el desván de la historia (docs/GUION.md), en secciones que se
 ## montan por orden (S_):
-##   S_1_desvan        paredes y tejado; al final, la hucha (prólogo, __clave)
+##   S_1_desvan        el suelo (18 tablones de tres largos parecidos: cada uno vale en varios huecos,
+##                     no en todos), paredes y tejado; al final, la hucha (prólogo, __clave)
 ##   S_2_infancia      zona izquierda: caja de música -> dibujo -> nutria (clave) + su dressing
 ##   S_3_adolescencia  zona central: MP3 -> cámara (escondida en el armario, flash) -> inscripción
 ##                     a Bellas Artes (escondida en el cajón, clave) + su dressing
@@ -115,10 +116,6 @@ func _initialize() -> void:
 
 func _build_base(root: Node3D) -> void:
 	_box(root, "Peana", Vector3(0, -0.16, 0), Vector3(HALF_W * 2 + 0.4, 0.3, HALF_D * 2 + 0.4), WOOD_DARK)
-	for i in 9:                                   # tablas del suelo
-		var z := -HALF_D + 0.18 + i * 0.37
-		var tone := WOOD_LIGHT.darkened(0.06 * (i % 3))
-		_box(root, "Tabla%d" % (i + 1), Vector3(0, 0.0, z), Vector3(HALF_W * 2, 0.02, 0.35), tone)
 	# Trastos entre zonas: cajas, una maleta, una alfombra enrollada.
 	_box(root, "CajaVieja1", Vector3(-0.92, 0.17, -1.35), Vector3(0.36, 0.34, 0.34), CARDBOARD)
 	_box(root, "CajaVieja2", Vector3(-0.9, 0.46, -1.37), Vector3(0.28, 0.24, 0.28), CARDBOARD.darkened(0.08))
@@ -134,6 +131,7 @@ func _build_base(root: Node3D) -> void:
 # --- Sección 1: paredes y tejado, y la hucha --------------------------------------------------
 
 func _build_structure(sec: Node3D) -> void:
+	_floor(sec)
 	_box(_node(sec, "P_pared_fondo", Vector3(0, 0, -HALF_D + 0.05)), "Pared", Vector3(0, KNEE * 0.5, 0), Vector3(HALF_W * 2, KNEE, 0.1), PLASTER)
 	var gable := PackedVector2Array([Vector2(-HALF_D, 0), Vector2(0, 0), Vector2(0, RIDGE), Vector2(-HALF_D, KNEE)])
 	_prism(_node(sec, "P_pared_izquierda", Vector3(-HALF_W, 0, 0)), "Pared", gable, 0.1, PLASTER.darkened(0.04))
@@ -172,6 +170,33 @@ func _build_structure(sec: Node3D) -> void:
 		for x in [-0.08, 0.08]:
 			_cyl(pig, "Pata%d%d" % [int(x > 0), int(z > 0)], Vector3(x, 0.025, z), 0.025, 0.05, pink.darkened(0.1))
 	_box(pig, "Ranura", Vector3(0, 0.225, 0), Vector3(0.016, 0.01, 0.1), Color(0.25, 0.15, 0.15))
+
+
+## El suelo, a tablones (quinta nota): 6 filas de tres tablones de largos parecidos (2,0 / 1,8 /
+## 1,6 m), en otro orden en cada fila. Un tablón largo vale en cualquier hueco largo, pero no en uno
+## mediano: hay que fijarse para encontrar dónde va cada uno. Entre tablón y tablón, una rendija.
+func _floor(sec: Node3D) -> void:
+	var lengths := {"largo": 2.0, "medio": 1.8, "corto": 1.6}
+	var rows := [["largo", "medio", "corto"], ["corto", "largo", "medio"], ["medio", "corto", "largo"],
+		["largo", "corto", "medio"], ["corto", "medio", "largo"], ["medio", "largo", "corto"]]
+	var used := {"largo": 0, "medio": 0, "corto": 0}
+	var width := HALF_D * 2.0 / rows.size()
+	for r in rows.size():
+		var z := -HALF_D + width * (r + 0.5)
+		var x := -HALF_W
+		for kind: String in rows[r]:
+			var length: float = lengths[kind]
+			var n: int = used[kind]
+			used[kind] = n + 1
+			var plank := _node(sec, "P_tablon_%s%s" % [kind, "" if n == 0 else "_%03d" % n], Vector3(x + length * 0.5, 0.0, z))
+			var tone := WOOD_LIGHT.darkened(0.03 * ((r + n) % 3)).lightened(0.02 * (r % 2))
+			_box(plank, "Tablon", Vector3.ZERO, Vector3(length - 0.014, 0.02, width - 0.014), tone)
+			var k := 0
+			for end in [-1.0, 1.0]:                # dos clavos en cada punta
+				for side in [-1.0, 1.0]:
+					_box(plank, "Clavo%d" % k, Vector3(end * (length * 0.5 - 0.06), 0.0105, side * width * 0.28), Vector3(0.012, 0.002, 0.012), WOOD_DARK)
+					k += 1
+			x += length
 
 
 # --- Sección 2: la infancia (izquierda) -------------------------------------------------------
@@ -581,7 +606,7 @@ func _bulb(parent: Node3D, pos: Vector3) -> void:
 	light.name = "LuzZona"
 	light.position = Vector3(0, -0.08, 0)
 	light.light_color = WARM_BULB
-	light.light_energy = 1.3
+	light.light_energy = 0.8                       # quinta nota: las luces quemaban (medido: techo y mesa)
 	light.omni_range = 2.6
 	light.omni_attenuation = 1.2
 	bulb.add_child(light)

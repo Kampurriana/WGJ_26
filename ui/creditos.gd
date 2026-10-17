@@ -1,7 +1,7 @@
 class_name Creditos
 extends CanvasLayer
-## Los créditos del final (cuarta nota: la hucha → transición → créditos). Sobre un fondo cálido y
-## oscuro sube despacio el texto de data/creditos_es.txt, con el nombre del juego arriba y los
+## Los créditos del final (cuarta nota: la hucha → transición → créditos). Sobre el fondo pastel del
+## juego (con sus estrellas) sube despacio el texto de data/creditos_es.txt, con el nombre del juego arriba y los
 ## dibujos que se encontraron (los que faltan, en hueco). El último renglón ("¡Gracias por jugar!")
 ## se queda en el centro y todo se funde a negro. Un clic o Esc lo acaban antes. Al acabar avisa
 ## (finished): main vuelve al menú, con el cerdito y sin frases.
@@ -13,6 +13,14 @@ const CREDITS_PATH := "res://data/creditos_es.txt"
 const SPEED := 46.0                          ## lo que sube, en px por segundo (a 720 de alto)
 const HOLD := 3.0                            ## lo que se queda el último renglón en el centro (s)
 const FADE := 1.2                            ## fundido a negro de salida (s)
+const INK := Color(0.29, 0.2, 0.13)          ## texto (sobre el pastel)
+const HEADING := Color(0.45, 0.33, 0.62)     ## encabezados
+## El fondo pastel del juego, con sus colores tal como se ven (todos los parámetros: trampa 32).
+const BACKGROUND := {
+	"color_centro": Color8(214, 230, 248), "color_borde": Color8(182, 205, 236), "centro": Vector2(0.5, 0.5),
+	"radio": 0.9, "color_forma": Color(0.9, 0.94, 0.99, 0.35), "forma": 0, "tam_forma": 190.0, "tam_figura": 0.2, "angulo_patron": 0.785,
+	"velocidad": 18.0, "giro": 0.25, "exposicion": 1.0, "saturacion": 1.0,
+}
 
 var rolling := false
 var _root: Control
@@ -23,6 +31,7 @@ var _y := 0.0
 var _end_y := 0.0
 var _hold_left := 0.0
 var _ending := false
+var _bg_mat: ShaderMaterial
 var _age := 0.0                              ## lo que lleva pasando (un clic recién empezados no los salta)
 
 
@@ -33,21 +42,17 @@ func _ready() -> void:
 	_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.theme = UiTheme.get_theme()
 	add_child(_root)
-	var bg := TextureRect.new()
+	# El mismo fondo que el juego (quinta nota: pastel con estrellas que se desplazan). Aquí no pasa
+	# por el tonemap del 3D: los colores son los que se ven.
+	var bg := ColorRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bg.stretch_mode = TextureRect.STRETCH_SCALE
-	var grad := Gradient.new()
-	grad.set_color(0, Color(0.2, 0.12, 0.07))
-	grad.set_color(1, Color(0.03, 0.02, 0.015))
-	var tex := GradientTexture2D.new()
-	tex.gradient = grad
-	tex.fill = GradientTexture2D.FILL_RADIAL
-	tex.fill_from = Vector2(0.5, 0.5)
-	tex.fill_to = Vector2(1.05, 1.05)
-	tex.width = 256
-	tex.height = 144
-	bg.texture = tex
+	var mat := ShaderMaterial.new()
+	mat.shader = preload("res://iluminacion/fondo.gdshader")
+	for k: String in BACKGROUND:
+		mat.set_shader_parameter(k, BACKGROUND[k])
+	bg.material = mat
+	_bg_mat = mat
 	_root.add_child(bg)
 	_roll = VBoxContainer.new()
 	_roll.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -62,7 +67,7 @@ func _ready() -> void:
 	_skip.offset_right = -24
 	_skip.offset_bottom = -14
 	_skip.add_theme_font_size_override("font_size", 15)
-	_skip.add_theme_color_override("font_color", Color(UiTheme.CREAM, 0.45))
+	_skip.add_theme_color_override("font_color", Color(INK, 0.5))
 	_root.add_child(_skip)
 	_out = ColorRect.new()
 	_out.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -77,10 +82,11 @@ func play(drawings: Array, total: int) -> void:
 	for c in _roll.get_children():
 		_roll.remove_child(c)
 		c.queue_free()
-	_roll.add_child(_line(GameState.game_title(), 54, UiTheme.CREAM))
+	Fondos.apply(_bg_mat, false, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))   # los que eligió el jugador
+	_roll.add_child(_line(GameState.game_title(), 54, INK))
 	_roll.add_child(_space(30))
 	if total > 0:
-		_roll.add_child(_line("DIBUJOS ENCONTRADOS", 15, Color(1.0, 0.78, 0.45), 4))
+		_roll.add_child(_line("DIBUJOS ENCONTRADOS", 15, HEADING, 4))
 		var row := HBoxContainer.new()
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
 		row.add_theme_constant_override("separation", 10)
@@ -92,7 +98,7 @@ func play(drawings: Array, total: int) -> void:
 				icon.faded = true
 			row.add_child(icon)
 		_roll.add_child(row)
-		_roll.add_child(_line("%d de %d" % [drawings.size(), total], 20, Color(UiTheme.CREAM, 0.8)))
+		_roll.add_child(_line("%d de %d" % [drawings.size(), total], 20, Color(INK, 0.8)))
 		_roll.add_child(_space(40))
 	var text := FileAccess.get_file_as_string(CREDITS_PATH).strip_edges()
 	if text == "":
@@ -102,9 +108,9 @@ func play(drawings: Array, total: int) -> void:
 		if l == "":
 			_roll.add_child(_space(26))
 		elif l == l.to_upper() and l.to_lower() != l:
-			_roll.add_child(_line(l, 15, Color(1.0, 0.78, 0.45), 4))
+			_roll.add_child(_line(l, 15, HEADING, 4))
 		else:
-			_roll.add_child(_line(l, 24, UiTheme.CREAM))
+			_roll.add_child(_line(l, 24, INK))
 	_ending = false
 	_age = 0.0
 	_hold_left = HOLD

@@ -12,27 +12,36 @@ ambient_light_color = Color(0.78, 0.74, 0.72, 1)
 ambient_light_energy = 0.26
 tonemap_mode = 4
 glow_enabled = true
-glow_intensity = 0.7
+glow_intensity = 0.4
 adjustment_enabled = true
 adjustment_contrast = 1.06
 adjustment_saturation = 1.06
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tqb12"]
 shader = ExtResource("2_0pdsr")
-shader_parameter/color_centro = Color(0.3, 0.19, 0.12, 1)
-shader_parameter/color_borde = Color(0.025, 0.02, 0.018, 1)
+shader_parameter/color_centro = Color(0.895, 1.143, 1.584, 1)
+shader_parameter/color_borde = Color(0.711, 0.894, 1.318, 1)
 shader_parameter/centro = Vector2(0.44, 0.52)
-shader_parameter/radio = 0.85
+shader_parameter/radio = 0.9
+shader_parameter/color_forma = Color(1.104, 1.363, 1.823, 0.35)
+shader_parameter/forma = 0
+shader_parameter/tam_forma = 190.0
+shader_parameter/tam_figura = 0.2
+shader_parameter/angulo_patron = 0.785
+shader_parameter/velocidad = 18.0
+shader_parameter/giro = 0.25
+shader_parameter/exposicion = 1.0
+shader_parameter/saturacion = 1.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3kvcb"]
 shader = ExtResource("3_kgeyi")
-shader_parameter/fuerza = 0.4
+shader_parameter/fuerza = 0.12
 shader_parameter/suavidad = 0.55
 
 [node name="Iluminacion" type="Node3D" unique_id=1691245891]
 script = ExtResource("1_m18ox")
 energia_inicio = 0.3
-energia_final = 0.75
+energia_final = 0.65
 
 [node name="Ambiente" type="WorldEnvironment" parent="." unique_id=750132112]
 environment = SubResource("Environment_mboph")

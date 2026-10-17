@@ -20,7 +20,7 @@ donde pone **sin probar**.
    - En el **PC de la persona (Windows)**: Godot portátil, descomprimido de
      https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip
      (p. ej. en `C:\Tools\Godot\4.7.2\`), y la ruta a su `*_console.exe` en `.claude/settings.local.json` → `{ "env": { "GODOT": "C:/…/Godot_v4.7.2-stable_win64_console.exe" } }`.
-2. `bash tools/check.sh` → tiene que decir **`CHECK OK (191 comprobaciones, 16 avisos)`** (~2 min).
+2. `bash tools/check.sh` → tiene que decir **`CHECK OK (207 comprobaciones, 17 avisos)`** (~3 min).
    Los avisos son sonidos que aún no existen (`assets/audio/...`): normal.
 3. Mirar el juego: en la nube no hay pantalla, se usa Xvfb:
    `xvfb-run -a -s "-screen 0 1280x720x24" bash tools/capture.sh build/c.png 0 0` → `CAPTURA OK … (1280x720)`
@@ -29,7 +29,15 @@ donde pone **sin probar**.
 
 Si el paso 2 o 3 no sale así, **no sigas**: diagnostica con `build/check.log` / `build/capture.log`.
 
-## 2. Estado del juego (17-oct-2026, junta "Cuarta nota" en `main` y en las 3 ramas)
+## 2. Estado del juego (17-oct-2026, junta "Quinta nota" en `main` y en las 3 ramas)
+
+**Quinta nota:** fondo **pastel** con un motivo en filas diagonales que se desplaza (el jugador elige
+color y motivo en Opciones: `ui/fondos.gd`; con HDR 2D y colores calibrados, trampa 37); el suelo del
+desván son **18 tablones-pieza** de tres largos parecidos; lo recogido **vuela** a la bandeja; el zoom
+lleva la zona al centro y el enfoque está en el centro; la estrella del cerdito sin luz; sin
+partículas al pasar al menú; sin consejo de los dibujos; el cuadro del caballete no se esconde en
+su primer plano; luces que no queman (medido).
+
 
 **Orden del juego (cuarta nota):** el cerdito del título con sus frases → el menú, sin frases (sale
 cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos → el espejo → transición
@@ -74,7 +82,7 @@ cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos �
   acerca, **acercamiento suave al colocar**, encuadre de cada sección y vaivén al completar.
 - **Arranque:** el puzle del título es **la hucha de cerdito** de la protagonista, sobre un cojín:
   21 piezas (cuerpo, 4 patas, hocico, orejas, ojos, cola, ranura, coloretes, lazo y 7
-  **pegatinas**: estrella que brilla en la oscuridad, corazón, flor, luna, rayo, arcoíris y la del
+  **pegatinas**: estrella, corazón, flor, luna, rayo, arcoíris y la del
   nombre del juego en un cartel). Es **un `.glb`** (`levels/provisional/menu_provisional.glb`,
   generado por `tools/build_title_level.gd`); si existe `assets/modelos/menu/menu.glb`, se usa ese. Al
   resolverlo sale el **menú** a la izquierda: Jugar/Continuar, Elegir diorama, Opciones, Créditos,
@@ -142,6 +150,13 @@ carpeta. Si no, parar y preguntar.
   puzle del título es **el cerdito**, de unas 20 piezas, sobre todo pegatinas; primer plano de la
   hucha con los diálogos y la moneda (y el fade out); el espejo de frente, fondo negro y su
   diálogo; secuencias con personalidad; jugabilidad orientativa y pausada.
+- **Feedback del 17-oct, quinta nota (y mensajes sueltos):** la estrella del cerdito, solo una
+  pegatina; sin partículas al pasar al menú; fondo pastel con una forma repetida en diagonal que se
+  desplaza (las estrellas, más grandes, en filas diagonales, separadas por igual y que se noten
+  poco); que el jugador pueda cambiar el color y los motivos del fondo; lo guardado se desplaza a la
+  bandeja; con zoom, foco en el centro y bordes desenfocados; sin diálogo sobre los dibujos; suelo
+  a tablones, un tablón vale en varios huecos pero no en todos; no quitar el cuadro del caballete en
+  su primer plano; que las luces no quemen.
 - **Feedback del 17-oct, cuarta nota:** al poner la cámara en la mesa, un logro de "has encontrado
   uno de los dibujos de cuando era pequeña"; 7 dibujos escondidos que van completando una cuerda en
   el desván, distinta de la del escritorio (y después: "no hace falta que sean dibujos, diferéncialos
@@ -219,7 +234,7 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 | Qué | Cómo |
 |---|---|
 | Todo el test | `bash tools/check.sh` → `CHECK OK (191 …)` |
-| Ver los tests en rojo | `python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 99 × `ROJO BIEN` (~2,5 h: córrelo en segundo plano y no toques código mientras, que copia el proyecto en cada pasada) |
-| Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11` (hucha), `--solve=57 --capture-after=27` (espejo), `--solve=58 --capture-after=40` (la hucha del final, con la moneda); `--f9` enseña la cuerda con los 7 dibujos |
+| Ver los tests en rojo | `PARALELO=3 HASTA=55 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` y luego `DESDE=56` → 110 × `ROJO BIEN` (~1 h cada tanda: en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada) |
+| Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=29` (hucha), `--solve=75 --capture-after=36` (espejo), `--solve=76 --capture-after=50` (la hucha del final, con la moneda); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

@@ -2,6 +2,8 @@ class_name OptionsPanel
 extends VBoxContainer
 ## Las Opciones (en el menú de inicio y en la pausa). Cada control escribe en Settings al momento
 ## (se oye y se ve el cambio); Settings lo guarda en disco medio segundo después del último cambio.
+## El fondo (quinta nota): una fila de muestras de color y otra de motivos (ui/fondos.gd); se ve el
+## cambio detrás del menú en cuanto se toca.
 
 const SLIDERS := [
 	["volumen_general", "Volumen general", 0.0, 1.0],
@@ -19,6 +21,8 @@ const TOGGLES := [
 const RESET_CONFIRM_TIME := 3.0
 
 var controls: Dictionary = {}               ## clave de Settings -> HSlider o CheckButton
+var swatches: Array[Button] = []            ## una muestra por color de fondo (Fondos.COLORES)
+var motifs: Array[Button] = []              ## un botón por motivo (Fondos.MOTIVOS)
 var reset_button: Button
 var _reset_armed := 0.0
 
@@ -26,6 +30,7 @@ var _reset_armed := 0.0
 ## show_reset: el botón "Borrar progreso" solo tiene sentido en el menú de inicio.
 func _init(show_reset := true) -> void:
 	add_theme_constant_override("separation", 6)
+	_add_background()                            # lo primero: es lo que más se nota al cambiarlo
 	for s: Array in SLIDERS:
 		_add_slider(s[0], s[1], s[2], s[3])
 	for t: Array in TOGGLES:
@@ -45,6 +50,10 @@ func refresh() -> void:
 			(c as Range).set_value_no_signal(Settings.get_value(key))
 		else:
 			(c as BaseButton).set_pressed_no_signal(Settings.get_value(key))
+	for i in swatches.size():
+		swatches[i].set_pressed_no_signal(i == int(Settings.get_value("fondo_color")))
+	for i in motifs.size():
+		motifs[i].set_pressed_no_signal(i == int(Settings.get_value("fondo_motivo")))
 	if reset_button != null:
 		_reset_armed = 0.0
 		reset_button.text = "Borrar progreso"
@@ -78,6 +87,54 @@ func _add_toggle(key: String, label: String) -> void:
 	c.toggled.connect(func(on: bool) -> void: Settings.set_value(key, on))
 	add_child(c)
 	controls[key] = c
+
+
+## El fondo: muestras de color (redondas, la elegida con borde) y botones de motivo.
+func _add_background() -> void:
+	var title := Label.new()
+	title.text = "Fondo"
+	add_child(title)
+	var colors := HBoxContainer.new()
+	colors.add_theme_constant_override("separation", 10)
+	var group := ButtonGroup.new()
+	for i in Fondos.COLORES.size():
+		var c: Dictionary = Fondos.COLORES[i]
+		var b := Button.new()
+		b.toggle_mode = true
+		b.button_group = group
+		b.custom_minimum_size = Vector2(38, 38)
+		b.tooltip_text = c.nombre
+		for state: String in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+			b.add_theme_stylebox_override(state, _swatch(c.centro, state.contains("pressed"), state.begins_with("hover")))
+		b.button_pressed = i == int(Settings.get_value("fondo_color"))
+		b.pressed.connect(func() -> void: Settings.set_value("fondo_color", i))
+		colors.add_child(b)
+		swatches.append(b)
+	add_child(colors)
+	var shapes := HBoxContainer.new()
+	shapes.add_theme_constant_override("separation", 6)
+	var shape_group := ButtonGroup.new()
+	for i in Fondos.MOTIVOS.size():
+		var b := Button.new()
+		b.text = Fondos.MOTIVOS[i].nombre
+		b.toggle_mode = true
+		b.button_group = shape_group
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.add_theme_font_size_override("font_size", 15)
+		b.button_pressed = i == int(Settings.get_value("fondo_motivo"))
+		b.pressed.connect(func() -> void: Settings.set_value("fondo_motivo", i))
+		shapes.add_child(b)
+		motifs.append(b)
+	add_child(shapes)
+
+
+static func _swatch(color: Color, selected: bool, hover: bool) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = color
+	sb.set_corner_radius_all(19)
+	sb.set_border_width_all(4 if selected else 2)
+	sb.border_color = UiTheme.WOOD_DARK if selected else Color(UiTheme.INK, 0.45 if hover else 0.22)
+	return sb
 
 
 ## Dos pulsaciones: la primera pregunta, la segunda borra. Sin ventanas emergentes.

@@ -6,7 +6,7 @@ Si sale "NO APLICADO", el código cambió: actualizar el texto del mutante.
 Uso (desde la raíz del proyecto; tarda ~2-3 min por mutante: córrelo en dos tandas, DESDE=50):
     python3 -I tools/mutantes.py . build/mutantes "$GODOT"
     SOLO=M17 python3 -I tools/mutantes.py . build/mutantes "$GODOT"     # solo uno
-    DESDE=50 python3 -I tools/mutantes.py . build/mutantes "$GODOT"     # del M50 en adelante
+    DESDE=50 python3 -I tools/mutantes.py . build/mutantes "$GODOT"     # del M50 en adelante (HASTA=49: hasta ahí)
     PARALELO=3 python3 -I tools/mutantes.py . build/mutantes "$GODOT"   # tres copias a la vez (cada una con su user://)
 Al añadir una mecánica con su test, añadir aquí su mutante y verlo en ROJO BIEN.
 """
@@ -25,7 +25,7 @@ MUTANTES = [
 		"el volumen de música llega al bus Musica"),
 	("M2 luz de una pieza encendida siendo silueta", "core/piece_slot.gd",
 		"\t\t\t(v as VisualInstance3D).hide()", "\t\t\tpass",
-		"la luz de una pieza del título (la estrella que brilla) está apagada mientras es silueta"),
+		"la luz de una pieza (la lámpara del escritorio) está apagada mientras es silueta"),
 	("M3 el menú no se abre tras el título", "scenes/main.gd",
 		"\t\t\tif GameState.diorama == d and GameState.mode == GameState.Mode.MENU and not menu.is_open():\n\t\t\t\t_open_menu())",
 		"\t\t\tpass)",
@@ -92,7 +92,7 @@ MUTANTES = [
 		"modo prototipo"),
 	("M23 la luz de la pieza no se enciende al colocarla", "core/piece_slot.gd",
 		"\t\t\ttw.tween_property(light, \"light_energy\", float(_light_energy[light]), LIGHT_FADE)", "\t\t\tpass",
-		"al colocar la estrella, su luz se enciende"),
+		"al colocar la lámpara, su luz se enciende"),
 	("M24 la pintura no se extiende", "core/diorama.gd",
 		"\t_add_paint(origin, color_radius, PAINT_TIME)", "\tpass",
 		"al encajar, la pintura se extiende"),
@@ -135,7 +135,7 @@ MUTANTES = [
 		"el desván empieza con su primera sección abierta"),
 	("M37 la clave no espera a las demás", "core/diorama.gd",
 		"\tif slot.is_key and slot.section != null:", "\tif false:",
-		"al empezar, la bandeja solo trae paredes"),
+		"al empezar, la bandeja trae el suelo y las paredes"),
 	("M38 el decorado de una zona cerrada se ve", "core/diorama.gd",
 		"\t\tsec.set_decor(sec.opened)", "\t\tsec.set_decor(true)",
 		"los actos cerrados no se ven"),
@@ -296,9 +296,10 @@ MUTANTES = [
 	("M88 los dibujos no echan destellos", "core/efectos.gd",
 		"\tif waiting.is_empty():\n\t\treturn\n\t_glint_i", "\tif true:\n\t\treturn\n\t_glint_i",
 		"los dibujos que esperan echan un destello"),
-	("M89 el consejo de los dibujos no dice cuántos hay", "ui/hud.gd",
-		"\treturn text.replace(\"{total}\", str(d.collectible_total()) if d != null and is_instance_valid(d) else \"\")", "\treturn text",
-		"la primera vez, un consejo dice cuántos dibujos hay escondidos"),
+	("M89 vuelve un consejo sobre los dibujos", "core/diorama.gd",
+		"\t_hang(it, found - 1, true)                  # sin frase ni consejo: los encuentra el jugador (quinta nota)",
+		"\t_hang(it, found - 1, true)\n\tEvents.tip_requested.emit(\"logro_dibujo\")",
+		"no hay frases ni consejos sobre los dibujos escondidos"),
 	("M90 F9 no cuelga los dibujos", "core/diorama.gd",
 		"\t\t\t_hang(it, collectibles_found() - 1, false)", "\t\t\tpass",
 		"y con F9 los 7 dibujos están colgados"),
@@ -335,10 +336,46 @@ MUTANTES = [
 		"\tif _chapter_showing() or _moment:            # no encima del rótulo de capítulo ni de un primer plano: espera",
 		"\tif _chapter_showing():",
 		"un consejo no sale encima de un primer plano"),
+	# --- Quinta nota (lote 6) ---
+	("M101 partículas al pasar el cerdito al menú", "core/efectos.gd",
+		"\tif GameState.mode == GameState.Mode.MENU:    # el cerdito del título se corre al menú sin luces delante (quinta nota)\n\t\treturn\n", "",
+		"al completar el cerdito y pasar al menú, no salen partículas"),
+	("M102 el fondo sin HDR (se queda gris)", "scenes/main.gd",
+		"\tget_viewport().use_hdr_2d = true", "\tget_viewport().use_hdr_2d = false",
+		"el fondo se pinta con HDR 2D"),
+	("M103 el color elegido no llega al fondo", "scenes/main.gd",
+		"\t\tFondos.apply(rect.material as ShaderMaterial, true, Settings.get_value(\"fondo_color\"), Settings.get_value(\"fondo_motivo\"))", "\t\tpass",
+		"en Opciones, tocar un color cambia el fondo al momento"),
+	("M104 el fondo liso sigue con figuras", "ui/fondos.gd",
+		"\tforma.a = ALFA_FORMA if int(m.forma) >= 0 else 0.0", "\tforma.a = ALFA_FORMA",
+		"y el motivo «Liso» quita las figuras del fondo"),
+	("M105 los créditos no llevan el fondo elegido", "ui/creditos.gd",
+		"\tFondos.apply(_bg_mat, false, Settings.get_value(\"fondo_color\"), Settings.get_value(\"fondo_motivo\"))   # los que eligió el jugador", "\tpass",
+		"los créditos llevan el mismo fondo que eligió el jugador"),
+	("M106 lo recogido aparece de golpe en la bandeja", "ui/hud.gd",
+		"\t_fly_to_tray.call_deferred(id, cam.unproject_position(center))", "\tpass",
+		"al coger lo guardado, su ficha sale de donde estaba y vuela"),
+	("M107 el zoom no lleva la zona al centro", "camera/diorama_camera.gd",
+		"\t\tcenter += (p - center) * minf(1.0, (1.0 - distance / old) * ZOOM_CENTER_PULL)", "\t\tcenter += (p - center) * (1.0 - distance / old)",
+		"al hacer zoom, la zona señalada se va hacia el centro"),
+	("M108 el enfoque no está en el centro", "core/enfoque.gd",
+		"\treturn size * 0.5", "\treturn size * Vector2(0.25, 0.25)",
+		"y el enfoque está en el centro de la pantalla"),
+	("M109 los tablones laten al cogerlos", "core/diorama.gd",
+		"\tvar guide := id != &\"\" and slots.filter(func(o: PieceSlot) -> bool: return o.id == id).size() == 1", "\tvar guide := id != &\"\"",
+		"al coger un tablón no late ninguna silueta"),
+	("M110 una pieza entra en el hueco de otra", "core/diorama.gd",
+		"\t\tif s.filled or s.id != piece_id or s.scope != focus or not is_unlocked(s):", "\t\tif s.filled or s.scope != focus or not is_unlocked(s):",
+		"un tablón largo no entra en el hueco de uno mediano"),
+	("M111 el primer plano esconde lo que va pegado al objeto", "core/momentos.gd",
+		"\t\t\tif mesh != null and not mine.has(mesh) and mesh.is_visible_in_tree() and not _touches(mesh, near):",
+		"\t\t\tif mesh != null and not mine.has(mesh) and mesh.is_visible_in_tree():",
+		"en el primer plano del caballete no se quita el cuadro"),
 ]
 
 solo = os.environ.get("SOLO")
 desde = int(os.environ.get("DESDE", "0"))      # DESDE=50: del M50 en adelante (para partir la tanda)
+hasta = int(os.environ.get("HASTA", "100000"))  # HASTA=55: hasta el M55
 paralelo = max(1, int(os.environ.get("PARALELO", "1")))   # PARALELO=3: tres copias a la vez
 os.makedirs(trabajo, exist_ok=True)
 huecos = queue.Queue()
@@ -377,7 +414,7 @@ def probar(mutante):
 		huecos.put(k)
 
 
-elegidos = [m for m in MUTANTES if (not solo or m[0].startswith(solo + " ")) and int(m[0].split()[0][1:]) >= desde]
+elegidos = [m for m in MUTANTES if (not solo or m[0].startswith(solo + " ")) and desde <= int(m[0].split()[0][1:]) <= hasta]
 with concurrent.futures.ThreadPoolExecutor(max_workers=paralelo) as pool:
 	for linea in pool.map(probar, elegidos):
 		print(linea)

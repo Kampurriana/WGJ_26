@@ -4,8 +4,10 @@
 `programacion`. Si más adelante alguien del equipo se encarga de ella, vuelve a tener su rama
 `iluminacion` y esta carpeta pasa a ser suya (ver `GIT-Y-RAMAS.md`).
 
-La luz es **en tiempo real** (nada horneado) y el **fondo es oscuro**: el diorama es una maqueta
-iluminada en un cuarto a oscuras. Por qué así y de dónde sale cada idea: `ANALISIS-WOODO.md`.
+La luz es **en tiempo real** (nada horneado). El **fondo es pastel** (quinta nota: "que no sea
+negro"), con un motivo que se repite en diagonal y se desplaza despacio; el **jugador elige** su
+color y su motivo en Opciones (`ui/fondos.gd`). Por qué así y de dónde sale cada idea:
+`ANALISIS-WOODO.md`.
 
 | Fichero | Qué es |
 |---|---|
@@ -14,7 +16,7 @@ iluminada en un cuarto a oscuras. Por qué así y de dónde sale cada idea: `ANA
 | `desvan.tscn` | La luz del desván: empieza más oscura ("el desván a oscuras") y se calienta al montarlo |
 | `probar_luz.tscn` | Para mirarla en el editor: la luz por defecto + la habitación + la cámara del juego |
 | `rig_luz.gd` | El script de la raíz de cada escena de luz (lo que la hace "en tiempo real") |
-| `fondo.gdshader` | El degradado oscuro del fondo, con un halo cálido detrás del diorama |
+| `fondo.gdshader` | El fondo: un pastel con un halo más claro detrás del diorama y un motivo (estrellas, corazones, lunares o liso) en filas diagonales que se desplazan. Sus colores los pone el juego según lo que eligió el jugador (`ui/fondos.gd`); los de la escena son los del azul |
 | `vineta.gdshader` | La viñeta: oscurece un poco las esquinas |
 
 ## Qué hay dentro de una escena de luz
@@ -35,9 +37,11 @@ iluminada en un cuarto a oscuras. Por qué así y de dónde sale cada idea: `ANA
 - **`Sol`** (DirectionalLight3D): la luz principal, con sombras. Su color y energía los pone el
   script (los de inicio/final de arriba): cambiarlos aquí no sirve.
 - **`Contraluz`** (DirectionalLight3D, sin sombras): desde detrás, fría. Recorta el diorama
-  contra el fondo oscuro.
-- **`Fondo` → `Degradado`**: en *Material → Shader Parameters*: *Color Centro* (el halo), *Color
-  Borde* (casi negro), *Centro* y *Radio* del halo.
+  contra el fondo.
+- **`Fondo` → `Degradado`**: en *Material → Shader Parameters*: *Centro* y *Radio* del halo, el
+  motivo (*Tam Forma* = separación, *Tam Figura*, *Velocidad*, *Angulo Patron* = 45º, *Giro*). Los
+  **colores** los pone el juego (los que elija el jugador): cambiarlos aquí no sirve. Para cambiar
+  o añadir un color de la lista, `ui/fondos.gd` + `tools/calibrar_fondo.gd` (ver "Cuidado").
 - **`Vineta` → `Sombra`**: *Fuerza* (0 = sin viñeta) y *Suavidad*.
 
 ## Sombras (por qué ya no salen pixeladas)
@@ -89,8 +93,16 @@ Claude que se la asigne (propiedad `Iluminacion` del nivel).
 - Renderer **Compatibility** (el único que funciona en el navegador): SSAO, SSR, SDFGI, niebla
   volumétrica y profundidad de campo no hacen nada. Sí funcionan: sombras de todas las luces,
   glow y el fondo por capa.
-- **El fondo pasa por el tonemap**: un color de halo sale bastante más oscuro en el juego que en el
-  selector de color (medido: 0,17 se ve como 0,07). Súbelo más de lo que parece.
+- **El fondo pasa por el tonemap**: un color sale distinto en el juego que en el selector (medido:
+  0,17 se ve como 0,07). Y sin HDR en 2D el lienzo se corta en 1,0: el fondo no pasaba de un gris
+  apagado (208/255). Por eso `main.gd` activa `use_hdr_2d` y los colores del fondo del 3D van
+  calculados (por encima de 1) con `tools/calibrar_fondo.gd`, que los busca midiendo píxeles:
+  `xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --path . --resolution 1280x720 --script res://tools/calibrar_fondo.gd`.
+  Repetirlo si cambian el tonemap o el resplandor del desván.
+- **Que no queme** (quinta nota): bombillas de zona a 0,8, lámpara del escritorio a 1,1, resplandor
+  (*Glow*) a 0,4 y sol final del desván a 0,65; los focos de los momentos, a 1,2. Medido con recortes
+  de las zonas calientes (techo sobre la bombilla: de 6 % a 0 % de píxeles al límite; mesa: de 11 %
+  a 5 %).
 - **Cada luz con sombra cuesta una pasada más** de dibujo en Compatibility. Las luces de las piezas
   van sin sombra a propósito; si se añade una con sombra, medir que el navegador lo aguanta.
 - **No guardes escenas de otras carpetas** (`levels/`, `scenes/`...) con el editor abierto mientras

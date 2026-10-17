@@ -81,7 +81,8 @@ si queréis una plantilla `.glb` para abrir en Blender, pedídsela a Claude):
 ```
 Desvan
 ├─ suelo, peana y trastos (decorado, siempre a la vista)
-├─ S_1_desvan        P_pared_fondo, P_pared_izquierda, P_pared_derecha, P_cumbrera__after-..., P_tejado__after-cumbrera (x3),
+├─ S_1_desvan        P_tablon_largo / P_tablon_medio / P_tablon_corto (6 de cada, el suelo; repetidas: valen
+│                    en cualquier hueco de su largo), P_pared_fondo, P_pared_izquierda, P_pared_derecha, P_cumbrera__after-..., P_tejado__after-cumbrera (x3),
 │                    P_viga__after-cumbrera (x2), P_ventana__after-pared_derecha, P_hucha__clave
 ├─ S_2_infancia      Bombilla (con su luz), BaulJuguetes (OR_tapa_baul__x + H_cubos + C_dibujo_verde), P_cama_infantil, ...,
 │                    P_caja_musica__after-comoda_infantil, P_dibujo__after-caja_musica, P_peluche__clave,
@@ -103,7 +104,7 @@ Cerdito
 ├─ Peana, Cojin, monedas sueltas (decorado)
 ├─ Hucha (grupo)   P_cuerpo; P_pata__after-cuerpo (x4), P_hocico__after-cuerpo, P_oreja__after-cuerpo (x2),
 │                  P_cola__after-cuerpo, P_ranura__after-cuerpo, P_ojo__after-hocico (x2), P_mejillas__after-ojo,
-│                  P_lazo__after-oreja, P_pegatina_estrella__after-cuerpo (con una luz: brilla en la oscuridad),
+│                  P_lazo__after-oreja, P_pegatina_estrella__after-cuerpo (solo una pegatina, sin luz),
 │                  P_pegatina_corazon / _flor / _luna / _rayo / _arcoiris (__after-cuerpo)
 └─ Cartel          P_pegatina_nombre__after-cuerpo (el texto del nombre del juego, en una malla "Nombre-WOODO_JAM")
 ```
