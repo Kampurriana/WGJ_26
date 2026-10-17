@@ -13,8 +13,8 @@ extends CanvasLayer
 ## Lo que se encuentra guardado (H_) no aparece de golpe en la bandeja: su ficha sale de donde estaba
 ## el objeto y vuela en arco hasta su sitio (quinta nota: "que no se teletransporte").
 ##
-## Dibujos escondidos (C_): al encontrar uno baja un aviso de logro (el dibujo en pequeño, su nombre
-## y "3 de 7" con una fila de puntos) y bajo el título queda el contador de dibujos.
+## Dibujos escondidos (C_): bajo el título queda el contador de dibujos (al encontrar uno, lo que se
+## enseña es su primer plano: ui/inspeccion.gd).
 
 signal next_requested
 signal pause_requested
@@ -28,9 +28,6 @@ const PANEL_WIDTH := COLUMNS * InventoryItem.SIZE.x + (COLUMNS - 1) * GAP + 2 * 
 const MARGIN := 10.0                         ## la bandeja flota: separada del borde de la pantalla
 const LIP := 26.0                            ## lo que se ve de ella mientras se arrastra una pieza
 const SLIDE_TIME := 0.22
-const AWARD_Y := 14.0                        ## el aviso de logro, arriba en el centro...
-const AWARD_HIDDEN_Y := -170.0               ## ...y escondido por encima de la pantalla
-const AWARD_TIME := 3.8                      ## lo que se queda a la vista (s)
 const FLY_TIME := 0.8                        ## lo que tarda en volar a la bandeja lo que se recoge (s)
 
 var _root: Control
@@ -68,15 +65,6 @@ var _tip_waiting: Array = []                 ## consejo que espera a que acabe e
 var _tip_box: PanelContainer                 ## consejo de juego (arriba)
 var _tip: Label
 var _tip_left := 0.0
-var _award: PanelContainer                   ## aviso de logro: un dibujo encontrado
-var _award_icon: DibujoIcono
-var _award_kicker: Label                     ## "DIBUJO ENCONTRADO · 3 DE 7"
-var _award_title: Label                      ## "El monstruo verde"
-var _award_text: Label
-var _award_dots: HBoxContainer
-var _award_queue: Array[Dictionary] = []
-var _award_tween: Tween
-var _award_showing := false
 var _drawings: PanelContainer                ## contador de dibujos encontrados (bajo el título)
 var _drawings_icon: DibujoIcono
 var _drawings_label: Label
@@ -102,7 +90,6 @@ func _ready() -> void:
 	_build_chapter()                             # debajo de los subtítulos: el rótulo no los apaga
 	_build_subtitle()
 	_build_tip()
-	_build_award()
 	_build_done()
 	Events.level_started.connect(func(_d: Node) -> void: _on_level_started())
 	Events.inventory_changed.connect(rebuild_inventory)
@@ -484,104 +471,16 @@ func flights() -> Array[Control]:
 	return _flights
 
 
-## Aviso de logro (arriba, en el centro): baja, se queda un poco y vuelve a subir.
-func _build_award() -> void:
-	_award = PanelContainer.new()
-	_award.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_award.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_award.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_award.hide()
-	_root.add_child(_award)
-	_set_award_y(AWARD_HIDDEN_Y)
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 16)
-	_award.add_child(row)
-	_award_icon = DibujoIcono.new()
-	row.add_child(_award_icon)
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 1)
-	col.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_child(col)
-	_award_kicker = Label.new()
-	_award_kicker.add_theme_font_size_override("font_size", 13)
-	_award_kicker.add_theme_color_override("font_color", UiTheme.WOOD)
-	var spaced := FontVariation.new()
-	spaced.base_font = ThemeDB.fallback_font
-	spaced.spacing_glyph = 3
-	_award_kicker.add_theme_font_override("font", spaced)
-	col.add_child(_award_kicker)
-	_award_title = Label.new()
-	_award_title.add_theme_font_size_override("font_size", 24)
-	col.add_child(_award_title)
-	_award_text = Label.new()
-	_award_text.add_theme_font_size_override("font_size", 15)
-	_award_text.add_theme_color_override("font_color", Color(UiTheme.INK, 0.8))
-	col.add_child(_award_text)
-	_award_dots = HBoxContainer.new()
-	_award_dots.add_theme_constant_override("separation", 6)
-	col.add_child(_award_dots)
-
-
-func _set_award_y(y: float) -> void:
-	_award.offset_top = y
-	_award.offset_bottom = y                     # crece hacia abajo lo que pida su contenido
-
-
-## Un dibujo encontrado: aviso de logro y contador.
+## Un dibujo encontrado: el contador (su primer plano lo enseña ui/inspeccion.gd).
 func _on_collectible_found(item: Node, found: int, total: int) -> void:
 	var it := item as Interactable
 	var color := drawing_color(it.target if it != null else null)
-	var title := Narrator.piece_name(it.id, true) if it != null else ""
-	_award_queue.append({"title": title, "found": found, "total": total, "color": color})
 	_drawings_label.text = "%d / %d" % [found, total]
 	_drawings_icon.color = color
 	if not _drawings.visible and _game_ui:
 		_drawings.show()
 		_drawings.modulate.a = 0.0
 		_drawings.create_tween().tween_property(_drawings, "modulate:a", 1.0, 0.6).set_delay(0.8)
-
-
-func _next_award() -> void:
-	if _award_showing or _award_queue.is_empty() or _moment or not _game_ui:
-		return
-	var a: Dictionary = _award_queue.pop_front()
-	var found: int = a.found
-	var total: int = a.total
-	var all := found >= total
-	_award_kicker.text = ("¡LOGRO! TODOS LOS DIBUJOS · %d DE %d" if all else "DIBUJO ENCONTRADO · %d DE %d") % [found, total]
-	_award_title.text = a.title
-	_award_text.text = Narrator.text("logro_dibujos_todos" if all else "logro_dibujo")
-	_award_icon.color = a.color
-	for c in _award_dots.get_children():
-		_award_dots.remove_child(c)
-		c.queue_free()
-	for k in total:
-		var dot := Panel.new()
-		dot.custom_minimum_size = Vector2(10, 10)
-		dot.pivot_offset = Vector2(5, 5)
-		var sb := StyleBoxFlat.new()
-		sb.set_corner_radius_all(5)
-		sb.bg_color = UiTheme.WOOD if k < found else Color(UiTheme.WOOD, 0.0)
-		sb.border_color = UiTheme.WOOD
-		sb.set_border_width_all(2)
-		dot.add_theme_stylebox_override("panel", sb)
-		_award_dots.add_child(dot)
-		if k == found - 1:                       # el nuevo se enciende con un saltito
-			dot.scale = Vector2.ZERO
-			dot.create_tween().tween_property(dot, "scale", Vector2.ONE, 0.45).set_delay(0.45) \
-				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_award_showing = true
-	_award.show()
-	_set_award_y(AWARD_HIDDEN_Y)
-	if _award_tween != null:
-		_award_tween.kill()
-	_award_tween = create_tween()
-	_award_tween.tween_method(_set_award_y, AWARD_HIDDEN_Y, AWARD_Y, 0.55).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_award_tween.tween_interval(AWARD_TIME)
-	_award_tween.tween_method(_set_award_y, AWARD_Y, AWARD_HIDDEN_Y, 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	_award_tween.tween_callback(func() -> void:
-		_award.hide()
-		_award_showing = false)
 
 
 ## El color de un dibujo (el de su papel, o el de su malla más grande), para pintar el icono igual.
@@ -599,11 +498,6 @@ static func drawing_color(n: Node) -> Color:
 				best_area = area
 				best = mat.albedo_color
 	return best
-
-
-## (Tests) Lo que dice el aviso de logro ahora ("" = no se ve).
-func award_text() -> String:
-	return "%s | %s" % [_award_kicker.text, _award_title.text] if _award_showing else ""
 
 
 ## (Tests) Lo que dice el contador de dibujos ("" = no se ve).
@@ -718,11 +612,6 @@ func _on_level_started() -> void:
 		if is_instance_valid(f):
 			f.queue_free()
 	_flights.clear()
-	_award_queue.clear()
-	if _award_tween != null:
-		_award_tween.kill()
-	_award.hide()
-	_award_showing = false
 	for g in _list.get_children():               # las fichas son del diorama anterior
 		_list.remove_child(g)
 		g.queue_free()
@@ -904,7 +793,6 @@ func _process(delta: float) -> void:
 		_tip_left -= delta
 		if _tip_left <= 0.0:
 			_tip_box.hide()
-	_next_award()
 	if not _tip_waiting.is_empty() and not _chapter_showing() and not _moment:
 		var tip: Array = _tip_waiting
 		_tip_waiting = []

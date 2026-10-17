@@ -392,12 +392,35 @@ func _test_story(main: Node) -> void:
 		green.activate()
 		await get_tree().process_frame
 		await get_tree().process_frame
+		var look: Inspeccion = main.inspeccion
 		check(green.collected and found_events.size() == 1 and found_events[0][1] == 1 and found_events[0][2] == 7
-			and green.target.get_parent() == d.clothesline,
-			"tocar el dibujo lo encuentra (1 de 7) y se va hacia la cuerda")
-		check(GameState.hud.award_text().contains("1 DE 7") and GameState.hud.award_text().contains(Narrator.piece_name(&"dibujo_verde", true))
-			and GameState.hud.drawings_text() == "1 / 7",
-			"sale el aviso de logro (%s) y el contador de dibujos" % GameState.hud.award_text())
+			and look.is_open() and look.item == green and d.is_held(green) and green.target.get_parent() != d.clothesline,
+			"tocar el dibujo lo encuentra (1 de 7) y sale su primer plano para mirarlo (aún no vuela a la cuerda)")
+		check(look.title_text() == Inspeccion.TITLE and look.name_text() == Narrator.piece_name(&"dibujo_verde").to_upper()
+			and look.count_text() == "1 DE 7" and is_instance_valid(look.copy) and GameState.hud.drawings_text() == "1 / 7",
+			"como en la referencia: título grande, su nombre en una cápsula, el dibujo en 3D, «1 DE 7» y el contador (%s · %s)"
+			% [look.title_text(), look.name_text()])
+		for i in 2:                                # el visor se maqueta un fotograma después
+			await get_tree().process_frame
+		_click(look.button_center())               # el botón llega el último: un clic con prisa no lo cierra
+		await get_tree().process_frame
+		check(look.is_open(), "el botón aún no está: un clic con prisa no lo cierra")
+		var turn_before := look.view_rotation().y
+		_mouse_button(look.view_center(), true)
+		var spin := InputEventMouseMotion.new()
+		spin.position = look.view_center() + Vector2(90, 0)
+		spin.global_position = spin.position
+		spin.relative = Vector2(90, 0)
+		spin.button_mask = MOUSE_BUTTON_MASK_LEFT
+		get_viewport().push_input(spin, true)
+		await get_tree().process_frame
+		_mouse_button(look.view_center() + Vector2(90, 0), false)
+		check(look.view_rotation().y - turn_before > 0.6, "arrastrando sobre el dibujo se gira para mirarlo (%.2f rad)" % (look.view_rotation().y - turn_before))
+		await get_tree().create_timer(Inspeccion.BUTTON_DELAY).timeout
+		_click(look.button_center())
+		await get_tree().process_frame
+		check(not look.is_open() and not d.is_held(green) and green.target.get_parent() == d.clothesline,
+			"«%s» lo cierra y el dibujo se va volando hacia la cuerda" % Inspeccion.BUTTON)
 		await get_tree().create_timer(Diorama.LIFT_TIME + 0.15 + Diorama.HANG_TIME + 0.25).timeout
 		check(green.target.global_position.distance_to(d.spot(0).global_position) < 0.02 and hung[0] == 1,
 			"el dibujo vuela hasta la primera pinza de la cuerda y se cuelga")
@@ -453,8 +476,14 @@ func _test_story(main: Node) -> void:
 	Narrator.clear()
 	m.finish()
 	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
-	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and pink.target.get_parent() == d.clothesline,
-		"al acabar el momento de la cámara, su dibujo se encuentra solo: logro (2 de 7) y a la cuerda")
+	var look2: Inspeccion = main.inspeccion
+	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and look2.is_open() and look2.count_text() == "2 DE 7",
+		"al acabar el momento de la cámara, su dibujo se encuentra solo y sale su primer plano (2 de 7)")
+	await get_tree().create_timer(Inspeccion.BUTTON_DELAY + 0.05).timeout
+	_key(KEY_ESCAPE)
+	await get_tree().process_frame
+	check(not look2.is_open() and not main.pause.is_open() and pink.target.get_parent() == d.clothesline,
+		"Esc también lo cierra (sin abrir la pausa) y el dibujo va a la cuerda")
 	steps = 0
 	while not application.available and steps < 60:
 		d.debug_solve_step()

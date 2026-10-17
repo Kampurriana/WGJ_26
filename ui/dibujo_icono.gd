@@ -1,6 +1,6 @@
 class_name DibujoIcono
 extends Control
-## Un dibujo en pequeño (para el aviso de logro, el contador y los créditos): un folio del color del
+## Un dibujo en pequeño (para el contador y los créditos): un folio del color del
 ## dibujo encontrado, con su trozo de celo. faded = uno que falta (solo el contorno).
 
 var color := Color(0.35, 0.72, 0.32):

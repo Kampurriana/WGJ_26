@@ -86,6 +86,7 @@ var clothesline: Node3D                     ## la cuerda de los dibujos (T_); nu
 var _spots: Array[Node3D] = []              ## sus pinzas, en orden: el n-ésimo dibujo encontrado va a la n-ésima
 var _given: Array[Interactable] = []        ## dibujos que vienen con una pieza, esperando a que acabe su momento
 var _given_wait := 0.0
+var _held: Dictionary = {}                  ## dibujos encontrados que se están mirando (ui/inspeccion.gd) -> su pinza
 ## (Momentos) Mientras sea true, la sección siguiente no se abre sola al acabar la pausa: espera
 ## (el final no se abre encima del espejo; lo abre la transición con open_pending_now).
 var hold_sections := false
@@ -701,7 +702,8 @@ func collectibles_found() -> int:
 	return interactables.filter(func(it: Interactable) -> bool: return it.kind == NameRules.COLLECTIBLE and it.collected).size()
 
 
-## Un dibujo encontrado: se levanta, vuela a la siguiente pinza de la cuerda y sale el logro.
+## Un dibujo encontrado: sale el logro y vuela a la siguiente pinza de la cuerda (si alguien lo está
+## mirando de cerca, hold_collectible, espera a que lo suelte).
 func find_collectible(it: Interactable) -> void:
 	if it.kind != NameRules.COLLECTIBLE or it.collected or not it.available:
 		return
@@ -711,7 +713,28 @@ func find_collectible(it: Interactable) -> void:
 	var found := collectibles_found()
 	Sfx.play("logro")
 	Events.collectible_found.emit(it, found, collectible_total())
-	_hang(it, found - 1, true)                  # sin frase ni consejo: los encuentra el jugador (quinta nota)
+	if not _held.has(it):
+		_hang(it, found - 1, true)              # sin frase ni consejo: los encuentra el jugador (quinta nota)
+
+
+## (Inspección, sexta nota) Ese dibujo recién encontrado se queda donde estaba mientras se mira de cerca.
+func hold_collectible(it: Interactable) -> void:
+	if it.collected and not _held.has(it):
+		_held[it] = collectibles_found() - 1
+
+
+## Y al dejar de mirarlo, vuela a su pinza.
+func release_collectible(it: Interactable) -> void:
+	if not _held.has(it):
+		return
+	var index: int = _held[it]
+	_held.erase(it)
+	_hang(it, index, true)
+
+
+## (Tests) ¿Está ese dibujo esperando a que se deje de mirar?
+func is_held(it: Interactable) -> bool:
+	return _held.has(it)
 
 
 ## Lo cuelga en la pinza `index` (animate = en vuelo y balanceándose; si no, ya colgado). Sin cuerda

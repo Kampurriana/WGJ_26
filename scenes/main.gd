@@ -17,6 +17,7 @@ extends Node3D
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
+##   --inspeccion         (capturas) al segundo de empezar, el primer plano de un dibujo (como al encontrarlo)
 ##   --fondo=C,M          (capturas) el fondo con el color C y el motivo M (ui/fondos.gd)
 ##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
@@ -34,6 +35,7 @@ var pause: PauseMenu
 var credits: Creditos
 var effects: Efectos
 var momentos: Momentos
+var inspeccion: Inspeccion                   ## el primer plano de un dibujo encontrado (sexta nota)
 var enfoque: Enfoque
 var _level: Node
 var _lighting: Node
@@ -48,6 +50,7 @@ var _hold := Vector2(-1, -1)
 var _zoom_steps := 0
 var _press_f9 := false
 var _roll_credits := false
+var _inspect := false
 var _zoom_at := Vector2.ZERO
 var _capture_path := ""
 var _capture_after := 3.0
@@ -91,6 +94,10 @@ func _ready() -> void:
 	momentos.name = "Momentos"
 	momentos.process_mode = Node.PROCESS_MODE_PAUSABLE
 	add_child(momentos)
+	inspeccion = Inspeccion.new()
+	inspeccion.name = "Inspeccion"
+	inspeccion.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(inspeccion)
 	add_child(GamepadCursor.new())
 	menu = MainMenu.new()
 	menu.name = "MainMenu"
@@ -154,6 +161,8 @@ func _parse_args() -> void:
 			_press_f9 = true
 		elif a == "--creditos":
 			_roll_credits = true
+		elif a == "--inspeccion":
+			_inspect = true
 		elif a.begins_with("--fondo="):          # (capturas) color,motivo del fondo: --fondo=1,1
 			var v := a.get_slice("=", 1).split(",")
 			Settings.set_value("fondo_color", int(v[0]))
@@ -379,6 +388,8 @@ func _process(delta: float) -> void:
 		if _solve_timer <= 0.0:
 			_solve_timer = 0.3
 			_solve_left -= 1
+			if inspeccion.is_open():
+				inspeccion.close_now()           # el paso automático no se queda mirando un dibujo
 			GameState.diorama.debug_solve_step()
 			if _solve_left > 0:
 				Narrator.clear()                 # en la captura se oye (y se ve) solo la última frase
@@ -391,6 +402,13 @@ func _process(delta: float) -> void:
 	if _roll_credits and _elapsed > 1.0:
 		_roll_credits = false
 		roll_credits()
+	if _inspect and _elapsed > 1.0:
+		_inspect = false
+		var d := GameState.diorama
+		for it in d.interactables if d != null else []:
+			if it.kind == NameRules.COLLECTIBLE:
+				inspeccion.open(it, 3, d.collectible_total())    # solo para mirarla: no lo encuentra
+				break
 	if _zoom_steps > 0 and _elapsed > 0.5:
 		_zoom_steps -= 1
 		GameState.camera.zoom_at(1.0 - GameState.camera.zoom_step, _zoom_at)
