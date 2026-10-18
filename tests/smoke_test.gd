@@ -1834,6 +1834,7 @@ func _check_sweep(who: String) -> void:
 	var checked := 0
 	var inside := 0
 	var rested := 0
+	var hit_names := {}                             # (con qué choca, si choca: para el mensaje)
 	var piece := String(GameState.drag.piece_id)
 	var view := get_viewport().get_visible_rect().size     # sin pantalla mide 1280x1280: la rejilla, a su medida
 	for i in 8:
@@ -1844,8 +1845,11 @@ func _check_sweep(who: String) -> void:
 				continue
 			checked += 1
 			inside += 1 if n > 0 else 0
+			if n > 0:
+				for nm: String in GameState.drag.held_colliders():
+					hit_names[nm] = true
 			rested += 1 if GameState.drag.last_rested else 0
-	check(checked >= 20 and inside == 0, "%s: la pieza en mano (%s) no atraviesa nada en %d puntos (dentro: %d)" % [who, piece, checked, inside])
+	check(checked >= 20 and inside == 0, "%s: la pieza en mano (%s) no atraviesa nada en %d puntos (dentro: %d %s)" % [who, piece, checked, inside, hit_names.keys()])
 	# Control (que el instrumento mida algo): al menos 1 de cada 8 puntos tiene que apoyarse. No más:
 	# un diorama que empieza casi vacío (el desván: solo suelo) tiene media pantalla de aire.
 	check(rested * 8 >= checked, "%s: la pieza en mano se apoya en las superficies (%d de %d puntos)" % [who, rested, checked])

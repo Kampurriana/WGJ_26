@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b61530j5gxqos"
-path.s3tc="res://.godot/imported/T_LitterBox_ARM.png-50d609de1019ab5c46bed11749e3c68e.s3tc.ctex"
+uid="uid://q4q3oxoigsmj"
+path.s3tc="res://.godot/imported/T_Pack_03_ARM.png-892173b33d5c2972878970e2babba176.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/kit/texturas/LitterBox/T_LitterBox_ARM.png"
-dest_files=["res://.godot/imported/T_LitterBox_ARM.png-50d609de1019ab5c46bed11749e3c68e.s3tc.ctex"]
+source_file="res://assets/kit/texturas/Pack_03/T_Pack_03_ARM.png"
+dest_files=["res://.godot/imported/T_Pack_03_ARM.png-892173b33d5c2972878970e2babba176.s3tc.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bedvpcqa8gftx"
-path.s3tc="res://.godot/imported/T_Hat_Normal.png-f876513ee9749e6d5b7c8d83defa21d4.s3tc.ctex"
+uid="uid://dpx4g1hb7fksw"
+path.s3tc="res://.godot/imported/T_Pack_03_Normal.png-0de4bb4be1b4ba239efdb349cb6b85f4.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/kit/texturas/Hat/T_Hat_Normal.png"
-dest_files=["res://.godot/imported/T_Hat_Normal.png-f876513ee9749e6d5b7c8d83defa21d4.s3tc.ctex"]
+source_file="res://assets/kit/texturas/Pack_03/T_Pack_03_Normal.png"
+dest_files=["res://.godot/imported/T_Pack_03_Normal.png-0de4bb4be1b4ba239efdb349cb6b85f4.s3tc.ctex"]
 
 [params]
 

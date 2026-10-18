@@ -123,3 +123,28 @@ recursos en el Inspector cambia todo el kit a la vez. Además: reflejos más sua
 provisionales de una paleta apagada y cálida (`PALETA` en `tools/estilo_kit.gd`; nada brilla).
 `tools/materiales_kit.gd` y `tools/piezas_kit.gd` lo ponen al crear; `tools/estilo_kit.gd` lo vuelve a
 poner en todos (y deja `tono`/`mezcla` con sus valores de `TONO`/`MEZCLA`).
+
+## Reparto de texturas (Eva, 18-oct)
+
+En `TexturasFinales/` se **ignoran** `CON_LINEART`, `Hat`, `Lights`, `LitterBox`, `Music_Box`, `Otter` y
+`POLAROIDS` (lo suyo va ahora en los Pack). Qué textura pinta cada pieza (`CONJUNTOS` en
+`tools/piezas_kit.gd`):
+
+| Textura | Piezas |
+|---|---|
+| `T_Boxes` | SM_BoxA..E, SM_CoverBoxA..E |
+| `T_Comoda` | SM_ComodaA..D |
+| `T_Desk` | SM_DeskA..D |
+| `T_StoolLamp` (`LampStool/`) | SM_Lamp, SM_Stool |
+| `T_Pack01` | soportes del techo (A..G, diagonal, pilarcitos), suelo y tablones, SM_Pillar, zócalos de abajo (y las de nombre de 3ds Max de FloorCeilingPlanks) |
+| `T_Pack02` | SM_Ceiling, SM_CeilingSupportVertical* |
+| `T_Pack03` | SM_SkirtingBoardBack/I/J/K/L/Top*, SM_WallA..C, SM_Window |
+| `T_Pack04` | SM_Burro, SM_CoverDesk, SM_TV |
+| `T_Pack05` | SM_BrushA..C, el MP3, SM_Vase |
+| `T_Pack06` | SM_MusicBox, SM_PolaroidA..D — **aún no está en Drive** (color provisional) |
+| `T_Pack07` | SM_Lights (y la cuerda y las bombillas), SM_LitterBox, la hucha (SM_PigA..L), SM_Polaroid (la cámara), pegatinas, el sombrero |
+| `T_Pack08` | SM_Caballete, SM_CatBed, SM_Mirror, SM_Rug — **aún no está en Drive** (color provisional) |
+
+La nutria (`modelos/Otter/SM_otter.fbx`, que no está en la lista) sigue con `texturas/Otter/`: es la única
+textura suya. El desván la monta directamente (no pasa por el tileset).
+

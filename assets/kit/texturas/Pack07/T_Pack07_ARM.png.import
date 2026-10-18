@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1llww0rldxc5"
-path.s3tc="res://.godot/imported/T_Polaroid_ARM.png-1273c34689064f3ef099228239b76080.s3tc.ctex"
+uid="uid://cl6amca0f45jn"
+path.s3tc="res://.godot/imported/T_Pack07_ARM.png-b824ea8b11e93e8748dd5c84dc007c85.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/kit/texturas/POLAROIDS/T_Polaroid_ARM.png"
-dest_files=["res://.godot/imported/T_Polaroid_ARM.png-1273c34689064f3ef099228239b76080.s3tc.ctex"]
+source_file="res://assets/kit/texturas/Pack07/T_Pack07_ARM.png"
+dest_files=["res://.godot/imported/T_Pack07_ARM.png-b824ea8b11e93e8748dd5c84dc007c85.s3tc.ctex"]
 
 [params]
 

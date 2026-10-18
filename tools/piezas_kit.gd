@@ -35,7 +35,7 @@ const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV
 const SOLO := {"SM_bombilla.fbx": ["bombilla"]}
 ## Ficheros que no se usan (Comoda.fbx es la cómoda fundida en una malla: están sus piezas sueltas; la
 ## referencia es una escena entera: de ella solo se cogen las MONTADAS).
-const EXCLUIDOS := ["Comoda.fbx"]
+const EXCLUIDOS := ["Comoda.fbx", "SM_otter.fbx"]   ## (la nutria la monta build_kit_level.gd con su malla entera)
 ## Mallas de la escena de referencia (el blocking de 3ds Max) que son una pieza montada que el kit solo
 ## trae en trozos: van antes que esos trozos (con su nombre de GRUPOS) y los trozos ya no se usan.
 const REFERENCIA := KIT + "referencia/Blocking3.fbx"   ## la misma que tools/build_diorama_kit.gd
@@ -50,25 +50,32 @@ const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "S
 ## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, ojos, ranura, cola) va montada en una pieza.
 const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
-## por cómo empieza su nombre. Son las carpetas de Assets/ de Drive: Pack01 (suelo, zócalos, correas,
-## pilar; las de nombre de 3ds Max de FloorCeilingPlanks... son las mismas), Pack02 (techo y postes).
-## Pack04 (la funda del escritorio, la tele, el burro), Pack05 (el MP3, el jarrón y los pinceles), la
-## caja de música, las bombillitas y las polaroids (una textura de color cada una, POLAROIDS_<x>). Las
-## que se llaman como su carpeta (SM_Hat, SM_LitterBox, SM_Comoda...) no hace falta ponerlas aquí.
-## Pack03 (paredes, ventana, zócalos de arriba) aún no tiene texturas; la de la nutria (Otter), sin modelo.
+## por cómo empieza su nombre. El reparto es el de Eva (18-oct): en TexturasFinales se ignoran
+## CON_LINEART, Hat, Lights, LitterBox, Music_Box, Otter y POLAROIDS (lo suyo va ahora en los Pack).
+## Las de nombre de 3ds Max (FloorPlanks, SB0, CeilingSupport0: las de FloorCeilingPlanks...) son de
+## Pack01. Pack06 (caja de música y polaroids A-D) y Pack08 (caballete, cama del gato, espejo y
+## alfombra) aún no están en Drive: hasta que lleguen, esas piezas van con su color provisional.
 const CONJUNTOS := {
-	"Pack_04": ["SM_CoverDesk", "SM_TV", "SM_Burro"],
-	"Pack_05": ["SM_MP3", "SM_Vase", "SM_Brush"],
-	"Music_Box": ["SM_MusicBox"],
-	"Lights": ["SM_Lights", "SM_Cuerda", "SM_Bombilla"],
-	"POLAROIDS_PolaroidA": ["SM_PolaroidA"], "POLAROIDS_PolaroidB": ["SM_PolaroidB"],
-	"POLAROIDS_PolaroidC": ["SM_PolaroidC"], "POLAROIDS_PolaroidD": ["SM_PolaroidD"],
-	"Desk": ["SM_Desk"],
 	"Boxes": ["SM_Box", "SM_CoverBox"],
+	"Comoda": ["SM_Comoda"],
+	"Desk": ["SM_Desk"],
 	"LampStool": ["SM_Lamp", "SM_Stool"],
-	"Pack01": ["SM_Floor", "FloorPlanks", "SM_SkirtingBoardBottom", "SB0", "CeilingSupport0", "SM_Pillar"],
-	"Pack_02": ["SM_Ceiling"],
+	"Pack01": ["SM_CeilingSupporDiagonal", "SM_CeilingSupportDiagonal", "SM_CeilingSupportSmallPillars",
+		"SM_CeilingSupportA", "SM_CeilingSupportB", "SM_CeilingSupportC", "SM_CeilingSupportD",
+		"SM_CeilingSupportE", "SM_CeilingSupportF", "SM_CeilingSupportG", "SM_Floor", "SM_Pillar", "SM_SkirtingBoardA", "SM_SkirtingBoardBottom",
+		"SM_SkirtingBoards", "FloorPlanks", "SB0", "CeilingSupport0"],
+	"Pack_02": ["SM_Ceiling"],                    # (y SM_CeilingSupportVertical*: empiezan igual)
+	"Pack_03": ["SM_SkirtingBoardBack", "SM_SkirtingBoardI", "SM_SkirtingBoardJ", "SM_SkirtingBoardK",
+		"SM_SkirtingBoardL", "SM_SkirtingBoardTop", "SM_Wall", "SM_Window"],
+	"Pack_04": ["SM_Burro", "SM_CoverDesk", "SM_TV"],
+	"Pack_05": ["SM_Brush", "SM_MP3", "SM_Vase"],
+	"Pack06": ["SM_MusicBox", "SM_PolaroidA", "SM_PolaroidB", "SM_PolaroidC", "SM_PolaroidD"],
+	"Pack07": ["SM_Lights", "SM_Cuerda", "SM_Bombilla", "SM_LitterBox", "SM_Pig", "SM_Sticker", "SN_Hat", "SM_Hat"],
+	"Pack08": ["SM_Caballete", "SM_CatBed", "SM_Mirror", "SM_Rug"],
 }
+## Las que tienen que llamarse exactamente así (SM_Polaroid, la cámara, es de Pack07; SM_PolaroidA..D,
+## las fotos, de Pack06: por el principio del nombre se confundirían).
+const EXACTAS := {"SM_Polaroid": "Pack07"}
 ## Grupo de color provisional según cómo empieza el nombre (el primero que encaja).
 const CATEGORIAS := [
 	["SM_CeilingSupport", "estructura"], ["CeilingSupport", "estructura"], ["SM_Ceiling", "techo"],
@@ -194,6 +201,9 @@ func _guardar_dibujo(nombre: String, imagen: String) -> Error:
 
 
 func _material(nombre: String, kit: Dictionary) -> Material:
+	if EXACTAS.has(nombre):
+		if kit.has(EXACTAS[nombre]):
+			return kit[EXACTAS[nombre]]
 	for conjunto: String in CONJUNTOS:
 		for prefijo: String in CONJUNTOS[conjunto]:
 			if nombre.begins_with(prefijo) and kit.has(conjunto):

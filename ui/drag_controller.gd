@@ -124,6 +124,13 @@ func hold_at(pos: Vector2) -> void:
 func held_overlaps(margin := 0.01) -> int:
 	if not is_instance_valid(_held) or not _held.visible:
 		return -1
+	return held_colliders(margin).size()
+
+
+## (Tests) Con qué choca ahora la pieza en mano (los nombres de sus mallas): para saber qué atraviesa.
+func held_colliders(margin := 0.01) -> Array:
+	if not is_instance_valid(_held) or not _held.visible:
+		return []
 	var t := _held.global_transform
 	var shape := BoxShape3D.new()
 	shape.size = (_held_box.size * t.basis.get_scale() - Vector3.ONE * margin * 2.0).max(Vector3.ONE * 0.002)
@@ -131,7 +138,8 @@ func held_overlaps(margin := 0.01) -> int:
 	q.shape = shape
 	q.collision_mask = Visuals.SURFACE_LAYER
 	q.transform = Transform3D(t.basis.orthonormalized(), t * _held_box.get_center())
-	return get_viewport().get_camera_3d().get_world_3d().direct_space_state.intersect_shape(q, 8).size()
+	return get_viewport().get_camera_3d().get_world_3d().direct_space_state.intersect_shape(q, 8).map(
+		func(hit: Dictionary) -> String: return String((hit.collider as Node).get_parent().name))
 
 
 func _finish(pos: Vector2) -> void:
