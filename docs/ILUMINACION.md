@@ -14,7 +14,7 @@ color y su motivo en Opciones (`ui/fondos.gd`). Por qué así y de dónde sale c
 | `luz_por_defecto.tscn` | La luz de todos los niveles que no tengan una propia |
 | `menu.tscn` | La luz del cerdito del título (y del menú) |
 | `desvan.tscn` | La luz del desván: empieza más oscura ("el desván a oscuras") y se calienta al montarlo |
-| `probar_luz.tscn` | Para mirarla en el editor: la luz por defecto + la habitación + la cámara del juego |
+| `desvan_tarde.tscn` | La del desván oficial: la tarde de verano (con `core/luz_ventana.gd`, el sol que entra por la ventana) |
 | `rig_luz.gd` | El script de la raíz de cada escena de luz (lo que la hace "en tiempo real") |
 | `fondo.gdshader` | El fondo: un pastel con un halo más claro detrás del diorama y un motivo (estrellas, corazones, lunares o liso) en filas diagonales que se desplazan. Sus colores los pone el juego según lo que eligió el jugador (`ui/fondos.gd`); los de la escena son los del azul |
 | `vineta.gdshader` | La viñeta: oscurece las esquinas con un degradado largo, **del tono del fondo** (no negra, sexta nota): su color lo pone el juego, el oscuro del fondo elegido (`Fondos.dark`) |
@@ -68,9 +68,9 @@ Medido el 16-oct-2026 con recortes ampliados del borde de una sombra:
 
 ## Cómo trabajar
 
-1. **Godot:** abre `iluminacion/probar_luz.tscn`. Para verlo con la cámara del juego: selecciona
-   `CamaraDeJuego` y marca **Preview** arriba en la vista 3D. En el editor no gira con la cámara
-   ni cambia con el progreso: eso solo pasa jugando.
+1. **Godot:** abre `preview/preview_assets.tscn` y pulsa F6 (Tab: el diorama de prueba): la misma luz,
+   cámara y enfoque que el desván. En el editor no gira con la cámara ni cambia con el progreso: eso
+   solo pasa jugando. (`probar_luz.tscn`, con la habitación japonesa, se borró el 18-oct.)
 2. **Para cambiar la luz**: pulsa el icono de claqueta junto a `Iluminacion` (abre
    `luz_por_defecto.tscn`), cambia valores y guarda (**Ctrl+S**).
 3. **F5** para verla de verdad: con la madera cruda, la pintura, las siluetas y las partículas.

@@ -37,6 +37,7 @@ func _run() -> void:
 	await _test_voices()
 	await _test_english()
 	_test_kit()
+	_test_export_filter()
 	await _test_logo()
 	if GameState.RESET_ON_START:
 		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
@@ -1296,6 +1297,45 @@ func _test_settings() -> void:
 
 ## El arte de las artistas (assets/kit/): cada modelo se carga, trae mallas con UV (sin UV no se
 ## ven las texturas) y el material del escritorio lleva sus texturas; la preview aparte carga.
+## La build (export_presets.cfg) no deja fuera nada que el juego cargue: las escenas del juego, sus
+## niveles (data/levels.json y los que nombran por su ruta, como el modelo de un Diorama), lo que los
+## scripts cargan por ruta y todas sus dependencias. Se rompió una vez sin que nada avisara: las piezas
+## del kit (assets/kit/piezas/) y el tebeo estaban excluidos y el desván oficial los usa.
+func _test_export_filter() -> void:
+	var re := RegEx.create_from_string("res://[A-Za-z0-9_./\\-]+\\.(tscn|scn|tres|res|glb|fbx|png|jpg|ogg|mp3|wav|gdshader|ttf|otf)")
+	var roots: Array = ["res://scenes/main.tscn", "res://icon.png"]
+	roots.append_array(JSON.parse_string(FileAccess.get_file_as_string("res://data/levels.json")))
+	for dir in ["res://core", "res://ui", "res://scenes", "res://autoload", "res://camera", "res://input", "res://iluminacion", "res://shaders", "res://levels"]:
+		for f in DirAccess.get_files_at(dir):
+			if f.get_extension() in ["gd", "tscn"] and not dir.path_join(f) in ["res://levels/level_00_muestra.tscn"]:
+				for m in re.search_all(FileAccess.get_file_as_string(dir.path_join(f))):
+					roots.append(m.get_string())
+	var seen := {}
+	var queue := roots.duplicate()
+	while not queue.is_empty():
+		var f: String = queue.pop_back()
+		if seen.has(f):
+			continue
+		seen[f] = true
+		if ResourceLoader.exists(f):
+			for dep in ResourceLoader.get_dependencies(f):
+				var i := dep.rfind("res://")
+				if i >= 0:
+					queue.append(dep.substr(i).get_slice("::", 0))
+	var cfg := ConfigFile.new()
+	var ok := cfg.load("res://export_presets.cfg") == OK
+	var left_out: Array[String] = []
+	for preset in cfg.get_sections() if ok else []:
+		if not cfg.has_section_key(preset, "exclude_filter"):
+			continue
+		for pattern in String(cfg.get_value(preset, "exclude_filter")).split(",", false):
+			for f: String in seen:
+				if f.trim_prefix("res://").match(pattern.strip_edges()) and not f in left_out:
+					left_out.append(f)
+	check(ok and seen.size() > 150 and left_out.is_empty(),
+		"la build no deja fuera nada que use el juego (%d ficheros; fuera: %s)" % [seen.size(), ", ".join(left_out.slice(0, 4))])
+
+
 func _test_kit() -> void:
 	var modelos := 0
 	var sin_uv := PackedStringArray()

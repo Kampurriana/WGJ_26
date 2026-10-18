@@ -98,9 +98,9 @@ GitHub rechaza ficheros de más de 100 MB y avisa a partir de 50 MB. Un `.glb` d
 no debería acercarse. Si alguno pasa de 50 MB: reducir texturas antes que meter Git LFS (LFS añade
 una instalación y una cuota más a cada artista, y en 48 h no compensa).
 
-Ojo con el peso total, que es lo que se descarga la versión web: el pack de props japoneses ocupa
-332 MB (ningún fichero pasa de 18 MB, pero en total es mucho). Antes de la build web, quitar del
-juego lo que no se use o reducir sus texturas.
+Ojo con el peso total, que es lo que se descarga la versión web. El pack de props japoneses ocupaba
+332 MB; el 18-oct se quitó todo lo que no se usa (quedan 7 modelos, ~140 MB, porque llevan las
+texturas dentro del `.glb`). Lo que se borra sigue en el historial de Git: el `.git` no adelgaza.
 
 ## `.gitignore` y fin de línea
 
