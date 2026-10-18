@@ -388,507 +388,507 @@ top_radius = 0.045
 bottom_radius = 0.045
 height = 0.012
 
-[node name="DesvanOficial" type="Node3D" unique_id=1074451101]
+[node name="DesvanOficial" type="Node3D" unique_id=1498340373]
 
-[node name="ApoyoSuelo" type="StaticBody3D" parent="." unique_id=444998189]
+[node name="ApoyoSuelo" type="StaticBody3D" parent="." unique_id=1887141050]
 collision_layer = 2
 collision_mask = 0
 
-[node name="@CollisionShape3D@14" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=932576361]
+[node name="@CollisionShape3D@14" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=1733384681]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.09, 0.5)
 shape = SubResource("BoxShape3D_t1dnx")
 
-[node name="@CollisionShape3D@15" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=939919571]
+[node name="@CollisionShape3D@15" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=391731077]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, -0.09, 3.2)
 shape = SubResource("BoxShape3D_j8wc0")
 
-[node name="@CollisionShape3D@16" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=533203360]
+[node name="@CollisionShape3D@16" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=288445136]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.09, -2.7)
 shape = SubResource("BoxShape3D_gge3c")
 
-[node name="S_1_desvan" type="Node3D" parent="." unique_id=609155746]
+[node name="S_1_desvan" type="Node3D" parent="." unique_id=1649256450]
 
-[node name="P_tablon_largo" type="Node3D" parent="S_1_desvan" unique_id=301187902]
+[node name="P_tablon_largo" type="Node3D" parent="S_1_desvan" unique_id=499331700]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2483872, 0.00014694035, -0.49077332)
 
 [node name="FloorPlanks015" type="Node3D" parent="S_1_desvan/P_tablon_largo" unique_id=1152032108 instance=ExtResource("1_aahec")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_largo_001" type="Node3D" parent="S_1_desvan" unique_id=1344580249]
+[node name="P_tablon_largo_001" type="Node3D" parent="S_1_desvan" unique_id=1895456879]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7489806, 0.0010140017, -0.47103867)
 
 [node name="FloorPlanks015_2" type="Node3D" parent="S_1_desvan/P_tablon_largo_001" unique_id=1121370573 instance=ExtResource("1_aahec")]
 
-[node name="P_tablon_largo_002" type="Node3D" parent="S_1_desvan" unique_id=124437909]
+[node name="P_tablon_largo_002" type="Node3D" parent="S_1_desvan" unique_id=292598941]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2462373, 0.00014694035, -0.49077338)
 
 [node name="FloorPlanks015_3" type="Node3D" parent="S_1_desvan/P_tablon_largo_002" unique_id=2017978932 instance=ExtResource("1_aahec")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_largo_003" type="Node3D" parent="S_1_desvan" unique_id=952600169]
+[node name="P_tablon_largo_003" type="Node3D" parent="S_1_desvan" unique_id=73627063]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7405179, 0.00014694035, -0.49077338)
 
 [node name="FloorPlanks015_4" type="Node3D" parent="S_1_desvan/P_tablon_largo_003" unique_id=471026962 instance=ExtResource("1_aahec")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio" type="Node3D" parent="S_1_desvan" unique_id=1670034767]
+[node name="P_tablon_medio" type="Node3D" parent="S_1_desvan" unique_id=2124207797]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7398632, 0.0002944842, 0.9837521)
 
 [node name="FloorPlanks013" type="Node3D" parent="S_1_desvan/P_tablon_medio" unique_id=506820658 instance=ExtResource("2_3hjdk")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio_001" type="Node3D" parent="S_1_desvan" unique_id=1675474807]
+[node name="P_tablon_medio_001" type="Node3D" parent="S_1_desvan" unique_id=134121966]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2448475, -0.00011765957, 0.99033636)
 
 [node name="FloorPlanks013_2" type="Node3D" parent="S_1_desvan/P_tablon_medio_001" unique_id=1914609959 instance=ExtResource("2_3hjdk")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio_002" type="Node3D" parent="S_1_desvan" unique_id=1179108759]
+[node name="P_tablon_medio_002" type="Node3D" parent="S_1_desvan" unique_id=73579520]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7420148, 0.00031466782, 0.98375696)
 
 [node name="FloorPlanks013_3" type="Node3D" parent="S_1_desvan/P_tablon_medio_002" unique_id=641189856 instance=ExtResource("2_3hjdk")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio_003" type="Node3D" parent="S_1_desvan" unique_id=2049681215]
+[node name="P_tablon_medio_003" type="Node3D" parent="S_1_desvan" unique_id=1959253641]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2469932, -0.0001378581, 0.99033463)
 
 [node name="FloorPlanks013_4" type="Node3D" parent="S_1_desvan/P_tablon_medio_003" unique_id=857895633 instance=ExtResource("2_3hjdk")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto" type="Node3D" parent="S_1_desvan" unique_id=777096998]
+[node name="P_tablon_corto" type="Node3D" parent="S_1_desvan" unique_id=198583828]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7467092, -0.0006262362, 0.49947882)
 
 [node name="FloorPlanks014" type="Node3D" parent="S_1_desvan/P_tablon_corto" unique_id=814259523 instance=ExtResource("3_qr01k")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto_001" type="Node3D" parent="S_1_desvan" unique_id=1689729707]
+[node name="P_tablon_corto_001" type="Node3D" parent="S_1_desvan" unique_id=1101902054]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.24598275, -0.0007411167, 0.50275636)
 
 [node name="FloorPlanks014_2" type="Node3D" parent="S_1_desvan/P_tablon_corto_001" unique_id=1596866125 instance=ExtResource("3_qr01k")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto_002" type="Node3D" parent="S_1_desvan" unique_id=1854702538]
+[node name="P_tablon_corto_002" type="Node3D" parent="S_1_desvan" unique_id=507347930]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2511429, -0.0006463453, 0.49947625)
 
 [node name="FloorPlanks014_3" type="Node3D" parent="S_1_desvan/P_tablon_corto_002" unique_id=1720036866 instance=ExtResource("3_qr01k")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto_003" type="Node3D" parent="S_1_desvan" unique_id=1782770692]
+[node name="P_tablon_corto_003" type="Node3D" parent="S_1_desvan" unique_id=21074960]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7518685, -0.0007411167, 0.5027561)
 
 [node name="FloorPlanks014_4" type="Node3D" parent="S_1_desvan/P_tablon_corto_003" unique_id=1637761815 instance=ExtResource("3_qr01k")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo" type="Node3D" parent="S_1_desvan" unique_id=1641730398]
+[node name="P_borde_suelo" type="Node3D" parent="S_1_desvan" unique_id=1020907786]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.090375, 0.00020637363, 3.5602176)
 
 [node name="SB020" type="Node3D" parent="S_1_desvan/P_borde_suelo" unique_id=1217831866 instance=ExtResource("4_3igjc")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_001" type="Node3D" parent="S_1_desvan" unique_id=835520377]
+[node name="P_borde_suelo_001" type="Node3D" parent="S_1_desvan" unique_id=791940060]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.963722, 0.00031523407, 2.5786796)
 
 [node name="SB021" type="Node3D" parent="S_1_desvan/P_borde_suelo_001" unique_id=1066202068 instance=ExtResource("5_7wiu7")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_002" type="Node3D" parent="S_1_desvan" unique_id=115060049]
+[node name="P_borde_suelo_002" type="Node3D" parent="S_1_desvan" unique_id=1880124294]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.992006, -0.00013499707, -3.5501695)
 
 [node name="SB022" type="Node3D" parent="S_1_desvan/P_borde_suelo_002" unique_id=1683213327 instance=ExtResource("6_lmj57")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_003" type="Node3D" parent="S_1_desvan" unique_id=468428641]
+[node name="P_borde_suelo_003" type="Node3D" parent="S_1_desvan" unique_id=1736157933]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0904449, -0.00021761656, 3.0717535)
 
 [node name="SB023" type="Node3D" parent="S_1_desvan/P_borde_suelo_003" unique_id=627167417 instance=ExtResource("7_enur8")]
 
-[node name="P_borde_suelo_004" type="Node3D" parent="S_1_desvan" unique_id=1796199916]
+[node name="P_borde_suelo_004" type="Node3D" parent="S_1_desvan" unique_id=1610722760]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0903618, 0.0005271882, 0.9774307)
 
 [node name="SB024" type="Node3D" parent="S_1_desvan/P_borde_suelo_004" unique_id=1424411483 instance=ExtResource("8_28ec8")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_005" type="Node3D" parent="S_1_desvan" unique_id=254014677]
+[node name="P_borde_suelo_005" type="Node3D" parent="S_1_desvan" unique_id=1949042531]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0929326, 0.00069384277, -1.5932838)
 
 [node name="SB025" type="Node3D" parent="S_1_desvan/P_borde_suelo_005" unique_id=106456954 instance=ExtResource("9_vpfl7")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_006" type="Node3D" parent="S_1_desvan" unique_id=1019966983]
+[node name="P_borde_suelo_006" type="Node3D" parent="S_1_desvan" unique_id=375635813]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8977991, -0.00024091452, -2.5830503)
 
 [node name="SB026" type="Node3D" parent="S_1_desvan/P_borde_suelo_006" unique_id=723160604 instance=ExtResource("10_edlif")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_007" type="Node3D" parent="S_1_desvan" unique_id=230536355]
+[node name="P_borde_suelo_007" type="Node3D" parent="S_1_desvan" unique_id=2116115120]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1124843, 0.00017788261, 3.5336351)
 
 [node name="SB029" type="Node3D" parent="S_1_desvan/P_borde_suelo_007" unique_id=2124028262 instance=ExtResource("11_vnbjh")]
 
-[node name="P_borde_suelo_008" type="Node3D" parent="S_1_desvan" unique_id=973720129]
+[node name="P_borde_suelo_008" type="Node3D" parent="S_1_desvan" unique_id=10448666]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0802575, 0.00017787516, 2.5948074)
 
 [node name="SB029_2" type="Node3D" parent="S_1_desvan/P_borde_suelo_008" unique_id=619034181 instance=ExtResource("11_vnbjh")]
 
-[node name="P_borde_suelo_009" type="Node3D" parent="S_1_desvan" unique_id=1812513748]
+[node name="P_borde_suelo_009" type="Node3D" parent="S_1_desvan" unique_id=1040772325]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0687618, 0.00013937801, -0.4760022)
 
 [node name="SB030" type="Node3D" parent="S_1_desvan/P_borde_suelo_009" unique_id=466612634 instance=ExtResource("12_66g0h")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_010" type="Node3D" parent="S_1_desvan" unique_id=248678287]
+[node name="P_borde_suelo_010" type="Node3D" parent="S_1_desvan" unique_id=1503909754]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0705824, -0.00011342764, 3.5333989)
 
 [node name="SB033" type="Node3D" parent="S_1_desvan/P_borde_suelo_010" unique_id=945062105 instance=ExtResource("13_ep28n")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_borde_suelo_011" type="Node3D" parent="S_1_desvan" unique_id=741798003]
+[node name="P_borde_suelo_011" type="Node3D" parent="S_1_desvan" unique_id=79620122]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0601687, 0.00017787516, 2.5735054)
 
 [node name="SB034" type="Node3D" parent="S_1_desvan/P_borde_suelo_011" unique_id=1127040828 instance=ExtResource("14_uphc8")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=811549266]
+[node name="P_pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1275505895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0697178, 0.000567317, -1.6546451)
 
 [node name="SM_WallA" type="Node3D" parent="S_1_desvan/P_pared_fondo" unique_id=1429552958 instance=ExtResource("15_2b517")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=2091241116]
+[node name="P_pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=63887254]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.84246767, 0.010786533, -2.577354)
 
 [node name="SM_WallB" type="Node3D" parent="S_1_desvan/P_pared_lateral" unique_id=1495189481 instance=ExtResource("16_bitfq")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pared_rincon" type="Node3D" parent="S_1_desvan" unique_id=419142727]
+[node name="P_pared_rincon" type="Node3D" parent="S_1_desvan" unique_id=2062353881]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8736829, -0.009565115, -3.5857654)
 
 [node name="SM_WallC" type="Node3D" parent="S_1_desvan/P_pared_rincon" unique_id=457941888 instance=ExtResource("17_halre")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pilar__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1494226184]
+[node name="P_pilar__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1921699769]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.94019055, 0.14849806, -1.5690848)
 
 [node name="SM_Pillar" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo" unique_id=967600117 instance=ExtResource("18_tvcor")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_pilar__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=9313756]
+[node name="P_pilar__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=1485169970]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.939572, 0.14791155, -3.4778476)
 
 [node name="SM_Pillar_2" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo_001" unique_id=1903942582 instance=ExtResource("18_tvcor")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pilar__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=791531016]
+[node name="P_pilar__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=462899924]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9688332, 0.14691925, -3.4778214)
 
 [node name="SM_Pillar_3" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo_002" unique_id=821621470 instance=ExtResource("18_tvcor")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1612093727]
+[node name="P_rodapie__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1541011575]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.105432, 0.20135632, 0.8753265)
 
 [node name="SM_SkirtingBoardI" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo" unique_id=1658919876 instance=ExtResource("19_uiukm")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=178693887]
+[node name="P_rodapie__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=1749321060]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.125122, 0.20026557, -1.6172308)
 
 [node name="SM_SkirtingBoardJ" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_001" unique_id=913875243 instance=ExtResource("20_w6cd8")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=140955510]
+[node name="P_rodapie__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=1628111661]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.94072, 0.20003086, -3.5522869)
 
 [node name="SM_SkirtingBoardL" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_002" unique_id=167358633 instance=ExtResource("21_n0s73")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo_003" type="Node3D" parent="S_1_desvan" unique_id=1840025427]
+[node name="P_rodapie__after-pared_fondo_003" type="Node3D" parent="S_1_desvan" unique_id=315021126]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8798929, 0.20150632, -2.5144923)
 
 [node name="SM_SkirtingBoardTopA" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_003" unique_id=19766292 instance=ExtResource("22_f4d5k")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_moldura__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=118951678]
+[node name="P_moldura__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=1620635464]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.87989235, 4.537537, -2.5144925)
 
 [node name="SM_SkirtingBoardTopA_2" type="Node3D" parent="S_1_desvan/P_moldura__after-pared_lateral" unique_id=373724103 instance=ExtResource("22_f4d5k")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_moldura__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=1605905572]
+[node name="P_moldura__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=2096408408]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.911151, 4.5377097, -3.6002803)
 
 [node name="SM_SkirtingBoardTopA_3" type="Node3D" parent="S_1_desvan/P_moldura__after-pared_lateral_001" unique_id=628644665 instance=ExtResource("22_f4d5k")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_ventana__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=768556117]
+[node name="P_ventana__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1632363383]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44045454, 1.1160216, -1.5310721)
 
 [node name="SM_Window" type="Node3D" parent="S_1_desvan/P_ventana__after-pared_fondo" unique_id=817106103 instance=ExtResource("23_we7nu")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_cumbrera__after-pared_fondo__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=583328677]
+[node name="P_cumbrera__after-pared_fondo__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=1263434843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3207279, 4.5323234, 0.872412)
 
 [node name="CeilingSupport020_2" type="Node3D" parent="S_1_desvan/P_cumbrera__after-pared_fondo__after-pared_lateral" unique_id=633974243 instance=ExtResource("24_01olc")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_cumbrera__after-pared_fondo__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=1013006779]
+[node name="P_cumbrera__after-pared_fondo__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=2095429014]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.028233, 0.4498615, 0.87241215)
 
 [node name="CeilingSupport020" type="Node3D" parent="S_1_desvan/P_cumbrera__after-pared_fondo__after-pared_lateral_001" unique_id=1451702841 instance=ExtResource("24_01olc")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=1192578750]
+[node name="P_viga__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=844640359]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7327226, 0.6510503, 3.1338308)
 
 [node name="SM_CeilingSupportVerticalA" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera" unique_id=1942315800 instance=ExtResource("25_cusqw")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=465200882]
+[node name="P_viga__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=1850082956]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7328827, 0.6511202, 1.6361524)
 
 [node name="SM_CeilingSupportVerticalB" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_001" unique_id=375483299 instance=ExtResource("26_swu6i")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=1101073289]
+[node name="P_viga__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=734992276]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7327535, 0.6510279, 0.13881104)
 
 [node name="SM_CeilingSupportVerticalC" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_002" unique_id=1755383544 instance=ExtResource("27_3gy5x")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=2004322884]
+[node name="P_viga__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=515911849]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7328832, 0.6511202, -1.3588133)
 
 [node name="SM_CeilingSupportVerticalD" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_003" unique_id=220960952 instance=ExtResource("28_dt3en")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=988558631]
+[node name="P_poste__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=109244467]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952245, 0.15124857, 3.1473727)
 
 [node name="CeilingSupport014" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera" unique_id=1021618526 instance=ExtResource("29_ir5qu")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=242065139]
+[node name="P_poste__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=594745911]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952055, 0.15127909, 1.6470976)
 
 [node name="CeilingSupport015" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_001" unique_id=1620854712 instance=ExtResource("30_064yr")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=1081401980]
+[node name="P_poste__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=18593227]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952198, 0.15125364, 0.15060392)
 
 [node name="CeilingSupport016" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_002" unique_id=1290985445 instance=ExtResource("31_4lrua")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=470563638]
+[node name="P_poste__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=528779684]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952198, 0.15125364, -1.3426642)
 
 [node name="CeilingSupport017" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_003" unique_id=30324814 instance=ExtResource("32_riy3m")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_correa__after-viga" type="Node3D" parent="S_1_desvan" unique_id=452468562]
+[node name="P_correa__after-viga" type="Node3D" parent="S_1_desvan" unique_id=2099211474]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2513945, 1.432858, 0.98894644)
 
 [node name="CeilingSupport018" type="Node3D" parent="S_1_desvan/P_correa__after-viga" unique_id=983765413 instance=ExtResource("33_yg4o2")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_correa__after-viga_001" type="Node3D" parent="S_1_desvan" unique_id=532361796]
+[node name="P_correa__after-viga_001" type="Node3D" parent="S_1_desvan" unique_id=2093643347]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3234135, 2.7548141, 0.9877314)
 
 [node name="CeilingSupport021" type="Node3D" parent="S_1_desvan/P_correa__after-viga_001" unique_id=322199181 instance=ExtResource("34_yv2es")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tejado__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=364524619]
+[node name="P_tejado__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=1019643546]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7366885, 0.66342866, 0.858822)
 
 [node name="SM_Ceiling" type="Node3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=2137199872 instance=ExtResource("35_rtaut")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda" type="Node3D" parent="S_1_desvan" unique_id=981640781]
+[node name="P_bombilla__after-guirnalda" type="Node3D" parent="S_1_desvan" unique_id=1349875325]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194865, 2.1328251, 2.6371825)
 
 [node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda" unique_id=163083676 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_001" type="Node3D" parent="S_1_desvan" unique_id=346022306]
+[node name="P_bombilla__after-guirnalda_001" type="Node3D" parent="S_1_desvan" unique_id=1923345627]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194696, 1.95147, 2.2305384)
 
 [node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_001" unique_id=1857527545 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_002" type="Node3D" parent="S_1_desvan" unique_id=1278076857]
+[node name="P_bombilla__after-guirnalda_002" type="Node3D" parent="S_1_desvan" unique_id=258426341]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194859, 2.1204257, 1.8238941)
 
 [node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_002" unique_id=716973632 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_003" type="Node3D" parent="S_1_desvan" unique_id=710642974]
+[node name="P_bombilla__after-guirnalda_003" type="Node3D" parent="S_1_desvan" unique_id=1505146470]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194865, 2.1328251, 1.4172499)
 
 [node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_003" unique_id=319106 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_004" type="Node3D" parent="S_1_desvan" unique_id=67372422]
+[node name="P_bombilla__after-guirnalda_004" type="Node3D" parent="S_1_desvan" unique_id=2036036878]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194696, 1.95147, 1.0106058)
 
 [node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_004" unique_id=1143297234 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_005" type="Node3D" parent="S_1_desvan" unique_id=449292742]
+[node name="P_bombilla__after-guirnalda_005" type="Node3D" parent="S_1_desvan" unique_id=36544059]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194859, 2.1204257, 0.6039616)
 
 [node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_005" unique_id=781389969 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_006" type="Node3D" parent="S_1_desvan" unique_id=1276937739]
+[node name="P_bombilla__after-guirnalda_006" type="Node3D" parent="S_1_desvan" unique_id=104638470]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194865, 2.1328251, 0.19731739)
 
 [node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_006" unique_id=572385446 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_007" type="Node3D" parent="S_1_desvan" unique_id=1256145663]
+[node name="P_bombilla__after-guirnalda_007" type="Node3D" parent="S_1_desvan" unique_id=2100170909]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194696, 1.95147, -0.2093268)
 
 [node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_007" unique_id=449384220 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_008" type="Node3D" parent="S_1_desvan" unique_id=462498182]
+[node name="P_bombilla__after-guirnalda_008" type="Node3D" parent="S_1_desvan" unique_id=1111662795]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194859, 2.1204257, -0.61597097)
 
 [node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_008" unique_id=70706563 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_009" type="Node3D" parent="S_1_desvan" unique_id=199630328]
+[node name="P_bombilla__after-guirnalda_009" type="Node3D" parent="S_1_desvan" unique_id=1657917457]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9575136, 2.187825, -2.1158175)
 
 [node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_009" unique_id=307158038 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_010" type="Node3D" parent="S_1_desvan" unique_id=738148849]
+[node name="P_bombilla__after-guirnalda_010" type="Node3D" parent="S_1_desvan" unique_id=1097038083]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9575306, 2.0064697, -2.5224617)
 
 [node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_010" unique_id=1672125287 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_011" type="Node3D" parent="S_1_desvan" unique_id=1003523741]
+[node name="P_bombilla__after-guirnalda_011" type="Node3D" parent="S_1_desvan" unique_id=1257176075]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95751417, 2.1754255, -2.929106)
 
 [node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_011" unique_id=1281398833 instance=ExtResource("36_o16sm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado" type="Node3D" parent="S_1_desvan" unique_id=1341543095]
+[node name="P_guirnalda__after-tejado" type="Node3D" parent="S_1_desvan" unique_id=1199552368]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194954, 2.1522841, 2.2300336)
 
 [node name="SM_Cuerda" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado" unique_id=1755433613 instance=ExtResource("37_ysi06")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado_001" type="Node3D" parent="S_1_desvan" unique_id=1219543931]
+[node name="P_guirnalda__after-tejado_001" type="Node3D" parent="S_1_desvan" unique_id=960360997]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194954, 2.1522841, 1.0101011)
 
 [node name="SM_Cuerda2" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_001" unique_id=807509795 instance=ExtResource("37_ysi06")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado_002" type="Node3D" parent="S_1_desvan" unique_id=124785328]
+[node name="P_guirnalda__after-tejado_002" type="Node3D" parent="S_1_desvan" unique_id=835018007]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194954, 2.1522841, -0.20983148)
 
 [node name="SM_Cuerda3" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_002" unique_id=1493958934 instance=ExtResource("37_ysi06")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado_003" type="Node3D" parent="S_1_desvan" unique_id=1492658899]
+[node name="P_guirnalda__after-tejado_003" type="Node3D" parent="S_1_desvan" unique_id=293884467]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9575047, 2.207284, -2.5229664)
 
 [node name="SM_Cuerda" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_003" unique_id=2024809543 instance=ExtResource("37_ysi06")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_hucha__clave" type="Node3D" parent="S_1_desvan" unique_id=159000832]
+[node name="P_hucha__clave" type="Node3D" parent="S_1_desvan" unique_id=394823525]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0.60060173, 1.72)
 
 [node name="SM_Pig" type="Node3D" parent="S_1_desvan/P_hucha__clave" unique_id=11663786 instance=ExtResource("38_2ejki")]
 transform = Transform3D(-0.93969256, 0, -0.34202012, 0, 1, 0, 0.34202012, 0, -0.93969256, 0, 0, 0)
 
-[node name="Z_montaje_hucha__reward-hucha__monta" type="Node3D" parent="S_1_desvan" unique_id=47689028]
+[node name="Z_montaje_hucha__reward-hucha__monta" type="Node3D" parent="S_1_desvan" unique_id=939774879]
 transform = Transform3D(-0.9396926, 0, -0.34202015, 0, 1, 0, 0.34202015, 0, -0.9396926, 0.45, 0.15, 2.33)
 
-[node name="P_pata_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1001119231]
+[node name="P_pata_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=210285284]
 
-[node name="SM_PigA" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha" unique_id=462549410]
+[node name="SM_PigA" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha" unique_id=641778789]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.10399628, 0.05021268, -0.09694433)
 mesh = ExtResource("39_gwsxv")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_pata_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1516924688]
+[node name="P_pata_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=293264970]
 
-[node name="SM_PigB" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_001" unique_id=2027604471]
+[node name="SM_PigB" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_001" unique_id=880015134]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.10399628, 0.05021268, -0.09694433)
 mesh = ExtResource("41_2m8a5")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_pata_hucha__after-cuerpo_hucha_002" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=586953426]
+[node name="P_pata_hucha__after-cuerpo_hucha_002" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1736804213]
 
-[node name="SM_PigC" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_002" unique_id=1715173326]
+[node name="SM_PigC" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_002" unique_id=1339510176]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.10399628, 0.05021268, 0.08967066)
 mesh = ExtResource("42_6ap0d")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_pata_hucha__after-cuerpo_hucha_003" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=929164537]
+[node name="P_pata_hucha__after-cuerpo_hucha_003" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=481679979]
 
-[node name="SM_PigD" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_003" unique_id=2143743584]
+[node name="SM_PigD" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_003" unique_id=539379976]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.10399628, 0.05021268, 0.08967066)
 mesh = ExtResource("43_ionyr")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1746827825]
+[node name="P_cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=2008495068]
 
-[node name="SM_PigE" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cuerpo_hucha" unique_id=320565461]
+[node name="SM_PigE" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cuerpo_hucha" unique_id=929914823]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.16805977, -0.006011009)
 mesh = ExtResource("44_4pwd0")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_oreja_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=311587189]
+[node name="P_oreja_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1791146170]
 
-[node name="SM_PigF" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha" unique_id=452152353]
+[node name="SM_PigF" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha" unique_id=552995194]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.11575508, 0.25757962, -0.07402706)
 mesh = ExtResource("45_mstxw")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_oreja_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1512507765]
+[node name="P_oreja_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=555562289]
 
-[node name="SM_PigG" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha_001" unique_id=1739228983]
+[node name="SM_PigG" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha_001" unique_id=2009586024]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.11575508, 0.25757962, -0.07402706)
 mesh = ExtResource("46_ndskd")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_hocico_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=349121619]
+[node name="P_hocico_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=828361382]
 
-[node name="SM_PigH" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_hocico_hucha__after-cuerpo_hucha" unique_id=346096122]
+[node name="SM_PigH" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_hocico_hucha__after-cuerpo_hucha" unique_id=597365422]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.13957983, -0.17983961)
 mesh = ExtResource("47_dw7sk")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_ojo_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=360937364]
+[node name="P_ojo_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1500389485]
 
-[node name="SM_PigI" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha" unique_id=1356405011]
+[node name="SM_PigI" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha" unique_id=790061354]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.062137604, 0.19284314, -0.17005444)
 mesh = ExtResource("48_do2jc")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_ojo_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1513838847]
+[node name="P_ojo_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1165363424]
 
-[node name="SM_PigJ" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha_001" unique_id=1213751616]
+[node name="SM_PigJ" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha_001" unique_id=111502279]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.062137604, 0.19284314, -0.17005444)
 mesh = ExtResource("49_f0uqf")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_corona_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=62369626]
+[node name="P_corona_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1078715241]
 
-[node name="SM_PigK" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_corona_hucha__after-cuerpo_hucha" unique_id=498584236]
+[node name="SM_PigK" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_corona_hucha__after-cuerpo_hucha" unique_id=678267033]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.31757492, -0.10401964)
 mesh = ExtResource("50_r1hpv")
 surface_material_override/0 = ExtResource("40_7604b")
 
-[node name="P_cola_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=32088266]
+[node name="P_cola_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=331683631]
 
-[node name="SM_PigL" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cola_hucha__after-cuerpo_hucha" unique_id=1090244077]
+[node name="SM_PigL" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cola_hucha__after-cuerpo_hucha" unique_id=1459933460]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.14287472, 0.18067503)
 mesh = ExtResource("51_4a1ox")
 surface_material_override/0 = ExtResource("40_7604b")
@@ -899,186 +899,186 @@ transform = Transform3D(0.99026805, 0, 0.1391731, 0, 1, 0, -0.1391731, 0, 0.9902
 [node name="SM_CoverBoxB" type="Node3D" parent="BaulViejo" unique_id=8470688 instance=ExtResource("53_r2af7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3303037, 0)
 
-[node name="S_2_infancia" type="Node3D" parent="." unique_id=855195596]
+[node name="S_2_infancia" type="Node3D" parent="." unique_id=466689342]
 
-[node name="LuzZona" type="OmniLight3D" parent="S_2_infancia" unique_id=496741266]
+[node name="LuzZona" type="OmniLight3D" parent="S_2_infancia" unique_id=159445280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 2.6, 1.6)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 0.8
 omni_range = 3.6
 omni_attenuation = 1.2
 
-[node name="P_caja_musica__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1694053805]
+[node name="P_caja_musica__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1882886008]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.41021755, 0.97400576, 1.6934576)
 
 [node name="SM_MusicBox" type="Node3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1667266757 instance=ExtResource("54_hldjf")]
 transform = Transform3D(-0.32556808, 0, -0.94551855, 0, 1, 0, 0.94551855, 0, -0.32556808, 0, 0, 0)
 
-[node name="P_cajon_comoda__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1858661054]
+[node name="P_cajon_comoda__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=553080732]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53141993, 0.31466538, 1.9121126)
 
 [node name="SM_ComodaB" type="Node3D" parent="S_2_infancia/P_cajon_comoda__after-comoda_infantil" unique_id=716175507 instance=ExtResource("55_ne16m")]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, 0, 0, 0)
 
-[node name="P_cajon_comoda__after-comoda_infantil_001" type="Node3D" parent="S_2_infancia" unique_id=1599218031]
+[node name="P_cajon_comoda__after-comoda_infantil_001" type="Node3D" parent="S_2_infancia" unique_id=649232096]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53141993, 0.5079654, 1.9121126)
 
 [node name="SM_ComodaC" type="Node3D" parent="S_2_infancia/P_cajon_comoda__after-comoda_infantil_001" unique_id=1403052313 instance=ExtResource("56_4n4t0")]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, 0, 0, 0)
 
-[node name="P_cajon_comoda__after-comoda_infantil_002" type="Node3D" parent="S_2_infancia" unique_id=1074753053]
+[node name="P_cajon_comoda__after-comoda_infantil_002" type="Node3D" parent="S_2_infancia" unique_id=2113630711]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53141993, 0.7012654, 1.9121126)
 
 [node name="SM_ComodaD" type="Node3D" parent="S_2_infancia/P_cajon_comoda__after-comoda_infantil_002" unique_id=1995425993 instance=ExtResource("57_t2ujg")]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, 0, 0, 0)
 
-[node name="P_comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=908825394]
+[node name="P_comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=396918236]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53141993, 0.14796537, 1.9121126)
 
 [node name="SM_ComodaA" type="Node3D" parent="S_2_infancia/P_comoda_infantil" unique_id=184999273 instance=ExtResource("58_65or3")]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, 0, 0, 0)
 
-[node name="P_dibujo__after-caja_musica" type="Node3D" parent="S_2_infancia" unique_id=1659378435]
+[node name="P_dibujo__after-caja_musica" type="Node3D" parent="S_2_infancia" unique_id=821605697]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.82, 1.2, -1.583)
 
 [node name="Dibujo_t_draw_03" type="Node3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=29514261 instance=ExtResource("59_e055e")]
 
-[node name="P_tele" type="Node3D" parent="S_2_infancia" unique_id=120436480]
+[node name="P_tele" type="Node3D" parent="S_2_infancia" unique_id=527471391]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3910263, 0.14710224, 2.5923252)
 
 [node name="SM_TV" type="Node3D" parent="S_2_infancia/P_tele" unique_id=241046827 instance=ExtResource("60_ajt43")]
 transform = Transform3D(-0.81915206, 0, -0.57357645, 0, 1, 0, 0.57357645, 0, -0.81915206, 0, 0, 0)
 
-[node name="P_cama_gato" type="Node3D" parent="S_2_infancia" unique_id=1462972423]
+[node name="P_cama_gato" type="Node3D" parent="S_2_infancia" unique_id=734886350]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.565902, 0.12740253, -1.103141)
 
 [node name="SM_CatBed" type="Node3D" parent="S_2_infancia/P_cama_gato" unique_id=1214750148 instance=ExtResource("61_01gxa")]
 transform = Transform3D(-0.81915206, 0, -0.57357645, 0, 1, 0, 0.57357645, 0, -0.81915206, 0, 0, 0)
 
-[node name="P_arenero" type="Node3D" parent="S_2_infancia" unique_id=1079467456]
+[node name="P_arenero" type="Node3D" parent="S_2_infancia" unique_id=320244900]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4318132, 0.12783308, 0.72330755)
 
 [node name="SM_LitterBox" type="Node3D" parent="S_2_infancia/P_arenero" unique_id=646184163 instance=ExtResource("62_oyp4u")]
 transform = Transform3D(0.35836798, 0, 0.9335804, 0, 1, 0, -0.9335804, 0, 0.35836798, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja" type="Node3D" parent="S_2_infancia" unique_id=1637979030]
+[node name="P_tapa_caja__after-caja" type="Node3D" parent="S_2_infancia" unique_id=1674524573]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4837835, 0.47689462, -1.0267427)
 
 [node name="SM_CoverBoxA" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja" unique_id=1549943990 instance=ExtResource("63_3oiw7")]
 transform = Transform3D(-0.42261833, 0, 0.90630776, 0, 1, 0, -0.90630776, 0, -0.42261833, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja_001" type="Node3D" parent="S_2_infancia" unique_id=1736593021]
+[node name="P_tapa_caja__after-caja_001" type="Node3D" parent="S_2_infancia" unique_id=641069041]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7631059, 0.30520535, -0.6971164)
 
 [node name="SM_CoverBoxE" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_001" unique_id=706436279 instance=ExtResource("64_orlb4")]
 transform = Transform3D(-0.9396926, 0, 0.3420202, 0, 1, 0, -0.3420202, 0, -0.9396926, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja_002" type="Node3D" parent="S_2_infancia" unique_id=1692306873]
+[node name="P_tapa_caja__after-caja_002" type="Node3D" parent="S_2_infancia" unique_id=1706362308]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.488407, 0.82351446, -1.1274493)
 
 [node name="SM_CoverBoxD" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_002" unique_id=476129678 instance=ExtResource("65_gw47t")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0, 0, 0)
 
-[node name="P_caja_encima__after-tapa_caja" type="Node3D" parent="S_2_infancia" unique_id=344906086]
+[node name="P_caja_encima__after-tapa_caja" type="Node3D" parent="S_2_infancia" unique_id=525185132]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.488407, 0.58194214, -1.1274493)
 
 [node name="SM_BoxD_2" type="Node3D" parent="S_2_infancia/P_caja_encima__after-tapa_caja" unique_id=1388488078 instance=ExtResource("66_2obva")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0, 0, 0)
 
-[node name="P_caja" type="Node3D" parent="S_2_infancia" unique_id=141777858]
+[node name="P_caja" type="Node3D" parent="S_2_infancia" unique_id=337954815]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4837835, 0.14659081, -1.0267427)
 
 [node name="SM_BoxA" type="Node3D" parent="S_2_infancia/P_caja" unique_id=1750570662 instance=ExtResource("67_fbqlq")]
 transform = Transform3D(-0.42261833, 0, 0.90630776, 0, 1, 0, -0.90630776, 0, -0.42261833, 0, 0, 0)
 
-[node name="P_caja_001" type="Node3D" parent="S_2_infancia" unique_id=2140408167]
+[node name="P_caja_001" type="Node3D" parent="S_2_infancia" unique_id=1858436861]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7631059, 0.14797667, -0.6971164)
 
 [node name="SM_BoxE" type="Node3D" parent="S_2_infancia/P_caja_001" unique_id=813211269 instance=ExtResource("68_ltib5")]
 transform = Transform3D(-0.9396926, 0, 0.3420202, 0, 1, 0, -0.3420202, 0, -0.9396926, 0, 0, 0)
 
-[node name="P_caja_002" type="Node3D" parent="S_2_infancia" unique_id=380890921]
+[node name="P_caja_002" type="Node3D" parent="S_2_infancia" unique_id=625174986]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1757374, 0.1508331, -0.4879461)
 
 [node name="SM_BoxD" type="Node3D" parent="S_2_infancia/P_caja_002" unique_id=1431071284 instance=ExtResource("66_2obva")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0, 0, 0)
 
-[node name="P_caja_003" type="Node3D" parent="S_2_infancia" unique_id=922042443]
+[node name="P_caja_003" type="Node3D" parent="S_2_infancia" unique_id=987179417]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.033589, 0.16209574, -0.79482657)
 
 [node name="SM_BoxD_3" type="Node3D" parent="S_2_infancia/P_caja_003" unique_id=699328653 instance=ExtResource("66_2obva")]
 transform = Transform3D(-0.30901703, 0, 0.9510565, 0, 1, 0, -0.9510565, 0, -0.30901703, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja_003" type="Node3D" parent="S_2_infancia" unique_id=1294151072]
+[node name="P_tapa_caja__after-caja_003" type="Node3D" parent="S_2_infancia" unique_id=1621443314]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.72, 0.30722868, 3.28)
 
 [node name="SM_CoverBoxE" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_003" unique_id=1417456647 instance=ExtResource("64_orlb4")]
 transform = Transform3D(0.99619466, 0, -0.08715576, 0, 1, 0, 0.08715576, 0, 0.99619466, 0, 0, 0)
 
-[node name="P_caja_004" type="Node3D" parent="S_2_infancia" unique_id=1631530692]
+[node name="P_caja_004" type="Node3D" parent="S_2_infancia" unique_id=169107236]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.72, 0.15, 3.28)
 
 [node name="SM_BoxE" type="Node3D" parent="S_2_infancia/P_caja_004" unique_id=370961736 instance=ExtResource("68_ltib5")]
 transform = Transform3D(0.99619466, 0, -0.08715576, 0, 1, 0, 0.08715576, 0, 0.99619466, 0, 0, 0)
 
-[node name="BaulJuguetes" type="Node3D" parent="S_2_infancia" unique_id=1879494165]
+[node name="BaulJuguetes" type="Node3D" parent="S_2_infancia" unique_id=2113953175]
 
-[node name="OR_tapa_baul__x" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1364004518]
+[node name="OR_tapa_baul__x" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1507519476]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 0.39157236, 1.6868051)
 
-[node name="P_tapa_caja__after-caja_004" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=1311857312]
+[node name="P_tapa_caja__after-caja_004" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=2034035767]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 0.39157236, 1.92)
 
 [node name="SM_CoverBoxC" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x/P_tapa_caja__after-caja_004" unique_id=879774568 instance=ExtResource("69_7vpkh")]
 transform = Transform3D(0.9396926, 0, 0.34202015, 0, 1, 0, -0.34202015, 0, 0.9396926, 2.55, -0.39157236, -1.6868051)
 
-[node name="P_caja_005" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=743482697]
+[node name="P_caja_005" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1039902884]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 0.15, 1.92)
 
 [node name="SM_BoxC" type="Node3D" parent="S_2_infancia/BaulJuguetes/P_caja_005" unique_id=991370047 instance=ExtResource("70_un8xc")]
 transform = Transform3D(0.9396926, 0, 0.34202015, 0, 1, 0, -0.34202015, 0, 0.9396926, 0, 0, 0)
 
-[node name="H_tebeo" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=19741345]
+[node name="H_tebeo" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=2064595073]
 transform = Transform3D(0.9396926, 0, 0.34202012, 0, 1, 0, -0.34202012, 0, 0.9396926, -2.55, 0.19000001, 1.9799998)
 
 [node name="Modelo" parent="S_2_infancia/BaulJuguetes/H_tebeo" unique_id=1276205640 instance=ExtResource("71_ltkd7")]
 
-[node name="C_dibujo_casa" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=145999417]
+[node name="C_dibujo_casa" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1295278744]
 transform = Transform3D(1, 0, 0, 0, 0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, -2.55, 0.37157235, 1.7368051)
 metadata/color = Color(0.9059058, 0.5589696, 0.48752397, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=1720447649]
+[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=754426695]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08097168, 0)
 mesh = SubResource("BoxMesh_q4hwg")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=1459065464]
+[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=1289652467]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08097168, 0.0021)
 mesh = SubResource("QuadMesh_0vkpb")
 
-[node name="C_dibujo_amigas__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1697809347]
+[node name="C_dibujo_amigas__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=42019576]
 transform = Transform3D(-0.9396926, -0.3420202, -1.4950178e-08, 0, -4.371139e-08, 1, -0.3420202, 0.9396926, 4.1075268e-08, -0.41142, 0.163, 2.362176)
 metadata/color = Color(0.8525677, 0.6557642, 0.2329578, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=2072010724]
+[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=1512680227]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
 mesh = SubResource("BoxMesh_d0hwl")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=10853112]
+[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=68910342]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.0021)
 mesh = SubResource("QuadMesh_jneto")
 
-[node name="P_peluche__clave" type="Node3D" parent="S_2_infancia" unique_id=1655426168]
+[node name="P_peluche__clave" type="Node3D" parent="S_2_infancia" unique_id=1656022988]
 transform = Transform3D(0.90630776, 0, 0.42261827, 0, 1, 0, -0.42261827, 0, 0.90630776, -1.45, 0.15, 2.3)
 
-[node name="Nutria" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=214565903]
+[node name="Nutria" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=11978495]
 transform = Transform3D(0.393701, 0, 0, 0, 0, 0.393701, 0, -0.393701, 0, 0.029649734, 0.22137815, -0.012421608)
 mesh = SubResource("ArrayMesh_enfik")
 surface_material_override/0 = ExtResource("74_uq0gq")
 
-[node name="P_tebeo" type="Node3D" parent="S_2_infancia" unique_id=1334608200]
+[node name="P_tebeo" type="Node3D" parent="S_2_infancia" unique_id=733516009]
 transform = Transform3D(0.25881907, 0, 0.9659258, 0, 1, 0, -0.9659258, 0, 0.25881907, -1.19, 0.15, 2.12)
 
-[node name="Modelo" parent="S_2_infancia/P_tebeo" unique_id=1170401203 instance=ExtResource("71_ltkd7")]
+[node name="Modelo" parent="S_2_infancia/P_tebeo" unique_id=318463157 instance=ExtResource("71_ltkd7")]
 
 [node name="T_dibujos" type="Node3D" parent="S_2_infancia" unique_id=1892349463]
 
@@ -1094,168 +1094,168 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005046725, -0.20081416, 2
 [node name="SM_Bombilla3" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=2009430347 instance=ExtResource("36_o16sm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.499267e-06)
 
-[node name="Pinza1" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=165709137]
+[node name="Pinza1" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=999580063]
 transform = Transform3D(0.9975641, 0.06975647, 0, -0.06975647, 0.9975641, 0, 0, 0, 1, 1.355471, 3.1819365, -3.4600143)
 
-[node name="Pinza2" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=599349163]
+[node name="Pinza2" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=800073959]
 transform = Transform3D(0.9986295, -0.05233596, 0, 0.05233596, 0.9986295, 0, 0, 0, 1, 1.755471, 2.7409418, -3.4599755)
 
-[node name="Pinza3" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=849358667]
+[node name="Pinza3" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1249097386]
 transform = Transform3D(0.99939084, 0.034899496, 0, -0.034899496, 0.99939084, 0, 0, 0, 1, 2.155471, 2.7358942, -3.459975)
 
-[node name="Pinza4" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=511723682]
+[node name="Pinza4" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=605148137]
 transform = Transform3D(0.9961947, -0.08715574, 0, 0.08715574, 0.9961947, 0, 0, 0, 1, 2.555471, 3.1867282, -3.4600146)
 
-[node name="S_3_adolescencia" type="Node3D" parent="." unique_id=1795287036]
+[node name="S_3_adolescencia" type="Node3D" parent="." unique_id=1765212871]
 
-[node name="LuzZona" type="OmniLight3D" parent="S_3_adolescencia" unique_id=504673443]
+[node name="LuzZona" type="OmniLight3D" parent="S_3_adolescencia" unique_id=219188963]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 2.8, -0.2)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 0.8
 omni_range = 3.6
 omni_attenuation = 1.2
 
-[node name="P_alfombra_adolescencia" type="Node3D" parent="S_3_adolescencia" unique_id=9674470]
+[node name="P_alfombra_adolescencia" type="Node3D" parent="S_3_adolescencia" unique_id=1284853934]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.15, 0.55)
 
 [node name="SM_Rug" type="Node3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=319582618 instance=ExtResource("75_l0vfy")]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0, 0, 0)
 
-[node name="Cajones" type="Node3D" parent="S_3_adolescencia" unique_id=517979705]
+[node name="Cajones" type="Node3D" parent="S_3_adolescencia" unique_id=296355880]
 
-[node name="OD_cajon_escritorio" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1853469415]
+[node name="OD_cajon_escritorio" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=298029386]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.6000761, -1.1421558)
 
-[node name="P_cajon__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=1073300563]
+[node name="P_cajon__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=1498910588]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.6000761, -1.1421558)
 
 [node name="SM_DeskC" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/P_cajon__after-escritorio" unique_id=1392942947 instance=ExtResource("76_x7r8p")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.05668357, -0.6000761, 1.1421558)
 
-[node name="H_solicitud" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=1725557469]
+[node name="H_solicitud" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=1549900309]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15838021, 0)
 
-[node name="Folio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud" unique_id=495930439]
+[node name="Folio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud" unique_id=523258589]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 
-[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=2105597930]
+[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1111857642]
 mesh = SubResource("BoxMesh_igogf")
 
-[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=103927578]
+[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1021244906]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0.004)
 mesh = SubResource("TextMesh_m4jve")
 
-[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1300934981]
+[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1065398401]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0.003)
 mesh = SubResource("BoxMesh_3oeho")
 
-[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1912451666]
+[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1307889320]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0.003)
 mesh = SubResource("BoxMesh_88hbl")
 
-[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=299308412]
+[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=2146659788]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07, 0.003)
 mesh = SubResource("BoxMesh_f2yoh")
 
-[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1202807023]
+[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=417770523]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.095, 0.003)
 mesh = SubResource("BoxMesh_xi0jo")
 
-[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1651253665]
+[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud/Folio" unique_id=1371922271]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0.006)
 mesh = SubResource("BoxMesh_pvgxa")
 
-[node name="P_cajon_pomo__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1444748662]
+[node name="P_cajon_pomo__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=380715263]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.3886761, -1.1421558)
 
 [node name="SM_DeskD" type="Node3D" parent="S_3_adolescencia/Cajones/P_cajon_pomo__after-escritorio" unique_id=908548972 instance=ExtResource("77_lscnm")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_cajon__after-escritorio_001" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=2099251456]
+[node name="P_cajon__after-escritorio_001" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1255603910]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.17727609, -1.1421558)
 
 [node name="SM_DeskC2" type="Node3D" parent="S_3_adolescencia/Cajones/P_cajon__after-escritorio_001" unique_id=463372444 instance=ExtResource("76_x7r8p")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_lapiz__after-bote" type="Node3D" parent="S_3_adolescencia" unique_id=1390496176]
+[node name="P_lapiz__after-bote" type="Node3D" parent="S_3_adolescencia" unique_id=611949090]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07780294, 0.91394615, -1.2937421)
 
 [node name="SM_BrushA" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote" unique_id=551136974 instance=ExtResource("78_aeotu")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_lapiz__after-bote_001" type="Node3D" parent="S_3_adolescencia" unique_id=1232995305]
+[node name="P_lapiz__after-bote_001" type="Node3D" parent="S_3_adolescencia" unique_id=494002659]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07030294, 0.91394615, -1.3067324)
 
 [node name="SM_BrushB" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote_001" unique_id=313310690 instance=ExtResource("79_u80nw")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_lapiz__after-bote_002" type="Node3D" parent="S_3_adolescencia" unique_id=928214129]
+[node name="P_lapiz__after-bote_002" type="Node3D" parent="S_3_adolescencia" unique_id=1807992473]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06280294, 0.91394615, -1.3197228)
 
 [node name="SM_BrushC" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote_002" unique_id=655048336 instance=ExtResource("80_c4r3m")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_bote__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1465803114]
+[node name="P_bote__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1810361910]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07030294, 0.8939462, -1.3067324)
 
 [node name="SM_Vase" type="Node3D" parent="S_3_adolescencia/P_bote__after-escritorio" unique_id=713109129 instance=ExtResource("81_ppyea")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_tapete__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=2822963]
+[node name="P_tapete__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=669324756]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35693163, 0.89397955, -1.1553416)
 
 [node name="SM_CoverDesk" type="Node3D" parent="S_3_adolescencia/P_tapete__after-escritorio" unique_id=1270465722 instance=ExtResource("82_gjvap")]
 transform = Transform3D(0.17364822, 0, 0.9848077, 0, 1, 0, -0.9848077, 0, 0.17364822, 0, 0, 0)
 
-[node name="P_escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=2145262664]
+[node name="P_escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1173786141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44168356, 0.15147609, -1.2061558)
 
 [node name="SM_DeskA" type="Node3D" parent="S_3_adolescencia/P_escritorio" unique_id=1169492705 instance=ExtResource("83_4tym3")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_mp3__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=2095549037]
+[node name="P_mp3__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1937577222]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8523371, 0.8939389, -1.0956372)
 
 [node name="SM_MP3" type="Node3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1656440081 instance=ExtResource("84_pf02g")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="Z_montaje_mp3__reward-mp3__monta" type="Node3D" parent="S_3_adolescencia" unique_id=1040988395]
+[node name="Z_montaje_mp3__reward-mp3__monta" type="Node3D" parent="S_3_adolescencia" unique_id=145303899]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.42, 0.175, 0.55)
 
-[node name="P_carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=214065267]
+[node name="P_carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1286796493]
 
-[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_carcasa_mp3" unique_id=780132150]
+[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_carcasa_mp3" unique_id=1173936601]
 transform = Transform3D(-1.4494536, 0.8368426, 0, 0, 0, 1.673685, 0.8368426, 1.4494536, 0, 0.064995766, 0.01834619, -0.027768835)
 mesh = ExtResource("85_hhww5")
 surface_material_override/0 = ExtResource("86_2667d")
 
-[node name="P_rueda_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1088145747]
+[node name="P_rueda_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=287458291]
 
-[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_rueda_mp3__after-carcasa_mp3" unique_id=450486118]
+[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_rueda_mp3__after-carcasa_mp3" unique_id=1594126571]
 transform = Transform3D(-1.4494536, 0.8368426, 0, 0, 0, 1.673685, 0.8368426, 1.4494536, 0, 0.064995766, 0.01834619, -0.027768835)
 mesh = ExtResource("87_n3avl")
 surface_material_override/0 = ExtResource("86_2667d")
 
-[node name="P_auriculares_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1538725084]
+[node name="P_auriculares_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1433057907]
 
-[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_auriculares_mp3__after-carcasa_mp3" unique_id=6705670]
+[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_auriculares_mp3__after-carcasa_mp3" unique_id=586131936]
 transform = Transform3D(-1.4494536, 0.8368426, 0, 0, 0, 1.673685, 0.8368426, 1.4494536, 0, 0.064995766, 0.01834619, -0.027768835)
 mesh = ExtResource("88_vb874")
 surface_material_override/0 = ExtResource("86_2667d")
 
-[node name="P_camara__clave__flash" type="Node3D" parent="S_3_adolescencia" unique_id=1271516607]
+[node name="P_camara__clave__flash" type="Node3D" parent="S_3_adolescencia" unique_id=160190794]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05191944, 0.92448175, -1.1959541)
 
 [node name="SM_Polaroid" type="Node3D" parent="S_3_adolescencia/P_camara__clave__flash" unique_id=611804780 instance=ExtResource("89_ovwqp")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_lampara__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1007669066]
+[node name="P_lampara__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=532649606]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.43, 0.15, -1.15)
 
 [node name="SM_Lamp" type="Node3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1707324944 instance=ExtResource("90_g1ijn")]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0, 0, 0)
 
-[node name="Luz" type="SpotLight3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=316770766]
+[node name="Luz" type="SpotLight3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=2068021549]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1.648895, 0)
 light_color = Color(1, 0.8, 0.55, 1)
 light_energy = 1.1
@@ -1263,101 +1263,101 @@ spot_range = 1.9
 spot_attenuation = 1.2
 spot_angle = 55.0
 
-[node name="P_silla" type="Node3D" parent="S_3_adolescencia" unique_id=1112170621]
+[node name="P_silla" type="Node3D" parent="S_3_adolescencia" unique_id=1814616520]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.61, 0.15, -0.55)
 
 [node name="Modelo" parent="S_3_adolescencia/P_silla" unique_id=595962120 instance=ExtResource("91_4qh3j")]
 
-[node name="P_altavoz__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=692165363]
+[node name="P_altavoz__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=527234252]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.8964579, -1.42)
 
 [node name="Modelo" parent="S_3_adolescencia/P_altavoz__after-escritorio" unique_id=1355233984 instance=ExtResource("92_direk")]
 
-[node name="P_libro__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1373871062]
+[node name="P_libro__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1347744881]
 transform = Transform3D(0.9848077, 0, 0.17364818, 0, 1, 0, -0.17364818, 0, 0.9848077, -0.55, 0.8964579, -1.4)
 
 [node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio" unique_id=163154563 instance=ExtResource("93_yq7h2")]
 
-[node name="P_libro__after-escritorio_001" type="Node3D" parent="S_3_adolescencia" unique_id=681531005]
+[node name="P_libro__after-escritorio_001" type="Node3D" parent="S_3_adolescencia" unique_id=1632804434]
 transform = Transform3D(0.9945219, 0, -0.104528464, 0, 1, 0, 0.104528464, 0, 0.9945219, -0.55, 0.93145794, -1.4)
 
-[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio_001" unique_id=1335108375 instance=ExtResource("93_yq7h2")]
+[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio_001" unique_id=1354777583 instance=ExtResource("93_yq7h2")]
 
-[node name="P_solicitud__after-mp3" type="Node3D" parent="S_3_adolescencia" unique_id=1157837704]
+[node name="P_solicitud__after-mp3" type="Node3D" parent="S_3_adolescencia" unique_id=639154149]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 2.03, -1.54)
 
-[node name="Folio" type="Node3D" parent="S_3_adolescencia/P_solicitud__after-mp3" unique_id=1137568590]
+[node name="Folio" type="Node3D" parent="S_3_adolescencia/P_solicitud__after-mp3" unique_id=1825598293]
 
-[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=1680292147]
+[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=682310859]
 mesh = SubResource("BoxMesh_wpbqe")
 
-[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=1724092000]
+[node name="Titulo" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=2029143316]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.045, 0.004)
 mesh = SubResource("TextMesh_d8nkf")
 
-[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=203563738]
+[node name="Linea0" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=2117643]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0.003)
 mesh = SubResource("BoxMesh_lv2he")
 
-[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=492925763]
+[node name="Linea1" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=1560593102]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0.003)
 mesh = SubResource("BoxMesh_0goo8")
 
-[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=1564055257]
+[node name="Linea2" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=1428961764]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07, 0.003)
 mesh = SubResource("BoxMesh_stqg7")
 
-[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=1836696741]
+[node name="Linea3" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=232959273]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.095, 0.003)
 mesh = SubResource("BoxMesh_g1e84")
 
-[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=375957989]
+[node name="Chincheta" type="MeshInstance3D" parent="S_3_adolescencia/P_solicitud__after-mp3/Folio" unique_id=173645495]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0.006)
 mesh = SubResource("BoxMesh_mlj64")
 
-[node name="C_dibujo_monstruo__after-silla" type="Node3D" parent="S_3_adolescencia" unique_id=11452022]
+[node name="C_dibujo_monstruo__after-silla" type="Node3D" parent="S_3_adolescencia" unique_id=1099210293]
 transform = Transform3D(0.9659258, -0.25881904, -1.131334e-08, 0, -4.371139e-08, 1, -0.25881904, -0.9659258, -4.222196e-08, -0.59000003, 0.18, -0.54162246)
 metadata/color = Color(0.039688006, 0.61007863, 0.70687944, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=1113059654]
+[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=1638335657]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
 mesh = SubResource("BoxMesh_7pp1a")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=318908363]
+[node name="Dibujo" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=880875035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.0021)
 mesh = SubResource("QuadMesh_a22is")
 
-[node name="CajaCamara" type="Node3D" parent="S_3_adolescencia" unique_id=1752477255]
+[node name="CajaCamara" type="Node3D" parent="S_3_adolescencia" unique_id=726891088]
 
-[node name="OR_tapa_caja__x" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=1415494428]
+[node name="OR_tapa_caja__x" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=649620917]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000012, 0.4803037, 0.42134604)
 
-[node name="P_tapa_camara__after-caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x" unique_id=1711117138]
+[node name="P_tapa_camara__after-caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x" unique_id=784341229]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000018, 0.4803037, 0.71999997)
 
 [node name="SM_CoverBoxB" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x/P_tapa_camara__after-caja_camara" unique_id=1105069142 instance=ExtResource("53_r2af7")]
 transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, -0.37000012, -0.4803037, -0.421346)
 
-[node name="P_caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=1448166223]
+[node name="P_caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=1196366634]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000018, 0.15, 0.71999997)
 
 [node name="SM_BoxB" type="Node3D" parent="S_3_adolescencia/CajaCamara/P_caja_camara" unique_id=912088893 instance=ExtResource("52_x44wv")]
 transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 0, 0, 0)
 
-[node name="H_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=79024453]
+[node name="H_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=879356666]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000012, 0.18, 0.72)
 
 [node name="SM_Polaroid" type="Node3D" parent="S_3_adolescencia/CajaCamara/H_camara" unique_id=492476051 instance=ExtResource("89_ovwqp")]
 
-[node name="S_4_adultez" type="Node3D" parent="." unique_id=498221112]
+[node name="S_4_adultez" type="Node3D" parent="." unique_id=46805949]
 
-[node name="P_lampara_pie" type="Node3D" parent="S_4_adultez" unique_id=1056581721]
+[node name="P_lampara_pie" type="Node3D" parent="S_4_adultez" unique_id=1510240086]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.489753, 0.15025853, -3.1717913)
 
 [node name="SM_Lamp" type="Node3D" parent="S_4_adultez/P_lampara_pie" unique_id=1737861739 instance=ExtResource("90_g1ijn")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="Luz" type="SpotLight3D" parent="S_4_adultez/P_lampara_pie" unique_id=609061420]
+[node name="Luz" type="SpotLight3D" parent="S_4_adultez/P_lampara_pie" unique_id=536815820]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1.648895, 0)
 light_color = Color(1, 0.8, 0.55, 1)
 light_energy = 1.1
@@ -1365,70 +1365,70 @@ spot_range = 1.9
 spot_attenuation = 1.2
 spot_angle = 55.0
 
-[node name="LuzZona" type="OmniLight3D" parent="S_4_adultez" unique_id=94027894]
+[node name="LuzZona" type="OmniLight3D" parent="S_4_adultez" unique_id=1832612527]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.489753, 1.6891536, -3.1717913)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 0.8
 omni_range = 3.6
 omni_attenuation = 1.2
 
-[node name="P_taburete" type="Node3D" parent="S_4_adultez" unique_id=434870706]
+[node name="P_taburete" type="Node3D" parent="S_4_adultez" unique_id=1494792623]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6209472, 0.14458477, -2.225303)
 
 [node name="SM_Stool" type="Node3D" parent="S_4_adultez/P_taburete" unique_id=1980574688 instance=ExtResource("95_lr7vf")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_polaroid" type="Node3D" parent="S_4_adultez" unique_id=984719521]
+[node name="P_polaroid" type="Node3D" parent="S_4_adultez" unique_id=1568404980]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.6, -2.05)
 
 [node name="SM_PolaroidA" type="Node3D" parent="S_4_adultez/P_polaroid" unique_id=1496484025 instance=ExtResource("96_6bgwt")]
 transform = Transform3D(-4.3471935e-08, 4.5690842e-09, 1, 0.104528464, 0.9945219, 0, -0.9945219, 0.104528464, -4.371139e-08, 0, 0, 0)
 
-[node name="P_polaroid_001" type="Node3D" parent="S_4_adultez" unique_id=1994039565]
+[node name="P_polaroid_001" type="Node3D" parent="S_4_adultez" unique_id=859609683]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.64, -2.33)
 
 [node name="SM_PolaroidB" type="Node3D" parent="S_4_adultez/P_polaroid_001" unique_id=35493595 instance=ExtResource("97_y4und")]
 transform = Transform3D(-4.360491e-08, -3.0491523e-09, 1, -0.06975647, 0.9975641, 0, -0.9975641, -0.06975647, -4.371139e-08, 0, 0, 0)
 
-[node name="P_polaroid_002" type="Node3D" parent="S_4_adultez" unique_id=402052899]
+[node name="P_polaroid_002" type="Node3D" parent="S_4_adultez" unique_id=1903010704]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.3, -2.12)
 
 [node name="SM_PolaroidC" type="Node3D" parent="S_4_adultez/P_polaroid_002" unique_id=2102471252 instance=ExtResource("98_nw23i")]
 transform = Transform3D(-4.338557e-08, -5.327079e-09, 1, -0.121869355, 0.99254614, 0, -0.99254614, -0.121869355, -4.371139e-08, 0, 0, 0)
 
-[node name="P_polaroid_003" type="Node3D" parent="S_4_adultez" unique_id=985945574]
+[node name="P_polaroid_003" type="Node3D" parent="S_4_adultez" unique_id=1944106097]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.34, -2.41)
 
 [node name="SM_PolaroidD" type="Node3D" parent="S_4_adultez/P_polaroid_003" unique_id=1697732016 instance=ExtResource("99_24n5a")]
 transform = Transform3D(-4.3651482e-08, 2.2876774e-09, 1, 0.05233596, 0.9986295, 0, -0.9986295, 0.05233596, -4.371139e-08, 0, 0, 0)
 
-[node name="P_alfombra_adultez" type="Node3D" parent="S_4_adultez" unique_id=462097904]
+[node name="P_alfombra_adultez" type="Node3D" parent="S_4_adultez" unique_id=920404770]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9207481, 0.16625883, -1.2169718)
 
 [node name="SM_Rug" type="Node3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=1098753880 instance=ExtResource("75_l0vfy")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_caballete" type="Node3D" parent="S_4_adultez" unique_id=1807589716]
+[node name="P_caballete" type="Node3D" parent="S_4_adultez" unique_id=743940251]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4613631, 0.170394, 0.38075197)
 
 [node name="SM_Caballete" type="Node3D" parent="S_4_adultez/P_caballete" unique_id=1055951671 instance=ExtResource("100_tm76t")]
 transform = Transform3D(-0.42261833, 0, -0.90630776, 0, 1, 0, 0.90630776, 0, -0.42261833, 0, 0, 0)
 
-[node name="P_lienzo__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=190664938]
+[node name="P_lienzo__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=555047093]
 transform = Transform3D(0.42261836, -0.12613367, 0.89748764, 0, 0.99026805, 0.1391731, -0.90630776, -0.05881711, 0.41850546, -1.097118, 0.9448478, 0.5506023)
 
-[node name="Lienzo" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=1116581318]
+[node name="Lienzo" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=1515720735]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
 mesh = SubResource("BoxMesh_6xqsl")
 
-[node name="Cara" type="Node3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=870298641]
+[node name="Cara" type="Node3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=1938218098]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
 
-[node name="Cuadro" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete/Cara" unique_id=1354343714]
+[node name="Cuadro" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete/Cara" unique_id=447363429]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0155)
 mesh = SubResource("QuadMesh_djf4k")
 
-[node name="P_pinceles__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=1469002930]
+[node name="P_pinceles__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=305205884]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.98, 0.601, -0.43)
 
 [node name="SM_Vase" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete" unique_id=836237881 instance=ExtResource("81_ppyea")]
@@ -1443,57 +1443,57 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 [node name="SM_BrushC" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1116973005 instance=ExtResource("80_c4r3m")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015, 0.02, 0)
 
-[node name="P_espejo__clave__reflejo" type="Node3D" parent="S_4_adultez" unique_id=1482068732]
+[node name="P_espejo__clave__reflejo" type="Node3D" parent="S_4_adultez" unique_id=1664941361]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5230659, 0.209913, -2.988389)
 
 [node name="SM_Mirror" type="Node3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=2109135176 instance=ExtResource("102_6thl1")]
 transform = Transform3D(-0.83867055, 0, -0.54463905, 0, 1, 0, 0.54463905, 0, -0.83867055, 0, 0, 0)
 
-[node name="Luna" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave__reflejo/SM_Mirror" unique_id=1096670360]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.9604645e-08, 0.96934295, 0.43019724)
+[node name="Luna" type="MeshInstance3D" parent="S_4_adultez/P_espejo__clave__reflejo/SM_Mirror" unique_id=733752752]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -5.9604645e-08, 0.96934295, -0.4301973)
 mesh = SubResource("QuadMesh_73qo3")
 
-[node name="P_perchero" type="Node3D" parent="S_4_adultez" unique_id=895415961]
+[node name="P_perchero" type="Node3D" parent="S_4_adultez" unique_id=2132065062]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8628409, 0.1500687, 1.6757607)
 
 [node name="SM_Burro" type="Node3D" parent="S_4_adultez/P_perchero" unique_id=1663708558 instance=ExtResource("103_d04q4")]
 transform = Transform3D(0.49999997, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_sombrero__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=935129903]
+[node name="P_sombrero__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=1329317597]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4200075, 1.1784141, 1.3624085)
 
 [node name="SM_Hat" type="Node3D" parent="S_4_adultez/P_sombrero__after-perchero" unique_id=2032936995 instance=ExtResource("104_ugnpm")]
 transform = Transform3D(-0.79493785, 0.6066907, 0.00028430996, 0.60669076, 0.7949379, 4.894695e-15, -0.0002260088, 0.00017248827, -0.99999994, 0, 0, 0)
 
-[node name="P_taza" type="Node3D" parent="S_4_adultez" unique_id=893480547]
+[node name="P_taza" type="Node3D" parent="S_4_adultez" unique_id=743194598]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5509472, 0.5181373, -2.175303)
 
 [node name="Modelo" parent="S_4_adultez/P_taza" unique_id=1032972180 instance=ExtResource("105_cjfwb")]
 
-[node name="P_reloj" type="Node3D" parent="S_4_adultez" unique_id=1003682782]
+[node name="P_reloj" type="Node3D" parent="S_4_adultez" unique_id=387058416]
 transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 1.6909473, 0.5181373, -2.265303)
 
 [node name="Modelo" parent="S_4_adultez/P_reloj" unique_id=1475517506 instance=ExtResource("106_nawbf")]
 
-[node name="C_dibujo_gato__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=768387016]
+[node name="C_dibujo_gato__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=443791956]
 transform = Transform3D(0.9848077, -0.17364818, -7.590403e-09, 0, -4.371139e-08, 1, -0.17364818, -0.9848077, -4.304731e-08, 1.8628409, 0.163, 1.5757607)
 metadata/color = Color(0.82362163, 0.73271346, 0.43388787, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=1451837192]
+[node name="Papel" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=743914720]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
 mesh = SubResource("BoxMesh_3o4op")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=2013392229]
+[node name="Dibujo" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=1895640123]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.0021)
 mesh = SubResource("QuadMesh_kv64o")
 
-[node name="S_5_epilogo" type="Node3D" parent="." unique_id=554791235]
+[node name="S_5_epilogo" type="Node3D" parent="." unique_id=1409008715]
 
-[node name="P_moneda__ofrecida" type="Node3D" parent="S_5_epilogo" unique_id=1617870158]
+[node name="P_moneda__ofrecida" type="Node3D" parent="S_5_epilogo" unique_id=2051226239]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4542672, 0.9486953, 1.7256484)
 
-[node name="Moneda" type="MeshInstance3D" parent="S_5_epilogo/P_moneda__ofrecida" unique_id=508620243]
+[node name="Moneda" type="MeshInstance3D" parent="S_5_epilogo/P_moneda__ofrecida" unique_id=73515266]
 transform = Transform3D(-4.1075268e-08, -0.9396926, 0.34202012, 1, -4.371139e-08, 0, 1.4950174e-08, 0.34202012, 0.9396926, 0, 0, 0)
 mesh = SubResource("CylinderMesh_ek81v")
 
-[node name="Trastos" type="Node3D" parent="." unique_id=1890542880]
+[node name="Trastos" type="Node3D" parent="." unique_id=64452376]

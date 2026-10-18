@@ -16,6 +16,7 @@ extends Node3D
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --capturas=N,S       (capturas) N capturas, una cada S segundos (ruta_00.png, ruta_01.png...): una animación
 ##   --rincon=ID          (capturas) monta solo hasta que se abre el rincón que da ID (hucha, mp3) y entra en él
+##   --espejo             (capturas) monta solo hasta que solo falta el espejo y lo pone (su plano)
 ##   --prototipo          se juega el desván prototipo (figuras provisionales) en vez del oficial
 ##   --capitulo           (capturas) al segundo de empezar, la estructura del desván ya puesta y se abre el
 ##                        capítulo I como en la partida: su rótulo y, cuando se va, sus cosas apareciendo
@@ -80,6 +81,7 @@ var _shot_every := 0.0
 var _shot_n := 0
 var _open_chapter := false
 var _corner := ""
+var _mirror := false                         ## (--espejo)
 var _solve_left := 0
 var _solve_timer := 0.0
 var _elapsed := 0.0
@@ -148,7 +150,10 @@ func _ready() -> void:
 	_build_fade()
 	hud.next_requested.connect(next_level)
 	Events.flash_requested.connect(flash)
-	Events.section_opened.connect(func(sec: RefCounted) -> void:
+	# La cámara se queda quieta mientras está el rótulo del capítulo y, cuando aparecen sus cosas, se
+	# desliza despacio hasta encuadrar la zona entera (18-oct: «arreglar el movimiento de la cámara al
+	# anunciar el capítulo»: daba un salto a un encuadre cortado, con la zona aún vacía).
+	Events.section_revealed.connect(func(sec: RefCounted) -> void:
 		if GameState.mode == GameState.Mode.PLAYING and not GameState.camera.in_moment:   # el epílogo es un momento
 			GameState.camera.frame_box((sec as Section).box()))
 	hud.pause_requested.connect(open_pause)
@@ -217,6 +222,8 @@ func _parse_args() -> void:
 			_open_chapter = true
 		elif a.begins_with("--rincon="):
 			_corner = a.get_slice("=", 1)
+		elif a == "--espejo":
+			_mirror = true
 		elif a == "--prototipo":
 			solo_nivel = PROTOTIPO
 		elif a == "--solo-fondo":
@@ -251,6 +258,29 @@ func _open_first_chapter() -> void:
 	if momentos.active:
 		momentos.finish()
 	d.continue_act()                         # como si pulsara «Continuar»
+
+
+## (--espejo) Acaba de golpe los capítulos de antes (como F8), monta la adultez hasta que solo falta el
+## espejo y lo pone: su plano, como en la partida.
+func _place_mirror() -> void:
+	var d := GameState.diorama
+	var mirror: PieceSlot = null
+	for s in d.slots:
+		if s.reflejo:
+			mirror = s
+	if mirror == null:
+		return
+	var guard := 0
+	while not (mirror.section.opened and d.is_unlocked(mirror)) and guard < 400:
+		if mirror.section.opened:
+			d.debug_solve_step()
+		else:
+			d.debug_complete_chapter()
+		Narrator.clear()
+		if momentos.active:
+			momentos.finish()
+		guard += 1
+	d.place(mirror)
 
 
 ## (--rincon) Monta solo hasta que el rincón que da `reward` está a la vista y entra en él (primer plano).
@@ -525,6 +555,9 @@ func _process(delta: float) -> void:
 	if _corner != "" and _elapsed > 1.0 and GameState.diorama != null:
 		_enter_corner(StringName(_corner))
 		_corner = ""
+	if _mirror and _elapsed > 1.0 and GameState.diorama != null:
+		_mirror = false
+		_place_mirror()
 	if _open_chapter and _elapsed > 1.0 and GameState.diorama != null:
 		_open_chapter = false
 		_open_first_chapter()

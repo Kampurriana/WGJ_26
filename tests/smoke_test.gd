@@ -719,11 +719,19 @@ func _test_story(main: Node) -> void:
 		waited += 0.1
 	var title_wait := 0.0
 	var quiet_title := true                        # mientras se ve el rótulo, aún no hay nada del capítulo
+	var still_goal := [cam_ctl.center, cam_ctl.yaw, cam_ctl.distance]
+	var still_cam := true                          # ...y la cámara no se mueve (18-oct: daba un salto)
 	while s2.opening and not s2.opened and title_wait < 8.0:
 		quiet_title = quiet_title and not s2.decor.any(func(n: Node3D) -> bool: return n.visible and not n is Light3D) \
 			and not _more(heard_chapter, "aparecer_capitulo")
+		still_cam = still_cam and cam_ctl.center.is_equal_approx(still_goal[0]) and is_equal_approx(cam_ctl.yaw, still_goal[1]) \
+			and is_equal_approx(cam_ctl.distance, still_goal[2])
 		await get_tree().create_timer(0.1).timeout
 		title_wait += 0.1
+	var zone: Vector3 = s2.box().get_center()
+	check(still_cam and cam_ctl.center.distance_to(zone) < (still_goal[0] as Vector3).distance_to(zone) - 0.1
+		and cam_ctl._cine_smooth >= DioramaCamera.FRAME_SMOOTH,
+		"la cámara se queda quieta mientras está el rótulo y, al aparecer las cosas del capítulo, se desliza despacio a su zona")
 	check(s2.opened and not d.act_waiting() and not GameState.hud.continue_button.visible and GameState.hud.chapter_text().contains("Infancia"),
 		"al pulsar «Continuar» sale el rótulo del capítulo y se abre la infancia")
 	check(bench != null and not bench.target.visible, "lo montado en el rincón se fue a la bandeja (no se queda repetido en el rincón)")
@@ -1073,16 +1081,23 @@ func _test_story(main: Node) -> void:
 	check(s4.completed and placed.find(&"caballete") < placed.find(&"lienzo") and placed.find(&"lienzo") < placed.find(&"espejo"),
 		"adultez en el orden del guion: el caballete, su lienzo y el espejo (clave) el último")
 	var mirror := _slot(d, &"espejo")
-	var front := mirror.node.global_basis.z
+	var front := m._mirror_front(mirror.node)        # hacia donde mira su luna (la cara del kit es su -Z)
 	var want_yaw := rad_to_deg(atan2(front.x, front.z))
-	await get_tree().create_timer(1.6).timeout
+	var glass_center := Visuals.global_aabb(mirror.node).get_center()
+	await get_tree().create_timer(Momentos.MIRROR_TIME * 0.5).timeout
+	var half_black := m.iris_strength()
+	var half_far := cam_ctl.cam.global_position.distance_to(glass_center)
+	await get_tree().create_timer(Momentos.MIRROR_TIME * 0.5 + 0.3).timeout
 	var shrunk := d.slots.filter(func(sl: PieceSlot) -> bool:      # (el saltito de colocar parte de su tamaño de verdad)
 		return sl.filled and sl.section != s1 and (not sl.node.transform.is_equal_approx(start_xf[sl])
 			or not (d._base_scale.get(sl.node, sl.node.scale) as Vector3).is_equal_approx(sl.node.scale)))
 	check(shrunk.is_empty(), "ninguna pieza se queda pequeña ni salta desde pequeña por colocarla mientras aún crecía (%s)"
 		% [shrunk.map(func(sl: PieceSlot) -> StringName: return sl.id)])
-	check(m.kind == "reflejo" and absf(cam_ctl.yaw - want_yaw) < 1.0 and cam_ctl.pitch < 8.0,
-		"al poner el espejo, la cámara se pone delante de él (giro %.0f, quiere %.0f)" % [cam_ctl.yaw, want_yaw])
+	check(m.kind == "reflejo" and absf(cam_ctl.yaw - want_yaw) < 1.0 and cam_ctl.pitch < 2.0
+		and cam_ctl.center.is_equal_approx(glass_center) and front.dot(Vector3(0, 0, 1)) > 0.3,
+		"al poner el espejo, la cámara se pone delante de él (de cara a su luna, que mira a la habitación) y centrada en el espejo entero (giro %.0f, quiere %.0f)" % [cam_ctl.yaw, want_yaw])
+	check(half_black > 0.2 and half_black < 0.9 and half_far > cam_ctl.cam.global_position.distance_to(glass_center) + 0.1,
+		"y es un zoom con fundido: a mitad, lo demás va a medio negro (%.2f) y la cámara aún se está acercando" % half_black)
 	check(m.is_isolated() and cam_ctl.cam.cull_mask != 0xFFFFF and m.iris_strength() > 0.95 and is_instance_valid(m.reflection),
 		"espejo: todo lo demás a negro y en la luna aparece su reflejo")
 	d._open_when_free(s5)                        # lo que hace la pausa entre secciones al acabar

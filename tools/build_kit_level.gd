@@ -421,8 +421,9 @@ func _easel_rest(easel: Node3D) -> Transform3D:
 	return Transform3D(basis, center + front * (reach + 0.03))
 
 
-## La luna del espejo del kit: una malla "Luna" justo delante del cristal (Momentos la busca por el
-## nombre para el reflejo y el primer plano de frente).
+## La luna del espejo del kit: una malla "Luna" justo delante del cristal, en su cara de delante (la -Z
+## del kit; Momentos la busca por el nombre para el reflejo y el primer plano de frente, y mira hacia
+## donde mira ella).
 func _mirror_glass(piece: Node3D) -> void:
 	var mirror := piece.get_child(0) as Node3D
 	var local := Visuals.local_aabb(mirror)
@@ -436,7 +437,8 @@ func _mirror_glass(piece: Node3D) -> void:
 	var glass := MeshInstance3D.new()
 	glass.name = "Luna"
 	glass.mesh = quad
-	glass.position = Vector3(local.get_center().x, local.position.y + local.size.y * 0.56, local.end.z + 0.004)
+	glass.position = Vector3(local.get_center().x, local.position.y + local.size.y * 0.56, local.position.z - 0.004)
+	glass.rotation_degrees.y = 180.0             # la cara del espejo del kit es su -Z (como la del caballete)
 	mirror.add_child(glass)
 
 
