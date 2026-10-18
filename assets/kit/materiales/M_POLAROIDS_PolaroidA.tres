@@ -1,0 +1,24 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/kit/texturas/POLAROIDS/T_PolaroidA_BC.png" id="1_ofoqv"]
+[ext_resource type="Texture2D" path="res://assets/kit/texturas/POLAROIDS/T_Polaroid_ARM.png" id="2_lxon1"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="3_qcgdy"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="4_2o02u"]
+[ext_resource type="Texture2D" path="res://assets/kit/texturas/POLAROIDS/T_Polaroid_Normal.png" id="5_bl0hb"]
+
+[resource]
+resource_name = "M_POLAROIDS_PolaroidA"
+albedo_texture = ExtResource("1_ofoqv")
+metallic = 1.0
+metallic_specular = 0.3
+metallic_texture = ExtResource("2_lxon1")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("2_lxon1")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("5_bl0hb")
+ao_enabled = true
+ao_texture = ExtResource("2_lxon1")
+detail_enabled = true
+detail_mask = ExtResource("4_2o02u")
+detail_albedo = ExtResource("3_qcgdy")

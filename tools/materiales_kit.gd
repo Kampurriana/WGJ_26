@@ -29,32 +29,20 @@ func _init() -> void:
 		if not tex.has("BC"):
 			print("MATERIALES: %s no tiene T_*_BC: no hago material" % carpeta)
 			continue
-		var m := StandardMaterial3D.new()
-		m.resource_name = "M_" + carpeta
-		m.albedo_texture = load(tex.BC)
-		if tex.has("ARM"):
-			var arm: Texture2D = load(tex.ARM)
-			m.ao_enabled = true
-			m.ao_texture = arm
-			m.ao_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
-			m.roughness = 1.0
-			m.roughness_texture = arm
-			m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
-			m.metallic = 1.0
-			m.metallic_texture = arm
-			m.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
-		if tex.has("Normal"):
-			m.normal_enabled = true
-			m.normal_texture = load(tex.Normal)
-		if tex.has("E"):
-			m.emission_enabled = true
-			m.emission_texture = load(tex.E)
-		Estilo.aplicar(m)
-		var out := "%s/M_%s.tres" % [MATERIALES, carpeta]
-		var err := ResourceSaver.save(m, out)
-		print("MATERIALES: %s (%s) err=%d" % [out, ", ".join(PackedStringArray(tex.keys())), err])
+		# Una carpeta con varios colores base (POLAROIDS: T_PolaroidA_BC... con un ARM y un Normal
+		# comunes) da un material por cada uno: M_<carpeta>_<variante> (M_POLAROIDS_PolaroidA).
+		var bcs: Array = tex.BCs
+		for bc: String in bcs:
+			var nombre := carpeta
+			if bcs.size() > 1:
+				nombre += "_" + bc.get_file().get_basename().trim_prefix("T_").trim_suffix("_BC")
+			var err := _material(nombre, bc, tex)
+			print("MATERIALES: M_%s (%s) err=%d" % [nombre, ", ".join(PackedStringArray(tex.keys())), err])
 		for rol: String in tex:
-			_importar_3d(tex[rol], rol == "Normal")
+			if rol != "BCs":
+				_importar_3d(tex[rol], rol == "Normal")
+		for bc: String in bcs:
+			_importar_3d(bc, false)
 		hechos += 1
 	print("MATERIALES OK (%d)" % hechos)
 	quit(0)
@@ -69,7 +57,34 @@ func _texturas(dir: String) -> Dictionary:
 		var rol := f.get_basename().get_slice("_", f.get_basename().get_slice_count("_") - 1)
 		if rol in ["BC", "ARM", "Normal", "E"]:
 			out[rol] = dir + "/" + f
+		if rol == "BC":
+			out.get_or_add("BCs", []).append(dir + "/" + f)
 	return out
+
+
+func _material(nombre: String, bc: String, tex: Dictionary) -> Error:
+	var m := StandardMaterial3D.new()
+	m.resource_name = "M_" + nombre
+	m.albedo_texture = load(bc)
+	if tex.has("ARM"):
+		var arm: Texture2D = load(tex.ARM)
+		m.ao_enabled = true
+		m.ao_texture = arm
+		m.ao_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_RED
+		m.roughness = 1.0
+		m.roughness_texture = arm
+		m.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
+		m.metallic = 1.0
+		m.metallic_texture = arm
+		m.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
+	if tex.has("Normal"):
+		m.normal_enabled = true
+		m.normal_texture = load(tex.Normal)
+	if tex.has("E"):
+		m.emission_enabled = true
+		m.emission_texture = load(tex.E)
+	Estilo.aplicar(m)
+	return ResourceSaver.save(m, "%s/M_%s.tres" % [MATERIALES, nombre])
 
 
 ## Ajusta el .import de una textura: comprimida en VRAM con mipmaps; la de normales, como normal map

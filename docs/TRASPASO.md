@@ -212,6 +212,17 @@ carpeta. Si no, parar y preguntar.
   finales». Traídas las de `TexturasFinales/` (Desk nuevas, Boxes, LampStool, Pack01 a 2048 px, Pack_02),
   no las de `CON_LINEART/`. Cada conjunto pinta sus piezas (`CONJUNTOS` en `tools/piezas_kit.gd`). Faltan
   las de Pack03 (paredes, ventana), cómoda, tele y Pack04/05.
+- **18-oct, segunda tanda de texturas + luz de tarde de verano:** pedido «reimporta texturas y assets de
+  Drive, colores y materiales unificados; luz en tiempo real y partículas realistas; que por la ventana
+  entre una luz agradable de cálida tarde de verano; postproceso lo más cinematográfico posible». Traídas
+  Comoda, Hat, Lights, LitterBox, Music_Box, POLAROIDS (un color por foto: `M_POLAROIDS_PolaroidA`...),
+  Pack_04 (funda, tele, burro), Pack_05 (MP3, jarrón, pinceles), Otter (sin modelo aún) y los nuevos
+  `Pack03.fbx` y `SM_MusicBox.fbx`. **No llegaron:** las carpetas de Pack_03 están vacías en Drive y
+  `t_draw_06.png` (9 MB) no pasa por el conector (subirlo a mano o en JPG < 5 MB). Las piezas sin textura
+  se acercan al tono común (`_unify_colors` en `build_kit_level.gd`, con `TONO`/`MEZCLA` del estilo cozy).
+  La luz: `core/luz_ventana.gd` (sol por la ventana con sombras, haz de luz volumétrico, polvo en el haz;
+  se enciende al poner la ventana) + `iluminacion/desvan_tarde.tscn` + acabado de cine en
+  `shaders/desenfoque.gdshader`. Medido: quemado 0,3 %.
 - **18-oct, voces nuevas (Drive `Audio/Dialogos`):** «adjunta los nuevos diálogos en la parte que
   especifica el título»; los textos los pasó el equipo después (captura de Discord). TEXTO AL ENTRAR AL
   DESVAN → `intro_desvan`; HUCHA EN EL DESVAN → `pieza_hucha`; TUTORIAL («cuando acabas la hucha»:

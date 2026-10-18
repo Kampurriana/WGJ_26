@@ -1,9 +1,10 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://core/diorama.gd" id="1_6c44a"]
+[ext_resource type="Script" path="res://core/diorama.gd" id="1_7mf1y"]
+[ext_resource type="Script" path="res://core/luz_ventana.gd" id="2_s213x"]
 
-[node name="Nivel01Desvan" type="Node3D" unique_id=1092853094]
-script = ExtResource("1_6c44a")
+[node name="Nivel01Desvan" type="Node3D" unique_id=703481232]
+script = ExtResource("1_7mf1y")
 level_title = "El desván"
 modelo_provisional = "res://levels/desvan/desvan_oficial.tscn"
 intro_key = "intro_desvan"
@@ -17,6 +18,11 @@ camera_yaw_min_deg = -20.0
 camera_yaw_max_deg = 60.0
 camera_pitch_min_deg = 10.0
 camera_pitch_max_deg = 55.0
-iluminacion = "res://iluminacion/desvan.tscn"
+iluminacion = "res://iluminacion/desvan_tarde.tscn"
 fundido_final = true
 momentos = true
+
+[node name="LuzVentana" type="Node3D" parent="." unique_id=173663421]
+script = ExtResource("2_s213x")
+ventana = Vector3(-0.44045448, 2.0834103, -1.625296)
+tam_ventana = Vector2(1.6730733, 1.6639082)
