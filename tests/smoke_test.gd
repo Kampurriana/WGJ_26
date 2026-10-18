@@ -1800,6 +1800,13 @@ func _test_complete_shortcut(main: Node) -> void:
 		and luz.sol.light_energy == 0.0 and not luz.haz.visible
 		and String(d.iluminacion).ends_with("desvan_tarde.tscn"),
 		"el desván lleva la luz de la tarde (desvan_tarde) y el sol de la ventana, con sombras, apagado hasta poner la ventana")
+	# Fallo de Godot 4.7: tras una luz con sombra (la de la ventana), lo aditivo salía cuadrado (chispas,
+	# luces, polvo). La cámara lleva un cuadradito invisible que vuelve a poner bien la mezcla.
+	var reset := GameState.camera.cam.get_node_or_null("ReinicioMezcla") as MeshInstance3D
+	var reset_mat: ShaderMaterial = null if reset == null else reset.material_override as ShaderMaterial
+	check(reset_mat != null and reset.visible and reset_mat.render_priority == Material.RENDER_PRIORITY_MIN
+		and reset_mat.shader.code.contains("blend_mix"),
+		"la cámara lleva el cuadradito invisible que reinicia la mezcla (sin él, con el sol de la ventana lo aditivo sale cuadrado)")
 	# F8: el capítulo en curso, de uno en uno (para probar cada capítulo suelto).
 	var f8 := func() -> void:
 		var k8 := InputEventKey.new()

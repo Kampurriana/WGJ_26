@@ -108,11 +108,35 @@ func _ready() -> void:
 	cam.fov = 38.0
 	add_child(cam)
 	cam.make_current()
+	_add_blend_reset()
 	Events.focus_changed.connect(_on_focus_changed)
 	Events.piece_placed.connect(func(_id: StringName, n: Node3D) -> void: nudge(Visuals.global_aabb(n).get_center()))
 	Events.level_completed.connect(func(_d: Node) -> void:
 		if GameState.mode == GameState.Mode.PLAYING and not in_moment:   # en un momento, lo decide él
 			showcase())
+
+
+## Arreglo de un fallo de Godot 4.7 (Compatibility, `rasterizer_scene_gles3.cpp`): una luz con sombra
+## que no es el sol (la de la ventana) se pinta en pasadas aditivas sobre lo opaco, que dejan la mezcla
+## en "suma sin alfa" (GL_ONE, GL_ONE) y la apuntan como "suma"; al empezar lo transparente no se
+## reinicia, así que todo lo aditivo que se pintaba después salía como un cuadrado (chispas, luces,
+## polvo, el haz: visto en captura al poner la ventana). Un cuadradito invisible en modo mezcla, el
+## primero de lo transparente (prioridad mínima), obliga a Godot a volver a poner la mezcla bien.
+func _add_blend_reset() -> void:
+	var shader := Shader.new()
+	shader.code = "shader_type spatial;\nrender_mode unshaded, blend_mix, depth_draw_never, depth_test_disabled, cull_disabled, shadows_disabled, fog_disabled;\nvoid fragment() { ALBEDO = vec3(0.0); ALPHA = 0.0; }\n"
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.render_priority = Material.RENDER_PRIORITY_MIN
+	var quad := QuadMesh.new()
+	quad.size = Vector2.ONE * 0.01
+	var m := MeshInstance3D.new()
+	m.name = "ReinicioMezcla"
+	m.mesh = quad
+	m.material_override = mat
+	m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	m.position = Vector3(0.0, 0.0, -0.5)        # delante de la cámara: siempre dentro de lo que se ve
+	cam.add_child(m)
 
 
 func configure(d: Diorama) -> void:

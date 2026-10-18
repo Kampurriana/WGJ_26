@@ -320,6 +320,15 @@ Playwright + Chromium (`--use-angle=swiftshader`). Portada y capturas: `--sin-in
     `render_mode ... fog_disabled` (shaders) o `disable_fog = true` (materiales de partículas). El test
     lo comprueba en las partículas, el aro y el haz.
 
+50. **Una luz con sombra que no es el sol deja lo aditivo cuadrado** (fallo de Godot 4.7, Compatibility,
+    `rasterizer_scene_gles3.cpp`): sus pasadas aditivas sobre lo opaco ponen la mezcla en `GL_ONE, GL_ONE`
+    y la apuntan como "suma"; al empezar lo transparente no se reinicia, y todo lo `blend_add` que se pinta
+    antes que algo `blend_mix` ignora su ALPHA (cuadrados enteros). Pasaba al poner la ventana (su sol
+    lleva sombra): chispas, luces al completar, polvo, el aro. Sin niebla ni resplandor seguía igual
+    (medido apagándolos uno a uno). Arreglo: `DioramaCamera._add_blend_reset` (un cuadradito invisible
+    `blend_mix` con prioridad mínima delante de la cámara: el primero de lo transparente). Mirar siempre
+    lo aditivo con la ventana puesta (`--f9`).
+
 ## Pendiente de verificar con el juego real (ver GDD)
 
 Lo marcado como *supuesto* en `docs/GDD-WOODO.md` se ha deducido de reseñas, no visto. Si alguien
