@@ -21,6 +21,7 @@ var section: Section             # sección S_ que lo contiene (null = ninguna)
 var container: Interactable      # (H_) el cajón o la puerta donde está guardado (null = a la vista)
 var diorama: Diorama
 var is_open := false
+var inside: Array[PieceSlot] = []         ## (OD_/OR_) piezas que van dentro del mueble (su cajón): sin ellas no se abre
 var collected := false
 var completed := false
 var available := true            # (H_) se ve y se puede coger (si no, aún no toca encontrarlo)
@@ -129,11 +130,21 @@ func set_open(value: bool, animate := true) -> void:
 ## Encender o apagar el clic (un Z_ se apaga mientras estás dentro para poder tocar lo de dentro).
 func set_clickable(value: bool) -> void:
 	_clickable = value
-	_shape.disabled = not value
+	_shape.disabled = not (value and pieces_ready())
 
 
 func is_clickable() -> bool:
-	return _clickable and is_visible_in_tree()
+	return _clickable and pieces_ready() and is_visible_in_tree()
+
+
+## (OD_/OR_) Lo que hay que poner del propio mueble antes de poder abrirlo (el cajón del escritorio
+## es una pieza: hasta que está puesto, ni se abre ni brilla). Al ponerlo, refresh_clickable.
+func pieces_ready() -> bool:
+	return inside.all(func(s: PieceSlot) -> bool: return s.filled)
+
+
+func refresh_clickable() -> void:
+	set_clickable(_clickable)
 
 
 ## (H_, C_) Si toca encontrarlo ya: se ve y se puede coger. Si no, ni se ve (no estropea la historia).

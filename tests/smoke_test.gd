@@ -876,12 +876,21 @@ func _test_story(main: Node) -> void:
 	check(not lamp_lights.is_empty() and not lamp.filled and not (lamp_lights[0][0] as Light3D).visible,
 		"la luz de una pieza (la lámpara del escritorio) está apagada mientras es silueta")
 	_farol_energy = float(lamp_lights[0][1]) if not lamp_lights.is_empty() else 0.0
+	# Los cajones del escritorio también se ponen: dos iguales (estrella) y el del pomo, después del
+	# escritorio; el de arriba (el de la solicitud) no se abre ni brilla hasta que está puesto.
+	var drawer_slots := s3.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("cajon"))
+	var top_drawer: Interactable = application.container
+	check(drawer_slots.size() == 3 and _slots_with(d, &"cajon") == 2 and _slots_with(d, &"cajon_pomo") == 1
+		and drawer_slots.all(func(sl: PieceSlot) -> bool: return sl.prereqs.has(&"escritorio") and not sl.filled)
+		and top_drawer != null and top_drawer.inside.size() == 1 and not top_drawer.is_clickable() and not top_drawer.attention,
+		"los cajones del escritorio son piezas que hay que poner (después del escritorio) y el de arriba no se abre sin ponerlo")
 	steps = 0
 	while not _slot(d, &"mp3").filled and steps < 40:
 		d.debug_solve_step()
 		steps += 1
 	check(application.available and not camera_pick.available and application.container != null
-		and application.container.kind == NameRules.DRAWER and application.container.attention,
+		and application.container.kind == NameRules.DRAWER and application.container.attention
+		and application.container.pieces_ready() and application.container.is_clickable(),
 		"con el MP3 puesto toca encontrar la solicitud de Bellas Artes: el cajón brilla (la cámara aún no aparece)")
 	# El escritorio y sus cajones son los de las artistas (kit), con su material, y el cajón de la
 	# solicitud está en la columna del escritorio y sale hacia el jugador (+Z).

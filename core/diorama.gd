@@ -225,6 +225,12 @@ func _setup_sections() -> void:
 ##    del mueble (si fuera hijo, giraría con la puerta).
 ## Se busca hacia arriba; no se mira entre los hijos de una sección ni de la raíz (ahí todo es hermano).
 func _link_containers() -> void:
+	for it in interactables:                  # un mueble que lleva piezas suyas dentro (su cajón): no se abre sin ellas
+		if it.is_openable():
+			for s in slots:
+				if it.target.is_ancestor_of(s.node):
+					it.inside.append(s)
+			it.refresh_clickable()
 	for it in interactables:
 		if not it.is_hidden_item():
 			continue
@@ -503,6 +509,9 @@ func place(slot: PieceSlot) -> void:
 		t.filled = true                          # ya puesta para el juego; su silueta espera su turno
 		inventory.erase(t.id)
 	_show_placed(slot)
+	for it in interactables:                  # su mueble (el cajón ya puesto) se puede abrir
+		if it.inside.has(slot) or twins.any(func(t: PieceSlot) -> bool: return it.inside.has(t)):
+			it.refresh_clickable()
 	var sound := place_sound(slot.id)
 	for i in twins.size():                     # (los sonidos propios ya traen varios golpes: uno por gesto)
 		create_tween().tween_callback(_show_placed.bind(twins[i], sound == "colocar")).set_delay((i + 1) * TWIN_STEP)
@@ -669,6 +678,8 @@ func hint_target(preferred: StringName = &"") -> Dictionary:
 	for it in interactables:
 		if it.kind == NameRules.PICKUP and it.available and not it.collected and it.scope == focus:
 			if it.container != null and not it.container.is_open:
+				if not it.container.pieces_ready():
+					continue                     # primero hay que poner el cajón (su hueco ya salió arriba)
 				return {"node": it.container.target, "container": it.container, "pickup": it}
 			return {"node": it.target, "pickup": it}
 	for it in interactables:
@@ -920,12 +931,12 @@ func _refresh(animate: bool) -> void:
 		it.set_attention(wanted and not hidden_inside)
 		if it.container != null:
 			calling[it.container] = calling.get(it.container, false) or (wanted and hidden_inside)
-		if wanted and hidden_inside:
+		if wanted and hidden_inside and it.container.pieces_ready():
 			_tip_once("consejo_muebles")
 		elif wanted and it.container != null:
 			_tip_once("consejo_dentro")
 	for c: Interactable in calling:
-		c.set_attention(calling[c])
+		c.set_attention(calling[c] and c.pieces_ready())   # el cajón sin poner aún no llama
 	# Los dibujos escondidos: están en cuanto se abre su zona (y su after-x está puesta); dentro de un
 	# mueble cerrado no se pueden coger. El que viene con una pieza espera a que acabe su momento.
 	for it in interactables:

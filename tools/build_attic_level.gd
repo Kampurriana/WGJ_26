@@ -355,8 +355,10 @@ func _build_teen(sec: Node3D) -> void:
 	_box(rug, "Alfombra", Vector3.ZERO, Vector3(1.3, 0.015, 0.9), TEEN_PURPLE)
 	for k in 3:
 		_box(rug, "Raya%d" % k, Vector3(0, 0.002, -0.3 + k * 0.3), Vector3(1.3, 0.015, 0.06), TEEN_PURPLE.lightened(0.25))
-	# El escritorio de las artistas, mirando al jugador, y sus cajones (decorado: se ven aunque el
-	# escritorio aún sea silueta). En el de arriba, la inscripción a Bellas Artes.
+	# El escritorio de las artistas, mirando al jugador, y sus cajones, que también hay que poner
+	# (piezas after-escritorio: los dos de estrella son iguales, el del pomo redondo va aparte). El de
+	# arriba se abre (OD_) y guarda la inscripción a Bellas Artes: su cajón-pieza va dentro del OD_,
+	# que no se abre hasta que está puesto.
 	var desk := Vector3(-0.34, 0, -1.24)
 	var desk_mat := load(KIT_DESK_MAT) as Material
 	var desk_piece := _node(sec, "P_escritorio", desk)
@@ -366,7 +368,13 @@ func _build_teen(sec: Node3D) -> void:
 	var round_knob := _kit_mesh(KIT_DRAWER_PACK, "SM_DeskD")
 	for k in 3:
 		var y := KIT_DESK_COLUMN.y - 0.003 - (k + 1) * KIT_DRAWER_H - k * 0.003
-		var drawer := _node(drawers, "OD_cajon_escritorio" if k == 0 else "Cajon%d" % k, Vector3(0, y, 0))
+		var holder := drawers
+		var at := Vector3(0, y, 0)
+		if k == 0:
+			holder = _node(drawers, "OD_cajon_escritorio", at)
+			at = Vector3.ZERO
+		var drawer := _node(holder, ["P_cajon__after-escritorio", "P_cajon_pomo__after-escritorio",
+			"P_cajon__after-escritorio_001"][k], at)
 		if k == 1:                                # el del medio, el de pomo redondo
 			var m := MeshInstance3D.new()
 			m.name = "Modelo"
