@@ -11,6 +11,7 @@ if ! command -v "$G" >/dev/null 2>&1 && [ ! -x "$G" ]; then
 	exit 3
 fi
 mkdir -p build
+touch build/.gdignore   # Godot no mira dentro: una copia de un script con class_name pisaba la clase buena
 LOG="build/check.log"
 rm -f "$LOG"
 "$G" --headless --path . --import >"$LOG" 2>&1

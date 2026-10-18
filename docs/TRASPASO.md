@@ -199,6 +199,12 @@ carpeta. Si no, parar y preguntar.
 - **18-oct, inicio del cerdito:** sin frase al empezar; entra ordenado (el cerdito → la bandeja para
   vestirlo → los botones de Menú y Pista) y sin la tarjeta de tarea ni las estrellas de logros, que son
   de más adelante (`Hud.stage_entrance`, `Hud._full_ui`).
+- **18-oct, el logo («what I never SAID»):** pedido montarlo en motor con sus piezas sueltas (moneda,
+  «what I never», «SAID», cerdito) encima del menú y en los créditos, cada pieza con su movimiento, sin
+  taparse y con la disposición de la referencia de maquetación. Hecho en `ui/logo.gd` con las cajas
+  medidas en la referencia; **faltan las imágenes** (se pasaron por el chat y no llegaron como fichero):
+  van en `assets/ui/logo/` (nombres en su `LEEME.md`; el texto llega en una imagen y se parte en dos).
+  Ojo: el juego aún se llama «Woodo Jam» (título de la ventana, cartel del cerdito).
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de
   prueba es una escena de instancias (`preview/diorama_kit.tscn`) que las artistas mueven en el editor.

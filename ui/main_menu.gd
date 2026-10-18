@@ -22,9 +22,8 @@ var pending_page := ""                      ## pÃ¡gina con la que abrirse la prÃ
 
 var _panel: PanelContainer
 var _pages: Dictionary = {}                 ## nombre -> Control
-var _logo: Label
+var logo: Logo                               ## el logo montado con las piezas de las artistas (ui/logo.gd)
 var _logros: LogrosLista
-var _t := 0.0
 
 
 func _ready() -> void:
@@ -65,6 +64,8 @@ func open(p := "principal") -> void:
 	if tab >= 0:
 		options.show_tab(tab)
 	Juice.pop_in(_panel, 0.0, 0.88, 0.4)         # el panel llega con un saltito
+	if p == "principal":
+		logo.play_intro(0.15)                    # y las piezas del logo, una tras otra
 
 
 func close() -> void:
@@ -98,11 +99,9 @@ func show_page(p: String) -> void:
 func _build_main(parent: Control) -> void:
 	var p := VBoxContainer.new()
 	p.add_theme_constant_override("separation", 10)
-	_logo = Label.new()                          # el nombre del juego, flotando (como el logo de la referencia)
-	_logo.text = GameState.game_title()
-	UiTheme.style_title(_logo, 72)
-	_logo.resized.connect(func() -> void: _logo.pivot_offset = _logo.size * 0.5)
-	p.add_child(_logo)
+	logo = Logo.new(430.0)                       # encima de las opciones; cada pieza se mueve a su aire
+	logo.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	p.add_child(logo)
 	_add_button(p, "jugar", "Jugar", func() -> void: play_requested.emit(GameState.next_level_to_play()))
 	_add_button(p, "opciones", "Opciones", func() -> void: show_page("opciones"))
 	_add_button(p, "logros", "Logros", func() -> void: show_page("logros"))
@@ -195,15 +194,6 @@ func _focus_first(node: Control) -> void:
 		if b.is_visible_in_tree() and not b.disabled:
 			b.grab_focus.call_deferred()
 			return
-
-
-## El logo flota: sube y baja despacio y se mece un poco.
-func _process(delta: float) -> void:
-	if not visible or _logo == null:
-		return
-	_t += delta
-	_logo.rotation_degrees = -3.0 + sin(_t * 1.1) * 1.5
-	_logo.scale = Vector2.ONE * (1.0 + 0.02 * sin(_t * 1.7))
 
 
 func _unhandled_input(e: InputEvent) -> void:

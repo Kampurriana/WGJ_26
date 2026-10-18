@@ -34,6 +34,7 @@ func _run() -> void:
 	_test_narrator()
 	await _test_voices()
 	_test_kit()
+	await _test_logo()
 	if GameState.RESET_ON_START:
 		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
 			"modo prototipo: al darle a Play no se carga progreso (título y niveles desde cero)")
@@ -264,6 +265,53 @@ func _test_voices() -> void:
 		"una grabación sin texto todavía suena entera, sin subtítulo")
 	Narrator.subtitle.disconnect(listen)
 	Narrator.clear()
+
+
+## El logo (ui/logo.gd), montado con las piezas de las artistas: cada una en su caja de la referencia
+## de maquetación, moviéndose cada una a su aire y sin taparse nunca entre ellas. Aquí, con piezas de
+## prueba de las mismas proporciones (las de verdad van en assets/ui/logo/).
+func _test_logo() -> void:
+	var sizes := {"moneda": Vector2i(64, 64), "what": Vector2i(160, 22), "said": Vector2i(132, 64), "cerdito": Vector2i(106, 100)}
+	var tex := {}
+	for key: String in sizes:
+		var img := Image.create(sizes[key].x, sizes[key].y, false, Image.FORMAT_RGBA8)
+		img.fill(Color.WHITE)
+		tex[key] = ImageTexture.create_from_image(img)
+	var logo := Logo.new(800.0, tex)
+	add_child(logo)
+	logo.position = Vector2(20, 20)
+	for i in 2:
+		await get_tree().process_frame
+	var coin := logo.piece_box("moneda")
+	var what := logo.piece_box("what")
+	var said := logo.piece_box("said")
+	var pig := logo.piece_box("cerdito")
+	check(logo.has_pieces() and coin.end.x < what.position.x and absf(coin.get_center().y - what.get_center().y) < coin.size.y
+		and said.position.y > what.end.y and pig.position.x > said.end.x and pig.position.y > what.end.y,
+		"el logo, como la referencia: la moneda a la izquierda de «what I never», «SAID» debajo y el cerdito a su derecha")
+	var keys := ["moneda", "what", "said", "cerdito"]
+	var first := {}
+	var moved := {}
+	var touching := PackedStringArray()
+	for step in 45:
+		for a in keys.size():
+			var ka: String = keys[a]
+			var xf: Transform2D = (logo.pieces[ka] as Control).get_global_transform()
+			if step == 0:
+				first[ka] = xf
+			elif not xf.is_equal_approx(first[ka]):
+				moved[ka] = true
+			for b in range(a + 1, keys.size()):
+				if logo.piece_box(ka).intersects(logo.piece_box(keys[b])) and not touching.has(ka + "-" + keys[b]):
+					touching.append(ka + "-" + keys[b])
+		await get_tree().create_timer(0.1).timeout
+	check(moved.size() == 4 and touching.is_empty(),
+		"cada pieza del logo se mueve a su aire (%d de 4) y nunca se tapan entre ellas (se tocan: %s)" % [moved.size(), ", ".join(touching)])
+	logo.queue_free()
+	var plain := Logo.new(430.0)
+	check(plain.has_pieces() == not Logo.load_pieces().is_empty() and (plain.has_pieces() or plain.get_child(0) is Label),
+		"sin las imágenes del logo sale el nombre del juego en letra; con ellas, las piezas")
+	plain.free()
 
 
 ## La historia del desván (docs/GUION.md): se monta por secciones en orden; en cada una los objetos
@@ -1152,9 +1200,9 @@ func _test_back_to_menu(main: Node) -> void:
 		"los créditos llevan el mismo fondo que eligió el jugador")
 	Settings.set_value("fondo_color", 0)
 	Settings.set_value("fondo_motivo", 0)
-	check(credits.rolling and credits.visible and credits.lines().has(GameState.game_title())
+	check(credits.rolling and credits.visible and is_instance_valid(credits.logo) and credits._roll.get_child(0) == credits.logo
 		and credits.lines()[credits.lines().size() - 1] == "¡Gracias por jugar!" and not main.menu.is_open(),
-		"al acabar el juego pasan los créditos (del nombre del juego a «¡Gracias por jugar!»)")
+		"al acabar el juego pasan los créditos (del logo a «¡Gracias por jugar!»)")
 	await get_tree().create_timer(1.2).timeout
 	var y0 := credits._roll.position.y
 	await get_tree().create_timer(0.5).timeout

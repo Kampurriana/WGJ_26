@@ -25,6 +25,7 @@ const BACKGROUND := {
 }
 
 var rolling := false
+var logo: Logo                               ## arriba del todo (ui/logo.gd)
 var _root: Control
 var _roll: VBoxContainer
 var _out: ColorRect
@@ -85,7 +86,10 @@ func play(drawings: Array, total: int) -> void:
 		_roll.remove_child(c)
 		c.queue_free()
 	Fondos.apply(_bg_mat, false, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))   # los que eligió el jugador
-	_roll.add_child(_line(GameState.game_title(), 54, INK))
+	logo = Logo.new(560.0)                       # el logo de las artistas, con sus piezas moviéndose
+	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_roll.add_child(logo)
+	logo.play_intro(0.4)
 	_roll.add_child(_space(30))
 	if total > 0:
 		_roll.add_child(_line("DIBUJOS ENCONTRADOS", 15, HEADING, 4))
