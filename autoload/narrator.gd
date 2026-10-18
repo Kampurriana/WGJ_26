@@ -9,6 +9,7 @@ extends Node
 ##    de la clave) con su subtítulo partido en frases; "marcas" = el segundo del audio en que empieza
 ##    cada frase después de la primera (las pausas de la grabación). Sin marcas, a partes iguales
 ##    por letras. Si se pasa de frase, se salta el trozo entero (audio y subtítulos van juntos).
+##    Con "frases": [] suena solo la voz, sin subtítulo (una grabación de la que aún no hay texto).
 ## Las frases van en COLA: una frase nueva espera a que acabe la anterior (nunca se pisan).
 ## Mientras suena una voz, la música baja (Sfx.duck; guion v2: "ducking").
 
@@ -121,6 +122,7 @@ func clear() -> void:
 	_queue.clear()
 	_left = 0.0
 	_player.stop()
+	_player.stream = null
 	if talking:
 		skipped.emit()
 
@@ -152,6 +154,11 @@ func _enqueue(key: String) -> void:
 func _enqueue_recorded(voice: String, seg: Dictionary) -> void:
 	var parts := _parts(seg)
 	var path := _voice(voice)
+	if parts.is_empty():                         # solo voz: suena sin subtítulo
+		if path != "":
+			var seconds := (load(path) as AudioStream).get_length() + VOICE_TAIL
+			_queue.append({"text": "", "voice": path, "seconds": seconds, "last": true})
+		return
 	if path == "":                               # sin grabación: cada frase con su tiempo de lectura
 		for line: String in parts:
 			_queue.append({"text": line, "voice": "", "seconds": _seconds_for(line), "last": true})
@@ -191,12 +198,12 @@ func _next() -> void:
 		return
 	var line := String(e.text)
 	_left = _duration(e)
-	if line == "":
-		return
 	_group = int(e.get("group", 0))
-	if String(e.voice) != "":
+	if String(e.get("voice", "")) != "":
 		_player.stream = load(String(e.voice))
 		_player.play()
+	if line == "":                               # un silencio, o una voz sin subtítulo
+		return
 	typing = float(e.get("typing", -1.0))
 	subtitle.emit(line, float(e.seconds))
 

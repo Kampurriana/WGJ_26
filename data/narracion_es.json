@@ -119,5 +119,9 @@
 	"consejo_muebles": "Algo está guardado. Toca el mueble que brilla para abrirlo.",
 	"consejo_dentro": "¡Ahí está! Tócalo para llevártelo a la bandeja.",
 	"logro_dibujo": "Uno de mis dibujos de cuando era pequeña",
-	"logro_dibujos_todos": "¡Todos mis dibujos! La cuerda está completa."
+	"logro_dibujos_todos": "¡Todos mis dibujos! La cuerda está completa.",
+	"dibujo_encontrado_1": {"frases": []},
+	"dibujo_encontrado_2": {"frases": []},
+	"dibujo_encontrado_3": {"frases": []},
+	"dibujo_encontrado_4": {"frases": []}
 }

@@ -36,9 +36,14 @@ allí, para que sea fácil poner al día:
   `SM_SkirtingBoardTop`, `SM_CeilingSupportSmallPillars`, `SM_CeilingSupporDiagonal`.
 - `Desk.fbx` (de `Texturas/`) no se ha traído: son las partes sueltas que luego se unieron en
   `SM_DeskA/C/D` (mismas mallas).
-- Solo el escritorio tiene texturas; lo demás se ve con el material gris por defecto. `T_Pack_01`
-  (`TexturasFinales/Pack01`, la estructura) está en Drive pero pesa 4,8 / 9,7 / 24 MB: el conector de
-  Drive no baja más de ~3 MB. Hace falta exportarlas a 2048 px (PNG o JPG de 1-3 MB cada una).
+- Texturas finales (18-oct, `TexturasFinales/` de Drive; no se usan las de `CON_LINEART/`): `Desk`
+  (escritorio y cajones), `Boxes` (cajas y tapas), `LampStool` (lámpara y taburete), `Pack01` (suelo,
+  zócalo, correas, pilar; 2048 px) y `Pack_02` (techo y postes). Qué piezas pinta cada una:
+  `CONJUNTOS` en `tools/piezas_kit.gd`. **Sin texturas todavía** (color provisional): `Pack03`
+  (paredes, ventana, zócalos de arriba), la cómoda, la tele, el burro, el MP3, el jarrón y los
+  pinceles (`Pack04`/`Pack05`) y el `CoverDesk`.
+- Al llegar texturas nuevas: dejarlas en `texturas/<Conjunto>/`, `tools/materiales_kit.gd`, importar
+  (`check.sh` o `godot --import`) y `tools/piezas_kit.gd` (el diorama de prueba las coge solo).
 - Tampoco están `SM_ComodaC` (en línea, como las piezas pequeñas) ni `SM_DeskB`: en el diorama se
   repiten `SM_ComodaB` y `SM_DeskC`.
 - `Pack04.fbx` y `Pack05.fbx` traen nombres de 3ds Max: `Box072` = burro, `TV05`/`TV01` = la tele

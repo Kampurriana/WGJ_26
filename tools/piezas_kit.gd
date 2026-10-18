@@ -5,7 +5,7 @@ extends SceneTree
 ## pieza, para apoyarla en el suelo) y dentro su malla tal como viene en su .fbx (orientación y
 ## escala del fichero, sin tocar), con su material:
 ##  - el del kit (assets/kit/materiales/M_<conjunto>.tres) si la pieza es de un conjunto con texturas
-##    (SM_DeskA -> M_Desk);
+##    (CONJUNTOS: qué piezas lleva cada carpeta de TexturasFinales; si no está, SM_<conjunto>...);
 ##  - si no, un color PROVISIONAL compartido (assets/kit/materiales/provisional/<grupo>.tres), que se
 ##    puede retocar en el editor y vale para todas las piezas de su grupo.
 ## Las piezas se cogen de modelos/ (sueltas, con su nombre bueno) y de paquetes/ (varias por fichero;
@@ -30,6 +30,17 @@ const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "S
 	"Object009": "SM_CoverBoxD", "Object010": "SM_CoverBoxE"}
 ## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero).
 const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar"}
+## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
+## por cómo empieza su nombre. Son las carpetas de Assets/ de Drive: Pack01 (suelo, zócalos, correas,
+## pilar; las de nombre de 3ds Max de FloorCeilingPlanks... son las mismas), Pack02 (techo y postes).
+## Pack03 (paredes, ventana, zócalos de arriba) y Pack04/05 aún no tienen texturas.
+const CONJUNTOS := {
+	"Desk": ["SM_Desk"],
+	"Boxes": ["SM_Box", "SM_CoverBox"],
+	"LampStool": ["SM_Lamp", "SM_Stool"],
+	"Pack01": ["SM_Floor", "FloorPlanks", "SM_SkirtingBoardBottom", "SB0", "CeilingSupport0", "SM_Pillar"],
+	"Pack_02": ["SM_Ceiling"],
+}
 ## Grupo de color provisional según cómo empieza el nombre (el primero que encaja).
 const CATEGORIAS := [
 	["SM_CeilingSupport", "estructura"], ["CeilingSupport", "estructura"], ["SM_Ceiling", "techo"],
@@ -113,6 +124,10 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 
 
 func _material(nombre: String, kit: Dictionary) -> Material:
+	for conjunto: String in CONJUNTOS:
+		for prefijo: String in CONJUNTOS[conjunto]:
+			if nombre.begins_with(prefijo) and kit.has(conjunto):
+				return kit[conjunto]
 	for conjunto: String in kit:
 		if nombre.begins_with("SM_" + conjunto):
 			return kit[conjunto]

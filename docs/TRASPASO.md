@@ -174,6 +174,18 @@ carpeta. Si no, parar y preguntar.
   un diorama de prueba con la arquitectura de la referencia de 3ds Max de las artistas. Pedido: **no
   redimensionar ningún asset** (se montan con las medidas con que se importan). Faltan las texturas
   `T_Pack_01` (demasiado grandes para el conector) y `SM_ComodaC`, `SM_DeskB`.
+- **18-oct, texturas finales:** pedido «cambia las texturas por las que están en la carpeta de texturas
+  finales». Traídas las de `TexturasFinales/` (Desk nuevas, Boxes, LampStool, Pack01 a 2048 px, Pack_02),
+  no las de `CON_LINEART/`. Cada conjunto pinta sus piezas (`CONJUNTOS` en `tools/piezas_kit.gd`). Faltan
+  las de Pack03 (paredes, ventana), cómoda, tele y Pack04/05.
+- **18-oct, voces nuevas (Drive `Audio/Dialogos`):** «adjunta los nuevos diálogos en la parte que
+  especifica el título». TEXTO AL ENTRAR AL DESVAN → `intro_desvan`; HUCHA EN EL DESVAN → `pieza_hucha`;
+  TUTORIAL → `intro_menu` (el puzle del cerdito); 1r DIBUJO COLECCIONABLE, V1, V2, V3 →
+  `dibujo_encontrado_1..4` (al abrirse el primer plano del dibujo que se encuentra en ese orden). **Los
+  textos no están**: no se pudieron transcribir (la red de la sesión no deja bajar un modelo de voz).
+  Las del desván, la hucha y el tutorial llevan el subtítulo que ya había (la de la hucha dura 14 s y
+  parece decir más); las de los dibujos suenan sin subtítulo (`{"frases": []}`). Cuando lleguen los
+  textos: ponerlos en `data/narracion_es.json` con sus `marcas` (pausas: `ffmpeg ... silencedetect`).
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de
   prueba es una escena de instancias (`preview/diorama_kit.tscn`) que las artistas mueven en el editor.

@@ -59,6 +59,7 @@ func quit(code := 0) -> void:
 	for p: AudioStreamPlayer in [_music, _music_old] + _pool:
 		p.stop()
 		p.stream = null
+	Narrator.clear()                         # una voz sonando al salir también se queda colgada
 	_cache.clear()
 	await get_tree().create_timer(QUIT_WAIT, true, false, true).timeout
 	get_tree().quit(code)

@@ -231,6 +231,7 @@ func open(it: Interactable, found: int, total: int) -> void:
 	_bar_label.text = Narrator.text("logro_dibujos_todos" if all else "logro_dibujo")
 	_count_label.text = "%d DE %d" % [found, total]
 	_fill_dots(found, total, Hud.drawing_color(it.target))
+	Narrator.say_if_exists("dibujo_encontrado_%d" % found)    # su voz: una por dibujo, en el orden en que salen
 	_show_copy(it.target)
 	_shade_mat.set_shader_parameter("color", Fondos.dark(Settings.get_value("fondo_color")).lightened(0.12))
 	_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS

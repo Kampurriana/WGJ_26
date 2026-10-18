@@ -236,6 +236,18 @@ func _test_voices() -> void:
 	check(got.size() == 1 and Narrator.remaining() <= 0.0 and not Narrator.voice_playing(),
 		"pasar de frase se lleva el trozo grabado entero: no sale el resto del subtítulo sin su voz")
 	check(not Sfx.ducked, "al callarse, la música vuelve")
+	var nuevas := 0                                  # las del 18-oct: entrar al desván, hucha, tutorial, un dibujo
+	for key: String in ["intro_desvan", "pieza_hucha", "intro_menu", "dibujo_encontrado_1", "dibujo_encontrado_2",
+			"dibujo_encontrado_3", "dibujo_encontrado_4"]:
+		if ResourceLoader.exists("res://assets/audio/voz/%s.ogg" % key) and lines.has(key):
+			nuevas += 1
+	check(nuevas == 7, "las voces nuevas (entrar al desván, hucha, tutorial y una por dibujo) tienen su frase (%d de 7)" % nuevas)
+	got.clear()
+	Narrator.say("dibujo_encontrado_2")
+	var only_len := (load("res://assets/audio/voz/dibujo_encontrado_2.ogg") as AudioStream).get_length()
+	check(got.is_empty() and Narrator.voice_playing()
+		and absf(Narrator.remaining() - (only_len + Narrator.VOICE_TAIL + Narrator.GAP)) < 0.05,
+		"una grabación sin texto todavía suena entera, sin subtítulo")
 	Narrator.subtitle.disconnect(listen)
 	Narrator.clear()
 
@@ -282,6 +294,7 @@ func _test_story(main: Node) -> void:
 	check(hud_now._panel.get_global_rect().position.y < 30.0 and hud_now._task.size.x < 260.0,
 		"sin contador de dibujos: la bandeja empieza arriba; y la tarjeta de tarea es pequeña, que no llame la atención")
 	var screen_w := get_viewport().get_visible_rect().size.x
+	Narrator.typing = -1.0                         # sin voz (la de entrar al desván ya ha marcado su ritmo)
 	hud_now._show_subtitle("Una frase de prueba, bastante larga, para ver cómo se escribe letra a letra.", 4.0)
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -414,7 +427,7 @@ func _test_story(main: Node) -> void:
 	check(d.is_opening() and not GameState.hud.says_nothing_left(),
 		"entre una sección y la siguiente, la bandeja espera: no dice que aquí no queda nada")
 	var waited := 0.0
-	while not s2.opened and waited < 10.0:
+	while not s2.opened and waited < 25.0:          # la voz de la hucha dura 14 s
 		await get_tree().create_timer(0.25).timeout
 		waited += 0.25
 	check(s2.opened and waited >= Diorama.SECTION_PAUSE - 0.3, "al completarla, la infancia se abre sola tras una pausa (%.1f s)" % waited)
@@ -521,6 +534,11 @@ func _test_story(main: Node) -> void:
 			and (look._pill_label.get_parent() as Control).get_global_rect().position.y >= look._title.get_global_rect().end.y - 2.0,
 			"como en la referencia: título grande, su nombre en una cápsula, el dibujo en 3D, «1 DE 4» y el contador (%s · %s)"
 			% [look.title_text(), look.name_text()])
+		var voices: Array = Narrator._queue.map(func(e: Dictionary) -> String: return String(e.get("voice", "")))
+		if Narrator.voice_playing():
+			voices.append(Narrator._player.stream.resource_path)
+		check(voices.any(func(v: String) -> bool: return v.ends_with("/dibujo_encontrado_1.ogg")),
+			"al encontrar el primer dibujo suena su voz (la del primero; los demás, la suya)")
 		for i in 2:                                # el visor se maqueta un fotograma después
 			await get_tree().process_frame
 		_click(look.button_center())               # el botón llega el último: un clic con prisa no lo cierra
@@ -908,6 +926,17 @@ func _test_kit() -> void:
 		p.free()
 		return mal)
 	check(tileset.size() >= 60 and malas.is_empty(), "el tileset del kit: %d piezas con escala 1 y su malla (mal: %s)" % [tileset.size(), malas])
+	# Las texturas finales (TexturasFinales de Drive): cada conjunto pinta sus piezas.
+	var sin_textura := PackedStringArray()
+	for par: Array in [["SM_Floor", "Pack01"], ["SM_Pillar", "Pack01"], ["SM_Ceiling", "Pack_02"], ["SM_BoxA", "Boxes"],
+			["SM_CoverBoxA", "Boxes"], ["SM_Lamp", "LampStool"], ["SM_Stool", "LampStool"], ["SM_DeskA", "Desk"]]:
+		var p := (load("res://assets/kit/piezas/%s.scn" % par[0]) as PackedScene).instantiate()
+		var m := p.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+		var mat := m.get_surface_override_material(0) as StandardMaterial3D
+		if mat == null or mat.resource_path != "res://assets/kit/materiales/M_%s.tres" % par[1] or mat.albedo_texture == null:
+			sin_textura.append(par[0])
+		p.free()
+	check(sin_textura.is_empty(), "las piezas del kit llevan las texturas finales de su conjunto (suelo, pilar, techo, cajas, lámpara, taburete, escritorio; sin: %s)" % ", ".join(sin_textura))
 	var diorama := (load("res://preview/diorama_kit.tscn") as PackedScene).instantiate() as Node3D
 	var instancias := diorama.find_children("*", "Node3D", true, false).filter(func(n: Node) -> bool: return n.scene_file_path != "")
 	var del_kit := instancias.filter(func(n: Node) -> bool: return n.scene_file_path.begins_with("res://assets/kit/piezas/"))
