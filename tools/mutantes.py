@@ -496,6 +496,9 @@ MUTANTES = [
 	("M150 el cristal de la ventana tapa el sol", "core/luz_ventana.gd",
 		"\t\t\t\tm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF", "\t\t\t\tpass",
 		"con la ventana puesta entra el sol"),
+	("M151 una herramienta hereda de un script que ya no existe", "tools/build_attic_level.gd",
+		'extends "res://tools/pack_props.gd"', 'extends "res://tools/build_room_level.gd"',
+		"las herramientas de tools/ compilan"),
 ]
 
 solo = os.environ.get("SOLO")

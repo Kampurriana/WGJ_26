@@ -38,6 +38,7 @@ func _run() -> void:
 	await _test_english()
 	_test_kit()
 	_test_export_filter()
+	_test_tools_compile()
 	await _test_logo()
 	if GameState.RESET_ON_START:
 		check(GameState.progress_path == "" and not GameState.menu_unlocked and not GameState.has_progress(),
@@ -1352,6 +1353,21 @@ func _test_export_filter() -> void:
 					left_out.append(f)
 	check(ok and seen.size() > 150 and left_out.is_empty(),
 		"la build no deja fuera nada que use el juego (%d ficheros; fuera: %s)" % [seen.size(), ", ".join(left_out.slice(0, 4))])
+
+
+## Las herramientas (tools/*.gd) compilan: el check no las ejecuta, y al borrar una de la que otras
+## heredaban (build_room_level.gd) dejaron de arrancar sin que nada avisara.
+func _test_tools_compile() -> void:
+	var broken: Array[String] = []
+	var tools := 0
+	for f in DirAccess.get_files_at("res://tools"):
+		if f.get_extension() != "gd":
+			continue
+		tools += 1
+		var script := ResourceLoader.load("res://tools/" + f, "", ResourceLoader.CACHE_MODE_IGNORE) as GDScript
+		if script == null or not script.can_instantiate():
+			broken.append(f)
+	check(tools >= 8 and broken.is_empty(), "las herramientas de tools/ compilan (%d; rotas: %s)" % [tools, ", ".join(broken)])
 
 
 func _test_kit() -> void:
