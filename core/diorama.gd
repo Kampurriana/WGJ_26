@@ -602,6 +602,10 @@ func enter_focus(anchor: Interactable) -> void:
 		focus.set_clickable(true)
 	focus = anchor
 	anchor.set_clickable(false)
+	Visuals.stop_growing(anchor.target)          # si aún estaba apareciendo, ya entero: la cámara lo encuadra por su tamaño
+	for s in slots:
+		if s.scope == anchor:
+			Visuals.stop_growing(s.node)
 	Sfx.play("zoom_in")
 	_refresh(true)                               # (dentro de un rincón, el rincón ya no llama)
 	Events.focus_changed.emit(anchor)
@@ -1173,6 +1177,10 @@ func debug_complete() -> void:
 	_refresh(false)
 	_given.clear()
 	for it in interactables:                    # los dibujos, ya colgados en su cuerda
+		if it.kind == NameRules.ZOOM and it.workbench:   # lo montado en un banco ya está en su sitio
+			it.completed = true
+			it.set_attention(false)
+			it.target.hide()
 		if it.kind == NameRules.COLLECTIBLE and not it.collected:
 			it.collected = true
 			it.set_clickable(false)

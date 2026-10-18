@@ -120,6 +120,21 @@ cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos �
   inglés). Textos: `data/narracion_en.json`, `data/piezas_en.json`, `data/creditos_en.txt` y
   `data/ui_en.json` (la interfaz: clave = el texto en español del código). Trampa 47.
 
+- **18-oct, el arte oficial:** «conserva este prototipo en una escena aparte; vamos a usar el arte oficial
+  (el diorama que te adjunté) para iterar; gameplay, mecánicas y funcionalidad exactamente iguales, el
+  dressing según lo iterado». El desván que se juega (`levels/level_01_desvan.tscn`) es ahora el diorama
+  de las artistas con la historia encima (`tools/build_kit_level.gd`, que lee `preview/diorama_kit.tscn`:
+  **si se retoca ese diorama en el editor, se vuelve a pasar la herramienta**). El prototipo queda en
+  `levels/prototipo/` (se juega con `jugar_prototipo.tscn` o `--prototipo`). Decidido con Manu: el
+  caballete se queda donde lo pusieron las artistas (izquierda) y la hucha va en el centro sobre una caja.
+  Después: «paredes, columnas, piezas pequeñas y grandes, separadas; al poner una se ponen las similares;
+  los objetos pequeños en piezas (el iPod) se montan en un primer plano y luego se colocan» → cada asset
+  del kit es su pieza y hay dos rincones de montaje (`__monta`): la hucha (12 trozos) y el MP3 (carcasa,
+  rueda, auriculares, sacados de su malla montada; el `Pack05` los trae sueltos pero sin montar). Los
+  cambios de historia que se hagan en el prototipo (`build_attic_level.gd`) hay que llevarlos también a
+  `build_kit_level.gd` (ya se llevaron: los cajones del escritorio como piezas, el monstruo bajo el puf, el
+  cuadro del lienzo).
+
 ## 3. Ramas y cómo se trabaja con el equipo
 
 Ramas fijas por área (pedido del equipo): `arte` (artistas, solo `assets/`), `iluminacion` (quien
@@ -353,7 +368,7 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 | Qué | Cómo |
 |---|---|
 | Todo el test | `bash tools/check.sh` → `CHECK OK (231 …)` |
-| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 144 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
+| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 147 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final, con la moneda y su fantasma a medio gesto); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

@@ -15,6 +15,7 @@ extends Node3D
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --capturas=N,S       (capturas) N capturas, una cada S segundos (ruta_00.png, ruta_01.png...): una animación
+##   --rincon=ID          (capturas) monta solo hasta que se abre el rincón que da ID (hucha, mp3) y entra en él
 ##   --prototipo          se juega el desván prototipo (figuras provisionales) en vez del oficial
 ##   --capitulo           (capturas) al segundo de empezar, la estructura del desván ya puesta y se abre el
 ##                        capítulo I como en la partida: su rótulo y, cuando se va, sus cosas apareciendo
@@ -78,6 +79,7 @@ var _shots := 1                              ## (--capturas) cuántas y cada cu�
 var _shot_every := 0.0
 var _shot_n := 0
 var _open_chapter := false
+var _corner := ""
 var _solve_left := 0
 var _solve_timer := 0.0
 var _elapsed := 0.0
@@ -213,6 +215,8 @@ func _parse_args() -> void:
 			_shot_every = v[1] if v.size() > 1 else 0.25
 		elif a == "--capitulo":
 			_open_chapter = true
+		elif a.begins_with("--rincon="):
+			_corner = a.get_slice("=", 1)
 		elif a == "--prototipo":
 			solo_nivel = PROTOTIPO
 		elif a == "--solo-fondo":
@@ -247,6 +251,34 @@ func _open_first_chapter() -> void:
 	if momentos.active:
 		momentos.finish()
 	d.continue_act()                         # como si pulsara «Continuar»
+
+
+## (--rincon) Monta solo hasta que el rincón que da `reward` está a la vista y entra en él (primer plano).
+func _enter_corner(reward: StringName) -> void:
+	var d := GameState.diorama
+	var bench: Interactable = null
+	for it in d.interactables:
+		if it.kind == NameRules.ZOOM and it.reward == reward:
+			bench = it
+	if bench == null:
+		return
+	var guard := 0
+	while bench.section != null and not bench.section.opened and guard < 400:
+		if d.act_waiting():
+			d.continue_act()
+			d._open_pending(d.opening_section())
+			d._reveal_pending(d.opening_section())
+		else:
+			d.debug_solve_step()
+		Narrator.clear()
+		if momentos.active:
+			momentos.finish()
+		guard += 1
+	while d.focus != null:
+		d.exit_focus()
+	d.enter_focus(bench)
+	var cam := GameState.camera
+	print("RINCON %s: centro %s distancia %.2f inclinación %.1f giro %.1f momento %s" % [reward, cam.center, cam.distance, cam.pitch, cam.yaw, cam.in_moment])
 
 
 ## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
@@ -489,6 +521,9 @@ func _process(delta: float) -> void:
 	if _roll_credits and _elapsed > 1.0:
 		_roll_credits = false
 		roll_credits()
+	if _corner != "" and _elapsed > 1.0 and GameState.diorama != null:
+		_enter_corner(StringName(_corner))
+		_corner = ""
 	if _open_chapter and _elapsed > 1.0 and GameState.diorama != null:
 		_open_chapter = false
 		_open_first_chapter()

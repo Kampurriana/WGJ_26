@@ -157,13 +157,13 @@ func _structure(sec: Node3D) -> void:
 
 
 ## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 12 trozos, cada uno su pieza (las patas, las
-## orejas y los ojos, iguales), montados donde van; primero el cuerpo.
+## orejas y los ojos, iguales; arriba, su corona), montados donde van; primero el cuerpo.
 func _pig_bench(sec: Node3D, pig: Node3D, at: Vector3) -> void:
 	var bench := _node(sec, "Z_montaje_hucha__reward-hucha__monta", at)
 	bench.rotation_degrees.y = 200.0
 	var parts := {"SM_PigA": "pata_hucha", "SM_PigB": "pata_hucha", "SM_PigC": "pata_hucha", "SM_PigD": "pata_hucha",
 		"SM_PigE": "cuerpo_hucha", "SM_PigF": "oreja_hucha", "SM_PigG": "oreja_hucha", "SM_PigH": "hocico_hucha",
-		"SM_PigI": "ojo_hucha", "SM_PigJ": "ojo_hucha", "SM_PigK": "ranura_hucha", "SM_PigL": "cola_hucha"}
+		"SM_PigI": "ojo_hucha", "SM_PigJ": "ojo_hucha", "SM_PigK": "corona_hucha", "SM_PigL": "cola_hucha"}
 	var used := {}
 	for m in Visuals.meshes_under(pig):
 		var part: String = parts[String(m.name)]
