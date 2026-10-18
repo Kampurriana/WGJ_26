@@ -2,20 +2,19 @@
 
 [ext_resource type="Script" path="res://core/diorama.gd" id="1_6c44a"]
 
-[node name="Nivel01Desvan" type="Node3D" unique_id=866884299]
+[node name="Nivel01Desvan" type="Node3D" unique_id=314458213]
 script = ExtResource("1_6c44a")
 level_title = "El desván"
-modelo = "res://assets/modelos/desvan/desvan.glb"
-modelo_provisional = "res://levels/provisional/desvan_provisional.tscn"
+modelo_provisional = "res://levels/desvan/desvan_oficial.tscn"
 intro_key = "intro_desvan"
-color_radius = 0.7
-camera_distance = 8.2
-camera_min_distance = 2.0
-camera_max_distance = 10.0
+color_radius = 0.9
+camera_distance = 11.5
+camera_min_distance = 2.6
+camera_max_distance = 14.0
 camera_pitch_deg = 24.0
-camera_yaw_deg = 6.0
-camera_yaw_min_deg = -32.0
-camera_yaw_max_deg = 32.0
+camera_yaw_deg = 18.0
+camera_yaw_min_deg = -20.0
+camera_yaw_max_deg = 60.0
 camera_pitch_min_deg = 10.0
 camera_pitch_max_deg = 55.0
 iluminacion = "res://iluminacion/desvan.tscn"

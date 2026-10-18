@@ -849,6 +849,8 @@ func continue_act() -> void:
 
 
 func _open_when_free(sec: Section) -> void:
+	if not is_inside_tree():                     # (el nivel ya se fue: otra partida, el menú)
+		return
 	if hold_sections and sec == _pending:
 		get_tree().create_timer(0.2, false).timeout.connect(_open_when_free.bind(sec))
 		return
@@ -882,6 +884,8 @@ func _open_pending(sec: Section) -> void:
 ## Sus cosas salen cuando se callan esas frases (antes si el jugador las pasa con clics: el final no
 ## hace esperar a la moneda, sexta nota) y no antes de `wait` s (lo que se ve el rótulo del capítulo).
 func _reveal_when_quiet(sec: Section, wait := 0.0) -> void:
+	if not is_inside_tree():                     # (el nivel ya se fue: otra partida, el menú)
+		return
 	if Narrator.remaining() > 0.05 or wait > 0.0:
 		get_tree().create_timer(0.1, false).timeout.connect(_reveal_when_quiet.bind(sec, maxf(wait - 0.1, 0.0)))
 	else:

@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://core/diorama.gd" id="1_6c44a"]
+
+[node name="DesvanPrototipo" type="Node3D" unique_id=866884299]
+script = ExtResource("1_6c44a")
+level_title = "El desván (prototipo)"
+modelo = ""
+modelo_provisional = "res://levels/provisional/desvan_provisional.tscn"
+intro_key = "intro_desvan"
+color_radius = 0.7
+camera_distance = 8.2
+camera_min_distance = 2.0
+camera_max_distance = 10.0
+camera_pitch_deg = 24.0
+camera_yaw_deg = 6.0
+camera_yaw_min_deg = -32.0
+camera_yaw_max_deg = 32.0
+camera_pitch_min_deg = 10.0
+camera_pitch_max_deg = 55.0
+iluminacion = "res://iluminacion/desvan.tscn"
+fundido_final = true
+momentos = true

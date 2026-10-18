@@ -653,6 +653,11 @@ static func drawing_color(n: Node) -> Color:
 static func drawing_texture(n: Node) -> Texture2D:
 	var m := n.find_child("Dibujo", true, false) as MeshInstance3D if n != null else null
 	var mat := m.get_active_material(0) as StandardMaterial3D if m != null else null
+	if mat == null and n != null:                # los dibujos del kit (Dibujo_<fichero>): la malla con la imagen
+		for mesh in Visuals.meshes_under(n):
+			var own := mesh.get_active_material(0) as StandardMaterial3D
+			if own != null and own.albedo_texture != null and own.albedo_texture.resource_path.contains("/dibujos/"):
+				return own.albedo_texture
 	return mat.albedo_texture if mat != null else null
 
 

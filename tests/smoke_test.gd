@@ -565,8 +565,8 @@ func _test_story(main: Node) -> void:
 	for sl in s1.slots:
 		if String(sl.id).begins_with("tablon_"):
 			planks[sl.id] = planks.get(sl.id, 0) + 1
-	check(planks.size() == 3 and planks.values().all(func(n: int) -> bool: return n == 6),
-		"el suelo son 18 tablones de tres largos (%s)" % planks)
+	check(planks.size() == 3 and planks.values().all(func(n: int) -> bool: return n == 4),
+		"el suelo son los 12 tablones del kit, de tres largos (%s)" % planks)
 	var cam3 := GameState.camera.cam
 	var mid_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_medio")[0]
 	var long_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")[0]
@@ -581,7 +581,7 @@ func _test_story(main: Node) -> void:
 	var longs := s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")
 	check(longs.all(func(sl: PieceSlot) -> bool: return sl.filled) and d.count_of(&"tablon_largo") == 0
 		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"tablon_largo"),
-		"al soltar un tablón se ponen todos los iguales: los 6 largos de una vez, y su ficha se va de la bandeja")
+		"al soltar un tablón se ponen todos los iguales: los %d largos de una vez, y su ficha se va de la bandeja" % longs.size())
 	check(longs.any(func(sl: PieceSlot) -> bool: return sl.is_ghost()) and longs.any(func(sl: PieceSlot) -> bool: return not sl.is_ghost()),
 		"se ven encajar uno tras otro: primero el que soltó el jugador")
 	await get_tree().create_timer(Diorama.TWIN_STEP * longs.size() + 0.15).timeout
@@ -694,7 +694,7 @@ func _test_story(main: Node) -> void:
 	var title_wait := 0.0
 	var quiet_title := true                        # mientras se ve el rótulo, aún no hay nada del capítulo
 	while s2.opening and not s2.opened and title_wait < 8.0:
-		quiet_title = quiet_title and not s2.decor.any(func(n: Node3D) -> bool: return n.visible) \
+		quiet_title = quiet_title and not s2.decor.any(func(n: Node3D) -> bool: return n.visible and not n is Light3D) \
 			and not _more(heard_chapter, "aparecer_capitulo")
 		await get_tree().create_timer(0.1).timeout
 		title_wait += 0.1
@@ -945,10 +945,11 @@ func _test_story(main: Node) -> void:
 	var kit_mat := func(m: MeshInstance3D) -> bool:
 		var mat := m.get_surface_override_material(0)
 		return mat != null and mat.resource_path == "res://assets/kit/materiales/M_Desk.tres"
-	check(desk_meshes.size() == 1 and desk_meshes[0].mesh.resource_path.begins_with("res://assets/kit/modelos/Desk/SM_DeskA.fbx")
-		and kit_mat.call(desk_meshes[0]) and drawer_it != null
+	check(desk_meshes.any(func(m: MeshInstance3D) -> bool:
+			return _kit_mesh(m, "SM_DeskA") and kit_mat.call(m))
+		and drawer_it != null
 		and Visuals.meshes_under(drawer_it.target).any(func(m: MeshInstance3D) -> bool:
-			return m.mesh.resource_path.begins_with("res://assets/kit/modelos/Desk/SM_DeskC.fbx") and kit_mat.call(m))
+			return _kit_mesh(m, "SM_DeskC") and kit_mat.call(m))
 		and desk_box.grow(0.05).encloses(drawer_box) and (drawer_it._open.origin - drawer_it._closed.origin).z > 0.2,
 		"el escritorio es el del kit (SM_DeskA, M_Desk) y el cajón de la solicitud, uno de sus cajones (SM_DeskC), en su columna y saliendo hacia el jugador")
 	steps = 0
@@ -1052,7 +1053,8 @@ func _test_story(main: Node) -> void:
 		and not d.tray_entries().any(func(e: Dictionary) -> bool: return e.id == &"moneda"),
 		"el final es un primer plano de la hucha mientras habla, y la moneda no va a la bandeja")
 	var trunk := d.find_child("BaulViejo", true, false)
-	check(m.is_isolated() and m.is_in_isolation(Visuals.meshes_under(pig)[0]) and m.is_in_isolation(trunk)
+	check(m.is_isolated() and m.is_in_isolation(Visuals.meshes_under(pig)[0])
+		and Visuals.meshes_under(trunk).any(func(t: MeshInstance3D) -> bool: return m.is_in_isolation(t))
 		and not m.is_in_isolation(Visuals.meshes_under(_slot(d, &"escritorio").node)[0])
 		and absf(cam_ctl.pitch - Momentos.ZENITH) < 0.5 and absf(cam_ctl._cur_pitch - cam_ctl.pitch) < 0.5,
 		"corte a la hucha sola (sobre su baúl), vista un poco desde arriba, quieta y sin vueltas")
@@ -1616,7 +1618,9 @@ func _test_real_levels(main: Node) -> void:
 	check(listed is Array and not (listed as Array).is_empty(), "data/levels.json lista niveles")
 	if not (listed is Array):
 		return
-	GameState.levels = PackedStringArray(listed)
+	check(not (listed as Array).has(main.PROTOTIPO) and ResourceLoader.exists(main.PROTOTIPO),
+		"el desván prototipo se conserva aparte (%s), fuera de la partida" % main.PROTOTIPO.get_file())
+	GameState.levels = PackedStringArray((listed as Array) + [main.PROTOTIPO])   # (y se sigue pudiendo jugar entero)
 	for i in GameState.levels.size():
 		var path := GameState.levels[i]
 		main.play_level(i)
@@ -1833,6 +1837,12 @@ func _wheel(button: MouseButton, pos: Vector2) -> void:
 		e.position = pos
 		e.global_position = pos
 		get_viewport().push_input(e, true)
+
+
+## Si la malla es la de esa pieza del kit de las artistas: de su .fbx o de su escena del tileset.
+func _kit_mesh(m: MeshInstance3D, piece: String) -> bool:
+	var path := m.mesh.resource_path
+	return path.get_file().begins_with(piece + ".fbx") or path.begins_with("res://assets/kit/piezas/%s.scn" % piece)
 
 
 ## Si el efecto ha sonado desde `before` (una copia de Sfx.played).

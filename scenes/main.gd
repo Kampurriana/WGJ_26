@@ -15,6 +15,7 @@ extends Node3D
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --capturas=N,S       (capturas) N capturas, una cada S segundos (ruta_00.png, ruta_01.png...): una animación
+##   --prototipo          se juega el desván prototipo (figuras provisionales) en vez del oficial
 ##   --capitulo           (capturas) al segundo de empezar, la estructura del desván ya puesta y se abre el
 ##                        capítulo I como en la partida: su rótulo y, cuando se va, sus cosas apareciendo
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
@@ -80,6 +81,10 @@ var _open_chapter := false
 var _solve_left := 0
 var _solve_timer := 0.0
 var _elapsed := 0.0
+## Si no está vacío, el juego tiene solo este nivel en vez de los de data/levels.json (el prototipo del
+## desván se juega así: levels/prototipo/jugar_prototipo.tscn, o el argumento --prototipo).
+@export_file("*.tscn") var solo_nivel := ""
+const PROTOTIPO := "res://levels/prototipo/desvan_prototipo.tscn"
 
 
 func _ready() -> void:
@@ -90,6 +95,8 @@ func _ready() -> void:
 	# de un gris apagado (medido: tope 208/255). Con HDR sale el color calibrado (iluminacion/fondo.gdshader).
 	get_viewport().use_hdr_2d = true
 	_parse_args()
+	if solo_nivel != "":
+		GameState.levels = PackedStringArray([solo_nivel])
 	var cam := DioramaCamera.new()
 	cam.name = "Camera"
 	cam.process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -206,6 +213,8 @@ func _parse_args() -> void:
 			_shot_every = v[1] if v.size() > 1 else 0.25
 		elif a == "--capitulo":
 			_open_chapter = true
+		elif a == "--prototipo":
+			solo_nivel = PROTOTIPO
 		elif a == "--solo-fondo":
 			_only_background = true
 		elif a == "--f9":

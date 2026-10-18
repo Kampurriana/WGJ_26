@@ -1,6 +1,8 @@
 extends "res://tools/build_room_level.gd"
-## Genera el diorama principal: el desván de la historia (docs/GUION.md), en secciones que se
-## montan por orden (S_):
+## EL PROTOTIPO (16-18 oct): el desván de la historia con figuras provisionales, con el que se iteró
+## la jugabilidad. Se conserva aparte (levels/prototipo/; se juega con levels/prototipo/jugar_prototipo.tscn
+## o `--prototipo`). El desván que se juega es el del arte oficial: tools/build_kit_level.gd, con las
+## mismas secciones, piezas y reglas. Secciones que se montan por orden (S_):
 ##   S_1_desvan        el suelo (18 tablones de tres largos parecidos: cada uno vale en varios huecos,
 ##                     no en todos), paredes y tejado; al final, la hucha (prólogo, __clave)
 ##   S_2_infancia      zona izquierda: caja de música -> dibujo -> nutria (clave) + su dressing
@@ -21,12 +23,10 @@ extends "res://tools/build_room_level.gd"
 ##   godot --headless --path . --script res://tools/build_attic_level.gd
 ## Escribe:
 ##   levels/provisional/desvan_provisional.tscn  el modelo provisional (figuras + props del pack MIT)
-##   levels/level_01_desvan.tscn                 el nivel: solo el Diorama con sus ajustes
-## Cuando exista assets/modelos/desvan/desvan.glb (artistas, mismos nombres), se usa ese.
+##   levels/prototipo/desvan_prototipo.tscn      el nivel: solo el Diorama con sus ajustes
 
 const ATTIC_MODEL_OUT := "res://levels/provisional/desvan_provisional.tscn"
-const ATTIC_LEVEL_OUT := "res://levels/level_01_desvan.tscn"
-const ART_ATTIC := "res://assets/modelos/desvan/desvan.glb"
+const ATTIC_LEVEL_OUT := "res://levels/prototipo/desvan_prototipo.tscn"
 const HALF_W := 2.7                          ## el desván va de x=-2.7 a 2.7
 const HALF_D := 1.65                         ## y de z=-1.65 (fondo) a 1.65 (delante, abierto)
 const KNEE := 1.0                            ## altura de la pared del fondo
@@ -104,10 +104,10 @@ func _initialize() -> void:
 		return
 
 	var level := Node3D.new()
-	level.name = "Nivel01Desvan"
+	level.name = "DesvanPrototipo"
 	level.set_script(load("res://core/diorama.gd"))
-	level.set("level_title", "El desván")
-	level.set("modelo", ART_ATTIC)
+	level.set("level_title", "El desván (prototipo)")
+	level.set("modelo", "")
 	level.set("modelo_provisional", ATTIC_MODEL_OUT)
 	level.set("intro_key", "intro_desvan")
 	level.set("outro_key", "")

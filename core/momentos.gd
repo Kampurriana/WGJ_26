@@ -270,10 +270,15 @@ func start(node: Node3D, p_kind: String, _id: String) -> void:
 			cam.close_up(_glass_box(node), node.global_basis.z)
 			_frame_to(1.0, BARS, 1.2)            # de cine: con sus bandas
 			_black.create_tween().tween_property(_black, "color:a", 1.0, 1.2)
+			var mirror_id := node.get_instance_id()      # (por id: si el nivel se va antes, el espejo ya no está; trampa 40)
 			get_tree().create_timer(1.3, false).timeout.connect(func() -> void:
-				if active and kind == "reflejo" and is_instance_valid(node):
-					_isolate([node, reflection]))
-			get_tree().create_timer(Diorama.POP_TIME + 0.05, false).timeout.connect(_make_reflection.bind(node))
+				var mirror := instance_from_id(mirror_id) as Node3D
+				if active and kind == "reflejo" and mirror != null:
+					_isolate([mirror, reflection]))
+			get_tree().create_timer(Diorama.POP_TIME + 0.05, false).timeout.connect(func() -> void:
+				var mirror := instance_from_id(mirror_id) as Node3D
+				if mirror != null:
+					_make_reflection(mirror))
 		"ofrecida":
 			_cut_to_offered(node)
 		_:
@@ -646,18 +651,20 @@ func _cut_to_offered(node: Node3D) -> void:
 	var tw := _curtain.create_tween()
 	if _curtain.color.a < 0.99:
 		tw.tween_property(_curtain, "color:a", 1.0, CUT_TIME)
+	var pig_id := node.get_instance_id()          # (por id: si el nivel se va antes del corte, ya no está; trampa 40)
 	tw.tween_callback(func() -> void:
-		if not active or kind != "ofrecida" or not is_instance_valid(node):
+		var pig := instance_from_id(pig_id) as Node3D
+		if not active or kind != "ofrecida" or pig == null:
 			return
 		var cam := GameState.camera
 		# Desde donde la ve el jugador en el desván, un poco girada para verle la cara (venimos del
 		# espejo: su vista no sirve).
 		var yaw := deg_to_rad(GameState.diorama.camera_yaw_deg + ENDING_YAW)
-		cam.close_up(Visuals.global_aabb(node).grow(0.06), Vector3(sin(yaw), 0.0, cos(yaw)), ZENITH, ENDING_MARGIN)
+		cam.close_up(Visuals.global_aabb(pig).grow(0.06), Vector3(sin(yaw), 0.0, cos(yaw)), ZENITH, ENDING_MARGIN)
 		cam.snap()                               # un corte, no un viaje: la cámara no da vueltas
-		_light_ending(node)
-		var shown: Array = [node, _offered.node, _spot, _rim, _motes]
-		shown.append_array(_support_under(node))
+		_light_ending(pig)
+		var shown: Array = [pig, _offered.node, _spot, _rim, _motes]
+		shown.append_array(_support_under(pig))
 		_isolate(shown)
 		_frame_to(COZY_IRIS, BARS, 0.01)
 		_shot_ready = true)

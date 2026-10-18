@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/main.tscn" id="1_main"]
+
+[node name="JugarPrototipo" instance=ExtResource("1_main")]
+solo_nivel = "res://levels/prototipo/desvan_prototipo.tscn"
