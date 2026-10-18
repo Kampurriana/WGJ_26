@@ -102,9 +102,10 @@ cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos �
   generado por `tools/build_title_level.gd`); si existe `assets/modelos/menu/menu.glb`, se usa ese. Al
   resolverlo sale el **menú** a la izquierda: Jugar/Continuar, Opciones, Logros, Créditos,
   Salir (no en Web). **Pausa** con Esc o el botón Menú.
-- `levels/level_01_habitacion.tscn` ("La habitación de estudio", con el pack *Modern Japanese Home
-  Props Lite*, MIT) **ya no se juega**: el desván usa algunos de esos props (escritorio, silla,
-  lámpara, altavoz, libros, taza, reloj). Se puede borrar si nadie la quiere.
+- La habitación japonesa (`level_01_habitacion.tscn`, su herramienta y `iluminacion/probar_luz.tscn`)
+  **se borró el 18-oct** con todo lo que no se usaba del pack *Modern Japanese Home Props Lite* (MIT):
+  quedan los 7 modelos que usan el desván oficial y el prototipo (libro, tebeo, reloj, altavoz, silla,
+  taza, lámpara), con su LICENSE y su README.
 - `levels/level_00_muestra.tscn` ya **no se juega**: es el banco de pruebas del test.
 - **Luz:** en escenas editables `iluminacion/*.tscn` (`docs/ILUMINACION.md`). La lámpara del
   escritorio y los faroles se encienden al colocarlos. Medido: quemado 0,0 % (`tools/medir_luz.py`
@@ -333,10 +334,9 @@ carpeta. Si no, parar y preguntar.
 ## 6. Pendiente (por orden de prioridad)
 
 1. **Exportar a Web (sin probar).** El plan de la jam obliga a hacerlo pronto. Faltan las plantillas de
-   exportación de Godot 4.7.2 y `export_presets.cfg`. **Peso:** el pack de props son 332 MB (~230 MB los
-   modelos que usa la habitación; texturas grandes dentro de cada `.glb`): hay que reducir texturas
-   (p. ej. import con compresión/tamaño máximo en los `.import`, o reexportar a 1024 px) y quitar del
-   export lo que no se use (`demo/`, `scenes/` del pack).
+   exportación de Godot 4.7.2 y `export_presets.cfg`. **Peso:** del pack de props quedan 7 modelos
+   (~140 MB: llevan las texturas dentro de cada `.glb`); reducirlos sería reexportarlos con texturas
+   más pequeñas. El export ya deja fuera lo que el juego no carga (test «la build no deja fuera nada»).
    Ojo también al **rendimiento en navegador** de lo nuevo: la capa de madera es una pasada
    transparente más por malla, el contraluz otra, y las partículas son de CPU. Medir FPS.
 2. **Probar en una GPU real** la luz y las sombras (todo se midió con render por software) y el
@@ -387,4 +387,4 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 | Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 147 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final, con la moneda y su fantasma a medio gesto); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
-| Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |
+| Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_kit_level.gd` (y `build_attic_level.gd`, `build_title_level.gd`, `build_sample_level.gd`) |
