@@ -24,6 +24,8 @@ extends Node3D
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
 ##   --sin-interfaz       (capturas) la captura sale sin la interfaz del juego (portada y capturas de itch.io)
+##   --tiro=G,P[,Z]       (capturas) la cámara como la vista del diorama de la preview: giro G y caída P en
+##                        grados, a 1,05 veces la diagonal del diorama (por Z); p. ej. --tiro=40,30
 ##   --presentacion       (capturas) con la presentación del principio (las capturas, si no, empiezan sin ella)
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
 ##   --inspeccion         (capturas) al segundo de empezar, el primer plano de un dibujo (como al encontrarlo)
@@ -71,6 +73,7 @@ var _hold := Vector2(-1, -1)
 var _zoom_steps := 0
 var _press_f9 := false
 var _no_hud := false
+var _tiro := Vector3.ZERO                    ## (capturas, --tiro) giro, caída y zoom de la cámara; z = 0: sin tiro
 var _roll_credits := false
 var _inspect := false
 var _celebrate := ""
@@ -240,6 +243,9 @@ func _parse_args() -> void:
 			_force_splash = true
 		elif a == "--sin-interfaz":
 			_no_hud = true
+		elif a.begins_with("--tiro="):
+			var t := a.get_slice("=", 1).split(",")
+			_tiro = Vector3(t[0].to_float(), t[1].to_float() if t.size() > 1 else 30.0, t[2].to_float() if t.size() > 2 else 1.0)
 		elif a == "--creditos":
 			_roll_credits = true
 		elif a == "--inspeccion":
@@ -381,6 +387,26 @@ func _apply_background() -> void:
 	var vignette := _lighting.get_node_or_null("Vineta/Sombra") as CanvasItem if _lighting != null else null
 	if vignette != null and vignette.material is ShaderMaterial:
 		(vignette.material as ShaderMaterial).set_shader_parameter("color", Fondos.dark(Settings.get_value("fondo_color")))
+
+
+## (--tiro) La cámara como en la vista del diorama de la preview (preview_assets.gd, mostrar): mismo giro
+## y caída, mirando al centro del diorama un poco por debajo, a 1,05 veces su diagonal. Sin límites ni
+## vaivén, para que el tiro sea exactamente ese.
+func _apply_tiro() -> void:
+	var cam := GameState.camera
+	var box := Visuals.global_aabb(GameState.diorama)
+	cam.showcasing = false
+	cam.yaw_min = -180.0
+	cam.yaw_max = 180.0
+	cam.pitch_min = 0.0
+	cam.pitch_max = 89.0
+	cam.yaw = _tiro.x
+	cam.pitch = _tiro.y
+	cam.center = box.get_center() + Vector3(0.0, -box.size.y * 0.12, 0.0)
+	cam.distance = box.size.length() * 1.05 * _tiro.z
+	cam.min_distance = minf(cam.min_distance, cam.distance)
+	cam.max_distance = maxf(cam.max_distance, cam.distance)
+	cam.snap()
 
 
 func load_level(index: int) -> void:
@@ -595,6 +621,8 @@ func _process(delta: float) -> void:
 		_hold = Vector2(-1, -1)
 	if _no_hud and GameState.hud != null:
 		GameState.hud.visible = false
+	if _tiro.z > 0.0 and _capture_path != "" and _elapsed >= _capture_after - 0.8 and GameState.diorama != null:
+		_apply_tiro()
 	if _capture_path != "" and _elapsed >= _capture_after and _solve_left == 0:
 		var img := get_viewport().get_texture().get_image()
 		var path := _capture_path if _shots == 1 else "%s_%02d.png" % [_capture_path.get_basename(), _shot_n]

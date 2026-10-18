@@ -19,6 +19,8 @@ extends Node3D
 ## Abrir en el editor y F6, o:  godot --path . res://preview/preview_assets.tscn
 ## Captura:  godot --path . --resolution 1280x720 res://preview/preview_assets.tscn -- --capture=build/preview.png
 ##           [--vista=diorama] [--capture-after=S] [--yaw=G] [--pitch=G] [--zoom=F] [--luz=inicio]
+##           [--diorama=res://levels/provisional/desvan_provisional.tscn]  (otra escena en la vista del
+##           diorama, con el mismo tiro de cámara: p. ej. el prototipo)
 
 const NIVEL := "res://levels/level_01_desvan.tscn"   ## de aquí salen la luz y los ajustes de cámara
 const KIT := "res://assets/kit"
@@ -55,7 +57,11 @@ func _ready() -> void:
 	contenido.name = "Contenido"
 	add_child(contenido)
 	_montar_catalogo()
-	diorama = (load(DIORAMA) as PackedScene).instantiate()
+	var escena := DIORAMA                    # --diorama=res://...: otra escena en la vista del diorama (el prototipo)
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--diorama="):
+			escena = a.get_slice("=", 1)
+	diorama = (load(escena) as PackedScene).instantiate()
 	add_child(diorama)
 	cam = DioramaCamera.new()
 	cam.name = "Camara"
