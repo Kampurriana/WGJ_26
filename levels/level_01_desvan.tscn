@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://core/diorama.gd" id="1_6c44a"]
 
-[node name="Nivel01Desvan" type="Node3D" unique_id=661760681]
+[node name="Nivel01Desvan" type="Node3D" unique_id=1583184213]
 script = ExtResource("1_6c44a")
 level_title = "El desván"
 modelo_provisional = "res://levels/desvan/desvan_oficial.tscn"

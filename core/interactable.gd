@@ -116,7 +116,11 @@ func activate() -> void:
 
 func set_open(value: bool, animate := true) -> void:
 	is_open = value
-	Sfx.play("open" if is_open else "close")
+	if animate:                                  # (los cajones, con los de Drive FXS; puertas y tapas, aún sin sonido)
+		if kind == NameRules.DRAWER:
+			Sfx.play("abrir_cajon" if is_open else "cerrar_cajon", 0.04)
+		else:
+			Sfx.play("open" if is_open else "close")
 	var goal := _open if is_open else _closed
 	if _tween != null:
 		_tween.kill()
