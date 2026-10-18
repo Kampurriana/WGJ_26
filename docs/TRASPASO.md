@@ -202,8 +202,10 @@ carpeta. Si no, parar y preguntar.
 - **18-oct, el logo («what I never SAID»):** pedido montarlo en motor con sus piezas sueltas (moneda,
   «what I never», «SAID», cerdito) encima del menú y en los créditos, cada pieza con su movimiento, sin
   taparse y con la disposición de la referencia de maquetación. Hecho en `ui/logo.gd` con las cajas
-  medidas en la referencia; **faltan las imágenes** (se pasaron por el chat y no llegaron como fichero):
-  van en `assets/ui/logo/` (nombres en su `LEEME.md`; el texto llega en una imagen y se parte en dos).
+  medidas en la referencia. Las piezas están en Drive `2D/` (`t_logo`, `t_coin_logo`, `t_pig_logo`) y
+  `tools/partir_logo.py` las deja en `assets/ui/logo/` (el texto, partido en sus dos líneas). Llevan un
+  borde blanco de pegatina que la referencia no tiene: la moneda va 12 px más a la izquierda y el cerdito
+  30 a la derecha y 35 más abajo, para que los bordes no se toquen.
   Ojo: el juego aún se llama «Woodo Jam» (título de la ventana, cartel del cerdito).
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de

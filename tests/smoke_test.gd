@@ -269,14 +269,15 @@ func _test_voices() -> void:
 
 ## El logo (ui/logo.gd), montado con las piezas de las artistas: cada una en su caja de la referencia
 ## de maquetación, moviéndose cada una a su aire y sin taparse nunca entre ellas. Aquí, con piezas de
-## prueba de las mismas proporciones (las de verdad van en assets/ui/logo/).
+## las piezas de verdad (assets/ui/logo/) o, si faltan, unas de prueba de las mismas proporciones.
 func _test_logo() -> void:
-	var sizes := {"moneda": Vector2i(64, 64), "what": Vector2i(160, 22), "said": Vector2i(132, 64), "cerdito": Vector2i(106, 100)}
-	var tex := {}
-	for key: String in sizes:
-		var img := Image.create(sizes[key].x, sizes[key].y, false, Image.FORMAT_RGBA8)
-		img.fill(Color.WHITE)
-		tex[key] = ImageTexture.create_from_image(img)
+	var tex := Logo.load_pieces()
+	if tex.is_empty():
+		for key: String in Logo.REF_RECTS:
+			var box: Rect2 = Logo.REF_RECTS[key]
+			var img := Image.create(int(box.size.x / 4.0), int(box.size.y / 4.0), false, Image.FORMAT_RGBA8)
+			img.fill(Color.WHITE)
+			tex[key] = ImageTexture.create_from_image(img)
 	var logo := Logo.new(800.0, tex)
 	add_child(logo)
 	logo.position = Vector2(20, 20)
@@ -309,8 +310,8 @@ func _test_logo() -> void:
 		"cada pieza del logo se mueve a su aire (%d de 4) y nunca se tapan entre ellas (se tocan: %s)" % [moved.size(), ", ".join(touching)])
 	logo.queue_free()
 	var plain := Logo.new(430.0)
-	check(plain.has_pieces() == not Logo.load_pieces().is_empty() and (plain.has_pieces() or plain.get_child(0) is Label),
-		"sin las imágenes del logo sale el nombre del juego en letra; con ellas, las piezas")
+	check(plain.has_pieces() and plain.pieces.size() == 4,
+		"el logo de las artistas está en el juego: sus cuatro piezas (moneda, «what I never», «SAID», cerdito)")
 	plain.free()
 
 

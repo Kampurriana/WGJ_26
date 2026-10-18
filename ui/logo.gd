@@ -12,15 +12,18 @@ const DIR := "res://assets/ui/logo/"
 ## Las piezas: una imagen por pieza, recortada a su dibujo (el texto llega en una imagen con las dos
 ## líneas: se parte en dos al traerlo, «what I never» y «SAID»).
 const FILES := {"moneda": "logo_moneda.png", "what": "logo_what.png", "said": "logo_said.png", "cerdito": "logo_cerdito.png"}
-## La caja de cada pieza en la referencia de maquetación (px de la referencia: 960 × 500).
+## La caja de cada pieza (con su borde blanco de pegatina) en px de la referencia de maquetación (960 de
+## ancho): el dibujo de cada una cae donde está en la referencia; como las piezas llevan un borde blanco
+## que la referencia no tiene, la moneda se aparta 12 px a la izquierda y el cerdito 30 px a la derecha y
+## 35 hacia abajo, lo justo para que los bordes no se toquen ni con el movimiento.
 const REF_RECTS := {
-	"moneda": Rect2(88, 82, 90, 90),
-	"what": Rect2(205, 86, 625, 80),
-	"said": Rect2(86, 243, 492, 205),
-	"cerdito": Rect2(613, 186, 267, 234),
+	"moneda": Rect2(61, 67, 119, 119),
+	"what": Rect2(189, 72, 640, 115),
+	"said": Rect2(72, 228, 534, 274),
+	"cerdito": Rect2(630, 206, 297, 290),
 }
 ## Lo que ocupa el logo entero en la referencia (las cajas, con sitio para que se muevan).
-const REF_FRAME := Rect2(78, 72, 812, 386)
+const REF_FRAME := Rect2(53, 59, 882, 451)
 ## Desde dónde se mueve cada pieza (fracción de su tamaño): el cerdito, desde las patas; «SAID», desde abajo.
 const PIVOTS := {"moneda": Vector2(0.5, 0.5), "what": Vector2(0.5, 0.6), "said": Vector2(0.5, 1.0), "cerdito": Vector2(0.5, 1.0)}
 
@@ -33,6 +36,7 @@ var _label: Label                            ## sin imágenes: el nombre en letr
 ## width = lo ancho que se ve el logo (px). textures = las piezas ya cargadas (si no, las de DIR).
 func _init(width := 430.0, textures: Dictionary = {}) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS   # se ve 3-4 veces más pequeño que la imagen
 	_k = width / REF_FRAME.size.x
 	var tex := textures if not textures.is_empty() else load_pieces()
 	if tex.is_empty():
@@ -117,15 +121,15 @@ func _process(delta: float) -> void:
 	coin.scale.x = cos(clampf((spin - 2.8) / 1.2, 0.0, 1.0) * TAU) if not _intro_running(coin) else coin.scale.x
 	_bob(coin, sin(_t * 1.6) * 3.0)
 	var what: TextureRect = pieces.what          # se mece
-	what.rotation_degrees = sin(_t * 0.9 + 1.0) * 0.8
+	what.rotation_degrees = sin(_t * 0.9 + 1.0) * 0.5
 	_bob(what, sin(_t * 1.1 + 0.5) * 2.0)
 	var said: TextureRect = pieces.said          # respira
 	if not _intro_running(said):
 		said.scale = Vector2.ONE * (1.0 + 0.022 * sin(_t * 1.4 + 2.0))
 	var pig: TextureRect = pieces.cerdito        # saltitos, meciéndose sobre las patas
 	var hop := absf(sin(_t * 2.2))
-	_bob(pig, -pow(hop, 3.0) * 5.0)
-	pig.rotation_degrees = sin(_t * 2.2) * 2.5
+	_bob(pig, -pow(hop, 3.0) * 4.0)
+	pig.rotation_degrees = sin(_t * 2.2) * 2.0
 
 
 func _bob(img: TextureRect, y_ref: float) -> void:
