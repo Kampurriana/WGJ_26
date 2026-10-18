@@ -812,8 +812,10 @@ func _test_story(main: Node) -> void:
 		_mouse_button(tip_at + Vector2(140, 0), false)
 		await get_tree().create_timer(0.4).timeout
 		check(GameState.hud.tip_text() == "", "el consejo es una notificación: deslizándolo fuera de la pantalla, se va")
+		var heard_store: Dictionary = Sfx.played.duplicate()
 		d.collect(blocks)
 		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
+		check(_heard(heard_store, "guardar_inventario") == 1, "al coger lo que va a la bandeja suena «GUARDAR OBJETO EN EL INVENTARIO» (Drive FXS)")
 		await get_tree().process_frame
 		await get_tree().process_frame
 		var flying := GameState.hud.flights()
@@ -1376,7 +1378,7 @@ func _test_title_menu(main: Node) -> bool:
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
-		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle"]
+		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle", "guardar_inventario", "aparecer_capitulo"]
 	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]

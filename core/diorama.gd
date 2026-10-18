@@ -26,6 +26,7 @@ const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
 const ACT_FADE := 0.5                        ## (cambio de acto) lo que tarda la voz en apagarse si el jugador sigue
 const COMPLETE_SOUND := "completar_puzzle"   ## al completar el puzle (Drive FXS, «COMPLETAR PUZZLE»)
+const STORE_SOUND := "guardar_inventario"    ## al coger lo que va a la bandeja (Drive FXS, «GUARDAR OBJETO EN EL INVENTARIO»)
 ## Al abrirse un capítulo (una sección con rótulo), primero el rótulo; sus cosas (muebles y siluetas)
 ## aparecen cuando se empieza a ir (Hud.show_chapter: a los 3,8 s), creciendo una tras otra con el
 ## sonido de Drive FXS «Cuando aparecen las cosas del capitulo» (aparecer_capitulo). Pedido del 18-oct.
@@ -576,7 +577,7 @@ func collect(it: Interactable) -> void:
 	it.set_clickable(false)
 	it.set_attention(false)
 	inventory.append(it.id)
-	Sfx.play("pickup")
+	Sfx.play(STORE_SOUND, 0.03)
 	Events.piece_collected.emit(it.id, it.target)
 	Narrator.say_if_exists("recogido_" + String(it.id))
 	# El objeto se encoge donde estaba y su ficha vuela por la pantalla hasta la bandeja (Hud).
