@@ -24,6 +24,7 @@ extends Node3D
 const MENU_SWAY_DEG := 14.0                  ## en el menú de inicio, el diorama se mece así de un lado a otro
 const MENU_SWAY_SPEED := 0.35
 const MENU_SHIFT := 0.22                     ## y se corre a la derecha para dejar sitio al panel del menú
+const MENU_ZOOM := 0.68                      ## y se acerca: el cerdito, grande al lado del menú
 const INTRO_TIME := 2.2                      ## entrada al nivel: segundos de movimiento de cine
 const INTRO_SMOOTH := 0.65                   ## y su suavidad (más = más lento y blando)
 const CINE_SMOOTH := 0.55                    ## suavidad de pista y rincones
@@ -196,8 +197,8 @@ func showcase() -> void:
 	_cine(2.5, 0.9)
 
 
-## Vista del menú de inicio: vuelve al encuadre inicial, se mece sola, se corre a la derecha
-## y no hace caso al jugador (las flechas y el ratón son para el menú).
+## Vista del menú de inicio: vuelve al encuadre inicial más de cerca (MENU_ZOOM), se mece sola, se corre
+## a la derecha y no hace caso al jugador (las flechas y el ratón son para el menú).
 func set_menu_view(on: bool) -> void:
 	_menu_view = on
 	_input_enabled = not on and not in_moment
@@ -206,7 +207,7 @@ func set_menu_view(on: bool) -> void:
 		yaw = _home.get("yaw", yaw)
 		pitch = _home.get("pitch", pitch)
 		center = _home.get("center", center)
-		distance = _home.get("distance", distance)
+		distance = float(_home.get("distance", distance)) * MENU_ZOOM
 
 
 func home_center() -> Vector3:

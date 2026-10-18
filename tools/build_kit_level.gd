@@ -39,6 +39,7 @@ const TILESET := "res://assets/kit/piezas/"
 const MIRROR_PAINTED := "res://assets/kit/materiales/M_Pack08.tres"   ## el espejo con ella en la luna (Pack08)
 const RUG_TOP := 0.17                         ## la alfombra de la adolescencia (encima, lo que se tumba en ella)
 const ADULT_RUG_TOP := 0.19                   ## la de la adultez
+const PHOTO_LONG := 0.233                       ## lo largo de una polaroid del kit (tumbada, va de su pie hacia -Z)
 const KEYS_AT := Vector3(0.94, 1.15, -1.347)  ## el llavero, en la cara de delante del pilar (la columna acaba en z -1,40)
 const KIT_OTTER := "res://assets/kit/modelos/Otter/SM_otter.fbx"
 const KIT_OTTER_MAT := "res://assets/kit/materiales/M_Otter.tres"
@@ -175,9 +176,8 @@ func _structure(sec: Node3D) -> void:
 			bulbs.append("%s/%s" % [rope, c.name])
 	_each(sec, "bombilla__after-guirnalda", bulbs)
 	_each(sec, "guirnalda__after-tejado", ropes)
-	# La hucha, en el centro sobre una caja del kit (el baúl viejo: lo que la sostiene en el final). El
-	# cerdito del kit viene en 10 trozos (los de la montada de las artistas) y 5 pegatinas: se montan en su rincón (Z_, primer plano), delante de la caja;
-	# entero, va a la bandeja, y se pone el último encima de su caja.
+	# La hucha, en el centro sobre una caja del kit (el baúl viejo: lo que la sostiene en el final). Viene
+	# ya montada (18-oct: sin rincón de montaje): sale de la bandeja y se pone la última encima de su caja.
 	var trunk := _take("Muebles/SM_BoxB", _root, "BaulViejo")
 	trunk.global_position = Vector3(0.45, FLOOR, 1.72)
 	trunk.rotation_degrees.y = 8.0
@@ -187,32 +187,6 @@ func _structure(sec: Node3D) -> void:
 	kit_pig.global_position = Vector3(0.45, top, 1.72)
 	kit_pig.global_rotation_degrees = Vector3(0, 200.0, 0)                       # de cara al jugador
 	kit_pig.global_position.y += top - Visuals.global_aabb(kit_pig).position.y   # apoyada justo encima (el final busca lo que la sostiene)
-	_pig_bench(sec, kit_pig, Vector3(0.45, FLOOR, 2.33))
-
-
-## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 10 trozos y sus 5 pegatinas (Pack07 del 18-oct
-## por la tarde, montada como SM_pig_compo), cada uno su pieza (las patas, las orejas, los ojos y las pegatinas, iguales; arriba, su
-## corona), montados donde van; primero el cuerpo.
-func _pig_bench(sec: Node3D, pig: Node3D, at: Vector3) -> void:
-	var bench := _node(sec, "Z_montaje_hucha__reward-hucha__monta", at)
-	bench.rotation_degrees.y = 200.0
-	var parts := {"SM_PigA": "pata_hucha", "SM_PigB": "pata_hucha", "SM_PigC": "pata_hucha", "SM_PigD": "pata_hucha",
-		"SM_PigE": "cuerpo_hucha", "SM_PigF": "oreja_hucha", "SM_PigG": "oreja_hucha", "SM_PigH": "hocico_hucha",
-		"SM_PigI": "ojo_hucha", "SM_PigJ": "ojo_hucha", "SM_PigK": "corona_hucha", "SM_PigL": "cola_hucha"}
-	var used := {}
-	for m in Visuals.meshes_under(pig):
-		var part: String = "pegatina_hucha" if String(m.name).begins_with("Plane") else parts[String(m.name)]
-		var n: int = used.get(part, 0)
-		used[part] = n + 1
-		var tokens := "" if part == "cuerpo_hucha" else "__after-cuerpo_hucha"
-		var piece := _node(bench, "P_%s%s%s" % [part, tokens, "" if n == 0 else "_%03d" % n], Vector3.ZERO)
-		var copy := m.duplicate() as MeshInstance3D
-		copy.transform = _rel(m, pig)
-		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(MESHES_OUT))
-		var path := MESHES_OUT + "hucha_%s.res" % String(m.name).trim_prefix("SM_Pig").to_lower()
-		ResourceSaver.save(m.mesh.duplicate(), path)   # (su malla, en su fichero: la de la hucha es de su escena)
-		copy.mesh = load(path)
-		piece.add_child(copy)
 
 
 # --- Sección 2: la infancia (izquierda) ----------------------------------------------------------
@@ -344,12 +318,17 @@ func _teen(sec: Node3D) -> void:
 	_piece(sec, "P_tapete__after-escritorio", ["Muebles/SM_CoverDesk"])
 	_piece(sec, "P_escritorio", ["Muebles/SM_DeskA"])
 	var top := Visuals.global_aabb(desk).end.y
-	# El MP3 viene en trozos: se monta en su banco (Z_, primer plano), en la alfombra, y entero se pone
-	# en el escritorio.
-	var mp3 := _piece(sec, "P_mp3__after-escritorio", ["Muebles/SM_MP3"])
-	_mp3_bench(sec, mp3.get_child(0) as Node3D, Vector3(-0.42, FLOOR + 0.025, 0.55))
+	# El MP3 viene en trozos y se monta en su sitio, encima del escritorio (18-oct: sin rincón aparte):
+	# con el último trozo, su primer plano y su frase (token de-mp3).
+	_mp3_parts(sec, "Muebles/SM_MP3")
 	# La cámara (clave, flash): la polaroid del kit, en el escritorio (donde la dejaron las artistas).
 	_piece(sec, "P_camara__clave__flash", ["Muebles/SM_Polaroid"])
+	# Y junto a ella, unas fotos suyas sueltas (18-oct): una medio debajo de la cámara y otra en el tapete.
+	var desk_photos := [["SM_PolaroidD", Vector3(0.05, top + 0.006, -1.02), -8.0], ["SM_PolaroidA", Vector3(-0.17, top + 0.016, -1.08), 12.0]]
+	for k in desk_photos.size():
+		var yaw: float = desk_photos[k][2]
+		var foot: Vector3 = desk_photos[k][1] + Basis(Vector3.UP, deg_to_rad(yaw)) * Vector3(0, 0, PHOTO_LONG * 0.5)
+		_kit_piece(sec, "P_foto_camara__after-escritorio" + ("" if k == 0 else "_%03d" % k), desk_photos[k][0], foot, yaw, -90.0)
 	var lamp := _piece(sec, "P_lampara__after-escritorio", ["Adornos/SM_Lamp"])
 	_lamp_light(lamp)
 	(lamp.get_node("Luz") as SpotLight3D).spot_range = 1.9
@@ -583,10 +562,12 @@ func _each(parent: Node3D, id_and_tokens: String, paths: Array, first := 0) -> v
 ## El MP3 del kit es una malla con sus trozos juntos (en el paquete, Pack05, vienen sueltos pero puestos
 ## para texturizar, no montados). Se parte en sus trozos sueltos (triángulos unidos), cada uno en su sitio
 ## del montado, y se agrupan en tres piezas: la carcasa (con la pantalla y los botones, que no se podrían
-## coger de tan pequeños), la rueda y los auriculares (lo que queda fuera de la carcasa).
-func _mp3_bench(sec: Node3D, mp3: Node3D, at: Vector3) -> void:
-	var bench := _node(sec, "Z_montaje_mp3__reward-mp3__monta", at)
-	bench.global_basis = mp3.global_basis
+## coger de tan pequeños), la rueda y los auriculares (lo que queda fuera de la carcasa). Van juntas en
+## "MP3", donde estaba el del kit (encima del escritorio), cada una __de-mp3: puestas las tres, el MP3.
+func _mp3_parts(sec: Node3D, kit_path: String) -> void:
+	var mp3 := _take(kit_path, sec)              # (el del kit se parte y sobra: se libera al acabar)
+	var bench := _node(sec, "MP3", Vector3.ZERO)
+	bench.global_transform = mp3.global_transform
 	var joined := Visuals.meshes_under(mp3)[0]
 	var mat := joined.get_active_material(0)
 	var in_piece := _rel(joined, mp3)              # (el montado va girado y escalado dentro de su pieza)
@@ -630,7 +611,7 @@ func _mp3_bench(sec: Node3D, mp3: Node3D, at: Vector3) -> void:
 		var part_mesh := st.commit()
 		var path := MESHES_OUT + key + ".res"
 		ResourceSaver.save(part_mesh, path)
-		var tokens := "" if key == "carcasa_mp3" else "__after-carcasa_mp3"
+		var tokens := ("__after-escritorio" if key == "carcasa_mp3" else "__after-carcasa_mp3") + "__de-mp3"
 		var piece := _node(bench, "P_%s%s" % [key, tokens], Vector3.ZERO)
 		var m := MeshInstance3D.new()
 		m.name = "Malla"
@@ -639,6 +620,7 @@ func _mp3_bench(sec: Node3D, mp3: Node3D, at: Vector3) -> void:
 		m.set_surface_override_material(0, mat)
 		piece.add_child(m)
 		print("MP3 %s: %d triángulos" % [key, (groups[key] as Array).size()])
+	mp3.free()
 
 
 ## Los triángulos de una malla (en el espacio de `root`).

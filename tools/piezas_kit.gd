@@ -59,9 +59,14 @@ const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
 ## El Pack07 del 18-oct por la tarde trae la hucha "explotada" (los trozos separados del cuerpo, para
 ## pintarla) y sus pegatinas pegadas al cuerpo. La montada es la de las artistas, SM_pig_compo.fbx (18-oct:
 ## una sola malla con los trozos en su sitio, sin ojos ni pegatinas): cada trozo va donde casan sus
-## vértices con los de ella (al milímetro); los que no están en ella (los ojos) no van; las pegatinas, con
-## el cuerpo. Si llega otra montada, basta con dejarla en su sitio y rehacer el tileset.
+## vértices con los de ella (al milímetro); los ojos, que no están en ella, donde los traía la hucha montada
+## de la mañana (OJOS: su origen respecto al del cuerpo); las pegatinas, con el cuerpo, y el arcoíris
+## (ARCOIRIS), girado alrededor del cuerpo hasta su costado (venía encima de la oreja). Si llega otra
+## montada, basta con dejarla en su sitio y rehacer el tileset.
 const HUCHA_COMPO := KIT + "referencia/SM_pig_compo.fbx"
+const OJOS := {"SM_PigI": Vector3(0.0621, 0.0248, -0.1640), "SM_PigJ": Vector3(-0.0621, 0.0248, -0.1640)}
+const ARCOIRIS := "Plane006"
+const ARCOIRIS_GIRO := -51.0                     ## grados alrededor del eje vertical del cuerpo (hacia atrás)
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. El reparto es el de Eva (18-oct): en TexturasFinales se ignoran
 ## CON_LINEART, Hat, Lights, LitterBox, Music_Box, Otter y POLAROIDS (lo suyo va ahora en los Pack).
@@ -171,13 +176,11 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 	for i in mallas.size():
 		var src: MeshInstance3D = mallas[i]
 		if nombre == "SM_Pig" and hucha.get(src) == null:
-			continue                             # (no está en la montada: los ojos)
+			continue                             # (no casa con la montada)
 		var m := MeshInstance3D.new()
 		m.name = src.name if mallas.size() > 1 else "Malla"
 		m.mesh = src.mesh
-		m.transform = _xf_en_fichero(src, escena)
-		if nombre == "SM_Pig":
-			m.transform.origin += hucha[src] as Vector3
+		m.transform = hucha[src] if nombre == "SM_Pig" else _xf_en_fichero(src, escena)
 		var mat := _material(nombre, kit)
 		for s in m.mesh.get_surface_count():
 			m.set_surface_override_material(s, mat)
@@ -197,9 +200,9 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 	return err
 
 
-## Cuánto hay que mover cada trozo de la hucha (en su fichero) para que quede donde está en la montada de
-## las artistas (HUCHA_COMPO): la traslación con la que sus vértices caen sobre los de ella. null = no está
-## en ella (los ojos); las pegatinas, las del cuerpo (van pegadas a él).
+## Dónde va cada trozo de la hucha (en su fichero) para que quede donde está en la montada de las artistas
+## (HUCHA_COMPO): movido con la traslación con la que sus vértices caen sobre los de ella. Los ojos, a OJOS
+## del cuerpo; las pegatinas, con el cuerpo (van pegadas a él); el arcoíris, además, girado. null = no casa.
 func _hucha_compo(mallas: Array, escena: Node) -> Dictionary:
 	var compo: Node = (load(HUCHA_COMPO) as PackedScene).instantiate()
 	var montada := compo.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
@@ -208,17 +211,58 @@ func _hucha_compo(mallas: Array, escena: Node) -> Dictionary:
 	var celdas := {}
 	for v in puntos:
 		celdas[_celda(v)] = true
-	var out := {}
-	var cuerpo: Variant = null
+	var mover := {}
+	var cuerpo: MeshInstance3D = null
 	for src: MeshInstance3D in mallas:
-		if String(src.name).begins_with("SM_Pig"):
-			out[src] = _casar(_vertices(src, _xf_en_fichero(src, escena)), puntos, celdas)
+		if String(src.name).begins_with("SM_Pig") and not OJOS.has(String(src.name)):
+			mover[src] = _casar(_vertices(src, _xf_en_fichero(src, escena)), puntos, celdas)
 			if src.name == &"SM_PigE":
-				cuerpo = out[src]
+				cuerpo = src
+	var out := {}
+	if cuerpo == null or mover[cuerpo] == null:
+		return out
+	var xf_cuerpo := _xf_en_fichero(cuerpo, escena)
+	xf_cuerpo.origin += mover[cuerpo] as Vector3
+	var centro := xf_cuerpo * cuerpo.mesh.get_aabb().get_center()
 	for src: MeshInstance3D in mallas:
-		if not out.has(src):
-			out[src] = cuerpo
+		var xf := _xf_en_fichero(src, escena)
+		if OJOS.has(String(src.name)):
+			xf.origin = xf_cuerpo.origin + (OJOS[String(src.name)] as Vector3)
+		elif mover.has(src):
+			if mover[src] == null:
+				out[src] = null
+				continue
+			xf.origin += mover[src] as Vector3
+		else:
+			xf.origin += mover[cuerpo] as Vector3
+			if src.name == StringName(ARCOIRIS):
+				xf = _girar_en_cuerpo(xf, src, centro, _vertices(cuerpo, xf_cuerpo))
+		out[src] = xf
 	return out
+
+
+## Una pegatina girada ARCOIRIS_GIRO alrededor del eje vertical del cuerpo y llevada a ras de él (el cuerpo
+## no es una esfera: donde acaba tiene otro radio que donde estaba).
+func _girar_en_cuerpo(xf: Transform3D, m: MeshInstance3D, centro: Vector3, cuerpo: PackedVector3Array) -> Transform3D:
+	var antes := (xf * m.mesh.get_aabb().get_center()) - centro
+	var giro := Transform3D(Basis(Vector3.UP, deg_to_rad(ARCOIRIS_GIRO)), Vector3.ZERO)
+	var nuevo := Transform3D(Basis(), centro) * giro * Transform3D(Basis(), -centro) * xf
+	var despues := giro.basis * antes
+	var dir := Vector3(despues.x, 0, despues.z).normalized()
+	nuevo.origin += dir * (_radio(cuerpo, centro, despues) - _radio(cuerpo, centro, antes))
+	return nuevo
+
+
+## El radio medio del cuerpo en la dirección `d` (los vértices a menos de 12° de ella), en horizontal.
+func _radio(cuerpo: PackedVector3Array, centro: Vector3, d: Vector3) -> float:
+	var suma := 0.0
+	var n := 0
+	for v in cuerpo:
+		var r := v - centro
+		if r.angle_to(d) < deg_to_rad(12.0):
+			suma += Vector2(r.x, r.z).length()
+			n += 1
+	return suma / n if n > 0 else 0.0
 
 
 func _vertices(m: MeshInstance3D, xf: Transform3D) -> PackedVector3Array:

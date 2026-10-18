@@ -625,27 +625,23 @@ func _test_story(main: Node) -> void:
 	var drawers_out := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"cajon_comoda").all(func(sl: PieceSlot) -> bool:
 		return (sl.node.get_child(0) as Node3D).global_basis.z.dot(dresser.global_basis.z) < -0.9)
 	check(_slots_with(d, &"cajon_comoda") == 3 and drawers_out, "los cajones de la cómoda miran hacia fuera: se les ven los tiradores")
-	var extras := ["foto_suelta", "papeles", "folio", "papel_arrugado", "llaves"].map(func(id: String) -> int: return _slots_with(d, StringName(id)))
-	check(extras == [3, 1, 2, 2, 1], "más cosas del kit en el desván: fotos sueltas, apuntes, folios, papeles arrugados y el llavero (%s)" % [extras])
-	# La hucha del kit viene en 10 trozos y 5 pegatinas: se monta en su rincón (Z_ __monta), con primer plano.
-	var bench: Interactable = null
-	for it in d.interactables:
-		if it.kind == NameRules.ZOOM and it.reward == &"hucha":
-			bench = it
-	var bench_parts := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.scope == bench) if bench != null else []
-	check(bench != null and bench.workbench and bench_parts.size() == 15 and bench.attention and bench.is_clickable()
-		and not d.visible_inventory().has(&"cuerpo_hucha"),
-		"la hucha se monta en su rincón: 10 trozos (los de la montada de las artistas) y 5 pegatinas que no salen en la bandeja hasta entrar, y el rincón llama la atención (%s)"
-		% [[bench.workbench, bench_parts.size(), bench.attention, bench.is_clickable(), d.visible_inventory().has(&"cuerpo_hucha"), d.lock_reason(&"hucha")] if bench != null else []])
-	if bench != null:
-		d.enter_focus(bench)
-		await get_tree().process_frame
-		check(d.visible_inventory().has(&"cuerpo_hucha") and not d.visible_inventory().has(&"tejado") and not bench.attention,
-			"al entrar en el rincón, la bandeja enseña solo sus trozos (y deja de llamar) (%s)" % [[d.visible_inventory().slice(0, 6), bench.attention]])
-		d.exit_focus()
+	var extras := ["foto_suelta", "papeles", "folio", "papel_arrugado", "llaves", "foto_camara"].map(func(id: String) -> int: return _slots_with(d, StringName(id)))
+	check(extras == [3, 1, 2, 2, 1, 2], "más cosas del kit en el desván: fotos sueltas, apuntes, folios, papeles arrugados, el llavero y fotos junto a la cámara (%s)" % [extras])
+	var cam_box := Visuals.global_aabb(_slot(d, &"camara").node).grow(0.12)
+	check(d.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"foto_camara").all(func(sl: PieceSlot) -> bool:
+		return cam_box.intersects(Visuals.global_aabb(sl.node))),
+		"las fotos de la cámara, encima del escritorio, junto a ella")
+	# La hucha del kit viene ya montada (18-oct: sin rincón de montaje): entera en la bandeja, con sus ojos
+	# y sus 5 pegatinas; al ponerla solo suena su frase (ninguna sin voz, como la del rincón acabado).
+	var pig_slot := _slot(d, &"hucha")
+	var pig_parts := Visuals.meshes_under(pig_slot.node).size() if pig_slot != null else 0
+	check(pig_slot != null and pig_parts == 17 and pig_slot.scope == null
+		and not d.interactables.any(func(it: Interactable) -> bool: return it.kind == NameRules.ZOOM),
+		"la hucha viene montada: ni rincón de montaje ni trozos sueltos; entera, con sus 12 trozos (ojos incluidos) y 5 pegatinas (%d)" % pig_parts)
 	var placed: Array[StringName] = []
 	var record := func(id: StringName, _n: Node3D) -> void: placed.append(id)
 	Events.piece_placed.connect(record)
+	Events.whole_placed.connect(record)          # (lo montado de trozos: el MP3)
 	var flashes := [0]
 	var count_flash := func() -> void: flashes[0] += 1
 	Events.flash_requested.connect(count_flash)
@@ -670,8 +666,8 @@ func _test_story(main: Node) -> void:
 		% [[_heard(heard_s1, "colocar_pared"), _heard(heard_s1, "colocar_tejado"), _heard(heard_s1, "colocar_viga"), _heard(heard_s1, "colocar_tablon")]])
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
 		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
-	check(bench != null and bench.completed and placed.find(&"cuerpo_hucha") >= 0 and placed.find(&"cuerpo_hucha") < placed.find(&"hucha"),
-		"primero se monta la hucha en su rincón y luego, entera, se pone encima de su caja")
+	check(not placed.has(&"cuerpo_hucha") and _slot(d, &"hucha").filled and not GameState.dialogue_log.has("sub_completo"),
+		"la hucha se pone entera encima de su caja, sin montarla antes ni la frase (sin voz) de un rincón acabado")
 	var cam_ctl := GameState.camera
 	var m: Momentos = main.momentos
 	check(m.active and m.target == _slot(d, &"hucha").node and cam_ctl.in_moment and GameState.hud.in_moment()
@@ -755,7 +751,6 @@ func _test_story(main: Node) -> void:
 		"la cámara se queda quieta mientras está el rótulo y, al aparecer las cosas del capítulo, se desliza despacio a su zona")
 	check(s2.opened and not d.act_waiting() and not GameState.hud.continue_button.visible and GameState.hud.chapter_text().contains("Infancia"),
 		"al pulsar «Continuar» sale el rótulo del capítulo y se abre la infancia")
-	check(bench != null and not bench.target.visible, "lo montado en el rincón se fue a la bandeja (no se queda repetido en el rincón)")
 	check(quiet_title and title_wait >= Diorama.CHAPTER_REVEAL - 0.15,
 		"al abrirse un capítulo, primero su rótulo: sus muebles y sus siluetas esperan a que se empiece a ir (%.1f s)" % title_wait)
 	check(_more(heard_chapter, "aparecer_capitulo") and Sfx.length("aparecer_capitulo") > 0.0,
@@ -1020,10 +1015,26 @@ func _test_story(main: Node) -> void:
 		and drawer_slots.all(func(sl: PieceSlot) -> bool: return sl.prereqs.has(&"escritorio") and not sl.filled)
 		and top_drawer != null and top_drawer.inside.size() == 1 and not top_drawer.is_clickable() and not top_drawer.attention,
 		"los cajones del escritorio son piezas que hay que poner (después del escritorio) y el de arriba no se abre sin ponerlo")
+	var mp3_parts := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.part_of == &"mp3")
 	steps = 0
-	while not _slot(d, &"mp3").filled and steps < 40:
+	var early := [false, false]                    # (con dos trozos puestos: ¿visto? ¿ya había momento?)
+	while mp3_parts.any(func(sl: PieceSlot) -> bool: return not sl.filled) and steps < 40:
 		d.debug_solve_step()
 		steps += 1
+		if mp3_parts.filter(func(sl: PieceSlot) -> bool: return sl.filled).size() == 2 and not early[0]:
+			early = [true, placed.has(&"mp3") or GameState.dialogue_log.has("pieza_mp3")]
+	check(early[0] and not early[1] and placed.has(&"mp3") and m.active and m.target == d.whole_node(&"mp3")
+		and GameState.dialogue_log.has("pieza_mp3"),
+		"con el último trozo del MP3 (no antes), su primer plano, con el MP3 entero, y su frase, como estaba planeado")
+	await get_tree().create_timer(Diorama.POP_TIME + 0.05).timeout
+	var desk_top := Visuals.global_aabb(_slot(d, &"escritorio").node)
+	var on_desk := true
+	for sl: PieceSlot in mp3_parts:
+		var c := Visuals.global_aabb(sl.node).get_center()
+		on_desk = on_desk and c.x > desk_top.position.x and c.x < desk_top.end.x and c.z > desk_top.position.z \
+			and c.z < desk_top.end.z and absf(c.y - desk_top.end.y) < 0.06 and sl.scope == null
+	check(mp3_parts.size() == 3 and _slot(d, &"mp3") == null and d.whole_node(&"mp3") != null and on_desk,
+		"el MP3 se monta en su sitio, encima del escritorio: carcasa, rueda y auriculares, sin rincón aparte (%d trozos)" % mp3_parts.size())
 	check(application.available and not camera_pick.available and application.container != null
 		and application.container.kind == NameRules.DRAWER and application.container.attention
 		and application.container.pieces_ready() and application.container.is_clickable(),
@@ -1603,6 +1614,13 @@ func _test_title_menu(main: Node) -> bool:
 	var stickers := t.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("pegatina_")).size()
 	check(_slot(t, &"cuerpo") != null and _slot(t, &"hocico") != null and stickers == 5,
 		"el título es la hucha de cerdito, con sus pegatinas para decorarla (%d pegatinas)" % stickers)
+	var rainbow := _slot(t, &"pegatina_arcoiris")
+	var pig_frame := rainbow.node.get_parent() as Node3D if rainbow != null else null   # (cajas en la hucha: girada, se inflan)
+	var rainbow_box := _box_in(rainbow.node, pig_frame) if rainbow != null else AABB()
+	var ears := t.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"oreja")
+	check(_slots_with(t, &"ojo") == 2 and rainbow != null and ears.size() == 2
+		and not ears.any(func(sl: PieceSlot) -> bool: return _box_in(sl.node, pig_frame).intersects(rainbow_box)),
+		"la hucha tiene sus dos ojos y la pegatina del arcoíris va en su costado (no debajo de la oreja)")
 	check(_slot(t, &"pegatina_nombre") == null and t.find_child("Cartel", true, false) == null,
 		"el cerdito no lleva cartel con el nombre (el nombre lo pone el logo del menú)")
 	check(t.count_of(&"pata") == 4 and _slots_with(t, &"pata") == 4, "las patas repetidas son la misma pieza: cuatro que valen en cualquier hueco de pata")
@@ -1664,6 +1682,9 @@ func _test_title_menu(main: Node) -> bool:
 	if not main.menu.is_open():
 		return false
 	check(not GameState.hud._panel.visible and not GameState.hud._done.visible, "con el menú abierto, el panel de piezas se esconde")
+	var menu_cam := GameState.camera
+	check(menu_cam._menu_view and is_equal_approx(menu_cam.distance, t.camera_distance * DioramaCamera.MENU_ZOOM) and DioramaCamera.MENU_ZOOM < 0.8,
+		"en el menú, la cámara se acerca al cerdito: se ve grande al lado del menú (%.2f de %.2f)" % [menu_cam.distance, t.camera_distance])
 	check(main.menu.buttons.jugar.text == "Jugar", "sin progreso, el botón dice Jugar")
 	for i in 2:
 		await get_tree().process_frame
@@ -1687,10 +1708,11 @@ func _test_title_menu(main: Node) -> bool:
 	check(_more(heard, "boton_preseleccion") and int(Sfx.played.get("boton_seleccion", 0)) - int(heard.get("boton_seleccion", 0)) == 2,
 		"los botones del menú suenan al pasar el puntero y al pulsarlos (una vez por clic)")
 	var waited := 0.0
-	while GameState.camera.cam.h_offset > -0.3 and waited < 1.5:
+	var shifted := -DioramaCamera.MENU_SHIFT * GameState.camera.distance * 0.9   # (lo que se corre va con lo cerca que está)
+	while GameState.camera.cam.h_offset > shifted and waited < 1.5:
 		waited += get_process_delta_time()
 		await get_tree().process_frame
-	check(GameState.camera.cam.h_offset < -0.3, "la cámara corre el diorama a la derecha del menú (h_offset %.2f)" % GameState.camera.cam.h_offset)
+	check(GameState.camera.cam.h_offset < shifted, "la cámara corre el diorama a la derecha del menú (h_offset %.2f)" % GameState.camera.cam.h_offset)
 	var play_btn: Button = main.menu.buttons.jugar
 	play_btn.mouse_entered.emit()
 	await get_tree().create_timer(0.3).timeout
@@ -1813,7 +1835,7 @@ func _test_back_to_menu(main: Node) -> void:
 		"los créditos empiezan con el nombre del juego ya a la vista y no siguen subiendo en blanco (a %.0f px, %.0f s en total)"
 		% [credits.title_y(), credits.roll_seconds()])
 	var who := Array(credits.lines())
-	check(["Eva Fernandez Valero", "Carmen Esteban Fernandez-Vicenti", "Inés Jackson Martín", "Sandra", "Ana Climent Sapena",
+	check(["Eva Fernandez Valero", "Carmen Esteban Fernandez-Vicenti", "Inés Jackson Martín", "Sandra García Marín", "Ana Climent Sapena",
 			"Anaïs Soriano Gimeno"].all(func(n: String) -> bool: return who.has(n))
 		and who.any(func(l: String) -> bool: return l.contains("ayuda de la IA"))
 		and who.has("Licencia del juego: CC BY-SA 3.0") and who.any(func(l: String) -> bool: return l.contains("(licencia MIT)"))
@@ -2153,6 +2175,18 @@ func _kit_mesh(m: MeshInstance3D, piece: String) -> bool:
 
 
 ## Si el efecto ha sonado desde `before` (una copia de Sfx.played).
+## La caja de las mallas de `n` en el espacio de `frame`.
+func _box_in(n: Node3D, frame: Node3D) -> AABB:
+	var inv := frame.global_transform.affine_inverse()
+	var out := AABB()
+	var first := true
+	for m in Visuals.meshes_under(n):
+		var b := (inv * m.global_transform) * m.get_aabb()
+		out = b if first else out.merge(b)
+		first = false
+	return out
+
+
 func _more(before: Dictionary, sound: String) -> bool:
 	return _heard(before, sound) > 0
 

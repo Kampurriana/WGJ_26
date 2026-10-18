@@ -20,6 +20,7 @@ var is_key := false              # token clave: va la última de su sección
 var flash := false               # token flash: destello blanco al colocarla
 var reflejo := false             # token reflejo: su momento es de frente, todo a negro, con un reflejo (el espejo)
 var offered := false             # token ofrecida: no va a la bandeja; aparece flotando junto a su hueco (la moneda)
+var part_of: StringName = &""    # token de-<id>: es un trozo de <id> (el MP3); con todos puestos, <id> está puesto
 var available := true            # ya toca: silueta blanca y se puede poner (si no, gris y bloqueada)
 var shown := true                # se ve la silueta (su sección está abierta)
 var filled := false

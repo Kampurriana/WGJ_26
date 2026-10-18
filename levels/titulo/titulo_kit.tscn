@@ -1,131 +1,147 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Peana.scn" id="1_7io16"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_piga.res" id="2_go2wb"]
-[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack07.tres" id="3_yrau6"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigb.res" id="4_oi8sg"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigc.res" id="5_ubfdv"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pige.res" id="6_3764d"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigf.res" id="7_lgcls"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigh.res" id="8_jsa4t"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigk.res" id="9_3umhr"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigd.res" id="10_dko7r"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigg.res" id="11_wltne"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigl.res" id="12_n2a1n"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane001.res" id="13_8wl6e"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane002.res" id="14_4chql"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane003.res" id="15_cwn7u"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane005.res" id="16_gcbrj"]
-[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane006.res" id="17_owogx"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Peana.scn" id="1_yrau6"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_piga.res" id="2_oi8sg"]
+[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack07.tres" id="3_ubfdv"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigb.res" id="4_3764d"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigc.res" id="5_lgcls"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pige.res" id="6_jsa4t"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigf.res" id="7_3umhr"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigh.res" id="8_dko7r"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigj.res" id="9_wltne"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigk.res" id="10_n2a1n"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigd.res" id="11_8wl6e"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigg.res" id="12_4chql"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigi.res" id="13_cwn7u"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/sm_pigl.res" id="14_gcbrj"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane001.res" id="15_owogx"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane002.res" id="16_hyycj"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane003.res" id="17_j3rbx"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane005.res" id="18_3a0a6"]
+[ext_resource type="ArrayMesh" path="res://levels/titulo/mallas/plane006.res" id="19_lo8qt"]
 
-[node name="Cerdito" type="Node3D" unique_id=1631194826]
+[node name="Cerdito" type="Node3D" unique_id=1293127702]
 
-[node name="Tocon" type="Node3D" parent="." unique_id=1456486224 instance=ExtResource("1_7io16")]
+[node name="Tocon" type="Node3D" parent="." unique_id=1456486224 instance=ExtResource("1_yrau6")]
 
-[node name="Hucha" type="Node3D" parent="." unique_id=352493704]
+[node name="Hucha" type="Node3D" parent="." unique_id=1967325431]
 transform = Transform3D(-0.81915206, 0, -0.57357645, 0, 1, 0, 0.57357645, 0, -0.81915206, 0, 0.07607332, 0)
 
-[node name="P_pata__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1594150145]
+[node name="P_pata__after-cuerpo" type="Node3D" parent="Hucha" unique_id=154037182]
 
-[node name="SM_PigA" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo" unique_id=1630167325]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.106864214, 0.05204159, -0.0690518)
-mesh = ExtResource("2_go2wb")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigA" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo" unique_id=96641787]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.11325264, 0.05204159, -0.0690518)
+mesh = ExtResource("2_oi8sg")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pata__after-cuerpo_001" type="Node3D" parent="Hucha" unique_id=294403032]
+[node name="P_pata__after-cuerpo_001" type="Node3D" parent="Hucha" unique_id=760307081]
 
-[node name="SM_PigB" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo_001" unique_id=1700341632]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.098658085, 0.05204159, -0.078719676)
-mesh = ExtResource("4_oi8sg")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigB" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo_001" unique_id=2129440729]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.09226966, 0.05204159, -0.078719676)
+mesh = ExtResource("4_3764d")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pata__after-cuerpo_002" type="Node3D" parent="Hucha" unique_id=1424928950]
+[node name="P_pata__after-cuerpo_002" type="Node3D" parent="Hucha" unique_id=1952660730]
 
-[node name="SM_PigC" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo_002" unique_id=146976607]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.088320255, 0.05021268, 0.09093642)
-mesh = ExtResource("5_ubfdv")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigC" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo_002" unique_id=811146227]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.09470868, 0.05021268, 0.09093642)
+mesh = ExtResource("5_lgcls")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_cuerpo" type="Node3D" parent="Hucha" unique_id=718245379]
+[node name="P_cuerpo" type="Node3D" parent="Hucha" unique_id=2107138270]
 
-[node name="SM_PigE" type="MeshInstance3D" parent="Hucha/P_cuerpo" unique_id=177382636]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0015070438, 0.17502186, -0.004138112)
-mesh = ExtResource("6_3764d")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigE" type="MeshInstance3D" parent="Hucha/P_cuerpo" unique_id=2065856042]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.00789547, 0.17502186, -0.004138112)
+mesh = ExtResource("6_jsa4t")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_oreja__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1581828632]
+[node name="P_oreja__after-cuerpo" type="Node3D" parent="Hucha" unique_id=2051965844]
 
-[node name="SM_PigF" type="MeshInstance3D" parent="Hucha/P_oreja__after-cuerpo" unique_id=331091941]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.10545325, 0.26838946, -0.065104306)
-mesh = ExtResource("7_lgcls")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigF" type="MeshInstance3D" parent="Hucha/P_oreja__after-cuerpo" unique_id=1627866419]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.09906483, 0.26838946, -0.065104306)
+mesh = ExtResource("7_3umhr")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_hocico__after-cuerpo" type="Node3D" parent="Hucha" unique_id=784349658]
+[node name="P_hocico__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1292584365]
 
-[node name="SM_PigH" type="MeshInstance3D" parent="Hucha/P_hocico__after-cuerpo" unique_id=918191641]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.006289482, 0.15947811, -0.18155587)
-mesh = ExtResource("8_jsa4t")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigH" type="MeshInstance3D" parent="Hucha/P_hocico__after-cuerpo" unique_id=543349680]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.012677908, 0.15947811, -0.18155587)
+mesh = ExtResource("8_dko7r")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_corona__after-cuerpo" type="Node3D" parent="Hucha" unique_id=681204771]
+[node name="P_ojo__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1524863972]
 
-[node name="SM_PigK" type="MeshInstance3D" parent="Hucha/P_corona__after-cuerpo" unique_id=1200729498]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0018129349, 0.30525225, -0.107417405)
-mesh = ExtResource("9_3umhr")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigJ" type="MeshInstance3D" parent="Hucha/P_ojo__after-cuerpo" unique_id=1524601733]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0699954, 0.19982186, -0.16813815)
+mesh = ExtResource("9_wltne")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pata__after-cuerpo_003" type="Node3D" parent="Hucha" unique_id=1746067332]
+[node name="P_corona__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1548807520]
 
-[node name="SM_PigD" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo_003" unique_id=1514109639]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.08911753, 0.05021268, 0.08249712)
-mesh = ExtResource("10_dko7r")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigK" type="MeshInstance3D" parent="Hucha/P_corona__after-cuerpo" unique_id=1985238349]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.004575491, 0.30525225, -0.107417405)
+mesh = ExtResource("10_n2a1n")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_oreja__after-cuerpo_001" type="Node3D" parent="Hucha" unique_id=403362077]
+[node name="P_pata__after-cuerpo_003" type="Node3D" parent="Hucha" unique_id=772290428]
 
-[node name="SM_PigG" type="MeshInstance3D" parent="Hucha/P_oreja__after-cuerpo_001" unique_id=506486467]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.10545325, 0.26697192, -0.06686038)
-mesh = ExtResource("11_wltne")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigD" type="MeshInstance3D" parent="Hucha/P_pata__after-cuerpo_003" unique_id=52293241]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0827291, 0.05021268, 0.08249712)
+mesh = ExtResource("11_8wl6e")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_cola__after-cuerpo" type="Node3D" parent="Hucha" unique_id=646630290]
+[node name="P_oreja__after-cuerpo_001" type="Node3D" parent="Hucha" unique_id=1103592500]
 
-[node name="SM_PigL" type="MeshInstance3D" parent="Hucha/P_cola__after-cuerpo" unique_id=2017726481]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.016374111, 0.1475198, 0.18239117)
-mesh = ExtResource("12_n2a1n")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigG" type="MeshInstance3D" parent="Hucha/P_oreja__after-cuerpo_001" unique_id=1916359204]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.11184168, 0.26697192, -0.06686038)
+mesh = ExtResource("12_4chql")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pegatina_corazon__after-cuerpo" type="Node3D" parent="Hucha" unique_id=812517166]
+[node name="P_ojo__after-cuerpo_001" type="Node3D" parent="Hucha" unique_id=844491964]
 
-[node name="Plane001" type="MeshInstance3D" parent="Hucha/P_pegatina_corazon__after-cuerpo" unique_id=1762142407]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.14433074, 0.22680706, -0.011255622)
-mesh = ExtResource("13_8wl6e")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigI" type="MeshInstance3D" parent="Hucha/P_ojo__after-cuerpo_001" unique_id=2087180736]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.054204464, 0.19982186, -0.16813815)
+mesh = ExtResource("13_cwn7u")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pegatina_estrella__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1437272813]
+[node name="P_cola__after-cuerpo" type="Node3D" parent="Hucha" unique_id=683620175]
 
-[node name="Plane002" type="MeshInstance3D" parent="Hucha/P_pegatina_estrella__after-cuerpo" unique_id=1478238588]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.074593306, 0.27206472, 0.100242615)
-mesh = ExtResource("14_4chql")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="SM_PigL" type="MeshInstance3D" parent="Hucha/P_cola__after-cuerpo" unique_id=170794989]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.022762537, 0.1475198, 0.18239117)
+mesh = ExtResource("14_gcbrj")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pegatina_rayo__after-cuerpo" type="Node3D" parent="Hucha" unique_id=594118300]
+[node name="P_pegatina_corazon__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1399091182]
 
-[node name="Plane003" type="MeshInstance3D" parent="Hucha/P_pegatina_rayo__after-cuerpo" unique_id=1137514710]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.053927183, 0.22237808, 0.15070987)
-mesh = ExtResource("15_cwn7u")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="Plane001" type="MeshInstance3D" parent="Hucha/P_pegatina_corazon__after-cuerpo" unique_id=1686845297]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.15071917, 0.22680706, -0.011255622)
+mesh = ExtResource("15_owogx")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pegatina_nube__after-cuerpo" type="Node3D" parent="Hucha" unique_id=63730777]
+[node name="P_pegatina_estrella__after-cuerpo" type="Node3D" parent="Hucha" unique_id=836087768]
 
-[node name="Plane005" type="MeshInstance3D" parent="Hucha/P_pegatina_nube__after-cuerpo" unique_id=322312659]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.13027215, 0.112408966, 0.02188623)
-mesh = ExtResource("16_gcbrj")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="Plane002" type="MeshInstance3D" parent="Hucha/P_pegatina_estrella__after-cuerpo" unique_id=1570060928]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.08098173, 0.27206472, 0.100242615)
+mesh = ExtResource("16_hyycj")
+surface_material_override/0 = ExtResource("3_ubfdv")
 
-[node name="P_pegatina_luna__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1458168755]
+[node name="P_pegatina_rayo__after-cuerpo" type="Node3D" parent="Hucha" unique_id=2018513156]
 
-[node name="Plane006" type="MeshInstance3D" parent="Hucha/P_pegatina_luna__after-cuerpo" unique_id=298770496]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.09971833, 0.25340408, -0.09631169)
-mesh = ExtResource("17_owogx")
-surface_material_override/0 = ExtResource("3_yrau6")
+[node name="Plane003" type="MeshInstance3D" parent="Hucha/P_pegatina_rayo__after-cuerpo" unique_id=1456978190]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.047538757, 0.22237808, 0.15070987)
+mesh = ExtResource("17_j3rbx")
+surface_material_override/0 = ExtResource("3_ubfdv")
+
+[node name="P_pegatina_nube__after-cuerpo" type="Node3D" parent="Hucha" unique_id=511685613]
+
+[node name="Plane005" type="MeshInstance3D" parent="Hucha/P_pegatina_nube__after-cuerpo" unique_id=2087238052]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.123883724, 0.112408966, 0.02188623)
+mesh = ExtResource("18_3a0a6")
+surface_material_override/0 = ExtResource("3_ubfdv")
+
+[node name="P_pegatina_arcoiris__after-cuerpo" type="Node3D" parent="Hucha" unique_id=1032864090]
+
+[node name="Plane006" type="MeshInstance3D" parent="Hucha/P_pegatina_arcoiris__after-cuerpo" unique_id=1449015541]
+transform = Transform3D(0.6293204, 0.777146, 0, 0, 0, 1, 0.777146, -0.6293204, 0, 0.11676538, 0.25340408, 0.013254106)
+mesh = ExtResource("19_lo8qt")
+surface_material_override/0 = ExtResource("3_ubfdv")

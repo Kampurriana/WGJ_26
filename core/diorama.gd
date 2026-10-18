@@ -195,6 +195,8 @@ func _scan(n: Node, scope: Interactable, section: Section) -> void:
 				s.flash = NameRules.has_token(info.tokens, "flash")
 				s.reflejo = NameRules.has_token(info.tokens, "reflejo")
 				s.offered = NameRules.has_token(info.tokens, "ofrecida")
+				var whole := NameRules.values(info.tokens, "de")
+				s.part_of = whole[0] if not whole.is_empty() else &""
 				s.section = section
 				if section != null:
 					section.slots.append(s)
@@ -433,7 +435,7 @@ func section_title(sec: Section) -> String:
 func prereqs_met(slot: PieceSlot) -> bool:
 	for p in slot.prereqs:
 		for s in slots:
-			if s.id == p and not s.filled:
+			if (s.id == p or s.part_of == p) and not s.filled:   # (lo montado de trozos: todos sus trozos)
 				return false
 	return true
 
@@ -524,6 +526,7 @@ func place(slot: PieceSlot) -> void:
 	for i in twins.size():                     # (los sonidos propios ya traen varios golpes: uno por gesto)
 		create_tween().tween_callback(_show_placed.bind(twins[i], sound == "colocar")).set_delay((i + 1) * TWIN_STEP)
 	Narrator.say_if_exists("pieza_" + String(slot.id))
+	_check_whole(slot)
 	if slot.flash:
 		Events.flash_requested.emit()
 	_refresh(true)
@@ -531,6 +534,23 @@ func place(slot: PieceSlot) -> void:
 	_check_scope(slot.scope)
 	_check_sections()
 	_check_completed()
+
+
+## (token de-<id>) Con el último trozo puesto, lo montado cuenta como puesto: su momento y su frase
+## (pieza_<id>), como si se hubiera puesto entero.
+func _check_whole(slot: PieceSlot) -> void:
+	if slot.part_of == &"" or slots.any(func(s: PieceSlot) -> bool: return s.part_of == slot.part_of and not s.filled):
+		return
+	Events.whole_placed.emit(slot.part_of, whole_node(slot.part_of))
+	Narrator.say_if_exists("pieza_" + String(slot.part_of))
+
+
+## El nodo que junta los trozos de `whole` (token de-<id>): el padre de sus P_.
+func whole_node(whole: StringName) -> Node3D:
+	for s in slots:
+		if s.part_of == whole:
+			return s.node.get_parent() as Node3D
+	return null
 
 
 ## Los huecos libres iguales a ese (mismo id, mismo ámbito, ya desbloqueados) que se llenan con él,

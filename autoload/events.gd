@@ -10,6 +10,7 @@ signal focus_changed(anchor: Node)            # null = vista general del diorama
 signal piece_drag_started(piece_id: StringName)
 signal piece_drag_ended(piece_id: StringName, placed: bool)
 signal piece_placed(piece_id: StringName, node: Node3D)
+signal whole_placed(whole_id: StringName, node: Node3D)   # (token de-<id>) puesto el último trozo de algo: lo montado
 signal piece_rejected(piece_id: StringName, reason: String)
 signal piece_collected(piece_id: StringName, node: Node3D)   # una pieza escondida (H_) encontrada
 signal collectible_found(item: Node, found: int, total: int)  # un dibujo escondido (C_): sale de su sitio hacia la cuerda

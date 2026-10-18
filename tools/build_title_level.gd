@@ -1,9 +1,9 @@
 extends "res://tools/build_sample_level.gd"
 ## Genera el diorama del título: la HUCHA DE CERDITO de la protagonista, la del kit de las artistas
-## (assets/kit/piezas/SM_Pig.scn: montada como SM_pig_compo.fbx, con sus cinco pegatinas), sobre el tocón
-## de madera (SM_Peana, con su textura), hecha piezas. Se monta como todo el juego (bandeja de la
-## derecha, siluetas): primero el cuerpo; luego patas, orejas, hocico, corona y cola; y las PEGATINAS
-## (corazón, estrella, rayo, nube y luna). Sin cartel (el nombre lo pone el logo del menú). Al acabar
+## (assets/kit/piezas/SM_Pig.scn: montada como SM_pig_compo.fbx, con sus ojos y sus cinco pegatinas), sobre
+## el tocón de madera (SM_Peana, con su textura), hecha piezas. Se monta como todo el juego (bandeja de la
+## derecha, siluetas): primero el cuerpo; luego patas, orejas, ojos, hocico, corona y cola; y las PEGATINAS
+## (corazón, estrella, rayo, nube y arcoíris). Sin cartel (el nombre lo pone el logo del menú). Al acabar
 ## sale el menú. Ejecutar (después de tools/piezas_kit.gd si cambia la hucha):
 ##   godot --headless --path . --script res://tools/build_title_level.gd
 ##
@@ -19,9 +19,10 @@ const TILESET := "res://assets/kit/piezas/"
 const PIG_YAW := -145.0                      ## la hucha mira de tres cuartos: se le ve la cara (la del kit mira a su -Z)
 ## Cada trozo de la hucha del kit, su pieza (las patas y las orejas, iguales); las pegatinas, cada una la suya.
 const PARTES := {"SM_PigA": "pata", "SM_PigB": "pata", "SM_PigC": "pata", "SM_PigD": "pata",
-	"SM_PigE": "cuerpo", "SM_PigF": "oreja", "SM_PigG": "oreja", "SM_PigH": "hocico", "SM_PigK": "corona",
-	"SM_PigL": "cola", "Plane001": "pegatina_corazon", "Plane002": "pegatina_estrella",
-	"Plane003": "pegatina_rayo", "Plane005": "pegatina_nube", "Plane006": "pegatina_luna"}
+	"SM_PigE": "cuerpo", "SM_PigF": "oreja", "SM_PigG": "oreja", "SM_PigH": "hocico", "SM_PigI": "ojo",
+	"SM_PigJ": "ojo", "SM_PigK": "corona", "SM_PigL": "cola", "Plane001": "pegatina_corazon",
+	"Plane002": "pegatina_estrella", "Plane003": "pegatina_rayo", "Plane005": "pegatina_nube",
+	"Plane006": "pegatina_arcoiris"}
 
 
 func _initialize() -> void:

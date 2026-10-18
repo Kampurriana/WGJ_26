@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://core/diorama.gd" id="1_th1n8"]
 
-[node name="MenuTitulo" type="Node3D" unique_id=976209683]
+[node name="MenuTitulo" type="Node3D" unique_id=1482129441]
 script = ExtResource("1_th1n8")
 level_title = ""
 modelo_provisional = "res://levels/titulo/titulo_kit.tscn"

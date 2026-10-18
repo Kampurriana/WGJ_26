@@ -15,7 +15,7 @@ extends Node3D
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
 ##   --capturas=N,S       (capturas) N capturas, una cada S segundos (ruta_00.png, ruta_01.png...): una animación
-##   --rincon=ID          (capturas) monta solo hasta que se abre el rincón que da ID (hucha, mp3) y entra en él
+##   --rincon=ID          (capturas) monta solo hasta que se abre el rincón (Z_ __monta) que da ID y entra en él
 ##   --espejo             (capturas) monta solo hasta que solo falta el espejo y lo pone (su plano)
 ##   --prototipo          se juega el desván prototipo (figuras provisionales) en vez del oficial
 ##   --capitulo           (capturas) al segundo de empezar, la estructura del desván ya puesta y se abre el

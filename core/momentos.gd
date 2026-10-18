@@ -176,6 +176,7 @@ func _ready() -> void:
 	_layer.add_child(_prompt)
 	Events.level_started.connect(func(_d: Node) -> void: reset())
 	Events.piece_placed.connect(_on_piece_placed)
+	Events.whole_placed.connect(_on_whole_placed)
 	Events.section_opened.connect(_on_section_opened)
 	Events.level_completed.connect(func(_d: Node) -> void:
 		if active and kind != "ofrecida":       # F9 o el último objeto: se acaba y la cámara se mece
@@ -242,6 +243,12 @@ func _on_piece_placed(id: StringName, node: Node3D) -> void:
 		return
 	var slot := _slot_of(d, node)
 	start(node, "reflejo" if slot != null and slot.reflejo else "normal", String(id))
+
+
+## Lo montado de trozos (token de-<id>, el MP3 en el escritorio): con el último, su momento, entero.
+func _on_whole_placed(id: StringName, node: Node3D) -> void:
+	if _diorama() != null and kind != "ofrecida" and node != null and Narrator.has_line("pieza_" + String(id)):
+		start(node, "normal", String(id))
 
 
 ## Al abrirse una sección con una pieza ofrecida (el epílogo): corte a un primer plano de lo que la

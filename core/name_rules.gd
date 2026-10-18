@@ -24,7 +24,10 @@ extends RefCounted
 ##        clave = va la última de su sección (y la cierra); flash = destello blanco al colocarla;
 ##        reflejo = su momento es de frente y con todo a negro, con un reflejo en ella (el espejo:
 ##        su cara es la +Z local); ofrecida = no va a la bandeja: cuando toca, aparece junto a su
-##        hueco y el jugador la arrastra hasta él (la moneda en la hucha).
+##        hueco y el jugador la arrastra hasta él (la moneda en la hucha); de-<id> = es un trozo de <id>
+##        y se monta en su sitio (el MP3 en el escritorio): con el último trozo, <id> cuenta como puesto
+##        (su frase y su momento, y lo que va __after-<id>). Los trozos, juntos dentro de un nodo sin
+##        prefijo (lo montado: su primer plano lo enseña entero).
 ##
 ## Blender añade ".001" a las copias y Godot lo convierte en "_001": se ignora,
 ## así dos sillas iguales comparten id y cualquiera vale en cualquier hueco de silla.
