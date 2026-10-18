@@ -122,6 +122,10 @@ func _ready() -> void:
 	stars.place_bar(Vector2(MARGIN + 6.0 + TASK_WIDTH + 10.0, MARGIN + 4.0))   # junto a la tarjeta de tarea
 	Events.achievement_unlocked.connect(func(id: String) -> void: stars.celebrate(id))
 	Events.level_completed.connect(func(_d: Node) -> void: _update_task())
+	Settings.changed.connect(func(key: String) -> void:
+		if key == "idioma" and GameState.diorama != null and is_instance_valid(GameState.diorama):
+			rebuild_inventory()                  # los nombres de las piezas
+			_update_task())
 	Events.focus_changed.connect(func(a: Node) -> void: _back_button.visible = a != null)
 	Events.piece_placed.connect(func(_id: StringName, _n: Node3D) -> void: _on_progress())
 	Events.level_completed.connect(func(_d: Node) -> void:
@@ -242,7 +246,7 @@ func _on_card_hovered(card: InventoryItem, on: bool) -> void:
 ## Tocar una ficha con candado: tiembla, suena "no" y la bandeja dice por qué (y qué va antes).
 func _on_locked_pressed(card: InventoryItem) -> void:
 	Sfx.play("reject")
-	_show_info(card, "Todavía no se puede poner.\n" + card.reason, 3.5)
+	_show_info(card, tr("Todavía no se puede poner.") + "\n" + card.reason, 3.5)
 	Events.piece_rejected.emit(card.piece_id, "bloqueada")
 
 
@@ -454,7 +458,7 @@ func show_chapter(text: String) -> void:
 		return
 	_chapter_text = text
 	var parts := text.split(" · ", false, 1)
-	_chapter_kicker.text = ("CAPÍTULO " + parts[0]) if parts.size() == 2 else ""
+	_chapter_kicker.text = (tr("CAPÍTULO %s") % parts[0]) if parts.size() == 2 else ""
 	_chapter_kicker.visible = parts.size() == 2
 	_chapter_title.text = parts[parts.size() - 1]
 	if _chapter_tween != null:
@@ -645,7 +649,7 @@ func _update_task() -> void:
 			sec = s_
 	if sec == null and d.is_opening():
 		sec = d.opening_section()
-	_title.text = (d.section_title(sec) if sec != null else d.level_title).to_upper()
+	_title.text = (d.section_title(sec) if sec != null else tr(d.level_title)).to_upper()
 	_title.visible = _title.text != ""
 	var pool: Array = sec.slots if sec != null else d.slots
 	var done := pool.filter(func(o: PieceSlot) -> bool: return o.filled).size()
@@ -669,7 +673,7 @@ func _update_task() -> void:
 	elif d.has_findable() and d.visible_inventory().is_empty():   # primero, lo que ya se puede poner
 		_task_text.text = "Busca lo guardado: toca lo que brilla."
 	elif left.size() == 1 and (left[0] as PieceSlot).is_key:
-		_task_text.text = "Falta la última: %s." % Narrator.piece_name((left[0] as PieceSlot).id)
+		_task_text.text = tr("Falta la última: %s.") % Narrator.piece_name((left[0] as PieceSlot).id)
 	elif left.size() == 1 and (left[0] as PieceSlot).offered:
 		_task_text.text = "Mete la moneda en la hucha."
 	else:
@@ -838,7 +842,7 @@ func _on_level_started() -> void:
 		g.queue_free()
 	_groups.clear()
 	_cards.clear()
-	_title.text = GameState.diorama.level_title.to_upper()
+	_title.text = tr(GameState.diorama.level_title).to_upper()
 	_task_done = -1
 	_task_text.text = ""
 	_chapter.modulate.a = 0.0
@@ -994,7 +998,7 @@ func _on_back() -> void:
 
 
 func _show_subtitle(text: String, seconds: float) -> void:
-	if not Settings.get_value("subtitulos"):
+	if not Settings.get_value("subtitulos") and Narrator.voiced():   # sin voz (inglés), siempre
 		return
 	_subtitle.text = text
 	if not _subtitle_box.visible:

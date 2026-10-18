@@ -7,7 +7,9 @@ extends VBoxContainer
 ## Por pestañas (pulido con la referencia de Ooblets, que agrupa sus ajustes): Fondo, Sonido y Juego,
 ## en una barra en forma de cápsula. Dentro, cada grupo de ajustes va en su TARJETA con su título
 ## (feedback: "resáltalas por secciones para que quede más unificado y no parezca información
-## flotando"): Color y Motivo; Volumen y Texto; Cámara, Pantalla y ayuda, Progreso.
+## flotando"): Color y Motivo; Volumen y Texto; Idioma, Cámara, Pantalla y ayuda, Progreso.
+## El idioma (Español / English, cada uno escrito en el suyo): en inglés no hay voz, así que los
+## subtítulos salen siempre y su interruptor y el volumen de la voz se apagan.
 
 const TABS := ["Fondo", "Sonido", "Juego"]
 ## [clave, texto, mínimo, máximo, pestaña, sección]
@@ -25,12 +27,15 @@ const TOGGLES := [
 	["pantalla_completa", "Pantalla completa", 2, "Pantalla y ayuda"],
 	["ayuda_automatica", "Pista automática si te atascas", 2, "Pantalla y ayuda"],
 ]
+## [idioma, su nombre en ese idioma]
+const LANGUAGES := [["es", "Español"], ["en", "English"]]
 const LABEL_WIDTH := 150.0                   ## los textos de las filas, todos del mismo ancho (alineados)
 const RESET_CONFIRM_TIME := 3.0
 
 var controls: Dictionary = {}               ## clave de Settings -> HSlider o CheckButton
 var swatches: Array[Button] = []            ## una muestra por color de fondo (Fondos.COLORES)
 var motifs: Array[Button] = []              ## un botón por motivo (Fondos.MOTIVOS)
+var languages: Array[Button] = []           ## un botón por idioma (LANGUAGES)
 var reset_button: Button
 var tabs: Array[Button] = []                 ## las pestañas (Fondo, Sonido, Juego)
 var pages: Array[VBoxContainer] = []         ## lo de cada pestaña
@@ -64,6 +69,7 @@ func _init(show_reset := true) -> void:
 		add_child(page)
 		pages.append(page)
 	_add_background()                            # lo primero: es lo que más se nota al cambiarlo
+	_add_languages()                             # la primera tarjeta de Juego
 	for s: Array in SLIDERS:
 		_add_slider(_section(s[4], s[5]), s[0], s[1], s[2], s[3])
 	for t: Array in TOGGLES:
@@ -82,6 +88,8 @@ func _init(show_reset := true) -> void:
 		reset_button.pressed.connect(_on_reset)
 		_section(2, "Progreso").add_child(reset_button)
 	show_tab(0)
+	_refresh_voice()
+	Settings.changed.connect(_on_setting_changed)
 
 
 ## La tarjeta de una sección (en su pestaña), con su título; la crea la primera vez. Devuelve dónde
@@ -105,7 +113,8 @@ func _section(i: int, title: String) -> VBoxContainer:
 	col.add_theme_constant_override("separation", 6)
 	card.add_child(col)
 	var head := Label.new()
-	head.text = title.to_upper()
+	head.text = title
+	head.uppercase = true                        # en mayúsculas después de traducirlo
 	head.add_theme_font_override("font", UiTheme.FONT_BOLD)
 	head.add_theme_font_size_override("font_size", 13)
 	head.add_theme_color_override("font_color", UiTheme.ORANGE)
@@ -154,6 +163,7 @@ func refresh() -> void:
 		swatches[i].set_pressed_no_signal(i == int(Settings.get_value("fondo_color")))
 	for i in motifs.size():
 		motifs[i].set_pressed_no_signal(i == int(Settings.get_value("fondo_motivo")))
+	_refresh_voice()
 	if reset_button != null:
 		_reset_armed = 0.0
 		reset_button.text = "Borrar progreso"
@@ -225,6 +235,45 @@ func _add_background() -> void:
 		shapes.add_child(b)
 		motifs.append(b)
 	_section(0, "Motivo").add_child(shapes)
+
+
+## Los idiomas: un botón en cápsula por idioma, con su nombre sin traducir.
+func _add_languages() -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	var group := ButtonGroup.new()
+	for entry: Array in LANGUAGES:
+		var b := Button.new()
+		b.text = entry[1]
+		b.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		b.toggle_mode = true
+		b.button_group = group
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_pill_style(b, 15)
+		var lang: String = entry[0]
+		b.pressed.connect(func() -> void: Settings.set_value("idioma", lang))
+		row.add_child(b)
+		languages.append(b)
+	_section(2, "Idioma").add_child(row)
+
+
+## Lo que depende de si hay voz: sin ella (inglés) los subtítulos van siempre y la voz no se ajusta.
+func _refresh_voice() -> void:
+	for i in languages.size():
+		languages[i].set_pressed_no_signal(LANGUAGES[i][0] == Settings.language())
+	var voiced := Settings.language() == Narrator.VOICE_LANGUAGE
+	var subs := controls.get("subtitulos") as CheckButton
+	if subs != null:
+		subs.disabled = not voiced
+		subs.set_pressed_no_signal(Settings.get_value("subtitulos") or not voiced)
+	var voice := controls.get("volumen_voz") as Range
+	if voice != null:
+		voice.editable = voiced
+
+
+func _on_setting_changed(key: String) -> void:
+	if key == "idioma":
+		_refresh_voice()
 
 
 static func _swatch(color: Color, selected: bool, hover: bool) -> StyleBoxFlat:

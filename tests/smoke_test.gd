@@ -30,9 +30,12 @@ func check(cond: bool, what: String) -> void:
 
 
 func _run() -> void:
+	Settings.load_from("")                       # solo en memoria: nunca los ajustes del jugador
+	Settings.set_system_language("es")           # y en español, aunque la máquina esté en inglés
 	_test_name_rules()
 	_test_narrator()
 	await _test_voices()
+	await _test_english()
 	_test_kit()
 	await _test_logo()
 	if GameState.RESET_ON_START:
@@ -265,6 +268,57 @@ func _test_voices() -> void:
 		"una grabación sin texto todavía suena entera, sin subtítulo")
 	Narrator.subtitle.disconnect(listen)
 	Narrator.clear()
+
+
+## El juego en inglés: sin voz, con subtítulos siempre (aunque estén apagados en Opciones), la
+## interfaz traducida (data/ui_en.json), sus frases, nombres y créditos; y al volver al español,
+## nada en inglés (el idioma de reserva es el español, no el inglés de Godot).
+func _test_english() -> void:
+	Narrator.clear()
+	var es: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/narracion_es.json"))
+	var en: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/narracion_en.json"))
+	var names_es: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/piezas_es.json"))
+	var names_en: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/piezas_en.json"))
+	var ui: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/ui_en.json"))
+	var same_keys := es.keys().all(func(k: String) -> bool: return en.has(k) and Narrator._segments(en[k]).size() == Narrator._segments(es[k]).size()) \
+		and en.size() == es.size() and names_es.keys().all(func(k: String) -> bool: return names_en.has(k)) and names_en.size() == names_es.size()
+	check(same_keys, "las frases y los nombres en inglés son los mismos que en español (%d frases, %d nombres)" % [en.size(), names_en.size()])
+	var formats_ok := true
+	for k: String in ui:
+		if not k.begins_with("_"):
+			formats_ok = formats_ok and String(ui[k]) != "" and k.count("%s") == String(ui[k]).count("%s") and k.count("%d") == String(ui[k]).count("%d")
+	check(formats_ok and ui.size() > 90, "cada texto de la interfaz tiene su traducción, con sus huecos %%s/%%d (%d)" % (ui.size() - 1))
+	Settings.set_value("subtitulos", false)
+	Settings.set_value("idioma", "en")
+	check(Narrator.language == "en" and not Narrator.voiced() and TranslationServer.translate("Jugar") == "Play"
+		and TranslationServer.translate("CAPÍTULO %s") % "II" == "CHAPTER II" and Narrator.piece_name(&"hucha") == "the piggy bank",
+		"en inglés: el narrador y la interfaz cambian de idioma (Jugar → %s)" % TranslationServer.translate("Jugar"))
+	var hud := Hud.new()
+	add_child(hud)
+	await get_tree().process_frame
+	Narrator.say("pieza_peluche")
+	check(hud._subtitle_box.visible and hud._subtitle.text == "Kitty! Now I know you're an otter…" and not Narrator.voice_playing()
+		and Narrator.remaining() > 5.0,
+		"en inglés no suena ninguna voz y el subtítulo sale aunque estén apagados (%.1f s de lectura)" % Narrator.remaining())
+	var options := OptionsPanel.new(false)
+	add_child(options)
+	var subs := options.controls["subtitulos"] as CheckButton
+	check(subs.disabled and subs.button_pressed and options.languages[1].button_pressed and not (options.controls["volumen_voz"] as Range).editable,
+		"en inglés, Opciones marca English y los subtítulos van fijos (sin voz que ajustar)")
+	check(Settings.localized(Creditos.CREDITS_PATH).ends_with("creditos_en.txt") and FileAccess.get_file_as_string(Settings.localized(Creditos.CREDITS_PATH)).contains("Thanks for playing"),
+		"los créditos en inglés")
+	Narrator.clear()
+	Settings.set_value("idioma", "es")
+	check(Narrator.language == "es" and Narrator.voiced() and TranslationServer.translate("Jugar") == "Jugar"
+		and TranslationServer.translate("Volver") == "Volver" and not subs.disabled and not subs.button_pressed,
+		"al volver al español, todo en español (nada se cuela del inglés) y los subtítulos vuelven a su ajuste")
+	Narrator.say("pieza_peluche")
+	check(Narrator.voice_playing() and not hud._subtitle_box.visible, "en español, con su voz y, con los subtítulos apagados, sin subtítulo")
+	Narrator.clear()
+	options.queue_free()
+	hud.queue_free()
+	Settings.load_from("")
+	await get_tree().process_frame
 
 
 ## El logo (ui/logo.gd), montado con las piezas de las artistas: cada una en su caja de la referencia
@@ -1116,6 +1170,20 @@ func _test_title_menu(main: Node) -> bool:
 		return false
 	check(not GameState.hud._panel.visible and not GameState.hud._done.visible, "con el menú abierto, el panel de piezas se esconde")
 	check(main.menu.buttons.jugar.text == "Jugar", "sin progreso, el botón dice Jugar")
+	for i in 2:
+		await get_tree().process_frame
+	var langs: Array[Button] = main.menu.languages
+	_click(langs[1].get_global_rect().get_center())
+	await get_tree().process_frame
+	check(Settings.language() == "en" and langs[1].is_visible_in_tree() and langs[1].button_pressed
+		and main.menu.buttons.jugar.tr(main.menu.buttons.jugar.text) == "Play" and main.menu.options.languages[1].button_pressed
+		and main.menu._credits_text.text.contains("Thanks for playing"),
+		"en el menú se cambia de idioma con un clic: English pasa la interfaz, los créditos y Opciones al inglés")
+	_click(langs[0].get_global_rect().get_center())
+	await get_tree().process_frame
+	check(Settings.language() == "es" and langs[0].button_pressed and not langs[1].button_pressed
+		and main.menu.buttons.jugar.tr(main.menu.buttons.jugar.text) == "Jugar" and main.menu.options.languages[0].button_pressed
+		and Narrator.voiced(), "y con Español vuelve todo al español, con voz")
 	var waited := 0.0
 	while GameState.camera.cam.h_offset > -0.3 and waited < 1.5:
 		waited += get_process_delta_time()

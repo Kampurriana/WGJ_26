@@ -1,7 +1,7 @@
 class_name Creditos
 extends CanvasLayer
 ## Los créditos del final (cuarta nota: la hucha → transición → créditos). Sobre el fondo pastel del
-## juego (con sus estrellas) sube despacio el texto de data/creditos_es.txt, con el nombre del juego arriba y los
+## juego (con sus estrellas) sube despacio el texto de data/creditos_<idioma>.txt, con el nombre del juego arriba y los
 ## dibujos que se encontraron (los que faltan, en hueco). El último renglón ("¡Gracias por jugar!")
 ## se queda en el centro y todo se funde a negro. Un clic o Esc lo acaban antes. Al acabar avisa
 ## (finished): main vuelve al menú, con el cerdito y sin frases.
@@ -9,7 +9,7 @@ extends CanvasLayer
 
 signal finished
 
-const CREDITS_PATH := "res://data/creditos_es.txt"
+const CREDITS_PATH := "res://data/creditos_%s.txt"     ## %s = el idioma (Settings.localized)
 const SPEED := 46.0                          ## lo que sube, en px por segundo (a 720 de alto)
 const START := 0.55                          ## dónde empieza el nombre del juego (fracción del alto): a la vista
                                              ## en cuanto acaba el fundido, no por debajo de la pantalla
@@ -106,11 +106,12 @@ func play(drawings: Array, total: int) -> void:
 				icon.faded = true
 			row.add_child(icon)
 		_roll.add_child(row)
-		_roll.add_child(_line("%d de %d" % [drawings.size(), total], 20, Color(INK, 0.8)))
+		_roll.add_child(_line(tr("%d de %d") % [drawings.size(), total], 20, Color(INK, 0.8)))
 		_roll.add_child(_space(40))
-	var text := FileAccess.get_file_as_string(CREDITS_PATH).strip_edges()
+	var file := Settings.localized(CREDITS_PATH)
+	var text := FileAccess.get_file_as_string(file).strip_edges()
 	if text == "":
-		push_warning("Creditos: %s vacío o no existe" % CREDITS_PATH)
+		push_warning("Creditos: %s vacío o no existe" % file)
 	for raw in text.split("\n"):
 		var l := raw.strip_edges()
 		if l == "":

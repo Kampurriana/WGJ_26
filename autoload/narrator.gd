@@ -12,6 +12,8 @@ extends Node
 ##    Con "frases": [] suena solo la voz, sin subtítulo (una grabación de la que aún no hay texto).
 ## Las frases van en COLA: una frase nueva espera a que acabe la anterior (nunca se pisan).
 ## Mientras suena una voz, la música baja (Sfx.duck; guion v2: "ducking").
+## El idioma es el de Settings.language(). Solo hay voces en español (VOICE_LANGUAGE): en otro idioma
+## no suena ninguna y cada frase dura su tiempo de lectura (los subtítulos salen siempre).
 
 signal subtitle(text: String, seconds: float)
 signal skipped                               ## el jugador ha pasado de frase (se quita el subtítulo)
@@ -23,6 +25,7 @@ const VOICE_PAD := 0.4                       ## la cola de silencio de cada grab
 const TYPE_LEAD := 0.6                       ## con voz, el texto acaba de escribirse esto antes del final del trozo
 const VOICE_EXTENSIONS := ["ogg", "wav", "mp3"]
 const SFX_PREFIX := "sfx:"
+const VOICE_LANGUAGE := "es"                 ## el idioma en que están grabadas las voces
 
 var language := "es"
 var _lines: Dictionary = {}
@@ -40,7 +43,11 @@ func _ready() -> void:
 	_player = AudioStreamPlayer.new()
 	_player.bus = &"Voz"
 	add_child(_player)
-	load_language(language)
+	load_language(Settings.language())
+	Settings.changed.connect(func(key: String) -> void:
+		if key == "idioma" and Settings.language() != language:
+			clear()
+			load_language(Settings.language()))
 
 
 func load_language(lang: String) -> void:
@@ -59,6 +66,11 @@ func load_language(lang: String) -> void:
 func piece_name(id: StringName, capital := false) -> String:
 	var n := String(_names.get(String(id), String(id).replace("_", " ")))
 	return n.left(1).to_upper() + n.substr(1) if capital else n
+
+
+## Si en este idioma hay voz (si no, solo subtítulos).
+func voiced() -> bool:
+	return language == VOICE_LANGUAGE
 
 
 func has_line(key: String) -> bool:
@@ -229,6 +241,8 @@ func _parts(seg: Dictionary) -> Array[String]:
 
 
 func _voice(name: String) -> String:
+	if not voiced():
+		return ""
 	for ext: String in VOICE_EXTENSIONS:
 		var path := "res://assets/audio/voz/%s.%s" % [name, ext]
 		if ResourceLoader.exists(path):

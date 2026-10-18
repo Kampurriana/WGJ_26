@@ -9,7 +9,7 @@ extends Node
 const EXTENSIONS := ["ogg", "wav", "mp3"]
 const POOL_SIZE := 8
 const MUSIC_FADE := 1.6                      ## segundos del fundido cruzado entre canciones
-const QUIT_WAIT := 0.2                       ## al salir, lo que se espera a que el audio suelte la música (s)
+const QUIT_WAIT := 0.5                       ## al salir, lo que se espera a que el audio suelte la música y la voz (s; con 0,2 a veces no le daba tiempo)
 const DUCK_DB := -6.0                        ## la música baja esto mientras suena una voz (guion v2)...
 const DUCK_IN := 0.3
 const DUCK_OUT := 1.0                        ## ...y vuelve en esto (s)

@@ -229,7 +229,7 @@ func open(it: Interactable, found: int, total: int) -> void:
 	_title.text = TITLE_LAST if all else TITLE
 	_pill_label.text = Narrator.piece_name(it.id).to_upper()
 	_bar_label.text = Narrator.text("logro_dibujos_todos" if all else "logro_dibujo")
-	_count_label.text = "%d DE %d" % [found, total]
+	_count_label.text = tr("%d DE %d") % [found, total]
 	_fill_dots(found, total, Hud.drawing_color(it.target))
 	Narrator.say_if_exists("dibujo_encontrado_%d" % found)    # su voz: una por dibujo, en el orden en que salen
 	_show_copy(it.target)

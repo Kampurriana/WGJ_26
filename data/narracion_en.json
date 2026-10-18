@@ -1,0 +1,122 @@
+{
+	"fin_menu": "Good as new! Now we can begin.",
+	"intro_habitacion": "A half-built room. Start with the big furniture: what goes on top comes later.",
+	"fin_habitacion": "Everything in its place. Now it's a nice place to study.",
+	"recogido_boli": "The pen! It was hidden in the drawer.",
+	"pieza_cuaderno": "The notebook, ready for notes.",
+	"intro_muestra": "This little house is half-built. Look closely: every white gap is waiting for its piece.",
+	"fin_muestra": "Done. Everything in its place, and the house has woken up.",
+	"orden": "That piece doesn't fit yet: something has to go underneath first.",
+	"pista": "See that glowing gap? It goes there.",
+	"sub_completo": "That corner looks so tidy now!",
+	"recogido_cuchara": "A spoon! It was hidden in the drawer.",
+	"pieza_cuadro": "The family portrait, hung at last.",
+	"fin_juego": "Thanks for playing.",
+	"intro_desvan": {
+		"frases": [
+			"Oh my… I haven't been up here in ages.",
+			"It's so dark in here.",
+			"Dad left his keys somewhere around here…",
+			"I wonder where they are."
+		]
+	},
+	"pieza_hucha": {
+		"frases": [
+			"My piggy bank! My old piggy bank!",
+			"I remember saving up for so long. To become a great artist.",
+			"Ooh! How much money is in it?…",
+			"Nothing, there's nothing.",
+			"What did I spend it on?"
+		]
+	},
+	"titulo_desvan": "The attic",
+	"titulo_infancia": "I · Childhood",
+	"pieza_caja_musica": {
+		"frases": [
+			"Grandma's music box. They said she was a great dancer, but she had to give it up…",
+			"“For the family, you learn to give in,” she used to tell my mother, and my mother told me. And I learned fast."
+		]
+	},
+	"pieza_dibujo": "Girls don't draw monsters, right, Mom? Princesses, kittens, the family, ballerinas… but no monsters.",
+	"pieza_peluche": {
+		"frases": [
+			"Kitty! Now I know you're an otter…",
+			"I always hid you from my brother, until one day he cried so much that I gave you to him to make him happy."
+		]
+	},
+	"titulo_adolescencia": "II · Adolescence",
+	"pieza_mp3": [
+		{
+			"voz": "pieza_mp3_a",
+			"frases": "Oh wow! I always used to share my MP3…"
+		},
+		"sfx:mp3_skip",
+		{
+			"voz": "pieza_mp3_b",
+			"frases": [
+				"And there isn't a single song on it I like… Now that I think about it…",
+				"I dressed like them, watched those silly shows, listened to this rubbish to fit in… to be part of the group."
+			]
+		}
+	],
+	"pieza_camara": {
+		"frases": [
+			"I love photography! I took it on our trips, to birthdays, to the village festivals…",
+			"Huh, I'm not in any of them…",
+			"Well, here I am, though my head's cut off and it's a bit blurry."
+		]
+	},
+	"pieza_solicitud": {
+		"frases": [
+			"This is what I wanted to study…",
+			"I saved so much, I never touched the piggy bank money for any silly whim…",
+			"But Dad's shop needed a van…",
+			"Now I remember why the piggy bank is empty…"
+		]
+	},
+	"titulo_adultez": "III · Career",
+	"pieza_llaves": {
+		"frases": [
+			"Ah! Here they are! Dad would lose his head if it weren't screwed on.",
+			"Who'd have thought I'd be the one opening the shop every morning. And I swore I never would."
+		]
+	},
+	"pieza_caballete": {
+		"frases": [
+			"I bought it with my first paycheck. It wasn't much, since almost all of it went into the family pot, but it was enough…",
+			"I had the perfect plan: paint every Sunday…",
+			"Then the rent went up, and guess who works on Sundays."
+		]
+	},
+	"pieza_espejo": {
+		"frases": [
+			"And here I am, the one who always says yes to whatever she's asked…",
+			"the one who avoids conflict… the one who puts everyone else first…",
+			"For the family, you give in… Goodbye, kitty… Hello, Dad's shop…",
+			"And me…? When is it my turn?…"
+		]
+	},
+	"seccion_epilogo": {
+		"frases": [
+			"All this time I've been living a life that wasn't the one I wanted.",
+			"I didn't think for myself… I didn't decide for myself…",
+			"I think it's time to change that.",
+			"No one ever taught me, but it's never too late to learn.",
+			"No!",
+			"I won't do it.",
+			"Ah… It's not easy to say, but…",
+			"Ah… It feels so good to say it out loud.",
+			"And as a first act of love…",
+			"This coin is…"
+		]
+	},
+	"pieza_moneda": "…for my future as an artist.",
+	"consejo_muebles": "Something is stored away. Tap the glowing furniture to open it.",
+	"consejo_dentro": "There it is! Tap it to take it to your tray.",
+	"logro_dibujo": "One of my drawings from when I was little",
+	"logro_dibujos_todos": "All my drawings! The string is complete.",
+	"dibujo_encontrado_1": "Look! One of my drawings from when I was little.",
+	"dibujo_encontrado_2": "Yes! Another drawing from when I was little.",
+	"dibujo_encontrado_3": "Look! Another drawing from when I was little.",
+	"dibujo_encontrado_4": "One more for the collection!"
+}

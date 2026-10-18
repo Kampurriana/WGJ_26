@@ -170,7 +170,7 @@ func _fill_album() -> void:
 		if first < 0 and it.collected:
 			first = i
 	var found := _album_items.filter(func(it: Interactable) -> bool: return it.collected).size()
-	_album_count.text = "Dibujos de cuando era pequeña · %d de %d" % [found, _album_items.size()]
+	_album_count.text = tr("Dibujos de cuando era pequeña · %d de %d") % [found, _album_items.size()]
 	_show_drawing(maxi(first, 0))
 
 

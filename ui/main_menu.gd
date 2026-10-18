@@ -4,16 +4,17 @@ extends CanvasLayer
 ## resuelto (o directamente si ya se resolvió en otra partida). El título del juego es el letrero
 ## que el jugador acaba de montar: el panel no lo repite. Páginas:
 ##   principal  Jugar/Continuar · Opciones · Logros · Créditos · Salir (no en Web). Sin selector de
-##              nivel: el juego es un solo diorama (el desván)
+##              nivel: el juego es un solo diorama (el desván). Debajo, Español / English (el idioma
+##              también está en Opciones › Juego; los dos selectores van a la par)
 ##   opciones   OptionsPanel con "Borrar progreso"
-##   creditos   el texto de data/creditos_es.txt
+##   creditos   el texto de data/creditos_<idioma>.txt (cambia con el idioma)
 ## Teclado: flechas + Intro. Esc vuelve a la página principal.
 
 signal play_requested(index: int)
 
 const WIDTH := 430.0
 const PAGE_MAX_HEIGHT := 440.0
-const CREDITS_PATH := "res://data/creditos_es.txt"
+const CREDITS_PATH := "res://data/creditos_%s.txt"     ## %s = el idioma (Settings.localized)
 
 var buttons: Dictionary = {}                ## nombre -> Button (los tests pulsan por aquí)
 var options: OptionsPanel
@@ -24,6 +25,8 @@ var _panel: PanelContainer
 var _pages: Dictionary = {}                 ## nombre -> Control
 var logo: Logo                               ## el logo montado con las piezas de las artistas (ui/logo.gd)
 var _logros: LogrosLista
+var _credits_text: Label
+var languages: Array[Button] = []           ## Español / English, debajo de los botones (OptionsPanel.LANGUAGES)
 
 
 func _ready() -> void:
@@ -108,7 +111,36 @@ func _build_main(parent: Control) -> void:
 	_add_button(p, "creditos", "Créditos", func() -> void: show_page("creditos"))
 	var quit := _add_button(p, "salir", "Salir", func() -> void: Sfx.quit())
 	quit.visible = not OS.has_feature("web")     # en el navegador no hay "salir"
+	_add_languages(p)
 	_add_page(parent, "principal", p)
+
+
+## El idioma, a la vista: una cápsula como la de las pestañas de Opciones, con cada idioma escrito
+## en el suyo (sin traducir).
+func _add_languages(parent: Control) -> void:
+	var bar := PanelContainer.new()
+	bar.add_theme_stylebox_override("panel", UiTheme._box(Color(UiTheme.BLUE_DEEP, 0.45), 24, Color(UiTheme.PALE, 0.5), 0, 2, 6, 5))
+	bar.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	bar.add_child(row)
+	var group := ButtonGroup.new()
+	for entry: Array in OptionsPanel.LANGUAGES:
+		var b := Button.new()
+		b.text = entry[1]
+		b.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+		b.toggle_mode = true
+		b.button_group = group
+		b.custom_minimum_size = Vector2(108, 0)
+		OptionsPanel._pill_style(b, 16)
+		b.set_pressed_no_signal(entry[0] == Settings.language())
+		var lang: String = entry[0]
+		b.pressed.connect(func() -> void:
+			Sfx.play("click", 0.0)
+			Settings.set_value("idioma", lang))
+		row.add_child(b)
+		languages.append(b)
+	parent.add_child(bar)
 
 
 func _build_options(parent: Control) -> void:
@@ -139,12 +171,27 @@ func _build_credits(parent: Control) -> void:
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.custom_minimum_size = Vector2(WIDTH - 70, 0)
-	text.text = FileAccess.get_file_as_string(CREDITS_PATH).strip_edges()
-	if text.text == "":
-		push_warning("MainMenu: %s vacío o no existe" % CREDITS_PATH)
+	text.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED    # ya viene en su idioma
+	_credits_text = text
+	_load_credits()
+	Settings.changed.connect(_on_setting_changed)
 	p.add_child(_scroll(text))
 	_add_button(p, "creditos_volver", "Volver", func() -> void: show_page("principal"))
 	_add_page(parent, "creditos", p)
+
+
+func _on_setting_changed(key: String) -> void:
+	if key == "idioma":
+		_load_credits()
+		for i in languages.size():
+			languages[i].set_pressed_no_signal(OptionsPanel.LANGUAGES[i][0] == Settings.language())
+
+
+func _load_credits() -> void:
+	var file := Settings.localized(CREDITS_PATH)
+	_credits_text.text = FileAccess.get_file_as_string(file).strip_edges()
+	if _credits_text.text == "":
+		push_warning("MainMenu: %s vacío o no existe" % file)
 
 
 # --- Piezas de interfaz ------------------------------------------------------------------

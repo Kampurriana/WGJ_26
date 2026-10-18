@@ -114,6 +114,11 @@ cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos �
 - **Modo prototipo:** `GameState.RESET_ON_START = true` → cada Play empieza de cero.
 - **Atajo de prueba F9:** monta el diorama entero de golpe y se queda a la vista
   (`GameState.DEBUG_SHORTCUTS`).
+- **Idiomas (18-oct):** español (original, con voz) e inglés (sin voz, solo subtítulos: lo pidió
+  así). Se elige en el menú principal (Español / English, debajo de los botones) y en Opciones ›
+  Juego; la primera vez, el del sistema o del navegador (español si está en español; si no,
+  inglés). Textos: `data/narracion_en.json`, `data/piezas_en.json`, `data/creditos_en.txt` y
+  `data/ui_en.json` (la interfaz: clave = el texto en español del código). Trampa 47.
 
 ## 3. Ramas y cómo se trabaja con el equipo
 

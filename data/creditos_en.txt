@@ -1,0 +1,27 @@
+Made in 48 hours for WGJ 2026
+
+3D MODELLING & TEXTURES
+Eva Fernandez Valero
+Inés Jackson Martín
+
+CONCEPT ART & 2D ART
+Carmen Esteban Fernandez-Vicenti
+
+CONCEPT ART & TEXTURE ARTIST
+Sandra
+
+PROGRAMMING & DESIGN
+Ana Climent Sapena
+
+SOUND DESIGNER & VOICE ACTRESS
+Anaïs Soriano
+
+The game's code was developed with the help of AI,
+but the game itself is made entirely by artists.
+
+Inspired by Woodo, by Tiny Monks Tales
+
+Made with Godot Engine
+godotengine.org/license
+
+Thanks for playing!

@@ -372,14 +372,14 @@ func lock_reason(id: StringName) -> String:
 		if first == null:
 			first = s
 	if first == null:
-		return "Ya está puesta."
+		return tr("Ya está puesta.")
 	var sec := first.section
 	if sec != null and not sec.opened:
 		if sec == _pending:
-			return "Ya casi: se está abriendo «%s»." % section_title(sec)
+			return tr("Ya casi: se está abriendo «%s».") % section_title(sec)
 		var i := sections.find(sec)
-		return "Es de «%s». Se abre al terminar «%s»." % [section_title(sec), section_title(sections[i - 1])] if i > 0 \
-			else "Es de «%s»." % section_title(sec)
+		return tr("Es de «%s». Se abre al terminar «%s».") % [section_title(sec), section_title(sections[i - 1])] if i > 0 \
+			else tr("Es de «%s».") % section_title(sec)
 	var before: PackedStringArray = []
 	for p in first.prereqs:
 		for o in slots:
@@ -387,11 +387,11 @@ func lock_reason(id: StringName) -> String:
 				before.append(Narrator.piece_name(p))
 				break
 	if not before.is_empty():
-		return "Antes tiene que estar %s." % " y ".join(before)
+		return tr("Antes tiene que estar %s.") % tr(" y ").join(before)
 	if first.is_key and sec != null:
 		var left := sec.slots.filter(func(o: PieceSlot) -> bool: return o != first and not o.filled).size()
-		return "Va la última de «%s»: antes, %s." % [section_title(sec), "la que falta" if left == 1 else "las %d que faltan" % left]
-	return "Todavía no."
+		return tr("Va la última de «%s»: antes, %s.") % [section_title(sec), tr("la que falta") if left == 1 else tr("las %d que faltan") % left]
+	return tr("Todavía no.")
 
 
 ## Una pieza que ya toca pero no está en la bandeja: está guardada (H_) o se gana en un rincón (Z_).
@@ -399,11 +399,11 @@ func _hidden_reason(id: StringName) -> String:
 	for it in interactables:
 		if it.kind == NameRules.PICKUP and it.id == id and not it.collected:
 			if it.container != null and not it.container.is_open:
-				return "Está guardada en un mueble: toca el que brilla."
-			return "Está a la vista: tócala para cogerla."
+				return tr("Está guardada en un mueble: toca el que brilla.")
+			return tr("Está a la vista: tócala para cogerla.")
 		if it.kind == NameRules.ZOOM and it.reward == id and not it.completed:
-			return "Se consigue al completar un rincón."
-	return "Todavía no."
+			return tr("Se consigue al completar un rincón.")
+	return tr("Todavía no.")
 
 
 ## Nombre de una sección para la interfaz ("I · Infancia"); si no tiene rótulo, su nombre.
