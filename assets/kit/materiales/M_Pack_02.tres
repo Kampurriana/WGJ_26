@@ -3,11 +3,14 @@
 [ext_resource type="Texture2D" path="res://assets/kit/texturas/Pack_02/T_Pack_02_BC.png" id="1_xuh6c"]
 [ext_resource type="Texture2D" path="res://assets/kit/texturas/Pack_02/T_Pack_02_ARM.png" id="2_4stho"]
 [ext_resource type="Texture2D" path="res://assets/kit/texturas/Pack_02/T_Pack_02_Normal.png" id="3_bkd51"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="3_ia8c5"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="4_oqjq4"]
 
 [resource]
 resource_name = "M_Pack_02"
 albedo_texture = ExtResource("1_xuh6c")
 metallic = 1.0
+metallic_specular = 0.3
 metallic_texture = ExtResource("2_4stho")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("2_4stho")
@@ -16,3 +19,6 @@ normal_enabled = true
 normal_texture = ExtResource("3_bkd51")
 ao_enabled = true
 ao_texture = ExtResource("2_4stho")
+detail_enabled = true
+detail_mask = ExtResource("4_oqjq4")
+detail_albedo = ExtResource("3_ia8c5")

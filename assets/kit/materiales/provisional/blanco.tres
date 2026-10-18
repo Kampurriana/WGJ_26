@@ -1,6 +1,13 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="1_mhy3l"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="2_t88l6"]
+
 [resource]
 resource_name = "Provisional_blanco"
-albedo_color = Color(0.95, 0.95, 0.97, 1)
+albedo_color = Color(0.93, 0.91, 0.88, 1)
+metallic_specular = 0.3
 roughness = 0.85
+detail_enabled = true
+detail_mask = ExtResource("2_t88l6")
+detail_albedo = ExtResource("1_mhy3l")

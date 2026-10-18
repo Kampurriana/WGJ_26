@@ -1,0 +1,13 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="1_mhfpv"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="2_70evi"]
+
+[resource]
+resource_name = "Provisional_tela"
+albedo_color = Color(0.8, 0.6, 0.54, 1)
+metallic_specular = 0.3
+roughness = 0.85
+detail_enabled = true
+detail_mask = ExtResource("2_70evi")
+detail_albedo = ExtResource("1_mhfpv")

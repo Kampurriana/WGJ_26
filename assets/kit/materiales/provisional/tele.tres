@@ -1,6 +1,13 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="1_kk8i6"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="2_phk71"]
+
 [resource]
 resource_name = "Provisional_tele"
-albedo_color = Color(0.62, 0.76, 0.9, 1)
+albedo_color = Color(0.66, 0.74, 0.8, 1)
+metallic_specular = 0.3
 roughness = 0.85
+detail_enabled = true
+detail_mask = ExtResource("2_phk71")
+detail_albedo = ExtResource("1_kk8i6")

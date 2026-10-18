@@ -1,6 +1,13 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="1_gqtfq"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="2_vvxv8"]
+
 [resource]
 resource_name = "Provisional_suelo"
-albedo_color = Color(0.8, 0.62, 0.43, 1)
+albedo_color = Color(0.78, 0.62, 0.47, 1)
+metallic_specular = 0.3
 roughness = 0.85
+detail_enabled = true
+detail_mask = ExtResource("2_vvxv8")
+detail_albedo = ExtResource("1_gqtfq")

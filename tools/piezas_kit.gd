@@ -8,9 +8,15 @@ extends SceneTree
 ##    (CONJUNTOS: qué piezas lleva cada carpeta de TexturasFinales; si no está, SM_<conjunto>...);
 ##  - si no, un color PROVISIONAL compartido (assets/kit/materiales/provisional/<grupo>.tres), que se
 ##    puede retocar en el editor y vale para todas las piezas de su grupo.
+## Todos con el estilo cozy del kit (tools/estilo_kit.gd: su paleta y su capa de tono).
 ## Las piezas se cogen de modelos/ (sueltas, con su nombre bueno) y de paquetes/ (varias por fichero;
 ## las que llegan con el nombre de 3ds Max se renombran: ALIAS; las que ya están sueltas no se
 ## repiten: REPETIDAS; las que vienen en trozos colocados entre sí, como el MP3, son una pieza: GRUPOS).
+## El MP3 de Pack05 viene despiezado (sus partes separadas, para texturizar): montado solo está en la
+## escena de referencia de las artistas (referencia/), y de ahí se coge (MONTADAS).
+## Y los dibujos 2D de las artistas (dibujos/), cada uno como un plano con su textura (Dibujo_<fichero>,
+## DIBUJO_ANCHO de ancho, de pie, mirando a +z, con el pivote abajo en el centro): para ponerlos en una
+## pared o colgarlos de la cuerda.
 ## Ejecutar otra vez si cambia un .fbx del kit o llegan texturas (después de materiales_kit.gd):
 ##   godot --headless --path . --script res://tools/piezas_kit.gd
 
@@ -18,18 +24,27 @@ const KIT := "res://assets/kit/"
 const SALIDA := KIT + "piezas/"
 const PROVISIONAL := KIT + "materiales/provisional/"
 const MODEL_EXT := ["fbx", "glb", "gltf"]
+const IMAGE_EXT := ["png", "jpg", "jpeg", "webp"]
+const DIBUJO_ANCHO := 0.42                  ## ancho de cada dibujo (m): un A3, como una lámina de la pared
+const Estilo := preload("res://tools/estilo_kit.gd")
 ## Duplicados de piezas que ya están sueltas (las cajas de Boxes.fbx = SM_BoxA..E; la tele de Pack04
 ## = SM_TV). Las de nombre SM_ repetido se descartan solas (la primera que se encuentra es la buena).
 const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV05"]
-## Ficheros que no se usan (Comoda.fbx es la cómoda fundida en una malla: están sus piezas sueltas).
+## Ficheros que no se usan (Comoda.fbx es la cómoda fundida en una malla: están sus piezas sueltas; la
+## referencia es una escena entera: de ella solo se cogen las MONTADAS).
 const EXCLUIDOS := ["Comoda.fbx"]
+## Mallas de la escena de referencia (el blocking de 3ds Max) que son una pieza montada que el kit solo
+## trae en trozos: van antes que esos trozos (con su nombre de GRUPOS) y los trozos ya no se usan.
+const REFERENCIA := KIT + "referencia/Blocking3.fbx"   ## la misma que tools/build_diorama_kit.gd
+const MONTADAS := ["MP3"]
 ## Nombres buenos para las piezas que llegan con el nombre por defecto de 3ds Max.
 const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "SM_Vase",
 	"Cylinder025": "SM_BrushA", "Cylinder026": "SM_BrushB", "Cylinder027": "SM_BrushC",
 	"Object006": "SM_CoverBoxA", "Object007": "SM_CoverBoxB", "Object008": "SM_CoverBoxC",
 	"Object009": "SM_CoverBoxD", "Object010": "SM_CoverBoxE"}
-## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero).
-const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar"}
+## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero). La hucha
+## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, ojos, ranura, cola) va montada en una pieza.
+const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. Son las carpetas de Assets/ de Drive: Pack01 (suelo, zócalos, correas,
 ## pilar; las de nombre de 3ds Max de FloorCeilingPlanks... son las mismas), Pack02 (techo y postes).
@@ -49,14 +64,11 @@ const CATEGORIAS := [
 	["SM_Comoda", "comoda"], ["SM_CoverBox", "caja"], ["SM_Box", "caja"], ["SM_TV", "tele"],
 	["SM_Burro", "metal"], ["SM_Lamp", "metal"], ["SM_Stool", "madera"], ["SM_Desk", "madera"],
 	["SM_MP3", "blanco"], ["SM_Vase", "jarron"], ["SM_Brush", "madera"], ["SM_CoverDesk", "naranja"],
+	["SM_PolaroidA", "foto"], ["SM_PolaroidB", "foto"], ["SM_PolaroidC", "foto"], ["SM_PolaroidD", "foto"],
+	["SM_Polaroid", "tele"], ["SM_MusicBox", "rosa"], ["SM_Pig", "rosa"], ["SM_Hat", "naranja"],
+	["SM_Lights", "luces"], ["SM_LitterBox", "tele"], ["SM_Caballete", "madera"], ["SM_CatBed", "tela"],
+	["SM_Rug", "tela"], ["SM_Mirror", "madera"],
 ]
-const COLORES := {
-	"suelo": Color(0.8, 0.62, 0.43), "estructura": Color(0.45, 0.3, 0.2), "pared": Color(0.9, 0.84, 0.74),
-	"techo": Color(0.66, 0.47, 0.31), "comoda": Color(0.66, 0.85, 0.74), "caja": Color(0.7, 0.55, 0.38),
-	"tele": Color(0.62, 0.76, 0.9), "metal": Color(0.85, 0.85, 0.82), "madera": Color(0.76, 0.6, 0.42),
-	"blanco": Color(0.95, 0.95, 0.97), "jarron": Color(0.98, 0.88, 0.58), "naranja": Color(0.95, 0.6, 0.3),
-	"otro": Color(0.8, 0.8, 0.8),
-}
 
 
 func _init() -> void:
@@ -65,30 +77,42 @@ func _init() -> void:
 	var kit := _materiales_kit()
 	var hechas: Array[String] = []
 	var fallos := 0
-	for carpeta in ["modelos", "paquetes"]:
-		for path in _ficheros(KIT + carpeta, MODEL_EXT):
-			if path.get_file() in EXCLUIDOS:
+	var ficheros := PackedStringArray([REFERENCIA]) if ResourceLoader.exists(REFERENCIA) else PackedStringArray()
+	ficheros.append_array(_ficheros(KIT + "modelos", MODEL_EXT))
+	ficheros.append_array(_ficheros(KIT + "paquetes", MODEL_EXT))
+	for path in ficheros:
+		if path.get_file() in EXCLUIDOS:
+			continue
+		var escena := (load(path) as PackedScene).instantiate()
+		var piezas := {}                     # nombre -> [MeshInstance3D...] de este fichero
+		for m: MeshInstance3D in escena.find_children("*", "MeshInstance3D", true, false):
+			if path == REFERENCIA and not String(m.name) in MONTADAS:
 				continue
-			var escena := (load(path) as PackedScene).instantiate()
-			var piezas := {}                     # nombre -> [MeshInstance3D...] de este fichero
-			for m: MeshInstance3D in escena.find_children("*", "MeshInstance3D", true, false):
-				var nombre := String(ALIAS.get(String(m.name), String(m.name)))
-				for prefijo: String in GRUPOS:
-					if nombre.begins_with(prefijo):
-						nombre = GRUPOS[prefijo]
-				if nombre in REPETIDAS or nombre in hechas:
-					continue
-				if not piezas.has(nombre):
-					piezas[nombre] = []
-				piezas[nombre].append(m)
-			for nombre: String in piezas:
-				var err := _guardar(nombre, piezas[nombre], escena, kit)
-				print("PIEZA %-28s %s  err=%d" % [nombre, path.trim_prefix(KIT), err])
-				if err == OK:
-					hechas.append(nombre)
-				else:
-					fallos += 1
-			escena.free()
+			var nombre := String(ALIAS.get(String(m.name), String(m.name)))
+			for prefijo: String in GRUPOS:
+				if nombre.begins_with(prefijo):
+					nombre = GRUPOS[prefijo]
+			if nombre in REPETIDAS or nombre in hechas:
+				continue
+			if not piezas.has(nombre):
+				piezas[nombre] = []
+			piezas[nombre].append(m)
+		for nombre: String in piezas:
+			var err := _guardar(nombre, piezas[nombre], escena, kit)
+			print("PIEZA %-28s %s  err=%d" % [nombre, path.trim_prefix(KIT), err])
+			if err == OK:
+				hechas.append(nombre)
+			else:
+				fallos += 1
+		escena.free()
+	for path in _ficheros(KIT + "dibujos", IMAGE_EXT):
+		var nombre := "Dibujo_" + path.get_file().get_basename()
+		var err := _guardar_dibujo(nombre, path)
+		print("PIEZA %-28s %s  err=%d" % [nombre, path.trim_prefix(KIT), err])
+		if err == OK:
+			hechas.append(nombre)
+		else:
+			fallos += 1
 	print("PIEZAS %s (%d)" % ["OK" if fallos == 0 else "CON %d FALLOS" % fallos, hechas.size()])
 	quit(0 if fallos == 0 else 1)
 
@@ -123,6 +147,36 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 	return err
 
 
+## Un dibujo 2D como pieza: un plano de pie (mirando a +z) con su imagen, DIBUJO_ANCHO de ancho y el alto
+## de su proporción, con el pivote abajo en el centro; papel mate, con el estilo del kit.
+func _guardar_dibujo(nombre: String, imagen: String) -> Error:
+	var tex := load(imagen) as Texture2D
+	if tex == null:
+		return ERR_CANT_OPEN
+	var raiz := Node3D.new()
+	raiz.name = nombre
+	var m := MeshInstance3D.new()
+	m.name = "Malla"
+	var quad := QuadMesh.new()
+	quad.size = Vector2(DIBUJO_ANCHO, DIBUJO_ANCHO * tex.get_height() / float(tex.get_width()))
+	m.mesh = quad
+	m.position = Vector3(0, quad.size.y * 0.5, 0)
+	var mat := StandardMaterial3D.new()
+	mat.resource_name = nombre
+	mat.albedo_texture = tex
+	mat.roughness = 0.95
+	Estilo.aplicar(mat)
+	m.set_surface_override_material(0, mat)
+	raiz.add_child(m)
+	m.owner = raiz
+	var packed := PackedScene.new()
+	var err := packed.pack(raiz)
+	if err == OK:
+		err = ResourceSaver.save(packed, SALIDA + nombre + ".scn")
+	raiz.free()
+	return err
+
+
 func _material(nombre: String, kit: Dictionary) -> Material:
 	for conjunto: String in CONJUNTOS:
 		for prefijo: String in CONJUNTOS[conjunto]:
@@ -140,8 +194,9 @@ func _material(nombre: String, kit: Dictionary) -> Material:
 	if not ResourceLoader.exists(path):
 		var mat := StandardMaterial3D.new()
 		mat.resource_name = "Provisional_" + grupo
-		mat.albedo_color = COLORES[grupo]
+		Estilo.pintar(mat, grupo)
 		mat.roughness = 0.85
+		Estilo.aplicar(mat)
 		ResourceSaver.save(mat, path)
 	return load(path)
 

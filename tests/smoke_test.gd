@@ -1088,6 +1088,34 @@ func _test_kit() -> void:
 	check(instancias.size() >= 45 and del_kit.size() == instancias.size() and escaladas.is_empty()
 		and nombres.has("SM_WallA") and nombres.has("SM_Window") and nombres.has("SM_Ceiling") and nombres.has("SM_ComodaA") and nombres.has("SM_TV"),
 		"el diorama de prueba (preview/diorama_kit.tscn) son piezas del tileset sin redimensionar: hastial, ventana, faldón, cómoda, tele... (%d)" % instancias.size())
+	# 18-oct: el diorama de prueba copia el blocking de las artistas (assets/kit/referencia/Blocking3.fbx)
+	# con los assets nuevos (Pack06-08), se llena con adornos, cuerdas de bombillitas (una libre para los
+	# dibujos) y el dibujo de la bailarina; y todo el kit lleva el estilo cozy (misma capa de tono).
+	var nuevas := ["SM_Caballete", "SM_Mirror", "SM_CatBed", "SM_Rug", "SM_Hat", "SM_LitterBox", "SM_MusicBox",
+		"SM_Pig", "SM_Lights", "SM_Polaroid", "SM_PolaroidA", "SM_ComodaC", "Dibujo_t_draw_03"]
+	var faltan := nuevas.filter(func(n: String) -> bool: return not tileset.has(n + ".scn"))
+	var tablones := nombres.filter(func(n: String) -> bool: return n.begins_with("FloorPlanks")).size()
+	var sombrero := diorama.find_children("SM_Hat*", "Node3D", true, false)
+	var inclinado := not sombrero.is_empty() and not (sombrero[0] as Node3D).basis.y.is_equal_approx(Vector3.UP)
+	check(faltan.is_empty() and tablones == 12 and not nombres.has("SM_Floor") and inclinado
+		and nombres.has("SM_Caballete") and nombres.has("SM_Mirror") and nombres.has("SM_CatBed") and nombres.has("SM_Burro"),
+		"el diorama de prueba sigue el blocking: el suelo en 12 tablones, caballete, espejo, cama del gato, burro con el sombrero colgado (faltan en el tileset: %s; tablones %d)" % [faltan, tablones])
+	var tramos := nombres.filter(func(n: String) -> bool: return n == "SM_Lights").size()
+	var luces := diorama.find_children("Luz", "OmniLight3D", true, false).size()
+	var cuerda_dibujos := diorama.find_child("CuerdaDibujos", true, false)
+	check(tramos >= 5 and luces == tramos and cuerda_dibujos != null and diorama.find_child("Adornos", true, false) != null
+		and nombres.has("SM_MusicBox") and nombres.has("SM_Pig") and nombres.has("Dibujo_t_draw_03"),
+		"el diorama de prueba, más lleno: cuerdas de bombillitas en varias paredes (%d tramos, cada bombilla con su luz; una libre para los dibujos), caja de música, hucha y el dibujo de la bailarina" % tramos)
+	var sin_estilo := PackedStringArray()
+	var tono: Texture2D = load("res://assets/kit/materiales/estilo/tono.tres")
+	for dir in ["res://assets/kit/materiales/", "res://assets/kit/materiales/provisional/"]:
+		for f in DirAccess.get_files_at(dir):
+			var m := load(dir + f) as BaseMaterial3D if f.get_extension() == "tres" else null
+			if m != null and (not m.detail_enabled or m.detail_albedo != tono or m.detail_mask == null):
+				sin_estilo.append(f)
+	var mezcla := ((load("res://assets/kit/materiales/estilo/mezcla.tres") as GradientTexture1D).gradient.colors[0] as Color).r
+	check(tono != null and sin_estilo.is_empty() and mezcla > 0.1 and mezcla < 0.6,
+		"el estilo cozy del kit: todos sus materiales mezclan su color con el mismo tono cálido (%d %%; sin estilo: %s)" % [roundi(mezcla * 100), ", ".join(sin_estilo)])
 	diorama.free()
 
 
