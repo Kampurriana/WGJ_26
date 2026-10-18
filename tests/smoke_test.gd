@@ -612,6 +612,9 @@ func _test_story(main: Node) -> void:
 	Events.collectible_hung.connect(count_hung)
 	Narrator.clear()
 	var heard_s1: Dictionary = Sfx.played.duplicate()
+	var start_xf := {}                             # (cómo vienen las piezas del modelo: ninguna se queda pequeña)
+	for sl in d.slots:
+		start_xf[sl] = sl.node.transform
 	var steps := 0
 	while not s1.completed and steps < 80:
 		d.debug_solve_step()
@@ -666,6 +669,16 @@ func _test_story(main: Node) -> void:
 	check(d.is_opening() and not GameState.hud.says_nothing_left(),
 		"entre una sección y la siguiente, la bandeja espera: no dice que aquí no queda nada")
 	var waited := 0.0
+	var heard_chapter: Dictionary = Sfx.played.duplicate()
+	var arriving: Array[Node3D] = []               # lo que aparece al abrirse la infancia: sus muebles y sus siluetas
+	arriving.append_array(s2.decor)
+	for sl in s2.slots:
+		arriving.append(sl.node)
+	var arriving_xf := {}
+	var arriving_floor := {}
+	for n in arriving:
+		arriving_xf[n] = n.transform
+		arriving_floor[n] = Visuals.global_aabb(n)
 	while (Narrator.remaining() > 0.0 or m.active) and waited < 25.0:   # la voz de la hucha dura 14 s
 		await get_tree().create_timer(0.25).timeout
 		waited += 0.25
@@ -675,11 +688,36 @@ func _test_story(main: Node) -> void:
 		"al acabar un acto, el siguiente no se abre solo: espera a que la jugadora pulse «Continuar»")
 	_click(GameState.hud.continue_button.get_global_rect().get_center())
 	waited = 0.0
-	while not s2.opened and waited < 6.0:
-		await get_tree().create_timer(0.25).timeout
-		waited += 0.25
+	while not s2.opening and waited < 3.0:
+		await get_tree().create_timer(0.1).timeout
+		waited += 0.1
+	var title_wait := 0.0
+	var quiet_title := true                        # mientras se ve el rótulo, aún no hay nada del capítulo
+	while s2.opening and not s2.opened and title_wait < 8.0:
+		quiet_title = quiet_title and not s2.decor.any(func(n: Node3D) -> bool: return n.visible) \
+			and not _more(heard_chapter, "aparecer_capitulo")
+		await get_tree().create_timer(0.1).timeout
+		title_wait += 0.1
 	check(s2.opened and not d.act_waiting() and not GameState.hud.continue_button.visible and GameState.hud.chapter_text().contains("Infancia"),
 		"al pulsar «Continuar» sale el rótulo del capítulo y se abre la infancia")
+	check(quiet_title and title_wait >= Diorama.CHAPTER_REVEAL - 0.15,
+		"al abrirse un capítulo, primero su rótulo: sus muebles y sus siluetas esperan a que se empiece a ir (%.1f s)" % title_wait)
+	check(_more(heard_chapter, "aparecer_capitulo") and Sfx.length("aparecer_capitulo") > 0.0,
+		"y al aparecer sus cosas suena el de Drive FXS «Cuando aparecen las cosas del capitulo»")
+	var growing := arriving.filter(func(n: Node3D) -> bool: return Visuals.is_growing(n))
+	var delays := growing.map(func(n: Node3D) -> float: return Visuals.grow_delay(n))
+	check(growing.size() >= 5 and s2.decor.any(func(n: Node3D) -> bool: return Visuals.is_growing(n))
+		and delays.max() - delays.min() > Visuals.GROW_SWEEP * 0.4,
+		"las cosas del capítulo no salen de golpe: muebles y siluetas crecen una tras otra, de izquierda a derecha (%d, de %.2f a %.2f s)"
+		% [growing.size(), delays.min() if not delays.is_empty() else 0.0, delays.max() if not delays.is_empty() else 0.0])
+	var late: Array = growing.filter(func(n: Node3D) -> bool: return Visuals.grow_delay(n) > 0.4)   # (aparecieron hace menos de 0,1 s)
+	var from_floor := not late.is_empty() and late.all(func(n: Node3D) -> bool:
+		var now := Visuals.global_aabb(n)
+		var full: AABB = arriving_floor[n]
+		return absf(now.position.y - full.position.y) < 0.02 and now.size.length() < full.size.length() * 0.2)
+	check(from_floor, "y crecen desde el suelo, no desde su centro (las que aún esperan su turno: %d, diminutas y en el suelo)" % late.size())
+	check(GameState.hud.chapter_text() != "" and GameState.hud.tip_text() == "",
+		"mientras se va el rótulo, el consejo del mueble que brilla aún espera (no sale encima)")
 	check(not m.active and not cam_ctl.in_moment and not GameState.hud.in_moment(),
 		"al callarse, el momento acaba: la cámara vuelve al jugador y la bandeja vuelve")
 	await get_tree().create_timer(Momentos.HIDE_TIME + 0.1).timeout
@@ -691,6 +729,21 @@ func _test_story(main: Node) -> void:
 	check(GameState.hud._chapter_kicker.text == "CAPÍTULO I" and GameState.hud._chapter_title.text == "Infancia"
 		and otter_slot.shown and otter_slot.ghost_visible(),
 		"el rótulo es de nuevo capítulo (CAPÍTULO I / Infancia) y las siluetas del acto aparecen")
+	await get_tree().create_timer(Visuals.GROW_SWEEP + Visuals.GROW_TIME).timeout
+	check(not arriving.any(func(n: Node3D) -> bool: return Visuals.is_growing(n))
+		and arriving.all(func(n: Node3D) -> bool: return n.transform.is_equal_approx(arriving_xf[n])),
+		"al acabar de aparecer, cada mueble y cada silueta queda exactamente como venía")
+	var probe := MeshInstance3D.new()
+	probe.mesh = BoxMesh.new()
+	d.add_child(probe)
+	probe.position = Vector3(0.0, 0.5, 0.0)
+	var probe_xf := probe.transform
+	Visuals.grow_in(probe, 0.3)
+	var probe_small := probe.transform.basis.get_scale().x < 0.1
+	Visuals.stop_growing(probe)
+	check(probe_small and probe.transform.is_equal_approx(probe_xf) and not Visuals.is_growing(probe),
+		"si se corta mientras crece (se coloca la pieza o se oculta), queda a su tamaño al momento")
+	probe.queue_free()
 	shown = d.visible_inventory()
 	check(shown.has(&"comoda_infantil") and not shown.has(&"caja_musica") and not shown.has(&"dibujo") and not shown.has(&"peluche"),
 		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
@@ -708,8 +761,8 @@ func _test_story(main: Node) -> void:
 	while GameState.hud.tip_text() == "" and tip_wait < 6.0:      # sale cuando se va el rótulo de capítulo
 		await get_tree().create_timer(0.25).timeout
 		tip_wait += 0.25
-	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles") and tip_wait > 1.0,
-		"la primera vez sale el consejo de tocar el mueble que brilla (cuando se va el rótulo de capítulo: %.1f s)" % tip_wait)
+	check(GameState.hud.tip_text() == Narrator.text("consejo_muebles") and GameState.hud.chapter_text() == "",
+		"la primera vez sale el consejo de tocar el mueble que brilla, ya sin el rótulo de capítulo (%.1f s)" % tip_wait)
 	check(GameState.hud.task_text().begins_with("I · INFANCIA | Lleva cada pieza") and d.has_findable(),
 		"mientras haya piezas que poner, la tarjeta pide ponerlas (aunque ya haya algo guardado que buscar)")
 	await get_tree().create_timer(0.5).timeout     # entra deslizándose
@@ -977,6 +1030,11 @@ func _test_story(main: Node) -> void:
 	var front := mirror.node.global_basis.z
 	var want_yaw := rad_to_deg(atan2(front.x, front.z))
 	await get_tree().create_timer(1.6).timeout
+	var shrunk := d.slots.filter(func(sl: PieceSlot) -> bool:      # (el saltito de colocar parte de su tamaño de verdad)
+		return sl.filled and sl.section != s1 and (not sl.node.transform.is_equal_approx(start_xf[sl])
+			or not (d._base_scale.get(sl.node, sl.node.scale) as Vector3).is_equal_approx(sl.node.scale)))
+	check(shrunk.is_empty(), "ninguna pieza se queda pequeña ni salta desde pequeña por colocarla mientras aún crecía (%s)"
+		% [shrunk.map(func(sl: PieceSlot) -> StringName: return sl.id)])
 	check(m.kind == "reflejo" and absf(cam_ctl.yaw - want_yaw) < 1.0 and cam_ctl.pitch < 8.0,
 		"al poner el espejo, la cámara se pone delante de él (giro %.0f, quiere %.0f)" % [cam_ctl.yaw, want_yaw])
 	check(m.is_isolated() and cam_ctl.cam.cull_mask != 0xFFFFF and m.iris_strength() > 0.95 and is_instance_valid(m.reflection),

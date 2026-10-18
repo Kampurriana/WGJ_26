@@ -14,6 +14,11 @@ const GHOST_SHADER := preload("res://shaders/ghost.gdshader")
 const CLAY_SHADER := preload("res://shaders/madera_cruda.gdshader")
 ## Esferas de pintura que caben en el shader (MAX_PINTURA en madera_cruda.gdshader).
 const MAX_PAINT := 128
+## Las cosas de un capítulo, al abrirse, no salen de golpe (pedido del 18-oct): cada una crece desde el
+## suelo con un rebote, y van saliendo de izquierda a derecha de la pantalla (grow_in, sweep_delay).
+const GROW_FROM := 0.02                      ## tamaño con el que empieza (casi nada: con 0 no se podría invertir)
+const GROW_TIME := 0.55                      ## lo que tarda cada una en crecer (s)
+const GROW_SWEEP := 0.9                      ## de la que está más a la izquierda a la de más a la derecha (s)
 
 
 static func meshes_under(root: Node) -> Array[MeshInstance3D]:
@@ -36,6 +41,73 @@ static func global_aabb(root: Node3D) -> AABB:
 	if not have:
 		box = AABB(root.global_position - Vector3.ONE * 0.1, Vector3.ONE * 0.2)
 	return box
+
+
+## Cuándo le toca aparecer a algo según dónde cae en la pantalla entre las cosas que aparecen con él
+## (`along`: sus centros): 0 la que está más a la izquierda, GROW_SWEEP la de más a la derecha.
+static func sweep_delay(node: Node3D, along: PackedVector3Array) -> float:
+	var cam := node.get_viewport().get_camera_3d() if node.is_inside_tree() else null
+	var at := global_aabb(node).get_center()
+	if cam == null or cam.is_position_behind(at):
+		return 0.0
+	var left := INF
+	var right := -INF
+	for p in along:
+		if not cam.is_position_behind(p):
+			var px := cam.unproject_position(p).x
+			left = minf(left, px)
+			right = maxf(right, px)
+	if right - left < 1.0:
+		return 0.0
+	return GROW_SWEEP * clampf((cam.unproject_position(at).x - left) / (right - left), 0.0, 1.0)
+
+
+## La hace crecer desde el centro de abajo de su caja (desde el suelo) hasta su tamaño, con un pequeño
+## rebote, pasados `delay` s. Al acabar, o si se corta con stop_growing, queda exactamente como estaba.
+static func grow_in(node: Node3D, delay := 0.0) -> void:
+	stop_growing(node)
+	if not node.is_inside_tree():
+		return
+	var base := node.transform
+	var box := global_aabb(node)
+	var bottom := Vector3(box.get_center().x, box.position.y, box.get_center().z)
+	var parent := node.get_parent_node_3d()
+	var pivot := parent.global_transform.affine_inverse() * bottom if parent != null else bottom
+	node.transform = _grown(base, pivot, GROW_FROM)
+	var tw := node.create_tween()
+	tw.tween_interval(delay)
+	tw.tween_method(func(s: float) -> void: node.transform = _grown(base, pivot, s), GROW_FROM, 1.0, GROW_TIME) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_callback(func() -> void:
+		node.remove_meta(&"crece")
+		node.transform = base)
+	node.set_meta(&"crece", [tw, base, delay])
+
+
+## Si estaba creciendo, la deja ya a su tamaño (al colocar una pieza que aún crecía, al ocultarla...).
+static func stop_growing(node: Node3D) -> void:
+	if not node.has_meta(&"crece"):
+		return
+	var info: Array = node.get_meta(&"crece")
+	node.remove_meta(&"crece")
+	var tw := info[0] as Tween
+	if tw != null and tw.is_valid():
+		tw.kill()
+	node.transform = info[1]
+
+
+static func is_growing(node: Node3D) -> bool:
+	return node.has_meta(&"crece")
+
+
+## (Tests) Cuánto esperaba para crecer (-1 si no está creciendo).
+static func grow_delay(node: Node3D) -> float:
+	return float((node.get_meta(&"crece") as Array)[2]) if node.has_meta(&"crece") else -1.0
+
+
+## `base` crecida a `s` (1 = su tamaño) desde `pivot`, en el espacio del padre.
+static func _grown(base: Transform3D, pivot: Vector3, s: float) -> Transform3D:
+	return Transform3D(Basis.from_scale(Vector3(s, s, s)) * base.basis, pivot + (base.origin - pivot) * s)
 
 
 ## Caja en el espacio local de root (para colisiones y para centrar copias).

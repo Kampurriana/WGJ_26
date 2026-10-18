@@ -14,6 +14,9 @@ extends Node3D
 ##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s; solo dice la frase de la última
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
 ##   --capture-after=S    segundos de espera antes de la captura (por defecto 3)
+##   --capturas=N,S       (capturas) N capturas, una cada S segundos (ruta_00.png, ruta_01.png...): una animación
+##   --capitulo           (capturas) al segundo de empezar, la estructura del desván ya puesta y se abre el
+##                        capítulo I como en la partida: su rótulo y, cuando se va, sus cosas apareciendo
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
@@ -70,6 +73,10 @@ var _celebrate := ""
 var _zoom_at := Vector2.ZERO
 var _capture_path := ""
 var _capture_after := 3.0
+var _shots := 1                              ## (--capturas) cuántas y cada cuánto
+var _shot_every := 0.0
+var _shot_n := 0
+var _open_chapter := false
 var _solve_left := 0
 var _solve_timer := 0.0
 var _elapsed := 0.0
@@ -193,6 +200,12 @@ func _parse_args() -> void:
 			_capture_path = a.get_slice("=", 1)
 		elif a.begins_with("--capture-after="):
 			_capture_after = a.get_slice("=", 1).to_float()
+		elif a.begins_with("--capturas="):
+			var v := a.get_slice("=", 1).split_floats(",")
+			_shots = maxi(1, int(v[0]))
+			_shot_every = v[1] if v.size() > 1 else 0.25
+		elif a == "--capitulo":
+			_open_chapter = true
 		elif a == "--solo-fondo":
 			_only_background = true
 		elif a == "--f9":
@@ -211,6 +224,20 @@ func _parse_args() -> void:
 			var v := a.get_slice("=", 1).split(",")
 			Settings.set_value("fondo_color", int(v[0]))
 			Settings.set_value("fondo_motivo", int(v[1]) if v.size() > 1 else 0)
+
+
+## (--capitulo) Pone la estructura del desván de golpe y abre el capítulo siguiente por el camino de la
+## partida («Continuar», rótulo y, cuando se va, sus cosas apareciendo), sin el momento de la hucha.
+func _open_first_chapter() -> void:
+	var d := GameState.diorama
+	var guard := 0
+	while d.opening_section() == null and not d.completed and guard < 200:
+		d.debug_solve_step()
+		guard += 1
+	Narrator.clear()
+	if momentos.active:
+		momentos.finish()
+	d.continue_act()                         # como si pulsara «Continuar»
 
 
 ## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
@@ -453,6 +480,9 @@ func _process(delta: float) -> void:
 	if _roll_credits and _elapsed > 1.0:
 		_roll_credits = false
 		roll_credits()
+	if _open_chapter and _elapsed > 1.0 and GameState.diorama != null:
+		_open_chapter = false
+		_open_first_chapter()
 	if (_menu_page == "dibujos" or _menu_page == "dialogos") and _elapsed > 1.5 and _solve_left == 0:
 		var p := _menu_page
 		_menu_page = ""
@@ -482,9 +512,14 @@ func _process(delta: float) -> void:
 		GameState.hud.visible = false
 	if _capture_path != "" and _elapsed >= _capture_after and _solve_left == 0:
 		var img := get_viewport().get_texture().get_image()
-		var out := ProjectSettings.globalize_path("res://" + _capture_path)
+		var path := _capture_path if _shots == 1 else "%s_%02d.png" % [_capture_path.get_basename(), _shot_n]
+		var out := ProjectSettings.globalize_path("res://" + path)
 		DirAccess.make_dir_recursive_absolute(out.get_base_dir())
 		var err := img.save_png(out)
 		print("CAPTURA %s %dx%d err=%d" % [out, img.get_width(), img.get_height(), err])
+		_shot_n += 1
+		if _shot_n < _shots:
+			_capture_after += _shot_every
+			return
 		_capture_path = ""
 		Sfx.quit()

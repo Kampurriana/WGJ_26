@@ -60,7 +60,8 @@ func center() -> Vector3:
 	return Visuals.global_aabb(node).get_center()
 
 
-## Silueta a la vista o no. animate = se materializa (disolución con trama) al abrirse su sección.
+## Silueta a la vista o no. animate = al abrirse su sección, crece desde el suelo (Visuals.grow_in, de
+## izquierda a derecha de la pantalla, como los muebles) mientras se materializa (disolución con trama).
 func set_shown(on: bool, animate := false) -> void:
 	if filled or on == shown:
 		return
@@ -70,10 +71,15 @@ func set_shown(on: bool, animate := false) -> void:
 	if _appear != null:
 		_appear.kill()
 	if on and animate and node.is_inside_tree():
+		var delay := Visuals.sweep_delay(node, section.sweep() if section != null else PackedVector3Array())
+		_ghost.set_shader_parameter("aparicion", 0.0)
 		_appear = node.create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		_appear.tween_interval(delay)
 		_appear.tween_method(func(a: float) -> void: _ghost.set_shader_parameter("aparicion", a), 0.0, 1.0, APPEAR_TIME)
+		Visuals.grow_in(node, delay)
 	else:
 		_ghost.set_shader_parameter("aparicion", 1.0)
+		Visuals.stop_growing(node)
 
 
 ## Disponible o no: blanca si ya se puede poner, gris si le falta una anterior.
@@ -118,6 +124,7 @@ func fill(fade := true) -> void:
 		_tween.kill()
 	if _appear != null:
 		_appear.kill()
+	Visuals.stop_growing(node)                  # si aún crecía, ya a su tamaño (el saltito de colocar parte de ahí)
 	for m in _meshes:
 		m.material_override = null
 		m.visible = true
