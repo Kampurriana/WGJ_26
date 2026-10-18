@@ -252,8 +252,8 @@ func _test_voices() -> void:
 			for m: Variant in marks:
 				new_marks_ok = new_marks_ok and float(m) > prev and float(m) < length
 				prev = float(m)
-	check(nuevas == 9 and new_marks_ok and not ResourceLoader.exists("res://assets/audio/voz/intro_menu.ogg"),
-		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas (%d de 9)" % nuevas)
+	check(nuevas == 9 and new_marks_ok and Narrator._voice("intro_cerdito") == "" and not lines.has("intro_menu"),
+		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas; el cerdito empieza sin voz (%d de 9)" % nuevas)
 	got.clear()
 	Narrator._lines["_prueba_solo_voz"] = {"frases": [], "voz": "dibujo_encontrado_2"}
 	Narrator.say("_prueba_solo_voz")

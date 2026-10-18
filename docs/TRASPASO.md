@@ -186,7 +186,9 @@ carpeta. Si no, parar y preguntar.
   → partido en la pausa de «Esta moneda es… / para mi futuro como artista»: `seccion_epilogo` (31 s,
   antes de que salga la moneda) y `pieza_moneda` (al meterla). Las frases de cada grabación cambian en
   sus pausas (`marcas`, medidas con `silencedetect`). En el texto del final ponía «siempre esto a
-  tiempo de aprender»: puesto «estoy».
+  tiempo de aprender»: puesto «estoy». La frase del principio del cerdito se llama ahora
+  `intro_cerdito` (antes `intro_menu`, que en `e69eb8e` llevó por error la voz de «¡Ha quedado como
+  nueva!»): así un `intro_menu.ogg` viejo que se quede en algún PC no vuelve a sonar al empezar.
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de
   prueba es una escena de instancias (`preview/diorama_kit.tscn`) que las artistas mueven en el editor.
