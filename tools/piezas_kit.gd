@@ -30,6 +30,9 @@ const Estilo := preload("res://tools/estilo_kit.gd")
 ## Duplicados de piezas que ya están sueltas (las cajas de Boxes.fbx = SM_BoxA..E; la tele de Pack04
 ## = SM_TV). Las de nombre SM_ repetido se descartan solas (la primera que se encuentra es la buena).
 const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV05"]
+## Ficheros de los que solo vale alguna malla: SM_bombilla.fbx trae la escena entera de 3ds Max (el
+## blocking y más) y de él solo es la bombilla. Con SM_cuerda.fbx, la guirnalda de bombillitas (18-oct).
+const SOLO := {"SM_bombilla.fbx": ["bombilla"]}
 ## Ficheros que no se usan (Comoda.fbx es la cómoda fundida en una malla: están sus piezas sueltas; la
 ## referencia es una escena entera: de ella solo se cogen las MONTADAS).
 const EXCLUIDOS := ["Comoda.fbx"]
@@ -39,16 +42,13 @@ const REFERENCIA := KIT + "referencia/Blocking3.fbx"   ## la misma que tools/bui
 const MONTADAS := ["MP3"]
 ## Nombres buenos para las piezas que llegan con el nombre por defecto de 3ds Max.
 const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "SM_Vase",
+	"SM_Lights001": "SM_Cuerda", "bombilla": "SM_Bombilla",
 	"Cylinder025": "SM_BrushA", "Cylinder026": "SM_BrushB", "Cylinder027": "SM_BrushC",
 	"Object006": "SM_CoverBoxA", "Object007": "SM_CoverBoxB", "Object008": "SM_CoverBoxC",
 	"Object009": "SM_CoverBoxD", "Object010": "SM_CoverBoxE"}
 ## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero). La hucha
 ## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, ojos, ranura, cola) va montada en una pieza.
 const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
-## Piezas que además se parten en dos por sus trozos sueltos (islas de la malla): [la del trozo más
-## ancho, la del resto]. SM_Lights es un tramo de cuerda con UNA bombilla (casquillo y cristal): la cuerda
-## sola y la bombilla sola sirven para montar cuerdas con bombillas a lo largo (tools/build_diorama_kit.gd).
-const PARTIR := {"SM_Lights": ["SM_LightsCuerda", "SM_LightsBombilla"]}
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. Son las carpetas de Assets/ de Drive: Pack01 (suelo, zócalos, correas,
 ## pilar; las de nombre de 3ds Max de FloorCeilingPlanks... son las mismas), Pack02 (techo y postes).
@@ -70,7 +70,8 @@ const CATEGORIAS := [
 	["SM_MP3", "blanco"], ["SM_Vase", "jarron"], ["SM_Brush", "madera"], ["SM_CoverDesk", "naranja"],
 	["SM_PolaroidA", "foto"], ["SM_PolaroidB", "foto"], ["SM_PolaroidC", "foto"], ["SM_PolaroidD", "foto"],
 	["SM_Polaroid", "tele"], ["SM_MusicBox", "rosa"], ["SM_Pig", "rosa"], ["SM_Hat", "naranja"],
-	["SM_Lights", "luces"], ["SM_LitterBox", "tele"], ["SM_Caballete", "madera"], ["SM_CatBed", "tela"],
+	["SM_Lights", "luces"], ["SM_Cuerda", "luces"], ["SM_Bombilla", "luces"],
+	["SM_LitterBox", "tele"], ["SM_Caballete", "madera"], ["SM_CatBed", "tela"],
 	["SM_Rug", "tela"], ["SM_Mirror", "madera"],
 ]
 
@@ -92,6 +93,8 @@ func _init() -> void:
 		for m: MeshInstance3D in escena.find_children("*", "MeshInstance3D", true, false):
 			if path == REFERENCIA and not String(m.name) in MONTADAS:
 				continue
+			if SOLO.has(path.get_file()) and not String(m.name) in SOLO[path.get_file()]:
+				continue
 			var nombre := String(ALIAS.get(String(m.name), String(m.name)))
 			for prefijo: String in GRUPOS:
 				if nombre.begins_with(prefijo):
@@ -108,17 +111,6 @@ func _init() -> void:
 				hechas.append(nombre)
 			else:
 				fallos += 1
-			if PARTIR.has(nombre) and piezas[nombre].size() == 1:
-				var partes := _partir(piezas[nombre][0])
-				for k in 2:
-					var parte: String = PARTIR[nombre][k]
-					err = _guardar(parte, [partes[k]], escena, kit)
-					print("PIEZA %-28s %s (de %s)  err=%d" % [parte, path.trim_prefix(KIT), nombre, err])
-					if err == OK:
-						hechas.append(parte)
-					else:
-						fallos += 1
-					partes[k].free()
 		escena.free()
 	for path in _ficheros(KIT + "dibujos", IMAGE_EXT):
 		var nombre := "Dibujo_" + path.get_file().get_basename()
@@ -190,93 +182,6 @@ func _guardar_dibujo(nombre: String, imagen: String) -> Error:
 		err = ResourceSaver.save(packed, SALIDA + nombre + ".scn")
 	raiz.free()
 	return err
-
-
-## Parte la malla de `m` por sus trozos sueltos (triángulos unidos por vértices en la misma posición):
-## [el trozo más ancho en x, todos los demás juntos], cada uno en un MeshInstance3D con la transformación de
-## `m` y colgado de su mismo padre (para que su transformación en el fichero sea la misma; se liberan después).
-func _partir(m: MeshInstance3D) -> Array[MeshInstance3D]:
-	var arr := m.mesh.surface_get_arrays(0)
-	var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
-	var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
-	var punto := PackedInt32Array()          # vértice -> su posición (los repetidos por normales, uno)
-	var posiciones := {}
-	for p in v:
-		var q := Vector3i((p * 10000.0).round())
-		if not posiciones.has(q):
-			posiciones[q] = posiciones.size()
-		punto.append(posiciones[q])
-	var padre := range(posiciones.size())
-	var raiz := func(a: int) -> int:
-		while padre[a] != a:
-			a = padre[a]
-		return a
-	for t in range(0, idx.size(), 3):
-		for k in 2:
-			padre[raiz.call(punto[idx[t + k]])] = raiz.call(punto[idx[t + k + 1]])
-	var islas := {}                          # raíz -> [triángulos]
-	for t in range(0, idx.size(), 3):
-		var r: int = raiz.call(punto[idx[t]])
-		if not islas.has(r):
-			islas[r] = PackedInt32Array()
-		islas[r].append(t / 3)
-	var ancha: Variant = null
-	var ancho := -1.0
-	for r: int in islas:
-		var x0 := INF
-		var x1 := -INF
-		for t: int in islas[r]:
-			for k in 3:
-				x0 = minf(x0, v[idx[t * 3 + k]].x)
-				x1 = maxf(x1, v[idx[t * 3 + k]].x)
-		if x1 - x0 > ancho:
-			ancho = x1 - x0
-			ancha = r
-	var resto := PackedInt32Array()
-	for r: int in islas:
-		if r != ancha:
-			resto.append_array(islas[r])
-	var out: Array[MeshInstance3D] = []
-	for tris: PackedInt32Array in [islas[ancha], resto]:
-		var parte := MeshInstance3D.new()
-		parte.mesh = _submalla(arr, tris)
-		parte.transform = m.transform
-		m.get_parent().add_child(parte)
-		out.append(parte)
-	return out
-
-
-## Una malla con solo los triángulos `tris` de una superficie (sus arrays), con sus vértices renumerados.
-func _submalla(arr: Array, tris: PackedInt32Array) -> ArrayMesh:
-	var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
-	var nv := (arr[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
-	var nuevo := {}
-	var orden := PackedInt32Array()
-	var idx2 := PackedInt32Array()
-	for t in tris:
-		for k in 3:
-			var i := idx[t * 3 + k]
-			if not nuevo.has(i):
-				nuevo[i] = orden.size()
-				orden.append(i)
-			idx2.append(nuevo[i])
-	var out := []
-	out.resize(Mesh.ARRAY_MAX)
-	for a in Mesh.ARRAY_MAX:
-		var src: Variant = arr[a]
-		if src == null or a == Mesh.ARRAY_INDEX or a >= Mesh.ARRAY_BONES:
-			continue
-		var dst: Variant = src.duplicate()
-		dst.resize(0)
-		var paso: int = src.size() / nv        # tangentes: 4 números por vértice
-		for i in orden:
-			for k in paso:
-				dst.append(src[i * paso + k])
-		out[a] = dst
-	out[Mesh.ARRAY_INDEX] = idx2
-	var malla := ArrayMesh.new()
-	malla.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, out)
-	return malla
 
 
 func _material(nombre: String, kit: Dictionary) -> Material:

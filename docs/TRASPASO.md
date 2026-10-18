@@ -229,8 +229,9 @@ carpeta. Si no, parar y preguntar.
   también se ve en el escritorio del desván, que usa `M_Desk`), y «la cuerda con la bombilla en distintos
   sitios, montada como cuerda con bombillitas; se usará para colgar los dibujos, dejar un espacio» y «un
   plano con textura para el dibujo de la bailarina y la abuela» (`CUERDAS`, la del fondo del entrante
-  libre; `Dibujo_t_draw_03`); y luego «las cuerdas con bombillas colgando a lo largo, apagadas»: `SM_Lights`
-  (un tramo con una bombilla) se parte en cuerda y bombilla y cada tramo lleva varias. Falta en el kit un
+  libre; `Dibujo_t_draw_03`); y luego «las cuerdas con bombillas colgando a lo largo, apagadas, SIN LUZ»,
+  con su imagen de referencia y sus dos mallas (`modelos/Cuerda/SM_cuerda.fbx` y `SM_bombilla.fbx`): 3
+  bombillas por tramo, a la misma distancia a lo largo de toda la cuerda. Falta en el kit un
   remate de 1,38 m del hastial (`SB17` del blocking).
 - **17-oct, cuarto dibujo:** `t_draw_04` (Ana y Lurdes, dos niñas con una carta de corazones) es
   coleccionable, debajo de la cama (`C_dibujo_amigas__after-cama_infantil`): ya son 4.

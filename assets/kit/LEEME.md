@@ -51,11 +51,15 @@ para que sea fácil poner al día:
   tamaños). Siguen sin textura `Pack03`, la cómoda, la tele, `Pack04`/`05` y lo nuevo de `Pack06`-`08`.
 - `SM_ComodaC` ya está (18-oct; se bajó entera). Falta `SM_DeskB`: en el escritorio se repite `SM_DeskC`.
 - Del 18-oct: `Pack06` (`SM_MusicBox`, `SM_PolaroidA..D`: las fotos), `Pack07` (`SN_Hat` = `SM_Hat`,
-  `SM_Polaroid` = la cámara, `SM_Lights` = **un tramo** de la cuerda de bombillitas (el tileset lo parte
-  también en `SM_LightsCuerda`, la cuerda sola, y `SM_LightsBombilla`, la bombilla sola), `SM_LitterBox` y la
+  `SM_Polaroid` = la cámara, `SM_Lights` = **un tramo** de la cuerda de bombillitas con una bombilla,
+  `SM_LitterBox` y la
   hucha en piezas `SM_PigA..L`, que el tileset monta en `SM_Pig`), `Pack08` (`SM_Caballete`, `SM_CatBed`,
   `SM_Mirror`, `SM_Rug`). Las piezas de menos de ~36 KB (cerdito, espejo, arenero) salen de los paquetes,
   que traen los nombres buenos.
+- `modelos/Cuerda/` (18-oct, pasadas por chat): `SM_cuerda.fbx` (un tramo de cuerda sola = pieza
+  `SM_Cuerda`) y `SM_bombilla.fbx` (una bombilla con su casquillo = `SM_Bombilla`). Ojo: `SM_bombilla.fbx`
+  trae la escena entera de 3ds Max (el blocking y más cosas); de él solo se coge la malla `bombilla`
+  (`SOLO` en `tools/piezas_kit.gd`). La carpeta no entra en la build (solo es para la preview).
 - El MP3 de `Pack05` viene despiezado (para texturizar): el tileset coge el **MP3 montado** de la
   referencia (`MONTADAS` en `tools/piezas_kit.gd`).
 - En el blocking hay un remate de 1,38 m arriba del hastial (`SB17`) que no está en el kit: no se pone.
@@ -101,10 +105,10 @@ Para traerlo todo con sus nombres: un `.zip` de la carpeta en Drive (se baja ent
   Lo que el blocking trae en trozos o con un modelo viejo se dice en `GRUPOS` / `A_MANO`. Después van los
   `ADORNOS` (más piezas del kit para llenar la escena: caja de música y hucha en la cómoda, polaroids,
   otra alfombra, otra lámpara, cajas, pinceles, el dibujo de la bailarina en el hastial) y las `CUERDAS`
-  de bombillitas: tramos de `SM_LightsCuerda` punta con punta con bombillas (`SM_LightsBombilla`)
-  colgando a lo largo, **apagadas** (bajo la correa del faldón, en la pared lateral del entrante y en la
-  del fondo; **esa última, alta y sin nada debajo, con las bombillas más separadas, es el sitio para
-  colgar los dibujos**). En el diorama, el blocking va girado 180° y centrado (fondo hacia -z, como el
+  de bombillitas: tramos de `SM_Cuerda` punta con punta con 3 `SM_Bombilla` cada uno, a la misma
+  distancia a lo largo de toda la cuerda (como la imagen de referencia del equipo), **apagadas, sin
+  luces** (bajo la correa del faldón, en la pared lateral del entrante y en la del fondo; **esa última,
+  alta y sin nada debajo, es el sitio para colgar los dibujos**). En el diorama, el blocking va girado 180° y centrado (fondo hacia -z, como el
   desván del juego).
 - Si llega otro blocking: dejarlo en `referencia/`, cambiar `REFERENCIA` en `tools/build_diorama_kit.gd` y
   `tools/piezas_kit.gd`, y mirar la tabla (`-- --analizar`): lo que salga en `SIN PIEZA` va en `A_MANO`.
