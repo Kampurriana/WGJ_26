@@ -60,6 +60,7 @@ const DIBUJOS := {
 }
 ## El dibujo de la pared de la infancia (la pieza P_dibujo): la niña bailarina y su abuela.
 const DIBUJO_PARED := "res://assets/kit/dibujos/t_draw_03.png"
+const CUADRO_LIENZO := "res://assets/kit/dibujos/t_draw_05.jpg"   ## lo que pinta en el lienzo del caballete (la adultez)
 ## El escritorio de las artistas (assets/kit/): SM_DeskA con el frente a -Z (aquí se gira 180° para que
 ## mire al jugador). A un lado, una columna de 0,27 m sin baldas, bajo el tablero, para tres cajones
 ## (SM_DeskC con estrella; SM_DeskD, con pomo redondo, solo viene en el paquete; SM_DeskB aún no está).
@@ -523,6 +524,7 @@ func _build_adult(sec: Node3D) -> void:
 	var canvas := _node(sec, "P_lienzo__after-caballete", Vector3(1.7, 0.78, 0.07))
 	canvas.rotation_degrees = Vector3(-6, -15, 0)
 	_box(canvas, "Lienzo", Vector3.ZERO, Vector3(0.46, 0.58, 0.025), Color(0.97, 0.96, 0.93))
+	_painting(canvas, CUADRO_LIENZO, Vector2(0.44, 0.56), 0.0126)
 	_brushes(_node(sec, "P_pinceles__after-caballete", Vector3(1.98, 0.0, 0.32)), false)
 	var mirror := _node(sec, "P_espejo__clave__reflejo", Vector3(2.35, 0, -1.12))
 	mirror.rotation_degrees.y = -38.0
@@ -653,6 +655,25 @@ func _sheet(n: Node3D, path: String, long_side: float, top_origin: bool) -> Vect
 	drawing.position = center + Vector3(0, 0, 0.0021)
 	n.add_child(drawing)
 	return size
+
+
+## Un cuadro pintado sobre la cara de delante (+Z) de un lienzo: la imagen, lo más grande que quepa
+## en `fit` sin deformarse, a `front` del centro. Como en _sheet, la imagen va en el material de la
+## malla (no en material_override, que el hueco vacía al colocar).
+func _painting(n: Node3D, path: String, fit: Vector2, front: float) -> void:
+	var tex := load(path) as Texture2D
+	var aspect := tex.get_width() / float(tex.get_height())
+	var quad := QuadMesh.new()
+	quad.size = Vector2(fit.x, fit.x / aspect) if fit.x / aspect <= fit.y else Vector2(fit.y * aspect, fit.y)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = tex
+	mat.roughness = 0.9
+	quad.material = mat
+	var picture := MeshInstance3D.new()
+	picture.name = "Cuadro"
+	picture.mesh = quad
+	picture.position = Vector3(0, 0, front)
+	n.add_child(picture)
 
 
 ## El color que más se ve en un dibujo (el fondo blanco del papel no cuenta): los píxeles con color
