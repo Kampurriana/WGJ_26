@@ -132,8 +132,13 @@ cuando el cerdito acaba de hablar) → el desván: estructura y los tres actos �
   del kit es su pieza y hay dos rincones de montaje (`__monta`): la hucha (12 trozos) y el MP3 (carcasa,
   rueda, auriculares, sacados de su malla montada; el `Pack05` los trae sueltos pero sin montar). Los
   cambios de historia que se hagan en el prototipo (`build_attic_level.gd`) hay que llevarlos también a
-  `build_kit_level.gd` (ya se llevaron: los cajones del escritorio como piezas, el monstruo bajo el puf, el
-  cuadro del lienzo).
+  `build_kit_level.gd` (ya se llevaron: los cajones del escritorio como piezas, el cuadro del lienzo).
+- **18-oct, tarde:** «quita todos los assets que no sean los importados o los del pack que implementé al
+  inicio; mantén los planos para los dibujos». En el desván oficial ya no hay figuras hechas en código
+  (cama, pelota, tren, cubos, puf, guitarra, corcho, pósteres, llaves, mesita, cajas de la tienda, planta,
+  peana, pinzas, celo): la nutria es la del kit (`Otter`, bajada de Drive), la cámara es la polaroid del
+  kit, lo del baúl de juguetes es un tebeo del pack, y los dibujos asoman en otros sitios (cómoda, silla,
+  burro). Solo queda la moneda del final (el kit no la trae: si las artistas la modelan, se cambia).
 
 ## 3. Ramas y cómo se trabaja con el equipo
 

@@ -147,9 +147,12 @@ func _run() -> void:
 	var cajon := _interactable(d, NameRules.DRAWER)
 	if cajon != null:
 		var before := cajon.target.transform
+		var heard_drawer: Dictionary = Sfx.played.duplicate()
 		cajon.activate()
 		await get_tree().create_timer(Interactable.OPEN_TIME + 0.2).timeout
 		check(not cajon.target.transform.is_equal_approx(before), "el cajón se mueve al abrirlo")
+		check(_heard(heard_drawer, "abrir_cajon") == 1 and _heard(heard_drawer, "cerrar_cajon") == 0,
+			"al abrir un cajón suena «ABRIR CAJÓN» (Drive FXS)")
 		var cuchara := _interactable(d, NameRules.PICKUP)
 		GameState.camera.snap()
 		var hit := d.pick_interactable(cam.unproject_position(Visuals.global_aabb(cuchara.target).get_center()), cam)
@@ -773,11 +776,11 @@ func _test_story(main: Node) -> void:
 		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
 	var friends := _collectible(d, &"dibujo_amigas")
 	check(friends != null and not friends.available and not friends.target.visible and d.clothesline != null and d.clothesline.is_visible_in_tree(),
-		"al abrirse la infancia aparece la cuerda de los dibujos; el de debajo de la cama aún no está (after-cama_infantil)")
-	var blocks := _pickup(d, &"cubos")
+		"al abrirse la infancia aparece la cuerda de los dibujos; el de delante de la cómoda aún no está (after-comoda_infantil)")
+	var blocks := _pickup(d, &"tebeo")
 	var chest: Interactable = blocks.container if blocks != null else null
 	check(chest != null and chest.kind == NameRules.DOOR and not chest.target.is_ancestor_of(blocks.target),
-		"los cubos están guardados en el baúl, sin ser hijos de la tapa (si no, girarían con ella)")
+		"el tebeo está guardado en el baúl, sin ser hijo de la tapa (si no, girarían con ella)")
 	# Su caja y su tapa son piezas del kit: hasta ponerlas, el baúl ni se abre ni brilla.
 	check(chest != null and not chest.inside.is_empty() and not chest.pieces_ready() and not chest.is_clickable() and not chest.attention,
 		"la caja de juguetes es una pieza y su tapa otra: sin ponerlas no se abre ni llama")
@@ -812,7 +815,7 @@ func _test_story(main: Node) -> void:
 	check(d.hint_target().get("container") == chest, "cuando solo falta buscar, la pista señala el mueble (no lo escondido)")
 	check(GameState.hud.task_text().begins_with("I · INFANCIA | Busca lo guardado"),
 		"y la tarjeta de tarea dice que toca buscar (%s)" % GameState.hud.task_text())
-	check(not _slot(d, &"peluche").available, "(control) la nutria no aparece mientras falten los cubos")
+	check(not _slot(d, &"peluche").available, "(control) la nutria no aparece mientras falte el tebeo")
 	var green := _collectible(d, &"dibujo_casa")
 	check(d.collectible_total() == 4 and green != null and green.available and green.container == chest and not green.is_clickable(),
 		"hay 4 dibujos escondidos; uno está en el baúl y, con el baúl cerrado, no se puede coger")
@@ -823,7 +826,7 @@ func _test_story(main: Node) -> void:
 		"los dibujos coleccionables son los de las artistas: cada uno lleva su imagen de assets/kit/dibujos y su color (%d)" % con_imagen.size())
 	check(friends.available and friends.target.visible and friends.is_clickable()
 		and Hud.drawing_texture(friends.target).resource_path == "res://assets/kit/dibujos/t_draw_04.jpg",
-		"con la cama puesta, asoma el de debajo (Ana y Lurdes, t_draw_04) y se puede coger")
+		"con la cómoda puesta, asoma el de delante (Ana y Lurdes, t_draw_04) y se puede coger")
 	Narrator.clear()                           # sin primer plano encima: consejos y avisos esperan a que acabe
 	m.finish()
 	if chest != null:
@@ -845,12 +848,12 @@ func _test_story(main: Node) -> void:
 		check(GameState.hud.tip_text() == "", "el consejo es una notificación: deslizándolo fuera de la pantalla, se va")
 		var heard_store: Dictionary = Sfx.played.duplicate()
 		d.collect(blocks)
-		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
+		check(d.visible_inventory().has(&"tebeo"), "el tebeo encontrado pasa a la bandeja")
 		check(_heard(heard_store, "guardar_inventario") == 1, "al coger lo que va a la bandeja suena «GUARDAR OBJETO EN EL INVENTARIO» (Drive FXS)")
 		await get_tree().process_frame
 		await get_tree().process_frame
 		var flying := GameState.hud.flights()
-		var cubes_card := GameState.hud.item_for(&"cubos")
+		var cubes_card := GameState.hud.item_for(&"tebeo")
 		var fly_from: Vector2 = flying[0].get_global_rect().get_center() if not flying.is_empty() else Vector2.ZERO
 		check(flying.size() == 1 and cubes_card != null and fly_from.distance_to(cubes_card.get_global_rect().get_center()) > 150.0,
 			"al coger lo guardado, su ficha sale de donde estaba y vuela por la pantalla (no aparece de golpe en la bandeja)")
@@ -922,7 +925,7 @@ func _test_story(main: Node) -> void:
 			"no hay frases ni consejos sobre los dibujos escondidos: los encuentra el jugador")
 		await get_tree().create_timer(Efectos.GLINT_EVERY + 0.3).timeout
 		check(main.effects.glints > 0, "los dibujos que esperan echan un destello de vez en cuando (%d)" % main.effects.glints)
-		d.place(_slot(d, &"cubos"))
+		d.place(_slot(d, &"tebeo"))
 	check(_slot(d, &"peluche").available and d.visible_inventory().has(&"peluche"), "con todo lo demás puesto aparece la nutria (clave)")
 	d.place(_slot(d, &"peluche"))
 	check(s2.completed and placed.find(&"caja_musica") < placed.find(&"dibujo") and placed.find(&"dibujo") < placed.find(&"peluche"),
@@ -1018,38 +1021,38 @@ func _test_story(main: Node) -> void:
 		check(bulb.visible and is_equal_approx(bulb.light_energy, float(lamp_lights[0][1])),
 			"al colocar la lámpara, su luz se enciende con un fundido (%.2f de %.2f)" % [bulb.light_energy, float(lamp_lights[0][1])])
 	check(pink != null and pink.comes_with == &"" and not pink.collected and m.active,
-		"al poner la cámara no sale ningún dibujo: el del monstruo está en otro sitio (debajo del puf)")
+		"al poner la cámara no sale ningún dibujo: el del monstruo está en otro sitio (debajo de la silla)")
 	Narrator.clear()
 	m.finish()
 	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
 	check(not pink.collected and found_events.size() == 1, "al acabar el momento de la cámara, el dibujo del monstruo sigue sin encontrar")
-	if not _slot(d, &"puf").filled:
-		d.place(_slot(d, &"puf"))
+	if not _slot(d, &"silla").filled:
+		d.place(_slot(d, &"silla"))
 	await get_tree().create_timer(Diorama.POP_TIME + 0.1).timeout
 	check(pink.available and pink.target.visible and pink.is_clickable(),
-		"con el puf puesto, el dibujo del monstruo asoma debajo y se puede coger (after-puf)")
+		"con la silla puesta, el dibujo del monstruo asoma debajo y se puede coger (after-silla)")
 	pink.activate()
 	await get_tree().process_frame
 	await get_tree().process_frame
 	var look2: Inspeccion = main.inspeccion
 	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and look2.is_open() and look2.count_text() == "2 DE 4",
-		"al cogerlo de debajo del puf sale su primer plano (2 de 4)")
+		"al cogerlo de debajo de la silla sale su primer plano (2 de 4)")
 	await get_tree().create_timer(Inspeccion.BUTTON_DELAY + 0.05).timeout
 	_key(KEY_ESCAPE)
 	await get_tree().process_frame
 	check(not look2.is_open() and not main.pause.is_open() and pink.target.get_parent() == d.clothesline,
 		"Esc también lo cierra (sin abrir la pausa) y el dibujo va a la cuerda")
-	# El gato (after-cajas_tienda) no asoma hasta que están puestas las cajas de la tienda.
+	# El gato (after-perchero) no asoma hasta que está puesto el burro.
 	var cat := _collectible(d, &"dibujo_gato")
 	steps = 0
 	while not s4.opened and steps < 60:
 		d.debug_solve_step()
 		steps += 1
-	check(cat != null and s4.opened and not _slot(d, &"cajas_tienda").filled and not cat.available and not cat.target.visible,
-		"al abrirse la profesión, el dibujo del gato aún no está: espera a las cajas de la tienda (after-cajas_tienda)")
+	check(cat != null and s4.opened and not _slot(d, &"perchero").filled and not cat.available and not cat.target.visible,
+		"al abrirse la profesión, el dibujo del gato aún no está: espera al burro (after-perchero)")
 	if s4.opened:
-		d.place(_slot(d, &"cajas_tienda"))
-	check(cat != null and cat.available and cat.target.visible and cat.is_clickable(), "con las cajas puestas, asoma el gato encima y se puede coger")
+		d.place(_slot(d, &"perchero"))
+	check(cat != null and cat.available and cat.target.visible and cat.is_clickable(), "con el burro puesto, asoma el gato debajo y se puede coger")
 	steps = 0
 	while not _slot(d, &"lienzo").filled and steps < 120:
 		d.debug_solve_step()
@@ -1067,8 +1070,8 @@ func _test_story(main: Node) -> void:
 	check(Logros.is_unlocked("infancia") and Logros.is_unlocked("adolescencia") and Logros.is_unlocked("adultez")
 		and not Logros.is_unlocked("dibujos"),
 		"logros: al completar cada acto se desbloquean sus recuerdos (infancia, adolescencia, adultez)")
-	check(s4.completed and placed.find(&"llaves") < placed.find(&"caballete") and placed.find(&"caballete") < placed.find(&"espejo"),
-		"adultez en el orden del guion: llaves, caballete y el espejo (clave) el último")
+	check(s4.completed and placed.find(&"caballete") < placed.find(&"lienzo") and placed.find(&"lienzo") < placed.find(&"espejo"),
+		"adultez en el orden del guion: el caballete, su lienzo y el espejo (clave) el último")
 	var mirror := _slot(d, &"espejo")
 	var front := mirror.node.global_basis.z
 	var want_yaw := rad_to_deg(atan2(front.x, front.z))
@@ -1423,7 +1426,8 @@ func _test_title_menu(main: Node) -> bool:
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
-		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle", "guardar_inventario", "aparecer_capitulo"]
+		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle", "guardar_inventario", "aparecer_capitulo",
+		"abrir_cajon", "cerrar_cajon", "transicion_desvan"]
 	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]
@@ -1559,8 +1563,11 @@ func _test_title_menu(main: Node) -> bool:
 		await get_tree().process_frame
 	check(Sfx.track == "menu" and _has_music("menu") and Sfx.music_looping(),
 		"en el puzle del título y el menú suena su canción en bucle (musica/menu, Ankui)")
+	var heard_play: Dictionary = Sfx.played.duplicate()
 	_click(main.menu.buttons.jugar.get_global_rect().get_center())
 	await get_tree().create_timer(main.BLACKOUT_TIME * 0.6).timeout
+	check(_heard(heard_play, "transicion_desvan") == 1 and Sfx.jingle_playing() == "transicion_desvan",
+		"al darle a Jugar suena la sintonía de pasar del menú al desván (Drive FXS)")
 	check(Sfx.track == "juego" and _has_music("juego") and Sfx.music_looping(),
 		"al darle a Jugar cambia a la canción de la partida (musica/juego, Loft), en bucle")
 	check(main.blacking_out and main.menu.is_open() and main._fade.color.a > 0.2 and main._fade.mouse_filter == Control.MOUSE_FILTER_STOP,

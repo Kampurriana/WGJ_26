@@ -379,6 +379,7 @@ func blackout_to_level(index: int) -> void:
 	if blacking_out:
 		return
 	blacking_out = true
+	Sfx.jingle("transicion_desvan")                # la sintonía de pasar del menú al desván (Drive FXS)
 	Sfx.music("juego", MUSIC_GAME_DB, BLACKOUT_TIME + BLACKOUT_HOLD + BLACKOUT_IN)   # cambia con el negro
 	_fade.mouse_filter = Control.MOUSE_FILTER_STOP
 	if _fade_tween != null:
