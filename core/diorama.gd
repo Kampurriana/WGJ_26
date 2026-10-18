@@ -25,6 +25,7 @@ const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al comple
 const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
 const ACT_FADE := 0.5                        ## (cambio de acto) lo que tarda la voz en apagarse si el jugador sigue
+const COMPLETE_SOUND := "completar_puzzle"   ## al completar el puzle (Drive FXS, «COMPLETAR PUZZLE»)
 ## Al abrirse un capítulo (una sección con rótulo), primero el rótulo; sus cosas (muebles y siluetas)
 ## aparecen cuando se empieza a ir (Hud.show_chapter: a los 3,8 s), creciendo una tras otra con el
 ## sonido de Drive FXS «Cuando aparecen las cosas del capitulo» (aparecer_capitulo). Pedido del 18-oct.
@@ -983,7 +984,8 @@ func _check_completed() -> void:
 	_add_paint(box.get_center(), box.size.length() * 0.75, FINAL_PAINT_TIME)
 	get_tree().create_timer(FINAL_PAINT_TIME + 0.1, false).timeout.connect(_finish_paint)
 	_play_animation("celebrar")
-	Sfx.play("complete")
+	if not fundido_final:                       # el cerdito del título; el desván acaba con la moneda
+		Sfx.jingle(COMPLETE_SOUND)
 	if outro_key != "":
 		Narrator.say(outro_key)
 	Events.level_completed.emit(self)

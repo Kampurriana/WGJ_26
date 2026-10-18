@@ -1376,7 +1376,7 @@ func _test_title_menu(main: Node) -> bool:
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
-		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro"]
+		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle"]
 	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]
@@ -1395,6 +1395,8 @@ func _test_title_menu(main: Node) -> bool:
 		steps += 1
 		await get_tree().process_frame
 	check(t.completed, "el título se completa (%d pasos)" % steps)
+	check(_heard(heard, "completar_puzzle") == 1 and Sfx.jingle_playing() == "completar_puzzle",
+		"al completar el puzle del cerdito suena «COMPLETAR PUZZLE» (Drive FXS), una vez y entero")
 	check(int(Sfx.played.get("colocar", 0)) - int(heard.get("colocar", 0)) >= steps, "cada pieza que encaja suena al colocarla (las gemelas, después, al encajar cada una)")
 	await get_tree().process_frame
 	check(not (main.effects as Efectos).get_children().any(func(c: Node) -> bool: return c.name == "Luces" or c.name == "Destellos"),
