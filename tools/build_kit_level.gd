@@ -171,7 +171,7 @@ func _structure(sec: Node3D) -> void:
 	_each(sec, "bombilla__after-guirnalda", bulbs)
 	_each(sec, "guirnalda__after-tejado", ropes)
 	# La hucha, en el centro sobre una caja del kit (el baúl viejo: lo que la sostiene en el final). El
-	# cerdito del kit viene en 12 trozos: se montan en su rincón (Z_, primer plano), delante de la caja;
+	# cerdito del kit viene en 12 trozos y 5 pegatinas: se montan en su rincón (Z_, primer plano), delante de la caja;
 	# entero, va a la bandeja, y se pone el último encima de su caja.
 	var trunk := _take("Muebles/SM_BoxB", _root, "BaulViejo")
 	trunk.global_position = Vector3(0.45, FLOOR, 1.72)
@@ -185,8 +185,9 @@ func _structure(sec: Node3D) -> void:
 	_pig_bench(sec, kit_pig, Vector3(0.45, FLOOR, 2.33))
 
 
-## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 12 trozos, cada uno su pieza (las patas, las
-## orejas y los ojos, iguales; arriba, su corona), montados donde van; primero el cuerpo.
+## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 12 trozos y sus 5 pegatinas (Pack07 del 18-oct
+## por la tarde), cada uno su pieza (las patas, las orejas, los ojos y las pegatinas, iguales; arriba, su
+## corona), montados donde van; primero el cuerpo.
 func _pig_bench(sec: Node3D, pig: Node3D, at: Vector3) -> void:
 	var bench := _node(sec, "Z_montaje_hucha__reward-hucha__monta", at)
 	bench.rotation_degrees.y = 200.0
@@ -195,7 +196,7 @@ func _pig_bench(sec: Node3D, pig: Node3D, at: Vector3) -> void:
 		"SM_PigI": "ojo_hucha", "SM_PigJ": "ojo_hucha", "SM_PigK": "corona_hucha", "SM_PigL": "cola_hucha"}
 	var used := {}
 	for m in Visuals.meshes_under(pig):
-		var part: String = parts[String(m.name)]
+		var part: String = "pegatina_hucha" if String(m.name).begins_with("Plane") else parts[String(m.name)]
 		var n: int = used.get(part, 0)
 		used[part] = n + 1
 		var tokens := "" if part == "cuerpo_hucha" else "__after-cuerpo_hucha"
@@ -374,6 +375,19 @@ func _teen(sec: Node3D) -> void:
 	stored.add_child((load(TILESET + "SM_Polaroid.scn") as PackedScene).instantiate())   # la misma polaroid
 
 
+## La solicitud a Bellas Artes: el papel de las artistas (SM_PaperUniversidad, Pack09 del 18-oct; en el
+## tileset viene tumbado, cara arriba y con el encabezado hacia -Z). En el cajón, tumbada; en la pared, de
+## pie mirando a la habitación (el encabezado arriba).
+func _application(n: Node3D, on_floor: bool) -> void:
+	var paper := (load(TILESET + "SM_PaperUniversidad.scn") as PackedScene).instantiate() as Node3D
+	paper.name = "Folio"
+	if on_floor:
+		paper.rotation_degrees.y = 4.0
+	else:
+		paper.rotation_degrees.x = 90.0
+	n.add_child(paper)
+
+
 # --- Sección 4: la adultez (el caballete y el entrante) ------------------------------------------
 
 func _adult(sec: Node3D) -> void:
@@ -431,25 +445,17 @@ func _easel_rest(easel: Node3D) -> Transform3D:
 	return Transform3D(basis, center + front * (reach + 0.03))
 
 
-## La luna del espejo del kit: una malla "Luna" justo delante del cristal, en su cara de delante (la -Z
-## del kit; Momentos la busca por el nombre para el reflejo y el primer plano de frente, y mira hacia
-## donde mira ella).
+## El espejo del kit (Pack08, 18-oct) trae el reflejo pintado en la luna (ella de mayor): no lleva luna
+## aparte. Solo una marca sin malla, "ReflejoPintado", en el centro de la luna y con su +Z hacia donde
+## mira (la -Z del kit, como el caballete): Momentos la usa para ponerse de frente y no pinta encima.
 func _mirror_glass(piece: Node3D) -> void:
 	var mirror := piece.get_child(0) as Node3D
 	var local := Visuals.local_aabb(mirror)
-	var quad := QuadMesh.new()
-	quad.size = Vector2(local.size.x * 0.62, local.size.y * 0.66)
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.8, 0.86, 0.92)    # un cristal claro (metálico del todo salía negro: no hay nada que reflejar)
-	mat.metallic = 0.25
-	mat.roughness = 0.12
-	quad.material = mat
-	var glass := MeshInstance3D.new()
-	glass.name = "Luna"
-	glass.mesh = quad
-	glass.position = Vector3(local.get_center().x, local.position.y + local.size.y * 0.56, local.position.z - 0.004)
-	glass.rotation_degrees.y = 180.0             # la cara del espejo del kit es su -Z (como la del caballete)
-	mirror.add_child(glass)
+	var mark := Node3D.new()
+	mark.name = "ReflejoPintado"
+	mark.position = Vector3(local.get_center().x, local.position.y + local.size.y * 0.56, local.position.z)
+	mark.rotation_degrees.y = 180.0
+	mirror.add_child(mark)
 
 
 # --- Sección 5: el final ---------------------------------------------------------------------------

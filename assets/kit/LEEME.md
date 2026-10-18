@@ -141,9 +141,25 @@ En `TexturasFinales/` se **ignoran** `CON_LINEART`, `Hat`, `Lights`, `LitterBox`
 | `T_Pack03` | SM_SkirtingBoardBack/I/J/K/L/Top*, SM_WallA..C, SM_Window |
 | `T_Pack04` | SM_Burro, SM_CoverDesk, SM_TV |
 | `T_Pack05` | SM_BrushA..C, el MP3, SM_Vase |
-| `T_Pack06` | SM_MusicBox, SM_PolaroidA..D — **aún no está en Drive** (color provisional) |
+| `T_Pack06` | SM_MusicBox, SM_PolaroidA..D (18-oct por la tarde; en Drive `Pack_06/T_Pack_06_*`, aquí `Pack06/T_Pack06_*`) |
 | `T_Pack07` | SM_Lights (y la cuerda y las bombillas), SM_LitterBox, la hucha (SM_PigA..L), SM_Polaroid (la cámara), pegatinas, el sombrero |
-| `T_Pack08` | SM_Caballete, SM_CatBed, SM_Mirror, SM_Rug — **aún no está en Drive** (color provisional) |
+| `T_Pack08` | SM_Caballete, SM_CatBed, SM_Mirror, SM_Rug (18-oct por la tarde; el espejo trae el reflejo pintado en la luna) |
+| `T_Pack09` | SM_Keyholder, SM_Paper01, SM_PaperBroken, SM_PaperStack, SM_PaperUniversidad, SM_Peana (18-oct por la tarde) |
+
+Lo del 18-oct por la tarde (`modelos/Pack09/`, `Pack07.fbx` nuevo):
+- Los de `Pack09` traen la malla con el nombre de 3ds Max (`Object022`...): la pieza se llama como su fichero
+  (`POR_FICHERO` en `tools/piezas_kit.gd`). `SM_Keyholder.fbx` (5 MB) traía la escena entera de 3ds Max,
+  con rutas a texturas que no existen (errores al importar): aquí solo está el llavero (`Object027`), en
+  `SM_Keyholder.glb` (sin materiales; lleva `M_Pack09` en el tileset).
+- `Pack07.fbx` nuevo: la hucha viene "explotada" (los trozos separados, para pintarla; mismas mallas y UV
+  que la de la mañana) y con **5 pegatinas** pegadas al cuerpo (`Plane001..006`). El tileset monta cada
+  trozo donde iba (`HUCHA_MONTADA`) y deja las pegatinas donde vienen; en el desván son 5 piezas más de su
+  rincón (`pegatina_hucha`).
+- En el desván ya se usa `SM_PaperUniversidad` (la solicitud: en el cajón y en la pared). El llavero, los
+  otros papeles y la peana están en el tileset y en el catálogo de la preview, **sin sitio todavía en el
+  desván** (falta decidir dónde van).
+- `SM_StickerA..E.fbx` (sueltas en Drive) no se han bajado: pesan menos de ~36 KB (el conector las da en
+  línea) y son las mismas pegatinas que trae `Pack07.fbx`.
 
 La nutria (`modelos/Otter/SM_otter.fbx`, que no está en la lista) sigue con `texturas/Otter/`: es la única
 textura suya. El desván la monta directamente (no pasa por el tileset).

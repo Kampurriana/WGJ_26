@@ -33,6 +33,10 @@ const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV
 ## Ficheros de los que solo vale alguna malla: SM_bombilla.fbx trae la escena entera de 3ds Max (el
 ## blocking y más) y de él solo es la bombilla. Con SM_cuerda.fbx, la guirnalda de bombillitas (18-oct).
 const SOLO := {"SM_bombilla.fbx": ["bombilla"]}
+## Ficheros de una sola malla con el nombre de 3ds Max (ObjectNNN): la pieza se llama como el fichero
+## (los de Pack09, 18-oct: los papeles y la peana).
+const POR_FICHERO := ["SM_Paper01.fbx", "SM_PaperBroken.fbx", "SM_PaperStack.fbx", "SM_PaperUniversidad.fbx",
+	"SM_Peana.fbx"]
 ## Ficheros que no se usan (Comoda.fbx es la cómoda fundida en una malla: están sus piezas sueltas; la
 ## referencia es una escena entera: de ella solo se cogen las MONTADAS).
 const EXCLUIDOS := ["Comoda.fbx", "SM_otter.fbx"]   ## (la nutria la monta build_kit_level.gd con su malla entera)
@@ -45,16 +49,29 @@ const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "S
 	"SM_Lights001": "SM_Cuerda", "bombilla": "SM_Bombilla",
 	"Cylinder025": "SM_BrushA", "Cylinder026": "SM_BrushB", "Cylinder027": "SM_BrushC",
 	"Object006": "SM_CoverBoxA", "Object007": "SM_CoverBoxB", "Object008": "SM_CoverBoxC",
-	"Object009": "SM_CoverBoxD", "Object010": "SM_CoverBoxE"}
+	"Object009": "SM_CoverBoxD", "Object010": "SM_CoverBoxE",
+	# Las pegatinas de la hucha (Pack07 del 18-oct, pegadas al cuerpo): con la hucha, en su pieza (GRUPOS).
+	"Plane001": "SM_PigPegatina1", "Plane002": "SM_PigPegatina2", "Plane003": "SM_PigPegatina3",
+	"Plane005": "SM_PigPegatina5", "Plane006": "SM_PigPegatina6"}
 ## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero). La hucha
 ## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, ojos, ranura, cola) va montada en una pieza.
 const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
+## El Pack07 del 18-oct por la tarde trae la hucha "explotada" (los trozos separados del cuerpo, para
+## pintarla; mismas mallas y UV que la de la mañana, que venía montada) y sus pegatinas pegadas al cuerpo.
+## Cada trozo va donde estaba montado, respecto al cuerpo (SM_PigE; medido en la de la mañana); las
+## pegatinas, donde vienen.
+const HUCHA_MONTADA := {"SM_PigA": Vector3(-0.1040, -0.1178, -0.0909), "SM_PigB": Vector3(0.1040, -0.1178, -0.0909),
+	"SM_PigC": Vector3(-0.1040, -0.1178, 0.0957), "SM_PigD": Vector3(0.1040, -0.1178, 0.0957),
+	"SM_PigF": Vector3(0.1158, 0.0895, -0.0680), "SM_PigG": Vector3(-0.1158, 0.0895, -0.0680),
+	"SM_PigH": Vector3(0.0000, -0.0285, -0.1738), "SM_PigI": Vector3(0.0621, 0.0248, -0.1640),
+	"SM_PigJ": Vector3(-0.0621, 0.0248, -0.1640), "SM_PigK": Vector3(0.0000, 0.1495, -0.0980),
+	"SM_PigL": Vector3(0.0000, -0.0252, 0.1867)}
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. El reparto es el de Eva (18-oct): en TexturasFinales se ignoran
 ## CON_LINEART, Hat, Lights, LitterBox, Music_Box, Otter y POLAROIDS (lo suyo va ahora en los Pack).
 ## Las de nombre de 3ds Max (FloorPlanks, SB0, CeilingSupport0: las de FloorCeilingPlanks...) son de
-## Pack01. Pack06 (caja de música y polaroids A-D) y Pack08 (caballete, cama del gato, espejo y
-## alfombra) aún no están en Drive: hasta que lleguen, esas piezas van con su color provisional.
+## Pack01. Pack06 (caja de música y polaroids A-D), Pack08 (caballete, cama del gato, espejo y
+## alfombra) y Pack09 (llavero, papeles y peana) llegaron el 18-oct por la tarde.
 const CONJUNTOS := {
 	"Boxes": ["SM_Box", "SM_CoverBox"],
 	"Comoda": ["SM_Comoda"],
@@ -72,6 +89,7 @@ const CONJUNTOS := {
 	"Pack06": ["SM_MusicBox", "SM_PolaroidA", "SM_PolaroidB", "SM_PolaroidC", "SM_PolaroidD"],
 	"Pack07": ["SM_Lights", "SM_Cuerda", "SM_Bombilla", "SM_LitterBox", "SM_Pig", "SM_Sticker", "SN_Hat", "SM_Hat"],
 	"Pack08": ["SM_Caballete", "SM_CatBed", "SM_Mirror", "SM_Rug"],
+	"Pack09": ["SM_Keyholder", "SM_Paper", "SM_Peana"],
 }
 ## Las que tienen que llamarse exactamente así (SM_Polaroid, la cámara, es de Pack07; SM_PolaroidA..D,
 ## las fotos, de Pack06: por el principio del nombre se confundirían).
@@ -112,6 +130,8 @@ func _init() -> void:
 			if SOLO.has(path.get_file()) and not String(m.name) in SOLO[path.get_file()]:
 				continue
 			var nombre := String(ALIAS.get(String(m.name), String(m.name)))
+			if path.get_file() in POR_FICHERO:
+				nombre = path.get_file().get_basename()
 			for prefijo: String in GRUPOS:
 				if nombre.begins_with(prefijo):
 					nombre = GRUPOS[prefijo]
@@ -146,12 +166,18 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 	var raiz := Node3D.new()
 	raiz.name = nombre
 	var caja := AABB()
+	var cuerpo := Vector3.ZERO                   # (la hucha: dónde está su cuerpo, para montar los trozos)
+	for src: MeshInstance3D in mallas:
+		if src.name == &"SM_PigE":
+			cuerpo = _xf_en_fichero(src, escena).origin
 	for i in mallas.size():
 		var src: MeshInstance3D = mallas[i]
 		var m := MeshInstance3D.new()
 		m.name = src.name if mallas.size() > 1 else "Malla"
 		m.mesh = src.mesh
 		m.transform = _xf_en_fichero(src, escena)
+		if nombre == "SM_Pig" and HUCHA_MONTADA.has(String(src.name)):
+			m.transform.origin = cuerpo + HUCHA_MONTADA[String(src.name)]
 		var mat := _material(nombre, kit)
 		for s in m.mesh.get_surface_count():
 			m.set_surface_override_material(s, mat)

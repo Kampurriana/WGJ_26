@@ -299,6 +299,9 @@ func start(node: Node3D, p_kind: String, _id: String) -> void:
 ## Hacia dónde mira el espejo: hacia donde mira su luna (la del kit tiene la cara en su -Z, no en la +Z
 ## de la pieza); sin luna, la +Z de la pieza.
 func _mirror_front(node: Node3D) -> Vector3:
+	var painted := _painted_mark(node)
+	if painted != null:
+		return painted.global_basis.z.normalized()
 	var glass := _glass_mesh(node)
 	return (glass.global_basis.z if glass != null else node.global_basis.z).normalized()
 
@@ -564,10 +567,12 @@ func _glass_box(node: Node3D) -> AABB:
 
 ## En la luna del espejo: un vaho claro (la luna se ve aunque refleje negro), la silueta de ella
 ## (cabeza y hombros, borrosa; aparece y se va con sus frases) y una luz cálida solo para el espejo.
+## Con la luna pintada (marca invisible), solo la luz.
 func _make_reflection(node: Node3D) -> void:
 	if not active or kind != "reflejo" or not is_instance_valid(node) or is_instance_valid(reflection):
 		return
 	var glass := _glass_mesh(node)
+	var painted := _painted_mark(node)
 	var xf := node.global_transform.affine_inverse() * (glass.global_transform if glass != null else node.global_transform)
 	var lb: AABB = xf * glass.get_aabb() if glass != null else Visuals.local_aabb(node)
 	var front := _mirror_front(node)
@@ -576,14 +581,19 @@ func _make_reflection(node: Node3D) -> void:
 	node.get_parent().add_child(reflection)
 	reflection.global_basis = (glass.global_basis if glass != null else node.global_basis).orthonormalized()
 	reflection.global_position = node.global_transform * lb.get_center() + front * 0.012
-	var mist := _sprite(_mist_texture(), lb.size, Color(0.72, 0.77, 0.84, 0.0))
-	reflection.add_child(mist)
-	mist.create_tween().tween_property(mist, "modulate:a", 0.42, 1.4)
-	_figure = _sprite(_silhouette_texture(), Vector3(lb.size.x * 0.82, lb.size.y * 0.78, 1.0), Color(0.07, 0.06, 0.09, 0.0))
-	_figure.position = Vector3(0, -lb.size.y * 0.07, 0.004)
-	_figure.render_priority = 6                  # encima del vaho
-	reflection.add_child(_figure)
-	_figure.create_tween().tween_property(_figure, "modulate:a", 0.85, 2.0).set_delay(0.6)
+	if painted != null:
+		reflection.global_transform = painted.global_transform.orthonormalized()
+	# Si el espejo trae el reflejo pintado (el del kit, Pack08: ella de mayor), ni vaho ni silueta encima:
+	# solo su luz.
+	if painted == null:
+		var mist := _sprite(_mist_texture(), lb.size, Color(0.72, 0.77, 0.84, 0.0))
+		reflection.add_child(mist)
+		mist.create_tween().tween_property(mist, "modulate:a", 0.42, 1.4)
+		_figure = _sprite(_silhouette_texture(), Vector3(lb.size.x * 0.82, lb.size.y * 0.78, 1.0), Color(0.07, 0.06, 0.09, 0.0))
+		_figure.position = Vector3(0, -lb.size.y * 0.07, 0.004)
+		_figure.render_priority = 6              # encima del vaho
+		reflection.add_child(_figure)
+		_figure.create_tween().tween_property(_figure, "modulate:a", 0.85, 2.0).set_delay(0.6)
 	var spot := SpotLight3D.new()
 	spot.light_color = Color(1.0, 0.86, 0.68)
 	spot.light_energy = 1.2                      # quinta nota: las luces de los efectos quemaban
@@ -607,6 +617,12 @@ func _sprite(tex: Texture2D, size: Vector3, color: Color) -> Sprite3D:
 	s.pixel_size = size.y / 128.0
 	s.scale = Vector3(size.x / maxf(size.y, 0.001), 1.0, 1.0)
 	return s
+
+
+## La marca de un espejo con el reflejo ya pintado (un nodo sin malla, "ReflejoPintado", en el centro
+## de la luna y con su +Z hacia donde mira); null si no hay.
+func _painted_mark(node: Node3D) -> Node3D:
+	return node.find_child("ReflejoPintado", true, false) as Node3D
 
 
 ## La malla de la luna (Luna, Cristal o Espejo); null si no hay.

@@ -609,15 +609,15 @@ func _test_story(main: Node) -> void:
 		and _slots_with(d, &"guirnalda") == 4 and _slots_with(d, &"cajon_comoda") == 3 and _slots_with(d, &"polaroid") == 4
 		and _slots_with(d, &"lapiz") == 3 and _slots_with(d, &"pared_fondo") == 1,
 		"cada pieza del kit va suelta: 12 bordes del suelo, 3 pilares, 12 bombillas en 4 cuerdas, 3 cajones de la cómoda, 4 polaroids, 3 lápices")
-	# La hucha del kit viene en 12 trozos: se monta en su rincón (Z_ __monta), con primer plano.
+	# La hucha del kit viene en 12 trozos y 5 pegatinas: se monta en su rincón (Z_ __monta), con primer plano.
 	var bench: Interactable = null
 	for it in d.interactables:
 		if it.kind == NameRules.ZOOM and it.reward == &"hucha":
 			bench = it
 	var bench_parts := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.scope == bench) if bench != null else []
-	check(bench != null and bench.workbench and bench_parts.size() == 12 and bench.attention and bench.is_clickable()
+	check(bench != null and bench.workbench and bench_parts.size() == 17 and bench.attention and bench.is_clickable()
 		and not d.visible_inventory().has(&"cuerpo_hucha"),
-		"la hucha se monta en su rincón: 12 trozos que no salen en la bandeja hasta entrar, y el rincón llama la atención (%s)"
+		"la hucha se monta en su rincón: 12 trozos y 5 pegatinas que no salen en la bandeja hasta entrar, y el rincón llama la atención (%s)"
 		% [[bench.workbench, bench_parts.size(), bench.attention, bench.is_clickable(), d.visible_inventory().has(&"cuerpo_hucha"), d.lock_reason(&"hucha")] if bench != null else []])
 	if bench != null:
 		d.enter_focus(bench)
@@ -1121,6 +1121,8 @@ func _test_story(main: Node) -> void:
 		"y es un zoom con fundido: a mitad, lo demás va a medio negro (%.2f) y la cámara aún se está acercando" % half_black)
 	check(m.is_isolated() and cam_ctl.cam.cull_mask != 0xFFFFF and m.iris_strength() > 0.95 and is_instance_valid(m.reflection),
 		"espejo: todo lo demás a negro y en la luna aparece su reflejo")
+	check(m._painted_mark(mirror.node) != null and not is_instance_valid(m._figure),
+		"el espejo del kit trae su reflejo pintado (ella de mayor, Pack08): el momento no le pone silueta ni vaho encima")
 	d._open_when_free(s5)                        # lo que hace la pausa entre secciones al acabar
 	check(d.hold_sections and d.opening_section() == s5 and not s5.opening,
 		"mientras dura el espejo, el final espera: no se abre encima")
