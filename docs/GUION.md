@@ -76,7 +76,7 @@ Dos momentos especiales:
   fantasma** (blanca y translúcida) enseña en bucle el gesto de meterla en la ranura; 3) el jugador
   **coge la moneda** (la fantasma se va) **y la arrastra hasta la ranura** (cerca, la ranura la atrae;
   si la suelta lejos, vuelve a su sitio y la fantasma vuelve a enseñarlo); se endereza, entra con **un golpe de
-  luz dorada, chispas y luces que suben**, el fondo se aviva, suena "Para unas pinturas de verdad." y
+  luz dorada, chispas y luces que suben**, el fondo se aviva, suena «…para mi futuro como artista.» y
   **fundido a negro** hacia los créditos.
 
 ## El título: la hucha de cerdito
@@ -133,8 +133,9 @@ cámara (así no se adelanta la historia).
 
 | Objeto | Frase |
 |---|---|
-| (al empezar) | «El desván, a oscuras. Antes de ordenarlo hay que ponerlo en pie: primero el suelo, las paredes y el tejado.» |
-| Hucha | «Mi hucha. Ahorraba para unas pinturas de verdad… Está vacía. ¿En qué me lo gasté?» |
+| (al acabar el cerdito del título) | «¡Ha quedado como nueva! Ya podemos empezar.» |
+| (al entrar al desván) | «Madre mía… Hace tiempo que no subo aquí. Esto está muy oscuro. Mi padre se dejó las llaves por aquí… Me pregunto dónde estarán.» |
+| Hucha | «¡Mi hucha! ¡Mi antigua hucha! Recuerdo que estuve mucho tiempo ahorrando. Para convertirme en una gran artista. ¡Uh! ¿Cuánto dinero habrá?… Nada, no hay nada. ¿En qué me lo gasté?» |
 | Caja de música | «La caja de la abuela. Bailaba hasta que nació mamá, y lo dejó. A mamá le pasó lo mismo con el ballet. En casa decían que por la familia una aprende a ceder. Yo aprendí rápido.» |
 | Dibujo | «Para mamá pintaba bailarinas. Le gustaban más que mis monstruos… así que dejé de pintar monstruos.» |
 | Nutria (clave) | «Mi nutria. Mi hermano la quería y lloró toda la tarde. Mamá me miró y yo dije “vale”. Todos sonrieron. Esa sonrisa me gustó demasiado.» |
@@ -144,8 +145,9 @@ cámara (así no se adelanta la historia).
 | Llaves | «Ahora soy yo quien abre la tienda cada mañana. Papá dice que algún día será mía. Nunca le he dicho que no la quiero.» |
 | Caballete | «Lo compré con mi primer sueldo, para pintar los domingos. Pero los domingos también abre la tienda.» |
 | Espejo (clave) | «Y aquí está la que siempre dijo “vale”.» / «La bailarina de la abuela, la nutria de mi hermano, la tienda de papá…» / «¿Y yo? ¿Dónde estoy yo?» (tres frases, para el momento del espejo) |
-| La hucha (final) | (silencio) «Nadie me enseñó a decir que no.» (silencio) «No.» «…Qué fácil suena cuando lo dices en voz alta.» |
-| Moneda | «Para unas pinturas de verdad.» → fundido a negro |
+| La hucha (final) | «Durante este tiempo he llevado una vida que no era la que quería. No pensaba por mí… No decidía por mí… Creo que ya es hora de cambiar eso. Nadie me lo ha enseñado, pero siempre estoy a tiempo de aprender. ¡No! No pienso hacerlo. Ah… No es fácil decirlo, pero… Ah… Qué bien sienta decirlo en voz alta. Y como primer acto de amor… Esta moneda es…» (y sale la moneda) |
+| Moneda | «…para mi futuro como artista.» → fundido a negro (la misma grabación, partida en la pausa) |
+| Dibujos encontrados (uno por orden) | «¡Mira! Uno de mis dibujos de cuando era pequeña.» · «¡Toma ya! Otro dibujo de cuando era pequeña.» · «¡Mira! Otro dibujo de cuando era pequeña.» · «¡Otro más para la colección!» |
 
 ## Cambios respecto al documento original (y por qué)
 

@@ -179,13 +179,14 @@ carpeta. Si no, parar y preguntar.
   no las de `CON_LINEART/`. Cada conjunto pinta sus piezas (`CONJUNTOS` en `tools/piezas_kit.gd`). Faltan
   las de Pack03 (paredes, ventana), cómoda, tele y Pack04/05.
 - **18-oct, voces nuevas (Drive `Audio/Dialogos`):** «adjunta los nuevos diálogos en la parte que
-  especifica el título». TEXTO AL ENTRAR AL DESVAN → `intro_desvan`; HUCHA EN EL DESVAN → `pieza_hucha`;
-  TUTORIAL → `intro_menu` (el puzle del cerdito); 1r DIBUJO COLECCIONABLE, V1, V2, V3 →
-  `dibujo_encontrado_1..4` (al abrirse el primer plano del dibujo que se encuentra en ese orden). **Los
-  textos no están**: no se pudieron transcribir (la red de la sesión no deja bajar un modelo de voz).
-  Las del desván, la hucha y el tutorial llevan el subtítulo que ya había (la de la hucha dura 14 s y
-  parece decir más); las de los dibujos suenan sin subtítulo (`{"frases": []}`). Cuando lleguen los
-  textos: ponerlos en `data/narracion_es.json` con sus `marcas` (pausas: `ffmpeg ... silencedetect`).
+  especifica el título»; los textos los pasó el equipo después (captura de Discord). TEXTO AL ENTRAR AL
+  DESVAN → `intro_desvan`; HUCHA EN EL DESVAN → `pieza_hucha`; TUTORIAL («cuando acabas la hucha»:
+  «¡Ha quedado como nueva!…») → `fin_menu`; 1r DIBUJO COLECCIONABLE, V1, V2, V3 →
+  `dibujo_encontrado_1..4` (al abrirse el primer plano del dibujo encontrado en ese orden); TEXTO FINAL
+  → partido en la pausa de «Esta moneda es… / para mi futuro como artista»: `seccion_epilogo` (31 s,
+  antes de que salga la moneda) y `pieza_moneda` (al meterla). Las frases de cada grabación cambian en
+  sus pausas (`marcas`, medidas con `silencedetect`). En el texto del final ponía «siempre esto a
+  tiempo de aprender»: puesto «estoy».
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de
   prueba es una escena de instancias (`preview/diorama_kit.tscn`) que las artistas mueven en el editor.

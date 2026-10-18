@@ -236,14 +236,28 @@ func _test_voices() -> void:
 	check(got.size() == 1 and Narrator.remaining() <= 0.0 and not Narrator.voice_playing(),
 		"pasar de frase se lleva el trozo grabado entero: no sale el resto del subtítulo sin su voz")
 	check(not Sfx.ducked, "al callarse, la música vuelve")
-	var nuevas := 0                                  # las del 18-oct: entrar al desván, hucha, tutorial, un dibujo
-	for key: String in ["intro_desvan", "pieza_hucha", "intro_menu", "dibujo_encontrado_1", "dibujo_encontrado_2",
-			"dibujo_encontrado_3", "dibujo_encontrado_4"]:
-		if ResourceLoader.exists("res://assets/audio/voz/%s.ogg" % key) and lines.has(key):
-			nuevas += 1
-	check(nuevas == 7, "las voces nuevas (entrar al desván, hucha, tutorial y una por dibujo) tienen su frase (%d de 7)" % nuevas)
+	var nuevas := 0                                  # las del 18-oct: entrar al desván, hucha, cerdito, dibujos, final
+	var new_marks_ok := true
+	for key: String in ["intro_desvan", "pieza_hucha", "fin_menu", "dibujo_encontrado_1", "dibujo_encontrado_2",
+			"dibujo_encontrado_3", "dibujo_encontrado_4", "seccion_epilogo", "pieza_moneda"]:
+		var path := "res://assets/audio/voz/%s.ogg" % key
+		if not ResourceLoader.exists(path) or not lines.has(key) or Narrator.text(key) == "":
+			continue
+		nuevas += 1
+		if lines[key] is Dictionary:                 # sus frases cambian en las pausas, dentro de la grabación
+			var marks: Array = (lines[key] as Dictionary).get("marcas", [])
+			var length := (load(path) as AudioStream).get_length()
+			var prev := 0.0
+			new_marks_ok = new_marks_ok and marks.size() == ((lines[key] as Dictionary).frases as Array).size() - 1
+			for m: Variant in marks:
+				new_marks_ok = new_marks_ok and float(m) > prev and float(m) < length
+				prev = float(m)
+	check(nuevas == 9 and new_marks_ok and not ResourceLoader.exists("res://assets/audio/voz/intro_menu.ogg"),
+		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas (%d de 9)" % nuevas)
 	got.clear()
-	Narrator.say("dibujo_encontrado_2")
+	Narrator._lines["_prueba_solo_voz"] = {"frases": [], "voz": "dibujo_encontrado_2"}
+	Narrator.say("_prueba_solo_voz")
+	Narrator._lines.erase("_prueba_solo_voz")
 	var only_len := (load("res://assets/audio/voz/dibujo_encontrado_2.ogg") as AudioStream).get_length()
 	check(got.is_empty() and Narrator.voice_playing()
 		and absf(Narrator.remaining() - (only_len + Narrator.VOICE_TAIL + Narrator.GAP)) < 0.05,
@@ -294,7 +308,8 @@ func _test_story(main: Node) -> void:
 	check(hud_now._panel.get_global_rect().position.y < 30.0 and hud_now._task.size.x < 260.0,
 		"sin contador de dibujos: la bandeja empieza arriba; y la tarjeta de tarea es pequeña, que no llame la atención")
 	var screen_w := get_viewport().get_visible_rect().size.x
-	Narrator.typing = -1.0                         # sin voz (la de entrar al desván ya ha marcado su ritmo)
+	Narrator.clear()                               # que la frase de entrar al desván no salga encima de la de prueba
+	Narrator.typing = -1.0                         # sin voz (la de entrar al desván ya había marcado su ritmo)
 	hud_now._show_subtitle("Una frase de prueba, bastante larga, para ver cómo se escribe letra a letra.", 4.0)
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -990,6 +1005,11 @@ func _test_title_menu(main: Node) -> bool:
 		"al completar el cerdito y pasar al menú, no salen partículas por delante")
 	check(GameState.menu_unlocked and _saved(TEST_PROGRESS, "menu_desbloqueado") == true, "resolver el título desbloquea el menú y se guarda")
 	var talk := Narrator.remaining()
+	var outro: Array = Narrator._queue.map(func(e: Dictionary) -> String: return String(e.get("voice", "")))
+	if Narrator.voice_playing():
+		outro.append(Narrator._player.stream.resource_path)
+	check(outro.any(func(v: String) -> bool: return v.ends_with("/fin_menu.ogg")) and Narrator.text("fin_menu").begins_with("¡Ha quedado como nueva!"),
+		"al acabar el puzle del cerdito suena «¡Ha quedado como nueva! Ya podemos empezar.» con su voz")
 	await get_tree().create_timer(main.MENU_DELAY + 0.3).timeout
 	check(talk > main.MENU_DELAY + 0.6 and not main.menu.is_open(),
 		"el menú no sale mientras el cerdito habla (le quedaban %.1f s de frases)" % talk)

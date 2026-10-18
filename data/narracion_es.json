@@ -1,6 +1,6 @@
 {
 	"intro_menu": "Mi hucha de cerdito, hecha piezas. Arrastra cada pieza de la bandeja de la derecha hasta su silueta: primero, el cuerpo.",
-	"fin_menu": "¡Como nueva! Ya podemos empezar.",
+	"fin_menu": "¡Ha quedado como nueva! Ya podemos empezar.",
 	"intro_habitacion": "Una habitación a medio montar. Empieza por los muebles grandes: lo de encima viene después.",
 	"fin_habitacion": "Todo en su sitio. Ya se puede estudiar a gusto.",
 	"recogido_boli": "¡El boli! Estaba escondido en el cajón.",
@@ -13,8 +13,34 @@
 	"recogido_cuchara": "¡Una cuchara! Estaba escondida en el cajón.",
 	"pieza_cuadro": "El cuadro de la familia, por fin colgado.",
 	"fin_juego": "Gracias por jugar.",
-	"intro_desvan": "El desván, a oscuras. Antes de ordenarlo hay que ponerlo en pie: primero el suelo, las paredes y el tejado.",
-	"pieza_hucha": "Mi hucha. Ahorraba para unas pinturas de verdad… Está vacía. ¿En qué me lo gasté?",
+	"intro_desvan": {
+		"frases": [
+			"Madre mía… Hace tiempo que no subo aquí.",
+			"Esto está muy oscuro.",
+			"Mi padre se dejó las llaves por aquí…",
+			"Me pregunto dónde estarán."
+		],
+		"marcas": [
+			3.4,
+			5.6,
+			8.2
+		]
+	},
+	"pieza_hucha": {
+		"frases": [
+			"¡Mi hucha! ¡Mi antigua hucha!",
+			"Recuerdo que estuve mucho tiempo ahorrando. Para convertirme en una gran artista.",
+			"¡Uh! ¿Cuánto dinero habrá?…",
+			"Nada, no hay nada.",
+			"¿En qué me lo gasté?"
+		],
+		"marcas": [
+			2.35,
+			7.85,
+			9.95,
+			12.3
+		]
+	},
 	"titulo_desvan": "El desván",
 	"titulo_infancia": "I · Infancia",
 	"pieza_caja_musica": {
@@ -109,19 +135,38 @@
 			14.75
 		]
 	},
-	"seccion_epilogo": [
-		"Nadie me enseñó a decir que no.",
-		"",
-		"No.",
-		"…Qué fácil suena cuando lo dices en voz alta."
-	],
-	"pieza_moneda": "Para unas pinturas de verdad.",
+	"seccion_epilogo": {
+		"frases": [
+			"Durante este tiempo he llevado una vida que no era la que quería.",
+			"No pensaba por mí… No decidía por mí…",
+			"Creo que ya es hora de cambiar eso.",
+			"Nadie me lo ha enseñado, pero siempre estoy a tiempo de aprender.",
+			"¡No!",
+			"No pienso hacerlo.",
+			"Ah… No es fácil decirlo, pero…",
+			"Ah… Qué bien sienta decirlo en voz alta.",
+			"Y como primer acto de amor…",
+			"Esta moneda es…"
+		],
+		"marcas": [
+			4.59,
+			7.7,
+			10.4,
+			14.75,
+			16.0,
+			17.8,
+			20.55,
+			25.1,
+			27.93
+		]
+	},
+	"pieza_moneda": "…para mi futuro como artista.",
 	"consejo_muebles": "Algo está guardado. Toca el mueble que brilla para abrirlo.",
 	"consejo_dentro": "¡Ahí está! Tócalo para llevártelo a la bandeja.",
 	"logro_dibujo": "Uno de mis dibujos de cuando era pequeña",
 	"logro_dibujos_todos": "¡Todos mis dibujos! La cuerda está completa.",
-	"dibujo_encontrado_1": {"frases": []},
-	"dibujo_encontrado_2": {"frases": []},
-	"dibujo_encontrado_3": {"frases": []},
-	"dibujo_encontrado_4": {"frases": []}
+	"dibujo_encontrado_1": "¡Mira! Uno de mis dibujos de cuando era pequeña.",
+	"dibujo_encontrado_2": "¡Toma ya! Otro dibujo de cuando era pequeña.",
+	"dibujo_encontrado_3": "¡Mira! Otro dibujo de cuando era pequeña.",
+	"dibujo_encontrado_4": "¡Otro más para la colección!"
 }
