@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://st8l85cmtfaa"
-path="res://.godot/imported/Fredoka-Bold.woff2-8c44e1106f9215012ad007de31e575f2.fontdata"
+uid="uid://bjaur2t1nquua"
+path="res://.godot/imported/MouldyCheese-Regular.ttf-49ca30e11b76488a5d1d41d64019f88c.fontdata"
 
 [deps]
 
-source_file="res://ui/fuentes/Fredoka-Bold.woff2"
-dest_files=["res://.godot/imported/Fredoka-Bold.woff2-8c44e1106f9215012ad007de31e575f2.fontdata"]
+source_file="res://ui/fuentes/MouldyCheese-Regular.ttf"
+dest_files=["res://.godot/imported/MouldyCheese-Regular.ttf-49ca30e11b76488a5d1d41d64019f88c.fontdata"]
 
 [params]
 

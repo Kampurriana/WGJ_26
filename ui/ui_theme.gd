@@ -1,14 +1,14 @@
 class_name UiTheme
 extends RefCounted
 ## Aspecto de toda la interfaz (HUD y menús), construido en código. Desde el pulido con la
-## referencia (Ooblets, la imagen del aviso de "badge"): letra redonda y gruesa (Fredoka, OFL, en
-## ui/fuentes/), paneles azules translúcidos con borde claro y sombra, botones morados en forma de
+## referencia (Ooblets, la imagen del aviso de "badge"): las letras del equipo (ui/fuentes/, de Niskala
+## Huruf): Mouldy Cheese para el texto pequeño y Wiggly Curves para títulos y botones; paneles azules translúcidos con borde claro y sombra, botones morados en forma de
 ## píldora con borde blanco y un canto oscuro debajo, cápsulas claras con texto violeta y títulos
 ## naranjas con contorno rosa y sombra. Si existe res://ui/theme.tres (hecho por las artistas en el
 ## editor), manda ese.
 
-const FONT := preload("res://ui/fuentes/Fredoka-SemiBold.woff2")
-const FONT_BOLD := preload("res://ui/fuentes/Fredoka-Bold.woff2")
+const FONT := preload("res://ui/fuentes/MouldyCheese-Regular.ttf")         ## el texto pequeño
+const FONT_BOLD := preload("res://ui/fuentes/WigglyCurves-Regular.ttf")    ## títulos, botones, rótulos
 
 # La paleta de la referencia.
 const BLUE := Color(0.22, 0.36, 0.78)          ## paneles

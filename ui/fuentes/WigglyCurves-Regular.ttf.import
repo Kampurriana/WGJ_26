@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://3e4uqdnw48t5"
-path="res://.godot/imported/Fredoka-SemiBold.woff2-856964489f894710e34f0de176533e00.fontdata"
+uid="uid://dvylrl6u58njd"
+path="res://.godot/imported/WigglyCurves-Regular.ttf-714c2317e16799277847bc22d1692004.fontdata"
 
 [deps]
 
-source_file="res://ui/fuentes/Fredoka-SemiBold.woff2"
-dest_files=["res://.godot/imported/Fredoka-SemiBold.woff2-856964489f894710e34f0de176533e00.fontdata"]
+source_file="res://ui/fuentes/WigglyCurves-Regular.ttf"
+dest_files=["res://.godot/imported/WigglyCurves-Regular.ttf-714c2317e16799277847bc22d1692004.fontdata"]
 
 [params]
 
