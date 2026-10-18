@@ -23,7 +23,7 @@ extends CanvasLayer
 signal next_requested
 signal pause_requested
 
-@export var hint_cooldown := 25.0            ## segundos de recarga de la pista
+@export var hint_cooldown := 8.0             ## segundos de recarga de la pista (con 25 parecía que no iba)
 @export var assist_after := 45.0             ## sin progreso tanto tiempo => la pista se recarga sola
 
 const COLUMNS := 2
@@ -99,6 +99,10 @@ var _charge := 1.0
 var _idle := 0.0
 var _subtitle_left := 0.0
 var _hinted: PieceSlot
+var continue_button: Button                  ## (cambio de acto) «Continuar»: el capítulo siguiente sale al pulsarlo
+var _continue_t := 0.0
+var hint_mark: MarcaPista                    ## la flecha que señala dónde va la siguiente pieza: solo si lleva
+                                             ## mucho rato sin poner ninguna (assist_after; feedback)
 
 
 func _ready() -> void:
@@ -122,6 +126,21 @@ func _ready() -> void:
 	stars.place_bar(Vector2(MARGIN + 6.0 + TASK_WIDTH + 10.0, MARGIN + 4.0))   # junto a la tarjeta de tarea
 	Events.achievement_unlocked.connect(func(id: String) -> void: stars.celebrate(id))
 	Events.level_completed.connect(func(_d: Node) -> void: _update_task())
+	hint_mark = MarcaPista.new()
+	_root.add_child(hint_mark)
+	continue_button = Button.new()
+	continue_button.text = "Continuar  ›"
+	continue_button.add_theme_font_size_override("font_size", 26)
+	continue_button.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	continue_button.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	continue_button.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	continue_button.offset_bottom = -160         # encima de la burbuja de diálogo
+	continue_button.hide()
+	continue_button.pressed.connect(func() -> void:
+		var d := GameState.diorama
+		if d != null and is_instance_valid(d):
+			d.continue_act())
+	_root.add_child(continue_button)
 	Settings.changed.connect(func(key: String) -> void:
 		if key == "idioma" and GameState.diorama != null and is_instance_valid(GameState.diorama):
 			rebuild_inventory()                  # los nombres de las piezas
@@ -668,6 +687,8 @@ func _update_task() -> void:
 	var left := pool.filter(func(o: PieceSlot) -> bool: return not o.filled)
 	if d.completed:
 		_task_text.text = "¡Completado!"
+	elif d.act_waiting():
+		_task_text.text = "¡Capítulo completado! Pulsa «Continuar»."
 	elif d.is_opening():
 		_task_text.text = "Se abre un capítulo nuevo…"
 	elif d.has_findable() and d.visible_inventory().is_empty():   # primero, lo que ya se puede poner
@@ -962,7 +983,7 @@ func request_hint() -> void:
 	var d := GameState.diorama
 	if d == null or _charge < 1.0 or _moment:
 		return
-	var h := d.hint_target(GameState.hovered_piece)
+	var h := _next_hint(d)
 	if h.is_empty():
 		return
 	_charge = 0.0
@@ -970,16 +991,72 @@ func request_hint() -> void:
 	Narrator.say_if_exists("pista")
 	GameState.camera.look_at_point(Visuals.global_aabb(h.node).get_center())
 	_clear_hint()
+	if _idle >= assist_after:                    # atascada de verdad: además, la flecha
+		hint_mark.point(h.node)
+	_mark_hint(h)
+	Events.hint_shown.emit(h.node)
+
+
+## Lo que señala la pista: la pieza que se señala con el ratón o, si no, la primera de la bandeja
+## que ya se puede poner (la siguiente que toca); si no hay, lo guardado que falta encontrar.
+func _next_hint(d: Diorama) -> Dictionary:
+	var ready_cards := cards(true)
+	var preferred := GameState.hovered_piece
+	if preferred == &"" and not ready_cards.is_empty():
+		preferred = ready_cards[0].piece_id
+	return d.hint_target(preferred)
+
+
+## El hueco late y su ficha se resalta, a la vista en la bandeja.
+func _mark_hint(h: Dictionary) -> void:
 	if h.has("slot"):
 		_hinted = h.slot
 		_hinted.set_pulse(true)
 		var item := item_for(h.piece)
 		if item != null:
 			item.highlight(true)
-	Events.hint_shown.emit(h.node)
+			_scroll.ensure_control_visible(item)  # y su ficha, a la vista en la bandeja
+			Juice.bounce(item, 1.15)
+
+
+## «Continuar» se ve mientras el acto siguiente espera (fuera de los primeros planos: ahí vale un clic),
+## latiendo un poco para que se note.
+func _update_continue(delta: float) -> void:
+	var d := GameState.diorama
+	var want := d != null and is_instance_valid(d) and d.act_waiting() and not _moment and _game_ui \
+		and GameState.mode == GameState.Mode.PLAYING
+	if want and not continue_button.visible:
+		continue_button.show()
+		_continue_t = 0.0
+		Juice.pop_in(continue_button, 0.0, 0.7, 0.4)
+		_update_task()
+	elif not want and continue_button.visible:
+		continue_button.hide()
+		_update_task()
+	if continue_button.visible:
+		_continue_t += delta
+		continue_button.pivot_offset = continue_button.size * 0.5
+		if _continue_t > 0.45:
+			continue_button.scale = Vector2.ONE * (1.0 + 0.035 * sin(_continue_t * 4.0))
+
+
+## Si lleva mucho rato sin poner ninguna pieza (y la ayuda automática está puesta), sale sola la flecha
+## encima del sitio de la siguiente pieza, sin mover la cámara. Se va al poner una.
+func _auto_mark() -> void:
+	var d := GameState.diorama
+	if hint_mark.visible or _moment or not Settings.get_value("ayuda_automatica") or _idle < assist_after \
+			or GameState.mode != GameState.Mode.PLAYING or GameState.is_dragging or d == null or not is_instance_valid(d) or d.completed:
+		return
+	var h := _next_hint(d)
+	if h.is_empty():
+		return
+	hint_mark.point(h.node)
+	_mark_hint(h)
 
 
 func _clear_hint() -> void:
+	if hint_mark != null:
+		hint_mark.point(null)
 	if _hinted != null:
 		_hinted.set_pulse(false)
 		var item := item_for(_hinted.id)
@@ -1017,6 +1094,10 @@ func _show_subtitle(text: String, seconds: float) -> void:
 
 func _process(delta: float) -> void:
 	_idle += delta
+	if _hinted != null and _hinted.filled:      # ya está puesta (o la otra gemela): la flecha se va
+		_clear_hint()
+	_auto_mark()
+	_update_continue(delta)
 	_charge = minf(1.0, _charge + delta / hint_cooldown)
 	var assist: bool = Settings.get_value("ayuda_automatica") and _idle >= assist_after
 	if assist:
@@ -1052,7 +1133,10 @@ func _process(delta: float) -> void:
 func _unhandled_input(e: InputEvent) -> void:
 	if not _game_ui:
 		return
-	if e.is_action_pressed("hint"):
+	if continue_button.visible and (e.is_action_pressed("ui_accept")):
+		continue_button.pressed.emit()
+		get_viewport().set_input_as_handled()
+	elif e.is_action_pressed("hint"):
 		request_hint()
 	elif e.is_action_pressed("complete_all") and GameState.DEBUG_SHORTCUTS and GameState.diorama != null:
 		GameState.drag.cancel()

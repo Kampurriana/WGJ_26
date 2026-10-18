@@ -24,3 +24,4 @@ signal attention_changed(target: Node, on: bool)   # un mueble u objeto llama la
 signal tip_requested(key: String)             # consejo de juego (texto en narracion_<idioma>.json)
 signal flash_requested                        # destello blanco (pieza con token flash)
 signal achievement_unlocked(id: String)       # un logro conseguido (core/logros.gd)
+signal act_continued                          # cambio de acto: el jugador sigue (Diorama.continue_act)

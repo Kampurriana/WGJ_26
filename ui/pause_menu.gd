@@ -18,6 +18,10 @@ var _main_page: VBoxContainer
 var _options_page: VBoxContainer
 var _album_page: VBoxContainer
 var _achievements_page: VBoxContainer
+var _dialogue_page: VBoxContainer            ## los diálogos ya dichos, para releerlos
+var _dialogue_scroll: ScrollContainer
+var _dialogue_list: VBoxContainer
+var _dialogue_empty: Label
 var logros: LogrosLista
 var _album_grid: GridContainer
 var _album_icon: DibujoIcono
@@ -59,6 +63,7 @@ func _ready() -> void:
 	v.add_child(_main_page)
 	_add_button(_main_page, "reanudar", "Reanudar", resume)
 	_add_button(_main_page, "dibujos", "Dibujos", func() -> void: show_page("dibujos"))
+	_add_button(_main_page, "dialogos", "Diálogos", func() -> void: show_page("dialogos"))
 	_add_button(_main_page, "logros", "Logros", func() -> void: show_page("logros"))
 	_add_button(_main_page, "opciones", "Opciones", func() -> void: show_page("opciones"))
 	_add_button(_main_page, "menu", "Menú principal", func() -> void:
@@ -79,7 +84,77 @@ func _ready() -> void:
 	logros = LogrosLista.new()
 	_achievements_page.add_child(logros)
 	_add_button(_achievements_page, "logros_volver", "Volver", func() -> void: show_page("principal"))
+	_build_dialogues(v)
 	hide()
+
+
+## Los diálogos ya dichos (GameState.dialogue_log), para releerlos: en el idioma de ahora, en orden,
+## cada uno en su bocadillo (con el nombre del objeto si lo dijo al ponerlo); se abre por el final.
+func _build_dialogues(parent: Control) -> void:
+	_dialogue_page = VBoxContainer.new()
+	_dialogue_page.add_theme_constant_override("separation", 10)
+	parent.add_child(_dialogue_page)
+	_dialogue_scroll = ScrollContainer.new()
+	_dialogue_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_dialogue_scroll.custom_minimum_size = Vector2(400, 380)
+	_dialogue_page.add_child(_dialogue_scroll)
+	_dialogue_list = VBoxContainer.new()
+	_dialogue_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_dialogue_list.add_theme_constant_override("separation", 8)
+	_dialogue_scroll.add_child(_dialogue_list)
+	_dialogue_empty = Label.new()
+	_dialogue_empty.text = "Todavía no hay diálogos."
+	_dialogue_empty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_dialogue_page.add_child(_dialogue_empty)
+	_add_button(_dialogue_page, "dialogos_volver", "Volver", func() -> void: show_page("principal"))
+
+
+func _fill_dialogues() -> void:
+	for c in _dialogue_list.get_children():
+		_dialogue_list.remove_child(c)
+		c.queue_free()
+	for key: String in GameState.dialogue_log:
+		var text := Narrator.text(key)
+		if text == "":
+			continue
+		var bubble := PanelContainer.new()
+		bubble.add_theme_stylebox_override("panel", UiTheme._box(Color(UiTheme.PALE, 0.95), 16, Color.WHITE, 0, 2, 14, 8))
+		var col := VBoxContainer.new()
+		col.add_theme_constant_override("separation", 2)
+		bubble.add_child(col)
+		if key.begins_with("pieza_"):
+			var who := Label.new()
+			who.text = Narrator.piece_name(StringName(key.trim_prefix("pieza_")), true)
+			who.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+			who.add_theme_font_override("font", UiTheme.FONT_BOLD)
+			who.add_theme_font_size_override("font_size", 13)
+			who.add_theme_color_override("font_color", UiTheme.CORAL)
+			who.add_theme_constant_override("outline_size", 0)
+			col.add_child(who)
+		var line := Label.new()
+		line.text = text
+		line.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED   # ya viene en su idioma
+		line.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		line.custom_minimum_size = Vector2(340, 0)
+		line.add_theme_font_size_override("font_size", 16)
+		line.add_theme_color_override("font_color", UiTheme.BLUE_DEEP)
+		line.add_theme_constant_override("outline_size", 0)
+		col.add_child(line)
+		_dialogue_list.add_child(bubble)
+	_dialogue_empty.visible = _dialogue_list.get_child_count() == 0
+	_dialogue_scroll.visible = not _dialogue_empty.visible
+	(func() -> void: _dialogue_scroll.scroll_vertical = 100000).call_deferred()   # lo último, a la vista
+
+
+## (Tests) Lo que se puede releer ahora, en orden.
+func dialogue_entries() -> PackedStringArray:
+	var out := PackedStringArray()
+	for bubble in _dialogue_list.get_children():
+		if bubble.is_queued_for_deletion():
+			continue
+		var labels := bubble.find_children("*", "Label", true, false)
+		out.append((labels[-1] as Label).text)
+	return out
 
 
 func _build_album(parent: Control) -> void:
@@ -228,6 +303,9 @@ func show_page(p: String) -> void:
 	_options_page.visible = p == "opciones"
 	_album_page.visible = p == "dibujos"
 	_achievements_page.visible = p == "logros"
+	_dialogue_page.visible = p == "dialogos"
+	if p == "dialogos":
+		_fill_dialogues()
 	if p == "logros":
 		logros.refresh()
 	if p == "opciones":
@@ -235,7 +313,7 @@ func show_page(p: String) -> void:
 	if p == "dibujos":
 		_fill_album()
 	var shown: Control = {"principal": _main_page, "opciones": _options_page, "dibujos": _album_page,
-		"logros": _achievements_page}.get(p, _main_page)
+		"logros": _achievements_page, "dialogos": _dialogue_page}.get(p, _main_page)
 	Juice.stagger(shown)
 	for c in shown.find_children("*", "Button", true, false):
 		if (c as Button).is_visible_in_tree():

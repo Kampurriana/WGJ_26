@@ -37,7 +37,8 @@ const COIN_GRAB_PX := 70.0                   ## lo cerca que hay que coger la mo
 const COIN_SNAP_PX := 80.0                   ## y lo cerca de la ranura que hay que soltarla
 const HIDE_TIME := 0.35                      ## lo que tarda en desvanecerse lo que tapa el plano
 const TRANSITION_HOLD := 1.4                 ## (espejo → final) el espejo vacío, en silencio...
-const TRANSITION_FADE := 1.8                 ## ...y el fundido lento a negro (s)
+const TRANSITION_FADE := 2.4                 ## ...y las bandas de cine que se cierran como un telón (s)
+const TRANSITION_PUSH := 0.6                 ## la cámara se acerca a la luna vacía (su caja, a esta escala)
 const CUT_IN := 1.8                          ## (ofrecida) lo que tarda en verse la escena tras el corte
 const GHOST_TIME := 1.5                      ## (ofrecida) la moneda fantasma va de la moneda a la ranura en esto...
 const GHOST_REST := 0.7                      ## ...y espera esto antes de repetirlo (s)
@@ -85,6 +86,9 @@ var _ghost_tween: Tween
 
 
 func _ready() -> void:
+	Events.act_continued.connect(func() -> void:
+		if active and kind == "normal":
+			finish())
 	_layer = CanvasLayer.new()
 	_layer.layer = 1                         # encima del enfoque (0) y por debajo de la interfaz (2)
 	add_child(_layer)
@@ -264,7 +268,7 @@ func start(node: Node3D, p_kind: String, _id: String) -> void:
 	match kind:
 		"reflejo":
 			cam.close_up(_glass_box(node), node.global_basis.z)
-			_frame_to(1.0, 0.0, 1.2)
+			_frame_to(1.0, BARS, 1.2)            # de cine: con sus bandas
 			_black.create_tween().tween_property(_black, "color:a", 1.0, 1.2)
 			get_tree().create_timer(1.3, false).timeout.connect(func() -> void:
 				if active and kind == "reflejo" and is_instance_valid(node):
@@ -405,6 +409,8 @@ func _unhandled_input(e: InputEvent) -> void:
 		Sfx.play("pickup")
 	elif kind == "transicion":
 		pass                                     # la transición no se salta: dura lo que dura
+	elif kind == "normal" and _diorama() != null and _diorama().act_waiting():
+		_diorama().continue_act()                # cierra un acto: al siguiente (la voz se apaga y sale su capítulo)
 	elif not Narrator.skip() and kind != "ofrecida":
 		_end_moment()
 
@@ -429,14 +435,26 @@ func _ending_follows() -> bool:
 	return false
 
 
-## Del espejo al final: el espejo vacío se queda un momento en silencio, fundido lento a negro y,
-## ya a oscuras, se abre la sección del final (su corte empieza desde el negro).
+## Del espejo al final, de cine (feedback: "más satisfactoria, más cinematográfica"): el espejo vacío
+## se queda un momento en silencio mientras la cámara se acerca despacio a la luna; luego las bandas
+## de arriba y de abajo se cierran como un telón hasta juntarse y, ya a oscuras, se abre la sección del
+## final (su corte empieza desde el negro).
 func _transition_to_ending() -> void:
 	kind = "transicion"
 	_prompt.create_tween().tween_property(_prompt, "modulate:a", 0.0, 0.4)
+	if _iris_tween != null:
+		_iris_tween.kill()
+	if is_instance_valid(target):
+		var glass := _glass_box(target)
+		GameState.camera.close_up(AABB(glass.get_center() - glass.size * TRANSITION_PUSH * 0.5, glass.size * TRANSITION_PUSH),
+			target.global_basis.z)
+	var half := get_viewport().get_visible_rect().size.y * 0.5 + 2.0
 	var tw := create_tween()
 	tw.tween_interval(TRANSITION_HOLD)
-	tw.tween_property(_curtain, "color:a", 1.0, TRANSITION_FADE).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_method(func(h: float) -> void:
+		_bars[0].offset_bottom = h
+		_bars[1].offset_top = -h, _bars[0].offset_bottom, half, TRANSITION_FADE).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tw.tween_callback(func() -> void: _curtain.color.a = 1.0)
 	tw.tween_callback(func() -> void:
 		if not active or kind != "transicion":
 			return
@@ -455,7 +473,8 @@ func _follow_iris() -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return
-	var box := _glass_box(target) if kind == "reflejo" else Visuals.global_aabb(target)
+	# El espejo: el foco abarca el espejo entero (marco y patas), no solo la luna: si no, lo cortaba.
+	var box := Visuals.global_aabb(target)
 	if is_instance_valid(coin):
 		box = box.merge(Visuals.global_aabb(coin))   # el foco también alumbra la moneda
 	var lo := Vector2(INF, INF)
@@ -469,12 +488,13 @@ func _follow_iris() -> void:
 		hi = hi.max(s)
 	if lo.x == INF:
 		return
-	var grow := 1.3 if kind == "reflejo" else 1.35
-	var r := ((hi - lo) * 0.5 * grow).max(Vector2(110, 110) if kind != "reflejo" else Vector2(40, 40))
+	var mirror := kind == "reflejo" or kind == "transicion"
+	var grow := 1.25 if mirror else 1.35
+	var r := ((hi - lo) * 0.5 * grow).max(Vector2(110, 110) if not mirror else Vector2(40, 40))
 	_iris_mat.set_shader_parameter("centro", (lo + hi) * 0.5)
 	_iris_mat.set_shader_parameter("radio", r)
 	var black := kind == "reflejo" or kind == "transicion"     # el espejo: todo a negro, con borde
-	_iris_mat.set_shader_parameter("suave", 0.12 if black else IRIS_SOFT)
+	_iris_mat.set_shader_parameter("suave", 0.35 if black else IRIS_SOFT)
 	_iris_mat.set_shader_parameter("dentro", 1.0 if black else IRIS_INSIDE)
 	_iris_mat.set_shader_parameter("color", Color.BLACK if black else COZY_DARK if kind == "ofrecida"
 		else Fondos.dark(Settings.get_value("fondo_color")))

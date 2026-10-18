@@ -6,6 +6,8 @@ extends Control
 ##     interfaz): una estrella grande que gira, "¡LOGRO DESBLOQUEADO!", el nombre y qué era;
 ##  2) la estrella sale del aviso, cruza la pantalla en arco girando y encaja en su hueco de la fila,
 ##     que da un salto y se queda dorado; 3) el aviso se va hacia arriba.
+## Le acompaña el cerdito (feedback): entra a saltitos hasta la esquina del aviso, lo celebra dando
+## un par de saltos y, antes de que el aviso se retire, se va saltando por donde vino.
 ## Si llegan varios seguidos, esperan su turno. Durante un primer plano la fila está escondida (la
 ## interfaz se aparta): se asoma lo justo para recibir la estrella y se vuelve a ir.
 
@@ -14,6 +16,9 @@ const BANNER_Y := 70.0                       ## dónde se queda el aviso (desde 
 const BANNER_HIDDEN_Y := -220.0
 const HOLD := 2.0                            ## lo que se lee el aviso antes de soltar la estrella (s)
 const FLIGHT := 0.95                         ## lo que tarda la estrella en llegar a su hueco (s)
+const PIG_SIZE := 104.0
+const PIG_IN := 0.7                          ## lo que tarda en llegar a saltitos...
+const PIG_OUT := 0.6                         ## ...y en irse
 
 var bar: PanelContainer                      ## la fila de estrellas
 var slots: Array[Estrella] = []              ## un hueco por logro, en el orden de Logros.LISTA
@@ -25,6 +30,7 @@ var _bar_wanted := true                      ## la fila se ve (no estamos en un 
 var _banner_star: Estrella
 var _banner_name: Label
 var _banner_text: Label
+var pig: Node2D                              ## el cerdito que acompaña al aviso (en los pies; Node2D, trampa 46)
 
 
 func _init() -> void:
@@ -43,6 +49,14 @@ func _init() -> void:
 		row.add_child(s)
 		slots.append(s)
 	_build_banner()
+	pig = Node2D.new()
+	pig.hide()
+	add_child(pig)
+	var sprite := Sprite2D.new()
+	sprite.texture = preload("res://icon.png")
+	sprite.scale = Vector2.ONE * PIG_SIZE / 256.0
+	sprite.position = Vector2(0, -PIG_SIZE * 0.5)
+	pig.add_child(sprite)
 
 
 func _build_banner() -> void:
@@ -143,7 +157,9 @@ func _next() -> void:
 	var tw := create_tween()
 	tw.tween_method(_set_banner_y, BANNER_HIDDEN_Y, BANNER_Y, 0.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(_banner_star, "rotation", TAU, 0.9).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tw.tween_callback(func() -> void: Juice.bounce(banner, 1.06))
+	tw.tween_callback(func() -> void:
+		Juice.bounce(banner, 1.06)
+		_pig_in())
 	tw.tween_interval(HOLD)
 	tw.tween_callback(_fly.bind(Logros.LISTA.map(func(l: Dictionary) -> String: return l.id).find(id)))
 
@@ -172,7 +188,8 @@ func _fly(index: int) -> void:
 		flying.scale = Vector2.ONE * s
 		flying.rotation = t * TAU * 2.0
 		flying.position = p - flying.size * 0.5, 0.0, 1.0, FLIGHT).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tw.parallel().tween_method(_set_banner_y, BANNER_Y, BANNER_HIDDEN_Y, 0.5).set_delay(FLIGHT * 0.5) \
+	_pig_out()                                   # el cerdito se va antes que el aviso
+	tw.parallel().tween_method(_set_banner_y, BANNER_Y, BANNER_HIDDEN_Y, 0.5).set_delay(maxf(FLIGHT * 0.5, PIG_OUT)) \
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tw.tween_callback(func() -> void:
 		if is_instance_valid(flying):
@@ -185,6 +202,51 @@ func _fly(index: int) -> void:
 		banner.hide())
 	tw.tween_interval(0.5)
 	tw.tween_callback(_next)
+
+
+## Dónde se pone el cerdito: a la izquierda del aviso, pegado a su borde (sin tapar la estrella).
+func _pig_spot() -> Vector2:
+	var r := banner.get_global_rect()
+	return get_global_transform().affine_inverse() * Vector2(r.position.x - PIG_SIZE * 0.42, r.end.y + 10.0)
+
+
+## Entra a saltitos desde fuera de la pantalla y, ya en su sitio, lo celebra con dos saltos.
+func _pig_in() -> void:
+	var to := _pig_spot()
+	var from := Vector2(-PIG_SIZE, to.y)
+	pig.show()
+	pig.position = from
+	pig.scale = Vector2.ONE
+	var tw := pig.create_tween()
+	tw.tween_method(func(t: float) -> void: _hop(from, to, t, 3, 26.0), 0.0, 1.0, PIG_IN)
+	tw.tween_method(func(t: float) -> void: _hop(to, to, t, 2, 34.0), 0.0, 1.0, 0.8)
+
+
+## Se va saltando por donde vino.
+func _pig_out() -> void:
+	if not pig.visible:
+		return
+	var from := pig.position
+	var to := Vector2(-PIG_SIZE * 1.5, from.y)
+	var tw := pig.create_tween()
+	tw.tween_method(func(t: float) -> void: _hop(from, to, t, 3, 30.0), 0.0, 1.0, PIG_OUT)
+	tw.tween_callback(pig.hide)
+
+
+## Un tramo a saltitos: avanza de from a to dando `hops` botes; se estira en el aire y se aplasta
+## un poco al tocar el suelo, con un pequeño balanceo.
+func _hop(from: Vector2, to: Vector2, t: float, hops: int, height: float) -> void:
+	if t >= 1.0:                                 # al final, en el suelo y derecho
+		pig.position = to
+		pig.scale = Vector2.ONE
+		pig.rotation = 0.0
+		return
+	var phase := fmod(t * hops, 1.0)
+	var lift := sin(phase * PI)
+	pig.position = from.lerp(to, t) - Vector2(0, lift * height)
+	var squash := 1.0 - lift
+	pig.scale = Vector2(1.0 + 0.1 * squash * squash - 0.04 * lift, 1.0 - 0.1 * squash * squash + 0.06 * lift)
+	pig.rotation = sin(t * hops * TAU) * 0.08
 
 
 func _set_banner_y(y: float) -> void:
