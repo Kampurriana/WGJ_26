@@ -298,7 +298,9 @@ func _test_logo() -> void:
 	var first := {}
 	var moved := {}
 	var touching := PackedStringArray()
-	var said_img: Control = logo.pieces["said"]
+	var said_img: Node2D = logo.motions["said"]
+	var float_y := logo._stage.position.y
+	var float_step := 0.0
 	var said_rot := said_img.rotation_degrees
 	var said_jump := 0.0
 	var said_scaled := 0
@@ -319,12 +321,18 @@ func _test_logo() -> void:
 		if absf(said_img.scale.y - 1.0) > 0.001:
 			said_scaled += 1
 		squashed = squashed or absf(logo.squash) > 0.004
+		float_step = maxf(float_step, absf(logo._stage.position.y - float_y))
+		float_y = logo._stage.position.y
 		await get_tree().create_timer(0.1).timeout
 	check(moved.size() == 4 and touching.is_empty(),
 		"cada pieza del logo se mueve a su aire (%d de 4) y ningún dibujo tapa a otro (se tocan: %s)" % [moved.size(), ", ".join(touching)])
 	check(said_jump < 0.1 and squashed and said_scaled <= 8,
 		"«SAID» no tiembla: se mece lentísimo (%.3f° por décima) y solo se aplasta un pelín cuando cae el cerdito (%d de 45 muestras)"
 		% [said_jump, said_scaled])
+	check(logo._stage is Node2D and logo.motions.values().all(func(m: Node) -> bool: return m is Node2D)
+		and get_viewport().gui_snap_controls_to_pixels and float_step > 0.0 and float_step < 0.4,
+		"el logo flota fluido: lo que se mueve va en Node2D (los Control se ajustan al píxel y daban saltos de 1 px; aquí %.2f px por décima)"
+		% float_step)
 	logo.queue_free()
 	var plain := Logo.new(430.0)
 	check(plain.has_pieces() and plain.pieces.size() == 4,

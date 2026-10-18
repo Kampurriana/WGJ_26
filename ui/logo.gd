@@ -7,6 +7,8 @@ extends Control
 ## la moneda da una vuelta de vez en cuando, «what I never» y «SAID» se mecen lentísimo, el cerdito da
 ## un saltito y, al caer, «SAID» se aplasta un pelín, como si le diera un golpecito. Ninguna pieza tapa
 ## el dibujo de otra (solo se tocan los bordes blancos). Encima del menú de inicio y en los créditos.
+## Lo que se mueve va en Node2D (el logo entero y cada pieza): los Control se ajustan al píxel entero
+## (gui/common/snap_controls_to_pixels) y un vaivén tan lento avanzaba a saltos de 1 px.
 ## Sin las imágenes, sale el nombre del juego en letra, como antes.
 
 const DIR := "res://assets/ui/logo/"
@@ -42,9 +44,10 @@ const SQUASH_TIME := 0.5                     ## lo que dura el golpecito en «SA
 const SQUASH := 0.018                        ## y cuánto se aplasta (fracción de su alto)
 
 var pieces: Dictionary = {}                  ## nombre -> TextureRect (la pieza, del tamaño de su dibujo)
+var motions: Dictionary = {}                 ## nombre -> Node2D que la mueve (en su punto de giro)
 var backing: Array[TextureRect] = []         ## la pegatina común y la sombra (siluetas engordadas)
 var squash := 0.0                            ## (tests) el aplastón de «SAID» ahora mismo
-var _stage: Control                          ## todo el logo junto: flota como una sola cosa
+var _stage: Node2D                           ## todo el logo junto: flota como una sola cosa
 var _k := 1.0                                ## px de pantalla por px de la referencia
 var _t := 0.0
 var _label: Label                            ## sin imágenes: el nombre en letra
@@ -64,9 +67,7 @@ func _init(width := 430.0, textures: Dictionary = {}) -> void:
 		add_child(_label)
 		return
 	custom_minimum_size = REF_FRAME.size * _k
-	_stage = Control.new()
-	_stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stage.size = custom_minimum_size
+	_stage = Node2D.new()
 	add_child(_stage)
 	for key: String in ORDER:                    # primero la sombra de todas, luego la pegatina blanca de todas
 		_silhouette(tex[key], REF_RECTS[key], SHADOW_GROW, SHADOW_COLOR, SHADOW_OFFSET, 2.5)
@@ -84,12 +85,17 @@ func _init(width := 430.0, textures: Dictionary = {}) -> void:
 		img.stretch_mode = TextureRect.STRETCH_SCALE
 		img.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		img.size = size_ref * _k
-		img.position = (box.position + (box.size - size_ref) * 0.5 - REF_FRAME.position) * _k
 		img.pivot_offset = img.size * (PIVOTS[key] as Vector2)
-		img.set_meta(&"base", img.position)
+		img.position = -img.pivot_offset             # quieta dentro de quien la mueve
 		img.set_meta(&"border", float(BORDER_TEX[key]) * fit * _k)
-		_stage.add_child(img)
+		var mover := Node2D.new()
+		mover.name = key
+		mover.position = (box.position + (box.size - size_ref) * 0.5 - REF_FRAME.position) * _k + img.pivot_offset
+		mover.set_meta(&"base", mover.position)
+		mover.add_child(img)
+		_stage.add_child(mover)
 		pieces[key] = img
+		motions[key] = mover
 
 
 ## Una silueta engordada de una pieza, quieta en su sitio (la pegatina común o su sombra).
@@ -179,29 +185,29 @@ func _process(delta: float) -> void:
 		_label.scale = Vector2.ONE * (1.0 + 0.02 * sin(_t * 1.7))
 		return
 	_stage.position.y = sin(_t * 0.7) * 3.0 * _k  # el logo entero flota, como una sola pegatina
-	var coin: TextureRect = pieces.moneda        # una vuelta sobre sí misma de vez en cuando
-	if not _intro_running(coin):
+	var coin: Node2D = motions.moneda            # una vuelta sobre sí misma de vez en cuando
+	if not _intro_running(pieces.moneda):
 		var turn := clampf((fmod(_t, COIN_EVERY) - (COIN_EVERY - COIN_TURN)) / COIN_TURN, 0.0, 1.0)
 		coin.scale.x = cos(_smooth(turn) * TAU)
 	_bob(coin, sin(_t * 0.9) * 1.5)
-	var what: TextureRect = pieces.what          # se mece lentísimo
+	var what: Node2D = motions.what              # se mece lentísimo
 	what.rotation_degrees = sin(_t * 0.55 + 2.0) * 0.4
 	_bob(what, sin(_t * 0.7 + 1.0) * 1.0)
-	var pig: TextureRect = pieces.cerdito        # un saltito de vez en cuando, ladeándose un poco
+	var pig: Node2D = motions.cerdito            # un saltito de vez en cuando, ladeándose un poco
 	var h := fmod(_t + 1.5, HOP_EVERY)
 	var hop := clampf(h / HOP_TIME, 0.0, 1.0) if h < HOP_TIME else 0.0
 	_bob(pig, -sin(PI * hop) * HOP_HEIGHT)
 	pig.rotation_degrees = sin(TAU * hop) * 3.0
-	var said: TextureRect = pieces.said          # se mece lentísimo y, al caer el cerdito, un golpecito
+	var said: Node2D = motions.said              # se mece lentísimo y, al caer el cerdito, un golpecito
 	said.rotation_degrees = sin(_t * 0.5) * 0.5
 	var q := (h - HOP_TIME) / SQUASH_TIME
 	squash = sin(TAU * q) * (1.0 - q) * SQUASH if q >= 0.0 and q <= 1.0 else 0.0
-	if not _intro_running(said):
+	if not _intro_running(pieces.said):
 		said.scale = Vector2(1.0 + squash * 0.5, 1.0 - squash)
 
 
-func _bob(img: TextureRect, y_ref: float) -> void:
-	img.position = (img.get_meta(&"base") as Vector2) + Vector2(0, y_ref * _k)
+func _bob(mover: Node2D, y_ref: float) -> void:
+	mover.position = (mover.get_meta(&"base") as Vector2) + Vector2(0, y_ref * _k)
 
 
 func _smooth(x: float) -> float:
