@@ -201,6 +201,14 @@ carpeta. Si no, parar y preguntar.
   tiempo de aprender»: puesto «estoy». La frase del principio del cerdito se llama ahora
   `intro_cerdito` (antes `intro_menu`, que en `e69eb8e` llevó por error la voz de «¡Ha quedado como
   nueva!»): así un `intro_menu.ogg` viejo que se quede en algún PC no vuelve a sonar al empezar.
+- **18-oct, sonidos nuevos (Drive `FXS`):** «van conforme indica el nombre del archivo». Colocar madera
+  del suelo / madera pared / techo / VIGA TECHO del desván → `colocar_tablon` / `_pared` / `_tejado` /
+  `_viga` (la cumbrera también suena a viga): cada pieza busca `colocar_<id>` o el de la primera parte de
+  su id, y si no, `colocar`. Esos clips traen ya 2-3 golpes (el del suelo dura 1 s), así que al soltar un
+  tablón suena **una vez** por los 6 iguales (con `colocar`, el corto, cada gemela sigue sonando).
+  `logro` (4,9 s, una sintonía) → el aviso de un logro y el dibujo encontrado, con `Sfx.jingle`: sin el
+  cambio de tono aleatorio (desafinaría), en un reproductor aparte (los clics no la cortan) y sin
+  repetirse si ya suena (el último dibujo da a la vez el logro «Todos mis dibujos»).
 - **18-oct, créditos:** el equipo (Eva Fernandez Valero y Inés Jackson Martín, 3D Modelling & Textures;
   Carmen Esteban Fernandez-Vicenti, Concept Art & 2D art; Sandra, Concept Art & Texture Artist; Ana
   Climent Sapena, Programming & Design; Anaïs Soriano, Sound Designer & Voice Actress) y la mención
@@ -335,7 +343,7 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 | Qué | Cómo |
 |---|---|
 | Todo el test | `bash tools/check.sh` → `CHECK OK (231 …)` |
-| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 135 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
+| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 139 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final, con la moneda y su fantasma a medio gesto); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

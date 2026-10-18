@@ -450,6 +450,19 @@ MUTANTES = [
 	("M136 la tarjeta pide buscar con piezas por poner", "ui/hud.gd",
 		"\telif d.has_findable() and d.visible_inventory().is_empty():", "\telif d.has_findable():",
 		"mientras haya piezas que poner, la tarjeta pide ponerlas"),
+	# Los sonidos de colocar del desván (Drive FXS, 18-oct)
+	("M137 todas las piezas suenan con colocar", "core/diorama.gd",
+		"\treturn \"colocar_\" + base if not base.is_empty() else \"colocar\"", "\treturn \"colocar\"",
+		"el tablón suena con su sonido"),
+	("M138 los tablones gemelos repiten su sonido", "core/diorama.gd",
+		"_show_placed.bind(twins[i], sound == \"colocar\")", "_show_placed.bind(twins[i], true)",
+		"el tablón suena con su sonido"),
+	("M139 la sintonía del logro se monta sobre sí misma", "autoload/sfx.gd",
+		"\tif stream == null or (_jingle.playing and _jingle.stream == stream):", "\tif stream == null:",
+		"la sintonía no se monta sobre sí misma"),
+	("M140 el dibujo encontrado suena como un efecto corto", "core/diorama.gd",
+		"\tSfx.jingle(\"logro\")", "\tSfx.play(\"logro\")",
+		"al encontrar un dibujo suena la sintonía del logro"),
 ]
 
 solo = os.environ.get("SOLO")

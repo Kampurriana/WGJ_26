@@ -536,7 +536,9 @@ func _test_story(main: Node) -> void:
 	var stars: EstrellasLogros = hud_now.stars
 	check(stars.bar.visible and stars.filled_count() == 0 and stars.slots.size() == Logros.LISTA.size(),
 		"arriba, junto a la tarjeta, la fila de estrellas de los logros (vacía al empezar)")
+	var heard_star: Dictionary = Sfx.played.duplicate()
 	stars.celebrate("speedrunner")
+	check(_heard(heard_star, "logro") == 1 and Sfx.jingle_playing() == "logro", "un logro suena con su sintonía (logro, de Drive FXS)")
 	await get_tree().create_timer(0.8).timeout
 	var pig_a := stars.pig.position
 	await get_tree().create_timer(0.3).timeout
@@ -568,6 +570,7 @@ func _test_story(main: Node) -> void:
 	var cam3 := GameState.camera.cam
 	var mid_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_medio")[0]
 	var long_plank: PieceSlot = s1.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"tablon_largo")[0]
+	var heard_planks: Dictionary = Sfx.played.duplicate()
 	var took := d.try_place(&"tablon_largo", cam3.unproject_position(mid_plank.center()), cam3)
 	check(not mid_plank.filled, "un tablón largo no entra en el hueco de uno mediano")
 	if not took:                                   # (si al lado había uno largo, ya ha ido ahí)
@@ -583,6 +586,8 @@ func _test_story(main: Node) -> void:
 		"se ven encajar uno tras otro: primero el que soltó el jugador")
 	await get_tree().create_timer(Diorama.TWIN_STEP * longs.size() + 0.15).timeout
 	check(longs.all(func(sl: PieceSlot) -> bool: return not sl.is_ghost()), "y enseguida están todos puestos")
+	check(_heard(heard_planks, "colocar_tablon") == 1 and not _more(heard_planks, "colocar"),
+		"el tablón suena con su sonido (Colocar madera del suelo), una vez por los 6: ya trae varios golpes (%d)" % _heard(heard_planks, "colocar_tablon"))
 	GameState.drag.begin(&"tablon_corto", GameState.hud.item_for(&"tablon_corto"))
 	check(GameState.is_dragging and not d.slots.any(func(sl: PieceSlot) -> bool:
 		return float(sl._ghost.get_shader_parameter("pulse")) > 0.0 if sl._ghost != null else false),
@@ -606,10 +611,15 @@ func _test_story(main: Node) -> void:
 	var count_hung := func(_item: Node) -> void: hung[0] += 1
 	Events.collectible_hung.connect(count_hung)
 	Narrator.clear()
+	var heard_s1: Dictionary = Sfx.played.duplicate()
 	var steps := 0
 	while not s1.completed and steps < 80:
 		d.debug_solve_step()
 		steps += 1
+	check(_heard(heard_s1, "colocar_pared") == 3 and _heard(heard_s1, "colocar_tejado") >= 1 and _heard(heard_s1, "colocar_viga") >= 2
+		and _heard(heard_s1, "colocar_tablon") == 2 and _more(heard_s1, "colocar") and d.place_sound(&"cumbrera") == "colocar_viga",
+		"cada pieza del desván suena según su tipo: paredes, techo, vigas (y la cumbrera) y el resto del suelo; la hucha, con el de siempre (%s)"
+		% [[_heard(heard_s1, "colocar_pared"), _heard(heard_s1, "colocar_tejado"), _heard(heard_s1, "colocar_viga"), _heard(heard_s1, "colocar_tablon")]])
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
 		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
 	var cam_ctl := GameState.camera
@@ -768,6 +778,13 @@ func _test_story(main: Node) -> void:
 		check(green.collected and found_events.size() == 1 and found_events[0][1] == 1 and found_events[0][2] == 4
 			and look.is_open() and look.item == green and d.is_held(green) and green.target.get_parent() != d.clothesline,
 			"tocar el dibujo lo encuentra (1 de 3) y sale su primer plano para mirarlo (aún no vuela a la cuerda)")
+		check(Sfx.jingle_playing() == "logro", "al encontrar un dibujo suena la sintonía del logro")
+		var heard_jingle: Dictionary = Sfx.played.duplicate()
+		Sfx.jingle("logro")                        # (el último dibujo: se encuentra y gana su logro a la vez)
+		for i in Sfx.POOL_SIZE + 1:
+			Sfx.play("boton_seleccion")
+		check(not _more(heard_jingle, "logro") and Sfx.jingle_playing() == "logro",
+			"la sintonía no se monta sobre sí misma (el último dibujo y su logro suenan una vez) y los clics no la cortan")
 		check(look.title_text() == Inspeccion.TITLE and look.name_text() == Narrator.piece_name(&"dibujo_casa").to_upper()
 			and look.count_text() == "1 DE 4" and is_instance_valid(look.copy)
 			and (look._pill_label.get_parent() as Control).get_global_rect().position.y >= look._title.get_global_rect().end.y - 2.0,
@@ -1291,8 +1308,9 @@ func _test_title_menu(main: Node) -> bool:
 	check(not star_glows, "la estrella del cerdito es solo una pegatina: ni luz ni brillo propio")
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
-	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar"]
-	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas y colocar")
+	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
+		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro"]
+	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]
 	free_card.mouse_entered.emit()
@@ -1759,12 +1777,17 @@ func _wheel(button: MouseButton, pos: Vector2) -> void:
 		get_viewport().push_input(e, true)
 
 
-## Lee una clave del progreso guardado en disco (lo que vería la próxima partida).
 ## Si el efecto ha sonado desde `before` (una copia de Sfx.played).
 func _more(before: Dictionary, sound: String) -> bool:
-	return int(Sfx.played.get(sound, 0)) > int(before.get(sound, 0))
+	return _heard(before, sound) > 0
 
 
+## Cuántas veces ha sonado el efecto desde `before`.
+func _heard(before: Dictionary, sound: String) -> int:
+	return int(Sfx.played.get(sound, 0)) - int(before.get(sound, 0))
+
+
+## Lee una clave del progreso guardado en disco (lo que vería la próxima partida).
 func _saved(path: String, key: String, default: Variant = null) -> Variant:
 	var cfg := ConfigFile.new()
 	if cfg.load(path) != OK:
