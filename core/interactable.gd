@@ -217,7 +217,7 @@ func _process(delta: float) -> void:
 ## Un movimiento pequeño de "aquí dentro hay algo": el cajón asoma y vuelve, la puerta se
 ## entreabre, el objeto da un saltito.
 func rattle() -> void:
-	if _tween != null and _tween.is_running():
+	if (_tween != null and _tween.is_running()) or Visuals.is_growing(target):   # (mientras aparece, no)
 		return
 	var base := target.transform
 	var peek := base

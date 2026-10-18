@@ -18,8 +18,13 @@ mkdir -p "$(dirname "$OUT")"
 rm -f "$OUT"
 LOG="build/capture.log"
 "$G" --path . --resolution ${W}x${H} -- --level="$LEVEL" --solve="$SOLVE" --capture="$OUT" "${@:4}" >"$LOG" 2>&1
-LINE=$(grep -a "^CAPTURA" "$LOG" | tr -d '\r')
-if [ -z "$LINE" ] || [ ! -s "$OUT" ]; then
+LINE=$(grep -a "^CAPTURA" "$LOG" | head -n 1 | tr -d '\r')
+FIRST="$OUT"
+if [ ! -s "$OUT" ] && [ -s "${OUT%.png}_00.png" ]; then   # --capturas=N,S: ruta_00.png, ruta_01.png...
+	FIRST="${OUT%.png}_00.png"
+	OUT="${OUT%.png}_NN.png ($(grep -ac "^CAPTURA" "$LOG"))"
+fi
+if [ -z "$LINE" ] || [ ! -s "$FIRST" ]; then
 	echo "CAPTURA FALLO: no se escribió $OUT (mira $LOG)"
 	exit 1
 fi

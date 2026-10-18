@@ -463,6 +463,22 @@ MUTANTES = [
 	("M140 el dibujo encontrado suena como un efecto corto", "core/diorama.gd",
 		"\tSfx.jingle(\"logro\")", "\tSfx.play(\"logro\")",
 		"al encontrar un dibujo suena la sintonía del logro"),
+	# Las cosas de un capítulo aparecen (18-oct): tras el rótulo, creciendo una tras otra, con su sonido
+	("M141 las cosas del capítulo salen todas a la vez", "core/visuals.gd",
+		"\treturn GROW_SWEEP * clampf((cam.unproject_position(at).x - left) / (right - left), 0.0, 1.0)", "\treturn 0.0",
+		"las cosas del capítulo no salen de golpe"),
+	("M142 crecen desde su centro", "core/visuals.gd",
+		"\tvar bottom := Vector3(box.get_center().x, box.position.y, box.get_center().z)", "\tvar bottom := box.get_center()",
+		"y crecen desde el suelo"),
+	("M143 las cosas aparecen debajo del rótulo", "core/diorama.gd",
+		"\t_reveal_when_quiet(sec, CHAPTER_REVEAL if is_chapter(sec) else 0.0)", "\t_reveal_when_quiet(sec, 0.0)",
+		"al abrirse un capítulo, primero su rótulo"),
+	("M144 colocar una pieza que crece no la deja a su tamaño", "core/piece_slot.gd",
+		"\tVisuals.stop_growing(node)                  # si aún crecía", "\tpass  # si aún crecía",
+		"ninguna pieza se queda pequeña ni salta desde pequeña"),
+	("M145 las cosas del capítulo aparecen sin sonido", "core/diorama.gd",
+		"\t\tSfx.play(\"aparecer_capitulo\", 0.0)", "\t\tpass",
+		"y al aparecer sus cosas suena"),
 ]
 
 solo = os.environ.get("SOLO")

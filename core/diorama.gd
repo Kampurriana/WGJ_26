@@ -24,6 +24,10 @@ const PAINT_TIME := 0.9                     ## lo que tarda en extenderse la pin
 const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al completarlo
 const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
+## Al abrirse un capítulo (una sección con rótulo), primero el rótulo; sus cosas (muebles y siluetas)
+## aparecen cuando se empieza a ir (Hud.show_chapter: a los 3,8 s), creciendo una tras otra con el
+## sonido de Drive FXS «Cuando aparecen las cosas del capitulo» (aparecer_capitulo). Pedido del 18-oct.
+const CHAPTER_REVEAL := 3.6
 const LIGHT_FADE := 1.6                     ## lo que tardan en encenderse las luces de una sección
 const POP_TIME := 0.35                      ## el saltito de una pieza al encajar (crece y vuelve)
 const LIFT_TIME := 0.45                     ## un dibujo encontrado se levanta de donde estaba...
@@ -761,6 +765,7 @@ func _hang(it: Interactable, index: int, animate: bool) -> void:
 		t.hide()
 		return
 	var spot := _spots[index]
+	Visuals.stop_growing(clothesline)            # (si la cuerda aún estaba apareciendo, ya a su tamaño)
 	t.reparent(clothesline, true)
 	t.show()
 	var size := t.global_basis.get_scale()
@@ -837,37 +842,47 @@ func opening_section() -> Section:
 
 
 ## Abre la sección que esperaba: luces de la zona, rótulo, cámara y sus frases (si las tiene).
-## Sus piezas aparecen cuando acaban esas frases (el epílogo habla antes de enseñar la moneda).
+## Sus cosas aparecen cuando acaban esas frases (el epílogo habla antes de enseñar la moneda) y, si es
+## un capítulo, cuando se empieza a ir su rótulo (CHAPTER_REVEAL).
 func _open_pending(sec: Section) -> void:
 	if sec == null or sec != _pending or sec.opened or sec.opening or not is_inside_tree():
 		return
 	sec.opening = true
 	sec.set_lights(true, LIGHT_FADE)
-	sec.set_decor(true, true)
-	for it in sec.interactables:
-		if not it.is_hidden_item():
-			it.set_clickable(true)
 	Events.section_opened.emit(sec)
 	Narrator.say_if_exists("seccion_" + sec.name)
-	_reveal_when_quiet(sec)
+	_reveal_when_quiet(sec, CHAPTER_REVEAL if is_chapter(sec) else 0.0)
 
 
-## Sus piezas salen cuando se callan esas frases: antes si el jugador las pasa con clics (el final
-## no hace esperar a la moneda, sexta nota).
-func _reveal_when_quiet(sec: Section) -> void:
-	if Narrator.remaining() > 0.05:
-		get_tree().create_timer(0.1, false).timeout.connect(_reveal_when_quiet.bind(sec))
+## Sus cosas salen cuando se callan esas frases (antes si el jugador las pasa con clics: el final no
+## hace esperar a la moneda, sexta nota) y no antes de `wait` s (lo que se ve el rótulo del capítulo).
+func _reveal_when_quiet(sec: Section, wait := 0.0) -> void:
+	if Narrator.remaining() > 0.05 or wait > 0.0:
+		get_tree().create_timer(0.1, false).timeout.connect(_reveal_when_quiet.bind(sec, maxf(wait - 0.1, 0.0)))
 	else:
 		_reveal_pending(sec)
 
 
+## Aparecen sus muebles y sus siluetas, creciendo una tras otra de izquierda a derecha (Visuals.grow_in),
+## y sus piezas pasan a la bandeja.
 func _reveal_pending(sec: Section) -> void:
 	if sec == null or sec != _pending or not is_inside_tree():
 		return
 	_pending = null
 	sec.opened = true
+	sec.set_decor(true, true)
+	for it in sec.interactables:
+		if not it.is_hidden_item():
+			it.set_clickable(true)
+	if is_chapter(sec):
+		Sfx.play("aparecer_capitulo", 0.0)
 	_refresh(true)
 	Events.inventory_changed.emit()
+
+
+## Una sección con rótulo de capítulo (la infancia...; el epílogo no).
+func is_chapter(sec: Section) -> bool:
+	return Narrator.text("titulo_" + sec.name) != ""
 
 
 ## Pone al día lo que se ve: las siluetas de las secciones abiertas (se materializan si animate),
@@ -1075,7 +1090,7 @@ func debug_complete() -> void:
 	for sec in sections:
 		if not sec.opened:
 			sec.set_lights(true, LIGHT_FADE)
-			sec.set_decor(true, true)
+			sec.set_decor(true)                  # de golpe: sin la ola de aparecer
 		sec.opening = false
 		sec.opened = true
 		sec.completed = true

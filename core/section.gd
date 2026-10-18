@@ -18,6 +18,8 @@ var completed := false
 
 var decor: Array[Node3D] = []    ## lo que cuelga de la sección y no es pieza (muebles, bombillas, la cuerda...)
 var _lights: Dictionary = {}     ## Light3D -> energía con la que vino del modelo
+var _full_box := AABB()          ## su caja con todo a su tamaño (la de cuando se abrió, antes de que nada crezca)
+var _sweep := PackedVector3Array()   ## por dónde pasa la ola de aparecer: el centro de cada cosa que aparece
 
 
 func setup(p_node: Node3D, info: Dictionary, index: int) -> void:
@@ -50,8 +52,16 @@ func collect_lights() -> void:
 			decor.append(c)
 
 
-## Decorado visible o no. animate = aparece con un pequeño rebote (al abrirse durante la partida).
+## Decorado visible o no. animate = al abrirse durante la partida, cada mueble crece desde el suelo,
+## de izquierda a derecha de la pantalla (Visuals.grow_in), como sus siluetas.
 func set_decor(on: bool, animate := false) -> void:
+	if on and animate and node.is_inside_tree():
+		_full_box = Visuals.global_aabb(node)
+		_sweep.clear()
+		for d in decor:
+			_sweep.append(Visuals.global_aabb(d).get_center())
+		for s in slots:
+			_sweep.append(Visuals.global_aabb(s.node).get_center())
 	for d in decor:
 		var was := d.visible
 		d.visible = on
@@ -59,10 +69,9 @@ func set_decor(on: bool, animate := false) -> void:
 		for body in d.find_children("Superficie", "StaticBody3D", true, false):
 			(body as StaticBody3D).collision_layer = Visuals.SURFACE_LAYER if on else 0
 		if on and animate and not was and d.is_inside_tree():
-			var base := d.scale
-			d.scale = base * 0.85
-			var tw := d.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-			tw.tween_property(d, "scale", base, 0.6)
+			Visuals.grow_in(d, Visuals.sweep_delay(d, _sweep))
+		elif not on:
+			Visuals.stop_growing(d)
 
 
 func set_lights(on: bool, fade_seconds := 0.0) -> void:
@@ -90,5 +99,14 @@ func is_full() -> bool:
 	return true
 
 
+## Su caja (para encuadrarla); mientras sus muebles crecen, la de todo a su tamaño.
 func box() -> AABB:
+	if decor.any(func(d: Node3D) -> bool: return Visuals.is_growing(d)):
+		return _full_box
 	return Visuals.global_aabb(node)
+
+
+## Por dónde pasa la ola de aparecer (de izquierda a derecha): los centros de lo que aparece (medidos
+## al abrirse, antes de que nada encoja).
+func sweep() -> PackedVector3Array:
+	return _sweep

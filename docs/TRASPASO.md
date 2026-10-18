@@ -202,6 +202,14 @@ carpeta. Si no, parar y preguntar.
   `logro` (4,9 s, una sintonía) → el aviso de un logro y el dibujo encontrado, con `Sfx.jingle`: sin el
   cambio de tono aleatorio (desafinaría), en un reproductor aparte (los clics no la cortan) y sin
   repetirse si ya suena (el último dibujo da a la vez el logro «Todos mis dibujos»).
+- **18-oct, al empezar un capítulo:** «el sonido cuando aparecen las cosas del capítulo» (Drive FXS →
+  `aparecer_capitulo`) y «una pequeña animación de aparición, que no spawneen y ya». Antes los muebles
+  salían de golpe (un rebote de 0,85 a 1) y las siluetas a la vez, debajo del rótulo de capítulo, que
+  oscurece la pantalla: casi no se veía. Ahora primero el rótulo (con la luz encendiéndose y la cámara
+  yendo a la zona) y, cuando se empieza a ir (`Diorama.CHAPTER_REVEAL`, 3,6 s), sus muebles y siluetas
+  crecen desde el suelo con un rebote, una tras otra de izquierda a derecha de la pantalla (0,9 s de
+  ola, 0,55 s cada una), con el sonido. Hasta entonces sus piezas no van a la bandeja ni sus muebles
+  se pueden tocar. F9 lo monta todo de golpe, sin ola. Para mirarlo: `--capitulo --capturas=10,0.22`.
 - **18-oct, créditos:** el equipo (Eva Fernandez Valero y Inés Jackson Martín, 3D Modelling & Textures;
   Carmen Esteban Fernandez-Vicenti, Concept Art & 2D art; Sandra, Concept Art & Texture Artist; Ana
   Climent Sapena, Programming & Design; Anaïs Soriano, Sound Designer & Voice Actress) y la mención
@@ -336,7 +344,7 @@ Todas están también en `CLAUDE.md` → "Trampas". Las que más pueden repetirs
 | Qué | Cómo |
 |---|---|
 | Todo el test | `bash tools/check.sh` → `CHECK OK (231 …)` |
-| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 139 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
+| Ver los tests en rojo | `PARALELO=3 python3 -I -u tools/mutantes.py . build/mutantes "$GODOT"` → 144 × `ROJO BIEN` (en segundo plano y sin tocar código mientras, que copia el proyecto en cada pasada; en la nube solo avanza mientras hay un turno en marcha: ver `docs/LECCIONES.md`) |
 | Captura de cualquier pantalla | `tools/capture.sh` (opciones en `scenes/main.gd`: `--level=menu`, `--menu-page=`, `--solve=`, `--hold=X,Y`, `--zoom=K,X,Y`, `--solo-fondo`, `--f9`, `--creditos`). Momentos del desván: `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final, con la moneda y su fantasma a medio gesto); `--f9` enseña la cuerda con los 7 dibujos; `--fondo=C,M` otro fondo |
 | Medir si la luz quema | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/c.png --fondo build/fondo.png` |
 | Regenerar niveles | `"$GODOT" --headless --path . --script res://tools/build_room_level.gd` (y `build_title_level.gd`, `build_sample_level.gd`) |

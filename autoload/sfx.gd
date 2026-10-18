@@ -10,6 +10,8 @@ extends Node
 ## cumbrera). Una pieza suena con colocar_<su id> o el de su primera parte (tablon_largo → colocar_tablon) si
 ## está, y si no con colocar: para darle sonido propio a otra pieza basta con dejar su fichero aquí.
 ## logro (Drive FXS, 18-oct; 4,9 s): la sintonía de un logro y de un dibujo encontrado, con jingle().
+## aparecer_capitulo («Cuando aparecen las cosas del capitulo», 2,3 s): al abrirse un capítulo, cuando
+## sus muebles y siluetas empiezan a crecer (Diorama._reveal_pending, tras el rótulo).
 ## Música (petición del equipo): musica/menu (Ankui) en el puzle del título y el menú; musica/juego
 ## (Loft) en bucle durante la partida, a volumen moderado. Siempre en bucle y con fundido cruzado.
 ## Suenan por los buses Efectos y Musica (los crea Settings), así les afectan las Opciones.
