@@ -14,28 +14,40 @@ extends Node3D
 ## Las piezas se cogen de cada .fbx/.glb: primero las sueltas (modelos/) y luego las de los paquetes
 ## (paquetes/) que no estén ya. Texturas: una pieza cuyo nombre contiene el de una carpeta de
 ## assets/kit/texturas/ (SM_DeskA -> Desk) lleva el material assets/kit/materiales/M_<carpeta>.tres.
+## Dos vistas (Tab cambia): el CATÁLOGO de piezas y el DIORAMA de prueba (preview/diorama_kit.gd: un
+## rincón del desván montado solo con el kit, con la arquitectura de la referencia de las artistas).
 ## Abrir en el editor y F6, o:  godot --path . res://preview/preview_assets.tscn
 ## Captura:  godot --path . --resolution 1280x720 res://preview/preview_assets.tscn -- --capture=build/preview.png
-##           [--capture-after=S] [--yaw=G] [--pitch=G] [--zoom=F] [--luz=inicio]
+##           [--vista=diorama] [--capture-after=S] [--yaw=G] [--pitch=G] [--zoom=F] [--luz=inicio]
 
 const NIVEL := "res://levels/level_01_desvan.tscn"   ## de aquí salen la luz y los ajustes de cámara
 const KIT := "res://assets/kit"
 const MODEL_EXT := ["fbx", "glb", "gltf"]
 const IMAGE_EXT := ["png", "jpg", "jpeg", "webp"]
 ## Piezas de los paquetes que también llegan sueltas con su nombre bueno (las cajas de Boxes.fbx son
-## SM_BoxA..E): no se montan dos veces. Las de nombre SM_ repetido se descartan solas.
-const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077"]
+## SM_BoxA..E; la tele de Pack04, SM_TV): no se montan dos veces. Las de nombre SM_ repetido se
+## descartan solas. Comoda.fbx (la cómoda fundida en una sola malla) no se trae: están sus piezas.
+const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV05"]
+const EXCLUIDOS := ["Comoda.fbx"]
+## Nombres buenos para las piezas que llegan con el nombre por defecto de 3ds Max.
+const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "SM_Vase",
+	"Cylinder025": "SM_BrushA", "Cylinder026": "SM_BrushB", "Cylinder027": "SM_BrushC"}
+## Piezas que llegan en trozos colocados entre sí (prefijo -> una sola pieza): el MP3 con su cable.
+const GRUPOS := {"MP3": "SM_MP3"}
 ## Qué va delante (la cámara mira ahí): muebles y cajas. Lo demás es estructura y va detrás.
-const PROPS := ["Desk", "Lamp", "Stool", "Box", "Object"]
+const PROPS := ["Desk", "Lamp", "Stool", "Box", "Object", "Comoda", "TV", "Burro", "CoverDesk", "Vase", "Brush", "MP3"]
 const HUECO := 0.3                           ## separación entre piezas del catálogo (m)
 const FILA_MAX := 9.0                        ## ancho máximo de una fila de estructura (m)
 const FILA_PROPS := 5.0                      ## y de una de muebles: el ancho del desván (cabe en el encuadre)
 const DIBUJO_ALTO := 0.55                    ## alto de cada dibujo 2D (m)
 
 var cam: DioramaCamera
-var contenido: Node3D                        ## todo lo montado (piezas y dibujos)
+var contenido: Node3D                        ## el catálogo (piezas y dibujos)
+var diorama: Node3D                          ## el diorama de prueba
+var vista := "catalogo"                      ## lo que se ve: "catalogo" o "diorama"
 var piezas: Array[String] = []               ## nombres de las piezas montadas (para el informe)
 var _props_caja := AABB()                    ## lo de delante: donde mira la cámara al empezar
+var _ajustes: Dictionary = {}
 var _rig: Node3D
 var _sol: DirectionalLight3D
 var _luz_final := true
@@ -46,13 +58,20 @@ var _t := 0.0
 
 func _ready() -> void:
 	get_viewport().use_hdr_2d = true         # como main.gd: sin HDR 2D el fondo pastel se queda gris
-	var ajustes := _ajustes_del_nivel()
-	_montar_luz(String(ajustes.get("iluminacion", "")))
+	_ajustes = _ajustes_del_nivel()
+	_montar_luz(String(_ajustes.get("iluminacion", "")))
 	contenido = Node3D.new()
 	contenido.name = "Contenido"
 	add_child(contenido)
 	_montar_catalogo()
-	_montar_camara(ajustes)
+	diorama = preload("res://preview/diorama_kit.gd").new()
+	diorama.name = "Diorama"
+	add_child(diorama)
+	diorama.montar(_materiales())
+	cam = DioramaCamera.new()
+	cam.name = "Camara"
+	add_child(cam)
+	mostrar("catalogo")
 	var enfoque := Enfoque.new()
 	enfoque.name = "Enfoque"
 	add_child(enfoque)
@@ -153,6 +172,8 @@ func _cargar_piezas() -> Array[Node3D]:
 	var out: Array[Node3D] = []
 	for carpeta in ["modelos", "paquetes"]:
 		for path in _ficheros(KIT + "/" + carpeta, MODEL_EXT):
+			if path.get_file() in EXCLUIDOS:
+				continue
 			var escena := load(path) as PackedScene
 			if escena == null:
 				push_error("Preview: no se carga %s" % path)
@@ -161,22 +182,27 @@ func _cargar_piezas() -> Array[Node3D]:
 			modelo.name = "_fbx_" + path.get_file()  # (si se llamara como su pieza, la pieza se renombraría)
 			contenido.add_child(modelo)
 			for m in _mallas(modelo):
-				var nombre := String(m.name)
-				if nombre in piezas or nombre in REPETIDAS:
+				var nombre := String(ALIAS.get(String(m.name), String(m.name)))
+				for prefijo: String in GRUPOS:
+					if nombre.begins_with(prefijo):
+						nombre = GRUPOS[prefijo]
+				var pieza := contenido.get_node_or_null(nombre) as Node3D if nombre in GRUPOS.values() else null
+				if pieza == null and (nombre in piezas or nombre in REPETIDAS):
 					continue
-				piezas.append(nombre)
 				for clave: String in materiales:
 					if nombre.contains(clave):
 						m.material_override = materiales[clave]
-				var pieza := Node3D.new()
-				pieza.name = nombre
-				contenido.add_child(pieza)
+				if pieza == null:
+					piezas.append(nombre)
+					pieza = Node3D.new()
+					pieza.name = nombre
+					contenido.add_child(pieza)
+					out.append(pieza)
 				var xf := m.global_transform
 				m.get_parent().remove_child(m)
 				pieza.add_child(m)
 				m.global_transform = xf
 				m.owner = null
-				out.append(pieza)
 			modelo.queue_free()
 	return out
 
@@ -223,19 +249,28 @@ func _montar_dibujos(z: float) -> float:
 	return z if fila.is_empty() else z - 0.1
 
 
-func _montar_camara(ajustes: Dictionary) -> void:
-	cam = DioramaCamera.new()
-	cam.name = "Camara"
-	add_child(cam)
-	var todo := Visuals.global_aabb(contenido)
-	var dist := float(ajustes.get("camera_distance", 8.0))   # la del nivel: los muebles, a su tamaño de partida
+## Enseña una de las dos vistas y pone la cámara a mirarla: el catálogo, desde delante y a la distancia
+## del nivel (los muebles, a su tamaño de partida); el diorama, en diagonal desde su esquina abierta,
+## como la referencia de las artistas.
+func mostrar(v: String) -> void:
+	vista = "diorama" if v == "diorama" else "catalogo"
+	contenido.visible = vista == "catalogo"
+	diorama.visible = vista == "diorama"
+	var todo := Visuals.global_aabb(contenido if vista == "catalogo" else diorama)
+	var dist := float(_ajustes.get("camera_distance", 8.0))
+	var centro := _props_caja.get_center()
+	cam.yaw = float(_ajustes.get("camera_yaw_deg", 0.0))
+	cam.pitch = float(_ajustes.get("camera_pitch_deg", 30.0))
+	if vista == "diorama":
+		dist = todo.size.length() * 1.05
+		centro = todo.get_center() + Vector3(0, -todo.size.y * 0.12, 0)
+		cam.yaw = 40.0
+		cam.pitch = 30.0
 	cam.yaw_min = -180.0                     # aquí se mira todo, también por detrás
 	cam.yaw_max = 180.0
-	cam.pitch_min = float(ajustes.get("camera_pitch_min_deg", 10.0))
-	cam.pitch_max = float(ajustes.get("camera_pitch_max_deg", 65.0))
-	cam.yaw = float(ajustes.get("camera_yaw_deg", 0.0))
-	cam.pitch = float(ajustes.get("camera_pitch_deg", 30.0))
-	cam._set_home(_props_caja.get_center(), dist, float(ajustes.get("camera_min_distance", 2.0)),
+	cam.pitch_min = float(_ajustes.get("camera_pitch_min_deg", 10.0))
+	cam.pitch_max = float(_ajustes.get("camera_pitch_max_deg", 65.0))
+	cam._set_home(centro, dist, float(_ajustes.get("camera_min_distance", 2.0)),
 		maxf(dist, todo.size.length() * 1.3), todo.size.length() * 0.6)
 	cam.snap()
 
@@ -245,7 +280,7 @@ func _montar_ayuda() -> void:
 	capa.layer = 2
 	add_child(capa)
 	var l := Label.new()
-	l.text = "PREVIEW DE ASSETS  ·  arrastra: girar  ·  rueda: zoom  ·  L: luz inicio/final"
+	l.text = "PREVIEW DE ASSETS  ·  Tab: catálogo / diorama  ·  arrastra: girar  ·  rueda: zoom  ·  L: luz inicio/final"
 	l.add_theme_font_override("font", UiTheme.FONT)
 	l.add_theme_font_size_override("font_size", 15)
 	l.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
@@ -260,6 +295,7 @@ func _leer_argumentos() -> void:
 		var kv := a.trim_prefix("--").split("=", true, 1)
 		var v := kv[1] if kv.size() > 1 else ""
 		match kv[0]:
+			"vista": mostrar(v)
 			"capture": _capture = v
 			"capture-after": _capture_after = float(v)
 			"yaw": cam.yaw = float(v)
@@ -280,15 +316,18 @@ func _informe() -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
-	if e is InputEventKey and (e as InputEventKey).pressed and (e as InputEventKey).physical_keycode == KEY_L:
-		_poner_luz(not _luz_final)
+	if e is InputEventKey and (e as InputEventKey).pressed and not (e as InputEventKey).echo:
+		match (e as InputEventKey).physical_keycode:
+			KEY_L: _poner_luz(not _luz_final)
+			KEY_TAB: mostrar("catalogo" if vista == "diorama" else "diorama")
 
 
 func _process(delta: float) -> void:
 	# Lo que hace el rig de luz con el nivel: girar con la cámara y ajustar el alcance de la sombra.
 	_rig.rotation.y = cam.cam.global_rotation.y * float(_rig.get("seguir_camara"))
 	if _sol != null:
-		var alcance := cam.cam.global_position.distance_to(cam.center) + _props_caja.size.length() * float(_rig.get("margen_sombra"))
+		var caja := _props_caja if vista == "catalogo" else Visuals.global_aabb(diorama)
+		var alcance := cam.cam.global_position.distance_to(cam.center) + caja.size.length() * float(_rig.get("margen_sombra"))
 		_sol.directional_shadow_max_distance = clampf(alcance, 4.0, 40.0)
 	_t += delta
 	if _capture != "" and _t >= _capture_after:

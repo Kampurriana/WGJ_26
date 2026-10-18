@@ -169,6 +169,11 @@ carpeta. Si no, parar y preguntar.
   carpeta 2D: la casa, el monstruo y el gato (3, uno por acto). El de la niña bailarina con su
   abuela **no es coleccionable**: es el dibujo de la pared de la infancia («las niñas no pintan
   monstruos», `P_dibujo`).
+- **18-oct, assets nuevos y diorama de prueba:** traídos `SM_ComodaA/B/D`, `SM_TV`, `Pack04.fbx`
+  (burro, CoverDesk) y `Pack05.fbx` (MP3, jarrón, pinceles). La preview tiene una segunda vista (Tab):
+  un diorama de prueba con la arquitectura de la referencia de 3ds Max de las artistas. Pedido: **no
+  redimensionar ningún asset** (se montan con las medidas con que se importan). Faltan las texturas
+  `T_Pack_01` (demasiado grandes para el conector) y `SM_ComodaC`, `SM_DeskB`.
 - **17-oct, cuarto dibujo:** `t_draw_04` (Ana y Lurdes, dos niñas con una carta de corazones) es
   coleccionable, debajo de la cama (`C_dibujo_amigas__after-cama_infantil`): ya son 4.
 - **17-oct, el escritorio del kit:** el escritorio de la adolescencia es el de las artistas (`SM_DeskA`)

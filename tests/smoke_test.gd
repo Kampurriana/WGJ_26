@@ -899,6 +899,14 @@ func _test_kit() -> void:
 		and desk.roughness_texture == desk.ao_texture and desk.ao_texture != null,
 		"el material del escritorio lleva su color, sus normales y la textura ARM (oclusión, rugosidad, metálico)")
 	check(load("res://preview/preview_assets.tscn") is PackedScene, "la escena de preview de assets (aparte del juego) carga")
+	# El diorama de prueba de la preview se monta con las piezas del kit (si falta una, no se monta).
+	var diorama: Node3D = load("res://preview/diorama_kit.gd").new()
+	diorama.montar({})
+	var nombres := diorama.find_children("*", "MeshInstance3D", true, false).map(func(m: Node) -> String: return String(m.name))
+	check(nombres.size() >= 50 and nombres.has("SM_WallA") and nombres.has("SM_Window") and nombres.has("SM_Ceiling")
+		and nombres.has("SM_ComodaA") and nombres.has("SM_TV") and nombres.has("Box072"),
+		"el diorama de prueba de la preview se monta con el kit: suelo, faldón, hastial con su ventana, cómoda, tele... (%d piezas)" % nombres.size())
+	diorama.free()
 
 
 func _has_music(song: String) -> bool:

@@ -36,7 +36,14 @@ allí, para que sea fácil poner al día:
   `SM_SkirtingBoardTop`, `SM_CeilingSupportSmallPillars`, `SM_CeilingSupporDiagonal`.
 - `Desk.fbx` (de `Texturas/`) no se ha traído: son las partes sueltas que luego se unieron en
   `SM_DeskA/C/D` (mismas mallas).
-- Solo el escritorio tiene texturas; lo demás se ve con el material gris por defecto.
+- Solo el escritorio tiene texturas; lo demás se ve con el material gris por defecto. `T_Pack_01`
+  (`TexturasFinales/Pack01`, la estructura) está en Drive pero pesa 4,8 / 9,7 / 24 MB: el conector de
+  Drive no baja más de ~3 MB. Hace falta exportarlas a 2048 px (PNG o JPG de 1-3 MB cada una).
+- Tampoco están `SM_ComodaC` (en línea, como las piezas pequeñas) ni `SM_DeskB`: en el diorama se
+  repiten `SM_ComodaB` y `SM_DeskC`.
+- `Pack04.fbx` y `Pack05.fbx` traen nombres de 3ds Max: `Box072` = burro, `TV05`/`TV01` = la tele
+  (está suelta como `SM_TV`), `CoverDesk`, `Vase001` = jarrón, `Cylinder025-027` = pinceles,
+  `MP301...` = el MP3 en trozos (la preview los junta en `SM_MP3`).
 
 ## En uso en el juego
 
@@ -52,4 +59,6 @@ Para traerlo todo con sus nombres: un `.zip` de la carpeta en Drive (se baja ent
 - `godot --headless --path . --script res://tools/revisar_kit.gd`: cada modelo, sus piezas, medidas,
   triángulos, UV y material; y las texturas.
 - `godot --path . res://preview/preview_assets.tscn` (o F6 en el editor): la **preview** aparte, con
-  la luz, la cámara y el postproceso del desván.
+  la luz, la cámara y el postproceso del desván. Tab cambia entre el catálogo y el **diorama de
+  prueba** (`preview/diorama_kit.gd`, la arquitectura de la referencia de las artistas montada con
+  sus piezas, sin redimensionar ninguna).
