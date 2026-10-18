@@ -15,7 +15,7 @@ extends "res://tools/build_room_level.gd"
 ## Dibujos escondidos (C_, cuarta nota): los dibujos de cuando era pequeña, los de las artistas
 ## (assets/kit/dibujos/, DIBUJOS); cada uno que se encuentra se cuelga en la cuerda de la infancia
 ## (T_): la casa en el baúl de juguetes · Ana y Lurdes debajo de la cama (after-cama_infantil) · el
-## monstruo con la cámara (con-camara) · el gato encima de las cajas de la tienda. El de la niña y la abuela bailarina no es coleccionable:
+## monstruo debajo del puf (after-puf) · el gato encima de las cajas de la tienda. El de la niña y la abuela bailarina no es coleccionable:
 ## es el dibujo de pared de la infancia (P_dibujo, "las niñas no pintan monstruos"), DIBUJO_PARED.
 ## Ejecutar:
 ##   godot --headless --path . --script res://tools/build_attic_level.gd
@@ -405,8 +405,6 @@ func _build_teen(sec: Node3D) -> void:
 	var cam_piece := _node(sec, "P_camara__clave__flash", desk + Vector3(0.2, KIT_DESK_TOP, 0.06))
 	cam_piece.rotation_degrees.y = -20.0
 	_retro_camera(cam_piece)
-	# Debajo de la cámara, entre las fotos: un dibujo suyo (se encuentra solo al ponerla).
-	_kid_drawing(_lying(sec, "C_dibujo_monstruo__con-camara", desk + Vector3(0.1, KIT_DESK_TOP + 0.008, -0.04), -10.0), "monstruo")
 	for k in 3:                                   # las fotos, en abanico junto a la cámara
 		var photo := _box(cam_piece, "Foto%d" % k, Vector3(-0.16 + k * 0.02, 0.003 + k * 0.002, 0.06), Vector3(0.07, 0.003, 0.085), Color(0.97, 0.97, 0.95))
 		photo.rotation_degrees.y = -15.0 + k * 15.0
@@ -435,6 +433,8 @@ func _build_teen(sec: Node3D) -> void:
 	var puf := _node(sec, "P_puf", Vector3(0.38, 0, 0.45))
 	var bean := _sphere(puf, "Puf", Vector3(0, 0.16, 0), 0.26, TEEN_TEAL.lightened(0.1))
 	bean.scale = Vector3(1.0, 0.62, 1.0)
+	# Debajo del puf asoma un dibujo suyo, el monstruo (sobre la alfombra; está desde que el puf está puesto).
+	_kid_drawing(_lying(sec, "C_dibujo_monstruo__after-puf", Vector3(0.3, 0.024, 0.6), 15.0), "monstruo")
 	var guitar := _node(sec, "P_guitarra", Vector3(0.22, 0, -1.42))
 	guitar.rotation_degrees = Vector3(-12, 15, 0)
 	var g1 := _sphere(guitar, "Caja", Vector3(0, 0.18, 0), 0.14, Color(0.85, 0.35, 0.22))
