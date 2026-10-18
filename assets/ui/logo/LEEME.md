@@ -14,7 +14,8 @@ preparan con `python3 -I tools/partir_logo.py carpeta_bajada assets/ui/logo`: pa
 dos líneas por el color (cada una con su borde blanco entero), recorta y reduce. Si cambian en Drive,
 bajarlas y repetir.
 
-Cada una se coloca en su caja de la referencia de maquetación (`Logo.REF_RECTS`) sin deformarse y se
-mueve por su cuenta (la moneda gira, «what I never» se mece, «SAID» respira, el cerdito da saltitos)
-sin tapar a las demás. Sale encima del menú de inicio y arriba de los créditos. Si faltara alguna, saldría el nombre
+Se montan como una sola pegatina (`Logo.REF_RECTS`): juntas como en la composición de las artistas,
+con los bordes blancos fundidos, una silueta blanca común detrás y una sombra. Cada una se mueve por su
+cuenta, despacio (la moneda da una vuelta, el texto se mece, el cerdito da un saltito y al caer «SAID»
+se aplasta un pelín), sin que ningún dibujo tape a otro. Sale encima del menú de inicio y arriba de los créditos. Si faltara alguna, saldría el nombre
 del juego en letra.

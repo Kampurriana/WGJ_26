@@ -203,9 +203,12 @@ carpeta. Si no, parar y preguntar.
   «what I never», «SAID», cerdito) encima del menú y en los créditos, cada pieza con su movimiento, sin
   taparse y con la disposición de la referencia de maquetación. Hecho en `ui/logo.gd` con las cajas
   medidas en la referencia. Las piezas están en Drive `2D/` (`t_logo`, `t_coin_logo`, `t_pig_logo`) y
-  `tools/partir_logo.py` las deja en `assets/ui/logo/` (el texto, partido en sus dos líneas). Llevan un
-  borde blanco de pegatina que la referencia no tiene: la moneda va 12 px más a la izquierda y el cerdito
-  30 a la derecha y 35 más abajo, para que los bordes no se toquen.
+  `tools/partir_logo.py` las deja en `assets/ui/logo/` (el texto, partido en sus dos líneas). Feedback
+  del mismo día: «más unificado e integradas las partes» y «SAID tiembla»: ahora es una sola pegatina
+  (piezas juntas como en la imagen de las artistas, bordes blancos fundidos, silueta blanca común y una
+  sombra, el logo entero flota) y los movimientos son tranquilos y encadenados (el cerdito salta y, al
+  caer, «SAID» se aplasta un pelín; ya no escala sin parar, que era lo que temblaba).
+- **18-oct, el cerdito sin cartel:** pedido quitarle el cartel con el nombre (lo pone el logo).
   Ojo: el juego aún se llama «Woodo Jam» (título de la ventana, cartel del cerdito).
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de

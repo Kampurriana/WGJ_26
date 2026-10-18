@@ -283,17 +283,26 @@ func _test_logo() -> void:
 	logo.position = Vector2(20, 20)
 	for i in 2:
 		await get_tree().process_frame
-	var coin := logo.piece_box("moneda")
-	var what := logo.piece_box("what")
-	var said := logo.piece_box("said")
-	var pig := logo.piece_box("cerdito")
+	var coin := logo.drawing_box("moneda")
+	var what := logo.drawing_box("what")
+	var said := logo.drawing_box("said")
+	var pig := logo.drawing_box("cerdito")
 	check(logo.has_pieces() and coin.end.x < what.position.x and absf(coin.get_center().y - what.get_center().y) < coin.size.y
 		and said.position.y > what.end.y and pig.position.x > said.end.x and pig.position.y > what.end.y,
 		"el logo, como la referencia: la moneda a la izquierda de «what I never», «SAID» debajo y el cerdito a su derecha")
+	var joined := [["moneda", "what"], ["what", "said"], ["said", "cerdito"], ["what", "cerdito"]].all(func(p: Array) -> bool:
+		return logo.piece_box(p[0]).intersects(logo.piece_box(p[1])))
+	check(joined and logo.backing.size() == 8,
+		"el logo es una sola pegatina: los bordes blancos de las piezas se funden y detrás hay una silueta blanca común y una sombra")
 	var keys := ["moneda", "what", "said", "cerdito"]
 	var first := {}
 	var moved := {}
 	var touching := PackedStringArray()
+	var said_img: Control = logo.pieces["said"]
+	var said_rot := said_img.rotation_degrees
+	var said_jump := 0.0
+	var said_scaled := 0
+	var squashed := false
 	for step in 45:
 		for a in keys.size():
 			var ka: String = keys[a]
@@ -303,11 +312,19 @@ func _test_logo() -> void:
 			elif not xf.is_equal_approx(first[ka]):
 				moved[ka] = true
 			for b in range(a + 1, keys.size()):
-				if logo.piece_box(ka).intersects(logo.piece_box(keys[b])) and not touching.has(ka + "-" + keys[b]):
+				if logo.drawing_box(ka).intersects(logo.drawing_box(keys[b])) and not touching.has(ka + "-" + keys[b]):
 					touching.append(ka + "-" + keys[b])
+		said_jump = maxf(said_jump, absf(said_img.rotation_degrees - said_rot))
+		said_rot = said_img.rotation_degrees
+		if absf(said_img.scale.y - 1.0) > 0.001:
+			said_scaled += 1
+		squashed = squashed or absf(logo.squash) > 0.004
 		await get_tree().create_timer(0.1).timeout
 	check(moved.size() == 4 and touching.is_empty(),
-		"cada pieza del logo se mueve a su aire (%d de 4) y nunca se tapan entre ellas (se tocan: %s)" % [moved.size(), ", ".join(touching)])
+		"cada pieza del logo se mueve a su aire (%d de 4) y ningún dibujo tapa a otro (se tocan: %s)" % [moved.size(), ", ".join(touching)])
+	check(said_jump < 0.1 and squashed and said_scaled <= 8,
+		"«SAID» no tiembla: se mece lentísimo (%.3f° por décima) y solo se aplasta un pelín cuando cae el cerdito (%d de 45 muestras)"
+		% [said_jump, said_scaled])
 	logo.queue_free()
 	var plain := Logo.new(430.0)
 	check(plain.has_pieces() and plain.pieces.size() == 4,
