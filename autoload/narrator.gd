@@ -26,6 +26,7 @@ const TYPE_LEAD := 0.6                       ## con voz, el texto acaba de escri
 const VOICE_EXTENSIONS := ["ogg", "wav", "mp3"]
 const SFX_PREFIX := "sfx:"
 const VOICE_LANGUAGE := "es"                 ## el idioma en que están grabadas las voces
+const NOT_LOGGED := ["pista", "orden", "sub_completo"]   ## avisos de juego, no historia: fuera del historial
 
 var language := "es"
 var _lines: Dictionary = {}
@@ -139,7 +140,28 @@ func clear() -> void:
 		skipped.emit()
 
 
+## Se calla con un fundido corto de la voz (el jugador pasa al acto siguiente mientras hablaba): el
+## subtítulo se quita ya, la cola se olvida y la voz baja hasta apagarse en `seconds`.
+func fade_out(seconds: float) -> void:
+	var talking := _left > 0.0 or not _queue.is_empty()
+	_queue.clear()
+	_left = 0.0
+	_group = 0
+	if talking:
+		skipped.emit()
+	if not _player.playing:
+		return
+	var tw := create_tween()
+	tw.tween_property(_player, "volume_db", -40.0, seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tw.tween_callback(func() -> void:
+		_player.stop()
+		_player.stream = null
+		_player.volume_db = 0.0)
+
+
 func _enqueue(key: String) -> void:
+	if not NOT_LOGGED.has(key) and not key.begins_with("_"):
+		GameState.log_dialogue(key)              # para releerlo en la pausa (Diálogos)
 	var segments := _segments(_lines[key])
 	for i in segments.size():
 		var seg: Variant = segments[i]

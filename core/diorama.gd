@@ -24,6 +24,7 @@ const PAINT_TIME := 0.9                     ## lo que tarda en extenderse la pin
 const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al completarlo
 const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
+const ACT_FADE := 0.5                        ## (cambio de acto) lo que tarda la voz en apagarse si el jugador sigue
 ## Al abrirse un capítulo (una sección con rótulo), primero el rótulo; sus cosas (muebles y siluetas)
 ## aparecen cuando se empieza a ir (Hud.show_chapter: a los 3,8 s), creciendo una tras otra con el
 ## sonido de Drive FXS «Cuando aparecen las cosas del capitulo» (aparecer_capitulo). Pedido del 18-oct.
@@ -96,6 +97,7 @@ var _held: Dictionary = {}                  ## dibujos encontrados que se están
 ## (Momentos) Mientras sea true, la sección siguiente no se abre sola al acabar la pausa: espera
 ## (el final no se abre encima del espejo; lo abre la transición con open_pending_now).
 var hold_sections := false
+var _waiting_act: Section                    ## (cambio de acto) el acto siguiente, esperando a que el jugador siga
 
 
 func _ready() -> void:
@@ -818,9 +820,32 @@ func _check_sections() -> void:
 		Events.section_completed.emit(sec)
 		if i + 1 < sections.size() and _pending == null:
 			_pending = sections[i + 1]
-			var wait := maxf(SECTION_PAUSE, Narrator.remaining() + 0.3)
-			get_tree().create_timer(wait, false).timeout.connect(_open_when_free.bind(_pending))
+			if hold_sections:                   # el espejo: el final lo abre su transición
+				var wait := maxf(SECTION_PAUSE, Narrator.remaining() + 0.3)
+				get_tree().create_timer(wait, false).timeout.connect(_open_when_free.bind(_pending))
+			else:                               # el capítulo siguiente sale cuando el jugador decide seguir
+				_waiting_act = _pending
 			Events.inventory_changed.emit()       # la bandeja espera a la sección nueva (no está "vacía")
+
+
+## (Cambio de acto) ¿Espera el acto siguiente a que el jugador siga? (botón «Continuar», o un clic
+## en el primer plano del objeto que lo cerró).
+func act_waiting() -> bool:
+	return _waiting_act != null
+
+
+## El jugador sigue: si aún se oye el diálogo, la voz se apaga en un momento (ACT_FADE) y, después,
+## sale el rótulo del capítulo siguiente y se abre (feedback: "una pequeña transición de audio").
+func continue_act() -> void:
+	if _waiting_act == null:
+		return
+	var sec := _waiting_act
+	_waiting_act = null
+	var talking := Narrator.remaining() > 0.05
+	if talking:
+		Narrator.fade_out(ACT_FADE)
+	Events.act_continued.emit()
+	get_tree().create_timer(ACT_FADE if talking else 0.05, false).timeout.connect(_open_when_free.bind(sec))
 
 
 func _open_when_free(sec: Section) -> void:
@@ -1115,7 +1140,8 @@ func debug_complete() -> void:
 func debug_solve_step() -> bool:
 	if completed:
 		return false
-	if _pending != null:                        # sin esperar pausas ni frases
+	if _pending != null:                        # sin esperar pausas, frases ni a que el jugador siga
+		_waiting_act = null
 		var sec := _pending
 		_open_pending(sec)
 		_reveal_pending(sec)

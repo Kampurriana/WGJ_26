@@ -32,6 +32,7 @@ var progress_path := "user://progreso.cfg"   ## "" = solo en memoria
 var menu_unlocked := false
 var completed_levels: PackedStringArray = []
 var achievements: PackedStringArray = []     ## logros conseguidos (core/logros.gd)
+var dialogue_log: PackedStringArray = []     ## las frases ya dichas (sus claves, en orden), para releerlas en la pausa
 
 
 func _ready() -> void:
@@ -64,6 +65,7 @@ func load_progress(file: String) -> void:
 	menu_unlocked = false
 	completed_levels = PackedStringArray()
 	achievements = PackedStringArray()
+	dialogue_log = PackedStringArray()
 	if file == "" or not FileAccess.file_exists(file):
 		return
 	var cfg := ConfigFile.new()
@@ -76,6 +78,8 @@ func load_progress(file: String) -> void:
 		completed_levels.append(String(p))
 	for a: Variant in cfg.get_value(SECTION, "logros", []):
 		achievements.append(String(a))
+	for k: Variant in cfg.get_value(SECTION, "dialogos", []):
+		dialogue_log.append(String(k))
 
 
 func save_progress() -> int:
@@ -85,6 +89,7 @@ func save_progress() -> int:
 	cfg.set_value(SECTION, "menu_desbloqueado", menu_unlocked)
 	cfg.set_value(SECTION, "completados", Array(completed_levels))
 	cfg.set_value(SECTION, "logros", Array(achievements))
+	cfg.set_value(SECTION, "dialogos", Array(dialogue_log))
 	var err := cfg.save(progress_path)
 	if err != OK:
 		push_warning("GameState: no puedo guardar %s (err %d)" % [progress_path, err])
@@ -112,10 +117,18 @@ func unlock_achievement(id: String) -> bool:
 	return true
 
 
+## Una frase de la historia ya dicha (Narrator): al historial de diálogos, una vez y en orden.
+func log_dialogue(key: String) -> void:
+	if not dialogue_log.has(key):
+		dialogue_log.append(key)
+		save_progress()
+
+
 func reset_progress() -> void:
 	menu_unlocked = false
 	completed_levels = PackedStringArray()
 	achievements = PackedStringArray()
+	dialogue_log = PackedStringArray()
 	save_progress()
 
 

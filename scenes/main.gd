@@ -9,7 +9,7 @@ extends Node3D
 ##   --level=N            empieza directamente en el nivel N (índice de data/levels.json)
 ##   --level=menu         empieza en el menú de inicio (igual que sin --level)
 ##   --menu-page=P        al abrirse el menú, en la página P (opciones, logros, creditos);
-##                        "pausa" abre la pausa nada más cargar; "dibujos", la pausa en el álbum (a los 1,5 s,
+##                        "pausa" abre la pausa nada más cargar; "dibujos" (o "dialogos"), la pausa en esa página (a los 1,5 s,
 ##                        para que --f9 ya haya colgado los dibujos)
 ##   --solve=K            coloca K piezas solo (jugador automático), una cada 0,3 s; solo dice la frase de la última
 ##   --capture=ruta.png   guarda una captura (relativa al proyecto) y sale
@@ -157,7 +157,7 @@ func _ready() -> void:
 		load_level(GameState.level_index)
 	if _menu_page == "pausa":
 		open_pause()
-	elif _menu_page == "dibujos":
+	elif _menu_page == "dibujos" or _menu_page == "dialogos":
 		pass                                     # en _process, cuando ya han pasado F9 y compañía
 	elif _menu_page != "":
 		menu.pending_page = _menu_page
@@ -227,7 +227,7 @@ func _parse_args() -> void:
 
 
 ## (--capitulo) Pone la estructura del desván de golpe y abre el capítulo siguiente por el camino de la
-## partida (rótulo y, cuando se va, sus cosas apareciendo), sin el momento de la hucha por medio.
+## partida («Continuar», rótulo y, cuando se va, sus cosas apareciendo), sin el momento de la hucha.
 func _open_first_chapter() -> void:
 	var d := GameState.diorama
 	var guard := 0
@@ -237,8 +237,7 @@ func _open_first_chapter() -> void:
 	Narrator.clear()
 	if momentos.active:
 		momentos.finish()
-	if d.opening_section() != null:
-		d._open_when_free(d.opening_section())
+	d.continue_act()                         # como si pulsara «Continuar»
 
 
 ## Cortina negra por encima de todo (menos de lo que no deja de verse): se abre al cargar.
@@ -484,10 +483,11 @@ func _process(delta: float) -> void:
 	if _open_chapter and _elapsed > 1.0 and GameState.diorama != null:
 		_open_chapter = false
 		_open_first_chapter()
-	if _menu_page == "dibujos" and _elapsed > 1.5:
+	if (_menu_page == "dibujos" or _menu_page == "dialogos") and _elapsed > 1.5 and _solve_left == 0:
+		var p := _menu_page
 		_menu_page = ""
 		open_pause()
-		pause.show_page("dibujos")
+		pause.show_page(p)
 	if _celebrate != "" and _elapsed > 1.0:
 		GameState.hud.stars.celebrate(_celebrate)
 		_celebrate = ""

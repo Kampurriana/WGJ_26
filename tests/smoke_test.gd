@@ -180,7 +180,43 @@ func _run() -> void:
 	await _test_complete_shortcut(main)
 	await _test_real_levels(main)
 	await _test_light_scale()
+	_test_artist(main)
+	_test_dialogue_log(main)
 	_end()
+
+
+## Los diálogos ya dichos se pueden releer en la pausa (Diálogos), en orden y sin los avisos de juego;
+## se guardan con el progreso.
+func _test_dialogue_log(main: Node) -> void:
+	main.open_pause()
+	main.pause.show_page("dialogos")
+	var lines: PackedStringArray = main.pause.dialogue_entries()
+	var hucha := Array(lines).find(Narrator.text("pieza_hucha"))
+	var espejo := Array(lines).find(Narrator.text("pieza_espejo"))
+	var saved: Array = _saved(TEST_PROGRESS, "dialogos", [])
+	check(main.pause.buttons.dialogos.visible and lines.size() >= 8 and hucha >= 0 and espejo > hucha
+		and not lines.has(Narrator.text("pista")) and saved.has("pieza_hucha"),
+		"en la pausa, «Diálogos» deja releer lo ya dicho, en orden (%d), sin los avisos de juego, y se guarda con el progreso" % lines.size())
+	main.pause.close()
+
+
+## «Alma de artista» (secreto): un minuto jugando con un fondo y otro con un fondo distinto.
+func _test_artist(main: Node) -> void:
+	var logros: Logros = main.logros
+	var was_mode := GameState.mode
+	var was_color: int = Settings.get_value("fondo_color")
+	GameState.mode = GameState.Mode.PLAYING
+	logros.backgrounds.clear()
+	logros._process(Logros.ARTIST_SECONDS + 1.0)
+	var after_one := Logros.is_unlocked("alma_artista")
+	Settings.set_value("fondo_color", (was_color + 1) % Fondos.COLORES.size())
+	logros._process(Logros.ARTIST_SECONDS * 0.5)
+	var after_half := Logros.is_unlocked("alma_artista")
+	logros._process(Logros.ARTIST_SECONDS * 0.5 + 1.0)
+	check(not after_one and not after_half and Logros.is_unlocked("alma_artista") and Logros.is_secret("alma_artista"),
+		"«Alma de artista» (secreto) llega al jugar más de un minuto con dos fondos distintos, no antes")
+	Settings.set_value("fondo_color", was_color)
+	GameState.mode = was_mode
 
 
 ## El narrador no pisa frases: una segunda frase espera a que acabe la primera.
@@ -504,14 +540,24 @@ func _test_story(main: Node) -> void:
 	stars.celebrate("speedrunner")
 	check(_heard(heard_star, "logro") == 1 and Sfx.jingle_playing() == "logro", "un logro suena con su sintonía (logro, de Drive FXS)")
 	await get_tree().create_timer(0.8).timeout
+	var pig_a := stars.pig.position
+	await get_tree().create_timer(0.3).timeout
 	var banner_rect := stars.banner.get_global_rect()
+	check(stars.pig.visible and stars.pig.position != pig_a,
+		"al aviso del logro le acompaña el cerdito, que llega a saltitos junto a él")
+	await get_tree().create_timer(1.5).timeout
+	var pig_at := stars.pig.get_global_transform() * Vector2.ZERO
+	check(stars.pig.visible and stars.pig.scale.is_equal_approx(Vector2.ONE) and banner_rect.grow(140.0).has_point(pig_at),
+		"el cerdito se queda en la esquina del aviso, derecho, después de celebrarlo (%s, %s, %s)" % [stars.pig.scale, pig_at, banner_rect])
 	check(stars.banner_text() == "Speedrunner" and absf(banner_rect.get_center().x - screen_w * 0.5) < 4.0 and banner_rect.position.y < 140.0,
 		"un logro sale en un aviso dorado arriba en el centro (%s)" % stars.banner_text())
-	await get_tree().create_timer(EstrellasLogros.HOLD + EstrellasLogros.FLIGHT * 0.5).timeout
+	await get_tree().create_timer(EstrellasLogros.HOLD + EstrellasLogros.FLIGHT * 0.5 - 1.8).timeout
 	check(is_instance_valid(stars.flying), "y su estrella sale volando del aviso...")
 	await get_tree().create_timer(EstrellasLogros.FLIGHT * 0.5 + 0.8).timeout
-	check(stars.filled_count() == 1 and stars.slots[Logros.LISTA.size() - 1].filled and not stars.is_busy() and stars.banner_text() == "",
+	var speed_index := Logros.LISTA.map(func(l: Dictionary) -> String: return l.id).find("speedrunner")
+	check(stars.filled_count() == 1 and stars.slots[speed_index].filled and not stars.is_busy() and stars.banner_text() == "",
 		"...hasta su hueco en la fila, que se queda con su estrella")
+	check(not stars.pig.visible, "y el cerdito se ha ido antes que el aviso")
 	stars.refresh()
 	await _test_tray(d, shown)
 	# El suelo, a tablones de tres largos parecidos: cada uno vale en varios huecos, pero no en todos.
@@ -633,7 +679,16 @@ func _test_story(main: Node) -> void:
 	for n in arriving:
 		arriving_xf[n] = n.transform
 		arriving_floor[n] = Visuals.global_aabb(n)
-	while not s2.opening and waited < 25.0:         # la voz de la hucha dura 14 s
+	while (Narrator.remaining() > 0.0 or m.active) and waited < 25.0:   # la voz de la hucha dura 14 s
+		await get_tree().create_timer(0.25).timeout
+		waited += 0.25
+	await get_tree().create_timer(Diorama.SECTION_PAUSE + 0.2).timeout
+	check(not s2.opened and not s2.opening and d.act_waiting() and GameState.hud.continue_button.visible
+		and GameState.hud.task_text().contains("Continuar"),
+		"al acabar un acto, el siguiente no se abre solo: espera a que la jugadora pulse «Continuar»")
+	_click(GameState.hud.continue_button.get_global_rect().get_center())
+	waited = 0.0
+	while not s2.opening and waited < 3.0:
 		await get_tree().create_timer(0.1).timeout
 		waited += 0.1
 	var title_wait := 0.0
@@ -643,7 +698,8 @@ func _test_story(main: Node) -> void:
 			and not _more(heard_chapter, "aparecer_capitulo")
 		await get_tree().create_timer(0.1).timeout
 		title_wait += 0.1
-	check(s2.opened and waited >= Diorama.SECTION_PAUSE - 0.3, "al completarla, la infancia se abre sola tras una pausa (%.1f s)" % waited)
+	check(s2.opened and not d.act_waiting() and not GameState.hud.continue_button.visible and GameState.hud.chapter_text().contains("Infancia"),
+		"al pulsar «Continuar» sale el rótulo del capítulo y se abre la infancia")
 	check(quiet_title and title_wait >= Diorama.CHAPTER_REVEAL - 0.15,
 		"al abrirse un capítulo, primero su rótulo: sus muebles y sus siluetas esperan a que se empiece a ir (%.1f s)" % title_wait)
 	check(_more(heard_chapter, "aparecer_capitulo") and Sfx.length("aparecer_capitulo") > 0.0,
@@ -838,6 +894,19 @@ func _test_story(main: Node) -> void:
 	d.place(_slot(d, &"peluche"))
 	check(s2.completed and placed.find(&"caja_musica") < placed.find(&"dibujo") and placed.find(&"dibujo") < placed.find(&"peluche"),
 		"infancia completa en el orden del guion: caja de música, dibujo, nutria")
+	# Un clic en el primer plano mientras aún habla: la voz se apaga en un momento y sale el acto siguiente.
+	for i in 3:
+		await get_tree().process_frame
+	var talk_left := Narrator.remaining()
+	check(d.act_waiting() and m.active and talk_left > 1.0 and not s3.opening,
+		"al cerrar la infancia, su diálogo suena y la adolescencia espera (%.1f s de voz)" % talk_left)
+	_click(Vector2(640, 300))
+	await get_tree().create_timer(Diorama.ACT_FADE * 0.5).timeout
+	var faded_mid := Narrator._player.volume_db
+	await get_tree().create_timer(Diorama.ACT_FADE * 0.5 + 0.3).timeout
+	check(faded_mid < -3.0 and not Narrator.voice_playing() and not m.active and (s3.opening or s3.opened)
+		and GameState.hud.chapter_text().contains("Adolescencia"),
+		"un clic mientras habla apaga la voz con un fundido (%.0f dB a mitad) y pasa al capítulo siguiente" % faded_mid)
 	# El dibujo es plano y está en la pared: su primer plano es de frente.
 	var drawing := _slot(d, &"dibujo").node
 	var pared := Hud.drawing_texture(drawing)
@@ -849,7 +918,8 @@ func _test_story(main: Node) -> void:
 		and m._flat_front(_slot(d, &"hucha").node) == Vector3.ZERO,
 		"los objetos planos de pared (el dibujo) se ven de frente en su primer plano")
 	m.finish()
-	d.debug_solve_step()                           # abre la adolescencia sin esperar (la espera ya se probó)
+	if not s3.opened:
+		d.debug_solve_step()                       # sus piezas, sin esperar a que se callen sus frases
 	var camera_pick := _pickup(d, &"camara")
 	var application := _pickup(d, &"solicitud")
 	check(s3.opened and camera_pick != null and application != null and not camera_pick.available and not application.available,
@@ -1020,6 +1090,7 @@ func _test_story(main: Node) -> void:
 	await get_tree().create_timer(0.6).timeout
 	check(not _slot(d, &"moneda").filled and is_instance_valid(m.coin) and m._coin_state == "" and is_instance_valid(m.ghost),
 		"soltar la moneda lejos de la ranura no la mete: vuelve a su sitio y la fantasma vuelve a enseñar el gesto")
+	main.logros._start_ms = maxi(0, Time.get_ticks_msec() - 90000)   # como si llevara (como mucho) 1,5 minutos
 	_mouse_button(m.coin_screen_position(), true)
 	await get_tree().process_frame
 	_mouse_move(m.slot_screen_position())
@@ -1031,8 +1102,12 @@ func _test_story(main: Node) -> void:
 	add_child(lista)
 	lista.refresh()
 	var got := lista.rows.filter(func(r: Control) -> bool: return bool(r.get_meta(&"conseguido")))
-	check(Logros.is_unlocked("speedrunner") and lista.rows.size() == Logros.LISTA.size() and got.size() == 4,
-		"acabar el desván en menos de 8 minutos da «Speedrunner»; la lista de logros enseña los 5 (4 conseguidos)")
+	var artist_card: Control = lista.rows[Logros.LISTA.size() - 1]
+	check(Logros.is_unlocked("speedrunner") and lista.rows.size() == Logros.LISTA.size() and got.size() == 4
+		and not Logros.is_unlocked("alma_artista") and String(artist_card.get_meta(&"texto")).begins_with("Logro secreto")
+		and lista._count.text == "Conseguidos: 4 de %d" % Logros.LISTA.size(),
+		"acabar el desván en menos de 2 minutos da «Speedrunner»; la lista enseña los %d (4 conseguidos, con su barra) y los secretos no dicen qué hacer (%s)"
+		% [Logros.LISTA.size(), [Logros.is_unlocked("speedrunner"), got.size(), lista._count.text, artist_card.get_meta(&"texto"), GameState.achievements]])
 	lista.queue_free()
 	check(d.find_child("ChispasMoneda", false, false) != null and float(m._cozy_mat.get_shader_parameter("brillo")) > 1.2,
 		"al entrar la moneda: golpe de luz, chispas doradas y el fondo se aviva")
@@ -1260,10 +1335,17 @@ func _test_title_menu(main: Node) -> bool:
 	check(t.intro_key == "" and Narrator.remaining() <= 0.0 and not hud_t._subtitle_box.visible
 		and not st.bandeja and not st.botones and not st.tarea and not st.estrellas,
 		"el cerdito empieza solo: sin frase, sin bandeja, sin botones, sin tarjeta de tarea ni estrellas de logros")
-	await get_tree().create_timer(Hud.ENTRANCE_TRAY + 0.8).timeout
+	var entrance_wait := 0.0                     # (esperando a que entre, no un tiempo fijo: con carga se retrasa)
+	while not hud_t.entrance_state().bandeja and entrance_wait < 5.0:
+		await get_tree().process_frame
+		entrance_wait += get_process_delta_time()
 	st = hud_t.entrance_state()
-	check(st.bandeja and not st.botones and not st.tarea, "luego entra la bandeja con las piezas para vestirlo (aún sin botones)")
-	await get_tree().create_timer(Hud.ENTRANCE_BUTTONS - Hud.ENTRANCE_TRAY).timeout
+	check(st.bandeja and not st.botones and not st.tarea and entrance_wait > Hud.ENTRANCE_TRAY * 0.8,
+		"luego entra la bandeja con las piezas para vestirlo (aún sin botones; a los %.1f s)" % entrance_wait)
+	while not hud_t.entrance_state().botones and entrance_wait < 8.0:
+		await get_tree().process_frame
+		entrance_wait += get_process_delta_time()
+	await get_tree().create_timer(0.5).timeout
 	st = hud_t.entrance_state()
 	check(st.bandeja and st.botones and not st.tarea and not st.estrellas,
 		"y por último los botones de Menú y Pista; la tarjeta de tarea y las estrellas siguen sin salir")
@@ -1691,8 +1773,29 @@ func _test_hint(d: Diorama) -> void:
 	check(not h.is_empty() and c.distance < home_distance - 0.1 and c.center.distance_to(target) < home.distance_to(target) - 0.05,
 		"la pista gira y acerca la cámara hacia el hueco (distancia %.2f -> %.2f)" % [home_distance, c.distance])
 	check((get_tree().root.find_child("Efectos", true, false) as Efectos).bursts > before, "la pista enseña chispas en el sitio")
-	await get_tree().process_frame
+	var first_ready: Array[InventoryItem] = GameState.hud.cards(true)
+	check(h.has("slot") and not first_ready.is_empty() and GameState.hud._hinted == h.slot and not GameState.hud.hint_mark.visible
+		and (GameState.hovered_piece != &"" or h.piece == first_ready[0].piece_id),
+		"la pista señala la siguiente pieza de la bandeja (su hueco late), sin flecha si no lleva rato atascada (%s)" % String(h.get("piece", "")))
 	GameState.hud._clear_hint()
+	var was_mode := GameState.mode
+	GameState.mode = GameState.Mode.PLAYING
+	GameState.hud._idle = GameState.hud.assist_after + 1.0   # mucho rato sin poner nada
+	await get_tree().process_frame
+	check(GameState.hud.hint_mark.visible and GameState.hud.hint_mark.target == h.node,
+		"si lleva mucho rato sin poner una pieza, sale sola una flecha encima del sitio de la siguiente")
+	for i in 3:
+		await get_tree().process_frame
+	var tip: Vector2 = GameState.hud.hint_mark.tip()
+	var screen_at: Vector2 = c.cam.unproject_position(Visuals.global_aabb(h.node).get_center())
+	check(get_viewport().get_visible_rect().has_point(tip) and tip.distance_to(screen_at) < 260.0,
+		"la flecha de la pista está en pantalla, encima del hueco (%.0f px)" % tip.distance_to(screen_at))
+	check(GameState.hud.hint_cooldown <= 10.0, "la pista se recarga pronto (%.0f s)" % GameState.hud.hint_cooldown)
+	await get_tree().process_frame
+	GameState.hud._idle = 0.0
+	GameState.hud._clear_hint()
+	GameState.mode = was_mode
+	check(not GameState.hud.hint_mark.visible, "al quitar la pista, la flecha se va")
 	c.configure(d)
 
 

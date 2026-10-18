@@ -149,6 +149,13 @@ carpeta. Si no, parar y preguntar.
 
 ## 5. Decisiones ya tomadas (no volver a discutirlas)
 
+- **Notas del 18-oct (libreta):** la pista señala la siguiente pieza de la bandeja, y la flecha
+  solo sale si lleva mucho rato sin poner ninguna; logros secretos (speedrunner en 2 min y «Alma de
+  artista»: un minuto con cada uno de dos fondos distintos); el aviso de logro con el cerdito; la
+  lista de logros más visual; el final del espejo, de cine (bandas que se cierran); el capítulo
+  siguiente sale cuando la jugadora pulsa «Continuar» (un clic mientras habla apaga la voz con un
+  fundido); el historial de diálogos en la pausa.
+
 - Clon mecánico de Woodo; menú desbloqueado con un puzle (pedido; no encontrado en fuentes).
 - Luz: sol 0,55, ambiente 0,35, sombras 0,8, AgX, fondo (0.86, 0.80, 0.72). Medido, no a ojo.
 - Cámara sin desplazamiento, giro limitado, **zoom hacia el cursor** (decisión mía; se le ofreció
