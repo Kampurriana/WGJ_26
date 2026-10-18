@@ -9,11 +9,12 @@ const LEVELS_PATH := "res://data/levels.json"
 const MENU_LEVEL := "res://levels/menu_titulo.tscn"
 const SECTION := "progreso"
 ## MODO PROTOTIPO: cada vez que se le da a Play, el puzle del título y los niveles empiezan de cero
-## (no se lee ni se guarda el progreso; las Opciones sí se guardan). Para la entrega: false.
-const RESET_ON_START := true
+## (no se lee ni se guarda el progreso; las Opciones sí se guardan). Solo al jugar desde el editor:
+## en una build exportada (la entrega, con plantilla) es false sola y el progreso se guarda.
+var RESET_ON_START := not OS.has_feature("template")
 ## ATAJOS DE PRUEBA: F9 monta el diorama entero de golpe (para mirarlo o probar el final sin
-## colocar pieza a pieza). Para la entrega: false.
-const DEBUG_SHORTCUTS := true
+## colocar pieza a pieza). Igual: en la build exportada no hay atajos.
+var DEBUG_SHORTCUTS := not OS.has_feature("template")
 
 var diorama: Diorama
 var camera: DioramaCamera

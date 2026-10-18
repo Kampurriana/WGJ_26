@@ -17,6 +17,7 @@ extends Node3D
 ##   --hold=X,Y           (capturas) coge la pieza más grande del panel y la lleva a ese punto
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
+##   --sin-interfaz       (capturas) la captura sale sin la interfaz del juego (portada y capturas de itch.io)
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
 ##   --inspeccion         (capturas) al segundo de empezar, el primer plano de un dibujo (como al encontrarlo)
 ##   --logro=ID           (capturas) al segundo de empezar, el aviso de ese logro y su estrella volando
@@ -57,6 +58,7 @@ var _menu_page := ""
 var _hold := Vector2(-1, -1)
 var _zoom_steps := 0
 var _press_f9 := false
+var _no_hud := false
 var _roll_credits := false
 var _inspect := false
 var _celebrate := ""
@@ -173,6 +175,8 @@ func _parse_args() -> void:
 			_only_background = true
 		elif a == "--f9":
 			_press_f9 = true
+		elif a == "--sin-interfaz":
+			_no_hud = true
 		elif a == "--creditos":
 			_roll_credits = true
 		elif a == "--inspeccion":
@@ -446,6 +450,8 @@ func _process(delta: float) -> void:
 			GameState.drag.begin(card.piece_id, card)
 			GameState.drag.hold_at(_hold)
 		_hold = Vector2(-1, -1)
+	if _no_hud and GameState.hud != null:
+		GameState.hud.visible = false
 	if _capture_path != "" and _elapsed >= _capture_after and _solve_left == 0:
 		var img := get_viewport().get_texture().get_image()
 		var out := ProjectSettings.globalize_path("res://" + _capture_path)

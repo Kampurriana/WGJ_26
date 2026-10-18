@@ -96,14 +96,27 @@ modelo de las artistas**, no por escenas editadas a mano. **El arte se cambia de
 en su sitio**: un nivel nuevo = escena con `core/diorama.gd` en la raíz y la ruta del `.glb` en
 `modelo` (o el `.glb` dentro) + línea en `data/levels.json`.
 
-## Modo prototipo (antes de entregar, cambiarlo)
+## Modo prototipo (solo en el editor; la build exportada lo quita sola)
 
-`GameState.RESET_ON_START = true`: cada Play empieza con el puzle del título y todos los niveles sin
-hacer (no se lee ni se guarda el progreso; las Opciones sí). Para la build de entrega: `false`.
+`GameState.RESET_ON_START` (= `not OS.has_feature("template")`): jugando desde el editor, cada Play
+empieza con el puzle del título y todos los niveles sin hacer (no se lee ni se guarda el progreso;
+las Opciones sí). En la build exportada es `false`: el progreso se guarda.
 
-`GameState.DEBUG_SHORTCUTS = true`: **F9 monta el diorama entero de golpe** (todas las zonas,
+`GameState.DEBUG_SHORTCUTS` (igual): **F9 monta el diorama entero de golpe** (todas las zonas,
 cada pieza, los dibujos en su cuerda, sin frases; se queda a la vista con el panel de fin, sin fundido). Para mirar el
-dressing o probar el final sin colocar 51 piezas. Para la build de entrega: `false`.
+dressing o probar el final sin colocar 51 piezas. En la build exportada no hay F9.
+
+## Entrega (Women Game Jam 2026, itch.io): `docs/ENTREGA.md`
+
+Presets en `export_presets.cfg` (Web sin hilos y Windows). Plantillas 4.7.2 en la nube: bajar solo
+las que hacen falta del `.tpz` con peticiones por rangos (no el paquete de 1,3 GB):
+`python3 -I <scratchpad>/tools/zip_remoto.py <url del .tpz> ~/.local/share/godot/export_templates/4.7.2.stable version.txt web_nothreads_release.zip windows_release_x86_64.exe`
+(el script, en `docs/ENTREGA.md` si se pierde el scratchpad: es un `zipfile` sobre un lector HTTP con `Range`).
+Exportar: `"$GODOT" --headless --path . --export-release "Web" build/export/web/index.html` (y
+`"Windows" build/export/windows/WhatINeverSaid.exe`). Probar la Web: servir la carpeta y abrirla con
+Playwright + Chromium (`--use-angle=swiftshader`). Portada y capturas: `--sin-interfaz` en
+`capture.sh` (sin HUD), en `entrega/` (con `.gdignore`; no entra en la build). Licencia: `LICENSE`
+(CC BY-SA 3.0, regla de la jam) y créditos con los recursos de terceros.
 
 ## Cómo trabajo aquí
 

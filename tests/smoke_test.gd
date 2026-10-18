@@ -1328,10 +1328,11 @@ func _test_back_to_menu(main: Node) -> void:
 		% [credits.title_y(), credits.roll_seconds()])
 	var who := Array(credits.lines())
 	check(["Eva Fernandez Valero", "Carmen Esteban Fernandez-Vicenti", "Inés Jackson Martín", "Sandra", "Ana Climent Sapena",
-			"Anaïs Soriano"].all(func(n: String) -> bool: return who.has(n))
+			"Anaïs Soriano Gimeno"].all(func(n: String) -> bool: return who.has(n))
 		and who.any(func(l: String) -> bool: return l.contains("ayuda de la IA"))
+		and who.has("Licencia del juego: CC BY-SA 3.0") and who.any(func(l: String) -> bool: return l.contains("(licencia MIT)"))
 		and not who.any(func(l: String) -> bool: return l.contains("(nombres") or l.contains("Claude")),
-		"en los créditos, las seis del equipo y que la programación se hizo con ayuda de la IA (sin huecos por rellenar)")
+		"en los créditos, las seis del equipo, que la programación se hizo con ayuda de la IA, la licencia de la jam (CC BY-SA 3.0) y los recursos de terceros (sin huecos por rellenar)")
 	_click(Vector2(640, 360))                      # un clic los acaba
 	await get_tree().create_timer(Creditos.FADE + 0.4).timeout
 	var t := GameState.diorama

@@ -1,6 +1,7 @@
-# Woodo Jam
+# What I Never Said
 
-Puzle de dioramas en 3D para una game jam de 48 h (Godot 4.7.2).
+Puzle de dioramas en 3D hecho en 48 h para la Women Game Jam 2026 (Godot 4.7.2).
+Licencia: CC BY-SA 3.0 (`LICENSE`). La entrega en itch.io, paso a paso: [`docs/ENTREGA.md`](docs/ENTREGA.md).
 
 - **Artistas:** empezad por [`docs/ARTE-PIPELINE.md`](docs/ARTE-PIPELINE.md) (cómo nombrar y exportar)
   y [`docs/GIT-Y-RAMAS.md`](docs/GIT-Y-RAMAS.md) (cómo subir con GitHub Desktop). Solo se toca `assets/`.
@@ -19,4 +20,5 @@ Controles: arrastrar en vacío o WASD/flechas = girar · rueda o Q/E = zoom (hac
 arrastrar una pieza del panel a su hueco = colocar · clic = abrir cajones / coger lo escondido /
 entrar en un rincón · H = pista · Esc = pausa (o salir del rincón). Mando: stick izq. = puntero,
 A = clic, stick dcho. = girar, gatillos = zoom, Y = pista, B = pausa / volver.
-Atajo de prueba: **F9 = montar el diorama entero de golpe** (se quita para la entrega).
+Atajo de prueba: **F9 = montar el diorama entero de golpe** (solo jugando desde el editor; en la
+build exportada no está).

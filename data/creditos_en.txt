@@ -14,12 +14,18 @@ PROGRAMMING & DESIGN
 Ana Climent Sapena
 
 SOUND DESIGNER & VOICE ACTRESS
-Anaïs Soriano
+Anaïs Soriano Gimeno
 
 The game's code was developed with the help of AI,
 but the game itself is made entirely by artists.
 
 Inspired by Woodo, by Tiny Monks Tales
+
+THIRD-PARTY ASSETS
+Modern Japanese Home Props Lite (MIT license)
+Fredoka font (SIL Open Font License)
+
+Game license: CC BY-SA 3.0
 
 Made with Godot Engine
 godotengine.org/license
