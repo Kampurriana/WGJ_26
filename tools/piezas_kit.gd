@@ -45,6 +45,10 @@ const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "S
 ## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero). La hucha
 ## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, ojos, ranura, cola) va montada en una pieza.
 const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
+## Piezas que además se parten en dos por sus trozos sueltos (islas de la malla): [la del trozo más
+## ancho, la del resto]. SM_Lights es un tramo de cuerda con UNA bombilla (casquillo y cristal): la cuerda
+## sola y la bombilla sola sirven para montar cuerdas con bombillas a lo largo (tools/build_diorama_kit.gd).
+const PARTIR := {"SM_Lights": ["SM_LightsCuerda", "SM_LightsBombilla"]}
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. Son las carpetas de Assets/ de Drive: Pack01 (suelo, zócalos, correas,
 ## pilar; las de nombre de 3ds Max de FloorCeilingPlanks... son las mismas), Pack02 (techo y postes).
@@ -104,6 +108,17 @@ func _init() -> void:
 				hechas.append(nombre)
 			else:
 				fallos += 1
+			if PARTIR.has(nombre) and piezas[nombre].size() == 1:
+				var partes := _partir(piezas[nombre][0])
+				for k in 2:
+					var parte: String = PARTIR[nombre][k]
+					err = _guardar(parte, [partes[k]], escena, kit)
+					print("PIEZA %-28s %s (de %s)  err=%d" % [parte, path.trim_prefix(KIT), nombre, err])
+					if err == OK:
+						hechas.append(parte)
+					else:
+						fallos += 1
+					partes[k].free()
 		escena.free()
 	for path in _ficheros(KIT + "dibujos", IMAGE_EXT):
 		var nombre := "Dibujo_" + path.get_file().get_basename()
@@ -175,6 +190,93 @@ func _guardar_dibujo(nombre: String, imagen: String) -> Error:
 		err = ResourceSaver.save(packed, SALIDA + nombre + ".scn")
 	raiz.free()
 	return err
+
+
+## Parte la malla de `m` por sus trozos sueltos (triángulos unidos por vértices en la misma posición):
+## [el trozo más ancho en x, todos los demás juntos], cada uno en un MeshInstance3D con la transformación de
+## `m` y colgado de su mismo padre (para que su transformación en el fichero sea la misma; se liberan después).
+func _partir(m: MeshInstance3D) -> Array[MeshInstance3D]:
+	var arr := m.mesh.surface_get_arrays(0)
+	var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
+	var punto := PackedInt32Array()          # vértice -> su posición (los repetidos por normales, uno)
+	var posiciones := {}
+	for p in v:
+		var q := Vector3i((p * 10000.0).round())
+		if not posiciones.has(q):
+			posiciones[q] = posiciones.size()
+		punto.append(posiciones[q])
+	var padre := range(posiciones.size())
+	var raiz := func(a: int) -> int:
+		while padre[a] != a:
+			a = padre[a]
+		return a
+	for t in range(0, idx.size(), 3):
+		for k in 2:
+			padre[raiz.call(punto[idx[t + k]])] = raiz.call(punto[idx[t + k + 1]])
+	var islas := {}                          # raíz -> [triángulos]
+	for t in range(0, idx.size(), 3):
+		var r: int = raiz.call(punto[idx[t]])
+		if not islas.has(r):
+			islas[r] = PackedInt32Array()
+		islas[r].append(t / 3)
+	var ancha: Variant = null
+	var ancho := -1.0
+	for r: int in islas:
+		var x0 := INF
+		var x1 := -INF
+		for t: int in islas[r]:
+			for k in 3:
+				x0 = minf(x0, v[idx[t * 3 + k]].x)
+				x1 = maxf(x1, v[idx[t * 3 + k]].x)
+		if x1 - x0 > ancho:
+			ancho = x1 - x0
+			ancha = r
+	var resto := PackedInt32Array()
+	for r: int in islas:
+		if r != ancha:
+			resto.append_array(islas[r])
+	var out: Array[MeshInstance3D] = []
+	for tris: PackedInt32Array in [islas[ancha], resto]:
+		var parte := MeshInstance3D.new()
+		parte.mesh = _submalla(arr, tris)
+		parte.transform = m.transform
+		m.get_parent().add_child(parte)
+		out.append(parte)
+	return out
+
+
+## Una malla con solo los triángulos `tris` de una superficie (sus arrays), con sus vértices renumerados.
+func _submalla(arr: Array, tris: PackedInt32Array) -> ArrayMesh:
+	var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
+	var nv := (arr[Mesh.ARRAY_VERTEX] as PackedVector3Array).size()
+	var nuevo := {}
+	var orden := PackedInt32Array()
+	var idx2 := PackedInt32Array()
+	for t in tris:
+		for k in 3:
+			var i := idx[t * 3 + k]
+			if not nuevo.has(i):
+				nuevo[i] = orden.size()
+				orden.append(i)
+			idx2.append(nuevo[i])
+	var out := []
+	out.resize(Mesh.ARRAY_MAX)
+	for a in Mesh.ARRAY_MAX:
+		var src: Variant = arr[a]
+		if src == null or a == Mesh.ARRAY_INDEX or a >= Mesh.ARRAY_BONES:
+			continue
+		var dst: Variant = src.duplicate()
+		dst.resize(0)
+		var paso: int = src.size() / nv        # tangentes: 4 números por vértice
+		for i in orden:
+			for k in paso:
+				dst.append(src[i * paso + k])
+		out[a] = dst
+	out[Mesh.ARRAY_INDEX] = idx2
+	var malla := ArrayMesh.new()
+	malla.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, out)
+	return malla
 
 
 func _material(nombre: String, kit: Dictionary) -> Material:

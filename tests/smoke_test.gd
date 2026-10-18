@@ -1092,7 +1092,8 @@ func _test_kit() -> void:
 	# con los assets nuevos (Pack06-08), se llena con adornos, cuerdas de bombillitas (una libre para los
 	# dibujos) y el dibujo de la bailarina; y todo el kit lleva el estilo cozy (misma capa de tono).
 	var nuevas := ["SM_Caballete", "SM_Mirror", "SM_CatBed", "SM_Rug", "SM_Hat", "SM_LitterBox", "SM_MusicBox",
-		"SM_Pig", "SM_Lights", "SM_Polaroid", "SM_PolaroidA", "SM_ComodaC", "Dibujo_t_draw_03"]
+		"SM_Pig", "SM_Lights", "SM_LightsCuerda", "SM_LightsBombilla", "SM_Polaroid", "SM_PolaroidA", "SM_ComodaC",
+		"Dibujo_t_draw_03"]
 	var faltan := nuevas.filter(func(n: String) -> bool: return not tileset.has(n + ".scn"))
 	var tablones := nombres.filter(func(n: String) -> bool: return n.begins_with("FloorPlanks")).size()
 	var sombrero := diorama.find_children("SM_Hat*", "Node3D", true, false)
@@ -1100,12 +1101,15 @@ func _test_kit() -> void:
 	check(faltan.is_empty() and tablones == 12 and not nombres.has("SM_Floor") and inclinado
 		and nombres.has("SM_Caballete") and nombres.has("SM_Mirror") and nombres.has("SM_CatBed") and nombres.has("SM_Burro"),
 		"el diorama de prueba sigue el blocking: el suelo en 12 tablones, caballete, espejo, cama del gato, burro con el sombrero colgado (faltan en el tileset: %s; tablones %d)" % [faltan, tablones])
-	var tramos := nombres.filter(func(n: String) -> bool: return n == "SM_Lights").size()
-	var luces := diorama.find_children("Luz", "OmniLight3D", true, false).size()
+	var tramos := nombres.filter(func(n: String) -> bool: return n == "SM_LightsCuerda").size()
+	var bombillas := nombres.filter(func(n: String) -> bool: return n == "SM_LightsBombilla").size()
+	var luces := diorama.find_children("*", "OmniLight3D", true, false).size()
+	var material_luces := load("res://assets/kit/materiales/provisional/luces.tres") as BaseMaterial3D
 	var cuerda_dibujos := diorama.find_child("CuerdaDibujos", true, false)
-	check(tramos >= 5 and luces == tramos and cuerda_dibujos != null and diorama.find_child("Adornos", true, false) != null
+	check(tramos >= 5 and bombillas >= tramos * 3 and luces == 0 and not material_luces.emission_enabled
+		and cuerda_dibujos != null and diorama.find_child("Adornos", true, false) != null
 		and nombres.has("SM_MusicBox") and nombres.has("SM_Pig") and nombres.has("Dibujo_t_draw_03"),
-		"el diorama de prueba, más lleno: cuerdas de bombillitas en varias paredes (%d tramos, cada bombilla con su luz; una libre para los dibujos), caja de música, hucha y el dibujo de la bailarina" % tramos)
+		"el diorama de prueba, más lleno: cuerdas de bombillitas en varias paredes (%d tramos con %d bombillas a lo largo, apagadas; una libre para los dibujos), caja de música, hucha y el dibujo de la bailarina" % [tramos, bombillas])
 	var sin_estilo := PackedStringArray()
 	var tono: Texture2D = load("res://assets/kit/materiales/estilo/tono.tres")
 	for dir in ["res://assets/kit/materiales/", "res://assets/kit/materiales/provisional/"]:
