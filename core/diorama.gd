@@ -534,7 +534,7 @@ func _show_placed(slot: PieceSlot) -> void:
 		_pop(slot.node)
 	_reveal_around(slot.center())
 	_play_animation(String(slot.id) + "_placed")
-	Sfx.play("snap")
+	Sfx.play("colocar")
 	Events.piece_placed.emit(slot.id, slot.node)
 
 

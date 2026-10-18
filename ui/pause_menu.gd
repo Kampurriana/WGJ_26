@@ -247,9 +247,7 @@ func _add_button(parent: Control, key: String, text: String, action: Callable) -
 	var b := Button.new()
 	b.text = text
 	b.custom_minimum_size = Vector2(0, 50)
-	b.pressed.connect(func() -> void:
-		Sfx.play("click", 0.0)
-		action.call())
+	b.pressed.connect(action)                    # (su sonido, el de todo botón: ui/juice.gd)
 	parent.add_child(b)
 	buttons[key] = b
 	return b

@@ -1,6 +1,10 @@
 extends Node
 ## Efectos y música. Se buscan por nombre en assets/audio/sfx|musica/<nombre>.(ogg|wav|mp3).
-## Nombres que usa el código: snap, reject, open, close, pickup, hint, complete, zoom_in, zoom_out, click.
+## Nombres que usa el código: colocar, reject, open, close, pickup, hint, complete, zoom_in, zoom_out...
+## Los de Anaïs (Drive FXS, 18-oct): boton_preseleccion (el puntero entra en algo pulsable) y
+## boton_seleccion (se pulsa), los dos para todo botón (ui/juice.gd); pieza_preseleccion (el puntero
+## entra en una ficha de la bandeja que se puede poner) y pieza_seleccion (se coge para colocarla);
+## colocar (la pieza encaja en el diorama).
 ## Música (petición del equipo): musica/menu (Ankui) en el puzle del título y el menú; musica/juego
 ## (Loft) en bucle durante la partida, a volumen moderado. Siempre en bucle y con fundido cruzado.
 ## Suenan por los buses Efectos y Musica (los crea Settings), así les afectan las Opciones.
@@ -24,6 +28,7 @@ var track := ""                               ## la canción pedida ("menu", "ju
 var _quitting := false
 var _duck: AudioEffectAmplify                ## en el bus Musica: lo que baja con las voces
 var ducked := false
+var played: Dictionary = {}                  ## (tests) nombre -> veces que ha sonado
 
 
 func _ready() -> void:
@@ -79,6 +84,7 @@ func play(sound: String, pitch_jitter := 0.08) -> void:
 	p.stream = stream
 	p.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
 	p.play()
+	played[sound] = int(played.get(sound, 0)) + 1
 
 
 ## Pone una canción en bucle a `volume_db`, con fundido cruzado desde la que sonaba. Si ya suena,

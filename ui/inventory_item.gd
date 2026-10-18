@@ -80,6 +80,7 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 		if not locked:
 			GameState.hovered_piece = piece_id
 			_hover_scale(1.08)                   # la ficha se ofrece: crece un poco
+			Sfx.play("pieza_preseleccion", 0.03)
 		hovered.emit(self, true))
 	mouse_exited.connect(func() -> void:
 		_hover = false
@@ -161,6 +162,7 @@ func _gui_input(e: InputEvent) -> void:
 				shake()
 				locked_pressed.emit(self)
 			else:
+				Sfx.play("pieza_seleccion", 0.03)
 				GameState.drag.begin(piece_id, self)
 			accept_event()
 

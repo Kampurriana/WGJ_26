@@ -4,7 +4,8 @@ extends RefCounted
 ## sea satisfactoria y de mucho feedback"). Todo son muelles cortos con rebote:
 ##  - Botones: cualquier BaseButton se engancha solo al entrar en el árbol (main.gd llama a watch).
 ##    Al pasar el ratón crece un poco y se inclina; al pulsar se aplasta; al soltar rebota; con el
-##    mando, crece al tener el foco.
+##    mando, crece al tener el foco. Y suena: boton_preseleccion al entrar el puntero,
+##    boton_seleccion al pulsarlo (Sfx).
 ##  - pop_in: aparece desde pequeño con un saltito (paneles, páginas, avisos, fichas nuevas).
 ##  - stagger: los hijos de una lista aparecen uno tras otro.
 ##  - bounce: un golpe de escala (un número que cambia, algo que se consigue).
@@ -30,7 +31,9 @@ static func attach_button(b: BaseButton) -> void:
 	_keep_centered(b)
 	b.mouse_entered.connect(func() -> void:
 		if not b.disabled:
+			Sfx.play("boton_preseleccion", 0.0)
 			_to(b, HOVER, TILT, 0.22))
+	b.pressed.connect(func() -> void: Sfx.play("boton_seleccion", 0.0))
 	b.mouse_exited.connect(func() -> void:
 		_to(b, FOCUS if b.has_focus() else 1.0, 0.0, 0.25))
 	b.focus_entered.connect(func() -> void:

@@ -1136,6 +1136,18 @@ func _test_title_menu(main: Node) -> bool:
 	check(not star_glows, "la estrella del cerdito es solo una pegatina: ni luz ni brillo propio")
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
+	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar"]
+	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas y colocar")
+	var heard: Dictionary = Sfx.played.duplicate()
+	var free_card: InventoryItem = GameState.hud.cards(true)[0]
+	free_card.mouse_entered.emit()
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	free_card._gui_input(press)
+	GameState.drag.cancel()
+	check(_more(heard, "pieza_preseleccion") and _more(heard, "pieza_seleccion") and not _more(heard, "boton_preseleccion"),
+		"con el puntero sobre una ficha suena su preselección, y al cogerla, su selección")
 	_check_lighting(main, "res://iluminacion/menu.tscn", "el título")
 	var steps := 0
 	while not t.completed and steps < 40:
@@ -1143,6 +1155,7 @@ func _test_title_menu(main: Node) -> bool:
 		steps += 1
 		await get_tree().process_frame
 	check(t.completed, "el título se completa (%d pasos)" % steps)
+	check(int(Sfx.played.get("colocar", 0)) - int(heard.get("colocar", 0)) >= steps, "cada pieza que encaja suena al colocarla (las gemelas, después, al encajar cada una)")
 	await get_tree().process_frame
 	check(not (main.effects as Efectos).get_children().any(func(c: Node) -> bool: return c.name == "Luces" or c.name == "Destellos"),
 		"al completar el cerdito y pasar al menú, no salen partículas por delante")
@@ -1184,6 +1197,13 @@ func _test_title_menu(main: Node) -> bool:
 	check(Settings.language() == "es" and langs[0].button_pressed and not langs[1].button_pressed
 		and main.menu.buttons.jugar.tr(main.menu.buttons.jugar.text) == "Jugar" and main.menu.options.languages[0].button_pressed
 		and Narrator.voiced(), "y con Español vuelve todo al español, con voz")
+	heard = Sfx.played.duplicate()
+	main.menu.buttons.opciones.mouse_entered.emit()
+	main.menu.buttons.opciones.mouse_exited.emit()
+	_click(langs[1].get_global_rect().get_center())
+	_click(langs[0].get_global_rect().get_center())
+	check(_more(heard, "boton_preseleccion") and int(Sfx.played.get("boton_seleccion", 0)) - int(heard.get("boton_seleccion", 0)) == 2,
+		"los botones del menú suenan al pasar el puntero y al pulsarlos (una vez por clic)")
 	var waited := 0.0
 	while GameState.camera.cam.h_offset > -0.3 and waited < 1.5:
 		waited += get_process_delta_time()
@@ -1563,6 +1583,11 @@ func _wheel(button: MouseButton, pos: Vector2) -> void:
 
 
 ## Lee una clave del progreso guardado en disco (lo que vería la próxima partida).
+## Si el efecto ha sonado desde `before` (una copia de Sfx.played).
+func _more(before: Dictionary, sound: String) -> bool:
+	return int(Sfx.played.get(sound, 0)) > int(before.get(sound, 0))
+
+
 func _saved(path: String, key: String, default: Variant = null) -> Variant:
 	var cfg := ConfigFile.new()
 	if cfg.load(path) != OK:

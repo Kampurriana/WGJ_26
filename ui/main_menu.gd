@@ -135,9 +135,7 @@ func _add_languages(parent: Control) -> void:
 		OptionsPanel._pill_style(b, 16)
 		b.set_pressed_no_signal(entry[0] == Settings.language())
 		var lang: String = entry[0]
-		b.pressed.connect(func() -> void:
-			Sfx.play("click", 0.0)
-			Settings.set_value("idioma", lang))
+		b.pressed.connect(func() -> void: Settings.set_value("idioma", lang))
 		row.add_child(b)
 		languages.append(b)
 	parent.add_child(bar)
@@ -207,9 +205,7 @@ func _add_button(parent: Control, key: String, text: String, action: Callable) -
 	b.text = text
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT          # opciones en texto, alineadas bajo el logo
 	b.custom_minimum_size = Vector2(0, 46)
-	b.pressed.connect(func() -> void:
-		Sfx.play("click", 0.0)
-		action.call())
+	b.pressed.connect(action)                    # (su sonido, el de todo botón: ui/juice.gd)
 	parent.add_child(b)
 	buttons[key] = b
 	return b
