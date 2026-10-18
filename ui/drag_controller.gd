@@ -7,6 +7,8 @@ extends Node
 
 const MAGNET := 1.6              ## el imán empieza a 1,6 veces la distancia de encaje
 const START_AHEAD := 0.15        ## la caja sale un poco por delante de la cámara
+const PATH_SHRINK := 0.005       ## en el camino al hueco, la caja un pelín más pequeña (ver _update)
+const TOUCH := 0.006             ## meterse menos que esto en algo es tocarlo, no atravesarlo
 
 var piece_id: StringName = &""
 var _source: InventoryItem
@@ -82,12 +84,15 @@ func _update(pos: Vector2) -> void:
 	if t * t > 0.999:
 		_held.global_transform = goal            # imantada del todo: en su hueco
 		return
-	# El camino hacia el hueco también choca: si algo se cruza, la pieza se para ahí.
+	# El camino hacia el hueco también choca: si algo se cruza, la pieza se para ahí. La caja va un
+	# pelín encogida: la pieza suelta ya está tocando algo (el suelo), y Godot no choca con lo que la
+	# caja toca al salir: la pieza se metía en el suelo invisible por su borde (1 de cada 1000 puntos).
 	var toward := loose.interpolate_with(goal, t * t).origin - loose.origin
-	var q := _box_query(loose)
+	var q := _box_query(loose, PATH_SHRINK)
 	q.motion = toward
 	var r := cam.get_world_3d().direct_space_state.cast_motion(q)
-	_held.global_transform = loose.translated(toward * r[0])
+	var moved := loose.translated(toward * r[0])
+	_held.global_transform = loose if _overlaps(moved) else moved
 
 
 ## Dónde puede estar la pieza bajo el cursor sin meterse en nada: su caja viaja desde la cámara
@@ -100,12 +105,32 @@ func _free_transform(pos: Vector2, basis: Basis, cam: Camera3D) -> Transform3D:
 	q.motion = dir * _reach
 	var r := cam.get_world_3d().direct_space_state.cast_motion(q)
 	last_rested = r[0] < 1.0
-	return at_start.translated(q.motion * r[0])
+	var xf := at_start.translated(q.motion * r[0])
+	if _overlaps(xf):
+		# Con piezas grandes (una pared de 4 m) y un rayo largo, el barrido de Godot a veces se salta
+		# lo que cruza (visto: el suelo invisible, 1-3 puntos de cada 4000). Entonces se busca por el
+		# rayo, entre la cámara y ahí, el último sitio libre (comprobado con intersect_shape, exacto).
+		var lo := 0.0
+		var hi := r[0]
+		for i in 12:
+			var mid := (lo + hi) * 0.5
+			if _overlaps(at_start.translated(q.motion * mid)):
+				hi = mid
+			else:
+				lo = mid
+		xf = at_start.translated(q.motion * lo)
+	return xf
+
+
+## ¿La caja de la pieza, colocada como `xf`, se mete en alguna superficie? (Tocar no cuenta.)
+func _overlaps(xf: Transform3D) -> bool:
+	var q := _box_query(xf, TOUCH)
+	return not get_viewport().get_world_3d().direct_space_state.intersect_shape(q, 1).is_empty()
 
 
 ## Consulta física con la caja de la pieza colocada como `xf` (sin escala: la escala va al tamaño).
-func _box_query(xf: Transform3D) -> PhysicsShapeQueryParameters3D:
-	_shape.size = (_held_box.size * xf.basis.get_scale()).max(Vector3.ONE * 0.01)
+func _box_query(xf: Transform3D, shrink := 0.0) -> PhysicsShapeQueryParameters3D:
+	_shape.size = (_held_box.size * xf.basis.get_scale() - Vector3.ONE * shrink * 2.0).max(Vector3.ONE * 0.01)
 	var q := PhysicsShapeQueryParameters3D.new()
 	q.shape = _shape
 	q.collision_mask = Visuals.SURFACE_LAYER
