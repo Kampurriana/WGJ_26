@@ -490,6 +490,12 @@ MUTANTES = [
 	("M148 el consejo de lo de dentro sale con el mueble cerrado", "core/diorama.gd",
 		"\t\telif wanted and it.container != null and not hidden_inside:", "\t\telif wanted and it.container != null:",
 		"al abrir el baúl, lo que brilla es lo de dentro"),
+	("M149 el sol de la ventana entra sin la ventana", "core/luz_ventana.gd",
+		"\tvar want := 1.0 if _window_placed() else 0.0", "\tvar want := 1.0",
+		"el desván lleva la luz de la tarde"),
+	("M150 el cristal de la ventana tapa el sol", "core/luz_ventana.gd",
+		"\t\t\t\tm.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF", "\t\t\t\tpass",
+		"con la ventana puesta entra el sol"),
 ]
 
 solo = os.environ.get("SOLO")

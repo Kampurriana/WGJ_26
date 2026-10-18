@@ -52,8 +52,17 @@ const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. Son las carpetas de Assets/ de Drive: Pack01 (suelo, zócalos, correas,
 ## pilar; las de nombre de 3ds Max de FloorCeilingPlanks... son las mismas), Pack02 (techo y postes).
-## Pack03 (paredes, ventana, zócalos de arriba) y Pack04/05 aún no tienen texturas.
+## Pack04 (la funda del escritorio, la tele, el burro), Pack05 (el MP3, el jarrón y los pinceles), la
+## caja de música, las bombillitas y las polaroids (una textura de color cada una, POLAROIDS_<x>). Las
+## que se llaman como su carpeta (SM_Hat, SM_LitterBox, SM_Comoda...) no hace falta ponerlas aquí.
+## Pack03 (paredes, ventana, zócalos de arriba) aún no tiene texturas; la de la nutria (Otter), sin modelo.
 const CONJUNTOS := {
+	"Pack_04": ["SM_CoverDesk", "SM_TV", "SM_Burro"],
+	"Pack_05": ["SM_MP3", "SM_Vase", "SM_Brush"],
+	"Music_Box": ["SM_MusicBox"],
+	"Lights": ["SM_Lights", "SM_Cuerda", "SM_Bombilla"],
+	"POLAROIDS_PolaroidA": ["SM_PolaroidA"], "POLAROIDS_PolaroidB": ["SM_PolaroidB"],
+	"POLAROIDS_PolaroidC": ["SM_PolaroidC"], "POLAROIDS_PolaroidD": ["SM_PolaroidD"],
 	"Desk": ["SM_Desk"],
 	"Boxes": ["SM_Box", "SM_CoverBox"],
 	"LampStool": ["SM_Lamp", "SM_Stool"],

@@ -33,6 +33,8 @@ const ZONE_LIGHT := 0.8                      ## las luces de zona (sin bombilla:
 const ZONE_RANGE := 3.6
 
 var _art: Node3D                             ## el diorama de las artistas, instanciado (de él salen los muebles)
+var _window_box := AABB()                    ## la ventana del kit (por ella entra la luz de la tarde)
+const Estilo := preload("res://tools/estilo_kit.gd")
 
 
 func _initialize() -> void:
@@ -43,6 +45,7 @@ func _initialize() -> void:
 	_root = model
 	root.add_child(model)
 	await process_frame                          # (hasta el primer fotograma no están dentro del árbol)
+	_window_box = Visuals.global_aabb(_art.get_node("Arquitectura/SM_Window") as Node3D)
 	_base(model)
 	_structure(_node(model, "S_1_desvan", Vector3.ZERO))
 	_childhood(_node(model, "S_2_infancia", Vector3.ZERO))
@@ -51,6 +54,7 @@ func _initialize() -> void:
 	_epilogue(_node(model, "S_5_epilogo", Vector3.ZERO))
 	_clothesline_kit(model.get_node("S_2_infancia"))   # aparece con la infancia, como en el prototipo
 	_leftovers(model)
+	_unify_colors(model)
 	_own_all(model)
 	root.remove_child(model)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OFICIAL_MODEL_OUT.get_base_dir()))
@@ -84,7 +88,15 @@ func _initialize() -> void:
 	level.set("camera_yaw_max_deg", 60.0)
 	level.set("camera_pitch_min_deg", 10.0)
 	level.set("camera_pitch_max_deg", 55.0)
-	level.set("iluminacion", "res://iluminacion/desvan.tscn")
+	level.set("iluminacion", "res://iluminacion/desvan_tarde.tscn")
+	# La luz de la tarde que entra por la ventana (se enciende al poner la ventana).
+	var sun := Node3D.new()
+	sun.name = "LuzVentana"
+	sun.set_script(load("res://core/luz_ventana.gd"))
+	sun.set("ventana", Vector3(_window_box.get_center().x, _window_box.get_center().y, _window_box.position.z))
+	sun.set("tam_ventana", Vector2(_window_box.size.x, _window_box.size.y) * 0.86)
+	level.add_child(sun)
+	sun.owner = level
 	packed = PackedScene.new()
 	err = packed.pack(level)
 	if err == OK:
@@ -715,6 +727,22 @@ func _on_slope(x: float, z: float) -> Vector3:
 ## Lo que gira algo plano (su cara por -Y) para quedar pegado al faldón mirando a la habitación.
 func _slope_deg() -> float:
 	return rad_to_deg(atan2(ROOF_B.y - ROOF_A.y, ROOF_B.x - ROOF_A.x))
+
+
+## Las figuras provisionales (lo que el kit aún no tiene) con el mismo estilo que el kit (estilo_kit.gd):
+## su color mezclado con el tono cálido en la misma proporción y los mismos reflejos suaves, para que el
+## diorama se lea de una pieza (pedido del 18-oct: "que cromáticamente esté unificado").
+func _unify_colors(model: Node3D) -> void:
+	var done := {}
+	for m in Visuals.meshes_under(model):
+		var mat := (m.mesh.surface_get_material(0) if m.mesh is PrimitiveMesh or m.mesh is TextMesh else null) as StandardMaterial3D
+		if mat == null or done.has(mat) or mat.albedo_texture != null or mat.shading_mode == BaseMaterial3D.SHADING_MODE_UNSHADED or mat.metallic > 0.5:
+			continue
+		done[mat] = true
+		var c := mat.albedo_color
+		mat.albedo_color = Color(c.lerp(Estilo.TONO, Estilo.MEZCLA), c.a)
+		mat.metallic_specular = Estilo.ESPECULAR
+		mat.roughness = maxf(mat.roughness, 0.75)
 
 
 ## Dueño de todo lo nuevo y de lo traído del kit (lo de dentro de cada instancia sigue siendo suyo:

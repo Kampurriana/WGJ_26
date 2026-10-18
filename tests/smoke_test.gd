@@ -1646,6 +1646,13 @@ func _test_complete_shortcut(main: Node) -> void:
 	main.play_level(0)
 	await get_tree().process_frame
 	var d := GameState.diorama
+	await get_tree().process_frame
+	# La tarde de verano que entra por la ventana: apagada hasta poner la ventana.
+	var luz := d.get_node_or_null("LuzVentana") as LuzVentana
+	check(luz != null and luz.sol != null and luz.sol.shadow_enabled and luz.encendida == 0.0
+		and luz.sol.light_energy == 0.0 and not luz.haz.visible
+		and String(d.iluminacion).ends_with("desvan_tarde.tscn"),
+		"el desván lleva la luz de la tarde (desvan_tarde) y el sol de la ventana, con sombras, apagado hasta poner la ventana")
 	# F8: el capítulo en curso, de uno en uno (para probar cada capítulo suelto).
 	var f8 := func() -> void:
 		var k8 := InputEventKey.new()
@@ -1694,6 +1701,14 @@ func _test_complete_shortcut(main: Node) -> void:
 	await get_tree().create_timer(4.0).timeout
 	check(GameState.diorama == d and GameState.hud._done.visible and main._fade.color.a < 0.1,
 		"tras F9 el desván se queda a la vista (panel de fin, sin fundido a negro)")
+	var window_shadows := 0
+	for n in d.find_children("P_ventana*", "", true, false):
+		for m: GeometryInstance3D in n.find_children("*", "GeometryInstance3D", true, false):
+			if m.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF:
+				window_shadows += 1
+	check(luz != null and luz.encendida >= 1.0 and luz.sol.light_energy > luz.energia * 0.9 and luz.haz.visible
+		and luz.polvo.emitting and window_shadows == 0,
+		"con la ventana puesta entra el sol: encendido (%.2f), con su haz y su polvo, y el cristal no le hace sombra (%d)" % [luz.encendida if luz else -1.0, window_shadows])
 	Events.level_completed.disconnect(on_end)
 
 
