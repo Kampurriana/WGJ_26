@@ -106,11 +106,11 @@ Cerdito
 │                  P_cola__after-cuerpo, P_ranura__after-cuerpo, P_ojo__after-hocico (x2), P_mejillas__after-ojo,
 │                  P_lazo__after-oreja, P_pegatina_estrella__after-cuerpo (solo una pegatina, sin luz),
 │                  P_pegatina_corazon / _flor / _luna / _rayo / _arcoiris (__after-cuerpo)
-└─ Cartel          P_pegatina_nombre__after-cuerpo (el texto del nombre del juego, en una malla "Nombre-WOODO_JAM")
+└─ (sin cartel: el nombre del juego lo pone el logo del menú)
 ```
 Las pegatinas son formas planas con un poco de grosor, pegadas al cuerpo. Se pueden cambiar,
-quitar o añadir más (`P_pegatina_<lo que sea>__after-cuerpo`); la del nombre tiene que seguir
-llamándose así (el test comprueba que lleva el nombre del juego).
+quitar o añadir más (`P_pegatina_<lo que sea>__after-cuerpo`). El cerdito ya no lleva cartel con el
+nombre del juego (18-oct).
 Podéis cambiar formas, tamaños, posiciones y añadir o quitar dressing: el puzle se monta con lo
 que haya. Lo único que no se puede tocar sin avisar son los nombres de las piezas de la historia
 (sus frases van por nombre).

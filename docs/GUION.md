@@ -82,9 +82,9 @@ Dos momentos especiales:
 ## El título: la hucha de cerdito
 
 El puzle que desbloquea el menú es **la hucha de ella**, sobre un cojín (la misma que luego cierra
-la historia): 21 piezas. Primero el cuerpo; luego patas, hocico, orejas, cola, ranura, ojos,
+la historia): 20 piezas. Primero el cuerpo; luego patas, hocico, orejas, cola, ranura, ojos,
 coloretes y lazo; y sobre todo **pegatinas**: una estrella, corazón,
-flor, luna, rayo, arcoíris y la del nombre del juego, en el cartel de delante.
+flor, luna, rayo y arcoíris. Sin cartel con el nombre (18-oct): el nombre lo pone el logo del menú.
 
 ## Los dibujos escondidos (cuarta nota)
 

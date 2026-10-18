@@ -2,7 +2,8 @@ extends "res://tools/build_sample_level.gd"
 ## Genera el diorama del título: la HUCHA DE CERDITO de la protagonista, sobre un cojín, hecha
 ## piezas. Se monta como todo el juego (bandeja de la derecha, siluetas): primero el cuerpo; luego
 ## patas, hocico, orejas, cola, ojos, ranura, coloretes y lazo; y sobre todo PEGATINAS (estrella,
-## corazón, flor, luna, rayo, arcoíris y la del nombre del juego, en el cartel de delante). 21 piezas. Al acabar sale el menú. Ejecutar:
+## corazón, flor, luna, rayo y arcoíris). 20 piezas, sin cartel (el nombre lo pone el logo del menú). Al acabar
+## sale el menú. Ejecutar:
 ##   godot --headless --path . --script res://tools/build_title_level.gd
 ##
 ## Escribe DOS ficheros:
@@ -11,7 +12,6 @@ extends "res://tools/build_sample_level.gd"
 ##   levels/menu_titulo.tscn                  el nivel: solo el Diorama con sus ajustes; carga el
 ##                                            modelo al empezar
 ## Cuando exista assets/modelos/menu/menu.glb (el de las artistas), el nivel usa ese sin tocar nada.
-## Si cambia el nombre del juego (project.godot), volver a ejecutar esto para rehacer la pegatina.
 
 const TITLE_OUT := "res://levels/menu_titulo.tscn"
 const MODEL_OUT := "res://levels/provisional/menu_provisional.glb"
@@ -26,7 +26,6 @@ var _mats: Dictionary = {}
 
 
 func _initialize() -> void:
-	var title := String(ProjectSettings.get_setting("application/config/name", "Diorama"))
 	var model := Node3D.new()
 	model.name = "Cerdito"
 	_root = model                                   # _own() de la muestra se adueña desde aquí
@@ -35,7 +34,6 @@ func _initialize() -> void:
 	pig.rotation_degrees.y = PIG_YAW
 	_build_pig(pig)
 	_build_stickers(pig)
-	_build_sign(model, title)
 	_own(model)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(MODEL_OUT.get_base_dir()))
 	var doc := GLTFDocument.new()
@@ -62,7 +60,7 @@ func _initialize() -> void:
 	level.set("camera_max_distance", 6.5)
 	level.set("camera_pitch_deg", 18.0)
 	level.set("camera_yaw_deg", 0.0)
-	level.set("camera_yaw_min_deg", -55.0)          ## las pegatinas y el cartel tienen que verse
+	level.set("camera_yaw_min_deg", -55.0)          ## las pegatinas tienen que verse
 	level.set("camera_yaw_max_deg", 55.0)
 	level.set("camera_pitch_min_deg", 6.0)
 	level.set("camera_pitch_max_deg", 55.0)
@@ -175,29 +173,6 @@ func _build_stickers(pig: Node3D) -> void:
 	for i in bands.size():
 		var r := 0.11 - i * 0.017
 		_flat(rainbow, "Banda%d" % i, _arc(r, r - 0.017), bands[i], false, 0.012 + i * 0.001)
-
-
-## El cartel de delante, con la pegatina del nombre del juego.
-func _build_sign(root: Node3D, title: String) -> void:
-	var sign := _node(root, "Cartel", Vector3(0.05, 0.19, 0.88))
-	sign.rotation_degrees.x = -14.0
-	_box(sign, "Tabla", Vector3(0, 0.15, 0), Vector3(1.0, 0.3, 0.05), Color(0.66, 0.46, 0.28))
-	for x in [-0.42, 0.42]:
-		_box(sign, "Clavo%d" % int(x > 0), Vector3(x, 0.15, 0.027), Vector3(0.02, 0.02, 0.01), Color(0.3, 0.3, 0.32))
-	var piece := _node(sign, "P_pegatina_nombre__after-cuerpo", Vector3(0, 0.15, 0.03))
-	piece.rotation_degrees.z = -3.0
-	_flat(piece, "Fondo", _rounded_rect(Vector2(0.78, 0.2), 0.05), Color(0.98, 0.94, 0.84))
-	var tm := TextMesh.new()
-	tm.text = title.to_upper()
-	tm.font_size = 64
-	tm.depth = 0.008
-	tm.pixel_size = 0.0021
-	tm.material = _material(Color(0.42, 0.24, 0.18))
-	var text := MeshInstance3D.new()
-	text.name = "Nombre-" + title.to_upper().replace(" ", "_")   # el test lee el nombre de aquí
-	text.mesh = tm
-	text.position = Vector3(0, -0.005, 0.009)
-	piece.add_child(text)
 
 
 ## Una pieza-pegatina pegada al cuerpo en (x, y) del lado que se ve, girada `roll` grados.

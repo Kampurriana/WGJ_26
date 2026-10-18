@@ -1046,7 +1046,8 @@ func _test_title_menu(main: Node) -> bool:
 	var stickers := t.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("pegatina_")).size()
 	check(_slot(t, &"cuerpo") != null and _slot(t, &"hocico") != null and stickers >= 6,
 		"el título es la hucha de cerdito, con pegatinas para decorarla (%d pegatinas)" % stickers)
-	check(_title_name(t) == GameState.game_title().to_upper().replace(" ", "_"), "la pegatina del cartel lleva el nombre del juego (%s)" % _title_name(t))
+	check(_slot(t, &"pegatina_nombre") == null and t.find_child("Cartel", true, false) == null,
+		"el cerdito no lleva cartel con el nombre (el nombre lo pone el logo del menú)")
 	check(t.count_of(&"pata") == 4 and _slots_with(t, &"pata") == 4, "las patas repetidas son la misma pieza: cuatro que valen en cualquier hueco de pata")
 	var star := _slot(t, &"pegatina_estrella")
 	var star_glows := star == null or not star.lights().is_empty()
@@ -1515,16 +1516,6 @@ func _mouse_move(pos: Vector2) -> void:
 	e.global_position = pos
 	e.button_mask = MOUSE_BUTTON_MASK_LEFT
 	get_viewport().push_input(e, true)
-
-
-## El nombre que lleva la pegatina del cartel del título (su malla se llama "Nombre-WOODO_JAM").
-func _title_name(d: Diorama) -> String:
-	var sticker := _slot(d, &"pegatina_nombre")
-	if sticker == null:
-		return ""
-	for n in sticker.node.find_children("Nombre-*", "", true, false):
-		return String(n.name).trim_prefix("Nombre-")
-	return ""
 
 
 func _slots_with(d: Diorama, id: StringName) -> int:
