@@ -1147,6 +1147,10 @@ func _unhandled_input(e: InputEvent) -> void:
 		GameState.drag.cancel()
 		GameState.diorama.debug_complete()
 		get_viewport().set_input_as_handled()
+	elif e.is_action_pressed("complete_chapter") and GameState.DEBUG_SHORTCUTS and GameState.diorama != null:
+		GameState.drag.cancel()
+		GameState.diorama.debug_complete_chapter()
+		get_viewport().set_input_as_handled()
 	elif e.is_action_pressed("back"):
 		if GameState.diorama != null and GameState.diorama.focus != null:
 			_on_back()

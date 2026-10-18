@@ -1181,6 +1181,59 @@ func debug_complete() -> void:
 	_check_completed()
 
 
+## (Atajo F8) Acaba de golpe el capítulo en curso, para probar cada uno suelto: sus piezas en su sitio
+## (con su pintura), lo que guardaba ya puesto y sus dibujos en la cuerda, sin frases ni primeros planos.
+## Luego sigue como si se hubiera acabado jugando (su logro, el «Continuar» del siguiente). Si el
+## siguiente ya esperaba al «Continuar», lo abre sin rótulo de espera. Devuelve la sección que ha
+## acabado o abierto (null si no había nada que hacer).
+func debug_complete_chapter() -> Section:
+	if completed:
+		return null
+	Narrator.clear()
+	Events.act_continued.emit()                  # (si estaba en un primer plano, se acaba)
+	if _pending != null:
+		_waiting_act = null
+		var next := _pending
+		_open_pending(next)
+		_reveal_pending(next)
+		return next
+	var sec: Section = null
+	for s in sections:
+		if s.opened and not s.completed:
+			sec = s
+			break
+	if sec == null:
+		return null
+	while focus != null:
+		exit_focus()
+	for d in sec.decor:                          # si aún crecía, ya a su tamaño
+		Visuals.stop_growing(d)
+	for s in sec.slots:
+		if not s.filled:
+			s.filled = true
+			inventory.erase(s.id)
+			s.fill()
+			for m in s.meshes():
+				Visuals.add_surface(m)
+			_reveal_around(s.center())
+	for it in sec.interactables:
+		if it.kind == NameRules.PICKUP and not it.collected:
+			it.collected = true                  # lo guardado ya está puesto: no hace falta buscarlo
+			it.set_clickable(false)
+			it.set_attention(false)
+			it.target.hide()
+		elif it.kind == NameRules.COLLECTIBLE and not it.collected:
+			it.collected = true
+			it.set_clickable(false)
+			_given.erase(it)
+			_hang(it, collectibles_found() - 1, false)
+	_refresh(false)
+	Events.inventory_changed.emit()
+	_check_sections()
+	_check_completed()
+	return sec
+
+
 func debug_solve_step() -> bool:
 	if completed:
 		return false
