@@ -1,8 +1,8 @@
-[gd_resource type="StandardMaterial3D" format=3]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://brns4jw2lmbxi"]
 
-[ext_resource type="Texture2D" path="res://assets/kit/texturas/Desk/T_Desk_BC.png" id="1_nfs2a"]
-[ext_resource type="Texture2D" path="res://assets/kit/texturas/Desk/T_Desk_ARM.png" id="2_3m0is"]
-[ext_resource type="Texture2D" path="res://assets/kit/texturas/Desk/T_Desk_Normal.png" id="3_y6k2g"]
+[ext_resource type="Texture2D" uid="uid://bbk4hr2uqmped" path="res://assets/kit/texturas/Desk/T_Desk_BC.png" id="1_nfs2a"]
+[ext_resource type="Texture2D" uid="uid://dn7muujik1oyr" path="res://assets/kit/texturas/Desk/T_Desk_ARM.png" id="2_3m0is"]
+[ext_resource type="Texture2D" uid="uid://l635edv1dade" path="res://assets/kit/texturas/Desk/T_Desk_Normal.png" id="3_y6k2g"]
 
 [resource]
 resource_name = "M_Desk"
