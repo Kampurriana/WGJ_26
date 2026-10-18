@@ -1639,12 +1639,40 @@ func _test_back_to_menu(main: Node) -> void:
 
 
 ## Los niveles de verdad (data/levels.json): cargan, cada pieza tiene su modelo, y se completan.
-## F9 (atajo de prueba) monta el desván entero de golpe y se queda a la vista, sin fundido.
+## F8 (atajo de prueba) acaba el capítulo en curso; F9 monta el desván entero de golpe y se queda a la
+## vista, sin fundido.
 func _test_complete_shortcut(main: Node) -> void:
 	GameState.levels = PackedStringArray(["res://levels/level_01_desvan.tscn"])
 	main.play_level(0)
 	await get_tree().process_frame
 	var d := GameState.diorama
+	# F8: el capítulo en curso, de uno en uno (para probar cada capítulo suelto).
+	var f8 := func() -> void:
+		var k8 := InputEventKey.new()
+		k8.physical_keycode = KEY_F8
+		k8.pressed = true
+		get_viewport().push_input(k8, true)
+	var first := d.sections[0]
+	var tries := 0
+	while not first.completed and tries < 3:
+		f8.call()
+		await get_tree().process_frame
+		tries += 1
+	check(first.completed and first.is_full() and not d.sections[1].opened and d.act_waiting() and not d.completed,
+		"F8 acaba solo el capítulo en curso (el primero): sus piezas puestas y el siguiente espera al «Continuar»")
+	f8.call()
+	await get_tree().process_frame
+	var kid := d.sections[1]
+	check(kid.opened or kid.opening, "con el capítulo acabado, F8 abre el siguiente sin esperar")
+	await get_tree().create_timer(0.3).timeout
+	f8.call()
+	await get_tree().process_frame
+	var kid_things := kid.interactables.filter(func(it: Interactable) -> bool:
+		return it.kind == NameRules.PICKUP or it.kind == NameRules.COLLECTIBLE)
+	check(kid.completed and kid.is_full() and not d.sections[2].opened and d.act_waiting()
+		and kid_things.all(func(it: Interactable) -> bool: return it.collected)
+		and d.collectibles_found() == kid_things.filter(func(it: Interactable) -> bool: return it.kind == NameRules.COLLECTIBLE).size(),
+		"y otra vez F8 acaba ese (%s) entero, con lo que guardaba y sus dibujos en la cuerda (%d); el resto, sin abrir" % [kid.name, d.collectibles_found()])
 	var ended := [false]
 	var on_end := func(_d: Node) -> void: ended[0] = true
 	Events.level_completed.connect(on_end)

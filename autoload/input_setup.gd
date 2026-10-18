@@ -21,6 +21,7 @@ const ACTIONS := {
 	"hint": [[K, KEY_H], [B, JOY_BUTTON_Y]],
 	"back": [[K, KEY_ESCAPE], [K, KEY_BACKSPACE], [B, JOY_BUTTON_B]],
 	"complete_all": [[K, KEY_F9]],                  # atajo de prueba (GameState.DEBUG_SHORTCUTS)
+	"complete_chapter": [[K, KEY_F8]],              # atajo de prueba: el capítulo en curso (DEBUG_SHORTCUTS)
 }
 
 
