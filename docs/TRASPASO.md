@@ -152,7 +152,9 @@ carpeta. Si no, parar y preguntar.
 - **Notas del 18-oct (libreta):** la pista señala la siguiente pieza de la bandeja, y la flecha
   solo sale si lleva mucho rato sin poner ninguna; logros secretos (speedrunner en 2 min y «Alma de
   artista»: un minuto con cada uno de dos fondos distintos); el aviso de logro con el cerdito; la
-  lista de logros más visual; el final del espejo, de cine (bandas que se cierran); el capítulo
+  lista de logros más visual; el final del espejo se probó con bandas que se cierran y el equipo
+  prefirió el fundido a negro de antes (vuelto a dejar); los cajones del escritorio se ponen como
+  piezas (el de la solicitud no se abre hasta ponerlo); el capítulo
   siguiente sale cuando la jugadora pulsa «Continuar» (un clic mientras habla apaga la voz con un
   fundido); el historial de diálogos en la pausa.
 

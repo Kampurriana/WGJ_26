@@ -23,6 +23,7 @@ extends "res://tools/build_attic_level.gd"
 ## Escribe levels/desvan/desvan_oficial.tscn (el modelo) y levels/level_01_desvan.tscn (el nivel).
 
 const KIT_DIORAMA := "res://preview/diorama_kit.tscn"
+const MESHES_OUT := "res://levels/desvan/mallas/"        ## los trozos del MP3 y de la hucha (sus mallas)
 const OFICIAL_MODEL_OUT := "res://levels/desvan/desvan_oficial.tscn"
 const OFICIAL_LEVEL_OUT := "res://levels/level_01_desvan.tscn"
 const FLOOR := 0.15                          ## el suelo de tablones del kit está a esta altura
@@ -42,6 +43,7 @@ func _initialize() -> void:
 	_root = model
 	root.add_child(model)
 	await process_frame                          # (hasta el primer fotograma no están dentro del árbol)
+	_base(model)
 	_structure(_node(model, "S_1_desvan", Vector3.ZERO))
 	_childhood(_node(model, "S_2_infancia", Vector3.ZERO))
 	_teen(_node(model, "S_3_adolescencia", Vector3.ZERO))
@@ -92,53 +94,113 @@ func _initialize() -> void:
 	quit(0 if err == OK else 1)
 
 
+## La peana (provisional: el kit no la tiene): el desván se monta encima, como en Woodo y en el
+## prototipo; con la forma en L del suelo, por debajo de los tablones. Se ve desde el principio y en ella
+## se apoya la pieza en mano antes de que haya suelo.
+func _base(model: Node3D) -> void:
+	var base := _node(model, "Peana", Vector3.ZERO)
+	_box(base, "Centro", Vector3(0.0, -0.09, 0.5), Vector3(6.44, 0.18, 4.44), WOOD_DARK)
+	_box(base, "Delante", Vector3(-2.1, -0.09, 3.2), Vector3(2.24, 0.18, 1.0), WOOD_DARK)
+	_box(base, "Entrante", Vector3(2.0, -0.09, -2.7), Vector3(2.44, 0.18, 1.98), WOOD_DARK)
+
+
 # --- Sección 1: el desván (estructura) y la hucha ----------------------------------------------
 
+## Cada pieza del kit, la suya (pedido del 18-oct: "que todo sea un puzle"); las que son iguales o del
+## mismo tipo comparten nombre, y al poner una se ponen todas (Diorama.place, twins_of).
 func _structure(sec: Node3D) -> void:
 	# Los tablones: tres largos (los del entrante, 6 m; los de la izquierda, 5 m; los del centro, 4 m).
 	var kinds := {"FloorPlanks015": "largo", "FloorPlanks013": "medio", "FloorPlanks014": "corto"}
 	for base: String in kinds:
+		var planks: Array = []
 		for k in 4:
-			var kit_name := base if k == 0 else "%s_%d" % [base, k + 1]
-			var piece := "P_tablon_%s%s" % [kinds[base], "" if k == 0 else "_%03d" % k]
-			_piece(sec, piece, ["Arquitectura/" + kit_name])
-	_piece(sec, "P_pared_fondo", ["Arquitectura/SM_WallA", "Arquitectura/SM_SkirtingBoardJ"])
-	_piece(sec, "P_pared_lateral", ["Arquitectura/SM_WallB", "Arquitectura/SM_Pillar", "Arquitectura/SM_Pillar_2",
-		"Arquitectura/SM_SkirtingBoardTopA", "Arquitectura/SM_SkirtingBoardTopA_2", "Adornos/CuerdaEntrante"])
-	_piece(sec, "P_pared_rincon", ["Arquitectura/SM_WallC", "Arquitectura/SM_Pillar_3",
-		"Arquitectura/SM_SkirtingBoardL", "Arquitectura/SM_SkirtingBoardTopA_3"])
+			planks.append("Arquitectura/" + (base if k == 0 else "%s_%d" % [base, k + 1]))
+		_each(sec, "tablon_" + kinds[base], planks)
+	_each(sec, "borde_suelo", ["SB020", "SB021", "SB022", "SB023", "SB024", "SB025", "SB026", "SB029", "SB029_2",
+		"SB030", "SB033", "SB034"].map(func(n: String) -> String: return "Arquitectura/" + n))
+	_piece(sec, "P_pared_fondo", ["Arquitectura/SM_WallA"])
+	_piece(sec, "P_pared_lateral", ["Arquitectura/SM_WallB"])
+	_piece(sec, "P_pared_rincon", ["Arquitectura/SM_WallC"])
+	_each(sec, "pilar__after-pared_fondo", ["Arquitectura/SM_Pillar", "Arquitectura/SM_Pillar_2", "Arquitectura/SM_Pillar_3"])
+	_each(sec, "rodapie__after-pared_fondo", ["Arquitectura/SM_SkirtingBoardI", "Arquitectura/SM_SkirtingBoardJ",
+		"Arquitectura/SM_SkirtingBoardL", "Arquitectura/SM_SkirtingBoardTopA"])
+	_each(sec, "moldura__after-pared_lateral", ["Arquitectura/SM_SkirtingBoardTopA_2", "Arquitectura/SM_SkirtingBoardTopA_3"])
 	_piece(sec, "P_ventana__after-pared_fondo", ["Arquitectura/SM_Window"])
-	_piece(sec, "P_cumbrera__after-pared_fondo__after-pared_lateral", ["Arquitectura/CeilingSupport020_2"])
-	var rafters := ["A", "B", "C", "D"]
-	for k in 4:
-		_piece(sec, "P_viga__after-cumbrera" + ("" if k == 0 else "_%03d" % k),
-			["Arquitectura/SM_CeilingSupportVertical" + rafters[k]])
-	_piece(sec, "P_tejado__after-cumbrera", ["Arquitectura/SM_Ceiling", "Arquitectura/CeilingSupport018",
-		"Arquitectura/CeilingSupport021", "Arquitectura/CeilingSupport020", "Arquitectura/CeilingSupport014",
-		"Arquitectura/CeilingSupport015", "Arquitectura/CeilingSupport016", "Arquitectura/CeilingSupport017",
-		"Arquitectura/SM_SkirtingBoardI", "Adornos/CuerdaFaldon"])        # (con la cuerda de bombillitas que cuelga de él)
-	# La hucha, en el centro sobre una caja del kit (el baúl viejo: lo que la sostiene en el final).
+	_each(sec, "cumbrera__after-pared_fondo__after-pared_lateral", ["Arquitectura/CeilingSupport020_2", "Arquitectura/CeilingSupport020"])
+	_each(sec, "viga__after-cumbrera", ["A", "B", "C", "D"].map(func(k: String) -> String: return "Arquitectura/SM_CeilingSupportVertical" + k))
+	_each(sec, "poste__after-cumbrera", ["014", "015", "016", "017"].map(func(k: String) -> String: return "Arquitectura/CeilingSupport" + k))
+	_each(sec, "correa__after-viga", ["Arquitectura/CeilingSupport018", "Arquitectura/CeilingSupport021"])
+	_piece(sec, "P_tejado__after-cumbrera", ["Arquitectura/SM_Ceiling"])
+	# Las cuerdas de bombillitas (apagadas): cada tramo y cada bombilla, su pieza.
+	var ropes: Array = []
+	var bulbs: Array = []
+	for rope in ["Adornos/CuerdaFaldon/SM_Cuerda", "Adornos/CuerdaFaldon/SM_Cuerda2", "Adornos/CuerdaFaldon/SM_Cuerda3",
+			"Adornos/CuerdaEntrante/SM_Cuerda"]:
+		ropes.append(rope)
+		for c in _added(rope):
+			bulbs.append("%s/%s" % [rope, c.name])
+	_each(sec, "bombilla__after-guirnalda", bulbs)
+	_each(sec, "guirnalda__after-tejado", ropes)
+	# La hucha, en el centro sobre una caja del kit (el baúl viejo: lo que la sostiene en el final). El
+	# cerdito del kit viene en 12 trozos: se montan en su rincón (Z_, primer plano), delante de la caja;
+	# entero, va a la bandeja, y se pone el último encima de su caja.
 	var trunk := _take("Muebles/SM_BoxB", _root, "BaulViejo")
-	trunk.global_position = Vector3(0.45, FLOOR, 1.95)
+	trunk.global_position = Vector3(0.45, FLOOR, 1.72)
 	trunk.rotation_degrees.y = 8.0
 	var top := Visuals.global_aabb(trunk).end.y
-	var pig := _piece(sec, "P_hucha__clave", ["Muebles/SM_ComodaA/SM_Pig"], Vector3(0.45, top, 1.95))
+	var pig := _piece(sec, "P_hucha__clave", ["Muebles/SM_ComodaA/SM_Pig"], Vector3(0.45, top, 1.72))
 	var kit_pig := pig.get_child(0) as Node3D
-	kit_pig.global_position = Vector3(0.45, top, 1.95)
-	kit_pig.global_rotation_degrees = Vector3(0, 20.0, 0)
+	kit_pig.global_position = Vector3(0.45, top, 1.72)
+	kit_pig.global_rotation_degrees = Vector3(0, 200.0, 0)                       # de cara al jugador
 	kit_pig.global_position.y += top - Visuals.global_aabb(kit_pig).position.y   # apoyada justo encima (el final busca lo que la sostiene)
+	_pig_bench(sec, kit_pig, Vector3(0.45, FLOOR, 2.33))
+
+
+## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 12 trozos, cada uno su pieza (las patas, las
+## orejas y los ojos, iguales), montados donde van; primero el cuerpo.
+func _pig_bench(sec: Node3D, pig: Node3D, at: Vector3) -> void:
+	var bench := _node(sec, "Z_montaje_hucha__reward-hucha__monta", at)
+	bench.rotation_degrees.y = 200.0
+	var parts := {"SM_PigA": "pata_hucha", "SM_PigB": "pata_hucha", "SM_PigC": "pata_hucha", "SM_PigD": "pata_hucha",
+		"SM_PigE": "cuerpo_hucha", "SM_PigF": "oreja_hucha", "SM_PigG": "oreja_hucha", "SM_PigH": "hocico_hucha",
+		"SM_PigI": "ojo_hucha", "SM_PigJ": "ojo_hucha", "SM_PigK": "ranura_hucha", "SM_PigL": "cola_hucha"}
+	var used := {}
+	for m in Visuals.meshes_under(pig):
+		var part: String = parts[String(m.name)]
+		var n: int = used.get(part, 0)
+		used[part] = n + 1
+		var tokens := "" if part == "cuerpo_hucha" else "__after-cuerpo_hucha"
+		var piece := _node(bench, "P_%s%s%s" % [part, tokens, "" if n == 0 else "_%03d" % n], Vector3.ZERO)
+		var copy := m.duplicate() as MeshInstance3D
+		copy.transform = _rel(m, pig)
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(MESHES_OUT))
+		var path := MESHES_OUT + "hucha_%s.res" % String(m.name).trim_prefix("SM_Pig").to_lower()
+		ResourceSaver.save(m.mesh.duplicate(), path)   # (su malla, en su fichero: la de la hucha es de su escena)
+		copy.mesh = load(path)
+		piece.add_child(copy)
 
 
 # --- Sección 2: la infancia (izquierda) ----------------------------------------------------------
 
 func _childhood(sec: Node3D) -> void:
 	_zone_light(sec, Vector3(-1.6, 2.6, 1.6))
-	_piece(sec, "P_caja_musica__after-comoda_infantil", ["Muebles/SM_ComodaA/SM_MusicBox"])   # (antes de mover la cómoda)
-	var dresser := _piece(sec, "P_comoda_infantil", ["Muebles/SM_ComodaA"])
-	assert(dresser.get_child(0).get_node_or_null("SM_ComodaB") != null, "la cómoda sin sus cajones")
+	# (lo que va encima o dentro de un mueble, antes de mover el mueble)
+	_piece(sec, "P_caja_musica__after-comoda_infantil", ["Muebles/SM_ComodaA/SM_MusicBox"])
+	_each(sec, "cajon_comoda__after-comoda_infantil", ["Muebles/SM_ComodaA/SM_ComodaB", "Muebles/SM_ComodaA/SM_ComodaC",
+		"Muebles/SM_ComodaA/SM_ComodaD"])
+	_piece(sec, "P_comoda_infantil", ["Muebles/SM_ComodaA"])
 	_piece(sec, "P_dibujo__after-caja_musica", ["Adornos/Dibujo_t_draw_03"])
 	_piece(sec, "P_tele", ["Muebles/SM_TV"])
 	_piece(sec, "P_cama_gato", ["Muebles/SM_CatBed"])
+	_piece(sec, "P_arenero", ["Muebles/SM_LitterBox"])
+	# Las cajas del fondo: cada caja y cada tapa, su pieza (la de encima, después de las tapas).
+	var covers: Array = []
+	for box in ["Muebles/SM_BoxA", "Muebles/SM_BoxE", "Muebles/SM_BoxD_2"]:
+		for c in _added(box):
+			covers.append("%s/%s" % [box, c.name])
+	_each(sec, "tapa_caja__after-caja", covers)
+	_piece(sec, "P_caja_encima__after-tapa_caja", ["Muebles/SM_BoxD_2"])
+	_each(sec, "caja", ["Muebles/SM_BoxA", "Muebles/SM_BoxE", "Muebles/SM_BoxD", "Muebles/SM_BoxD_3"])
 	var rug := _node(sec, "P_alfombra_infancia", Vector3(-1.5, FLOOR + 0.012, 1.65))
 	_cyl(rug, "Alfombra", Vector3.ZERO, 0.62, 0.015, PASTEL_PINK)
 	_cyl(rug, "Circulo", Vector3(0, 0.002, 0), 0.4, 0.015, PASTEL_BLUE)
@@ -172,15 +234,19 @@ func _childhood(sec: Node3D) -> void:
 ## La caja de juguetes: una caja del kit cuya tapa se levanta (OR_, bisagra atrás) y guarda los cubos y
 ## el dibujo de la casa (apoyado en el fondo: tumbado no se vería, trampa 34).
 func _toy_chest(sec: Node3D) -> void:
-	var stacked := _take("Adornos/SM_BoxC/SM_BoxE", _root, "CajaApilada")   # la que llevaba encima, a la esquina
+	# La que llevaba encima, a la esquina (su caja y su tapa, piezas como las otras).
+	var stacked := _art.get_node("Adornos/SM_BoxC/SM_BoxE") as Node3D
 	stacked.global_position = Vector3(-2.72, FLOOR, 3.28)
+	_each(sec, "tapa_caja__after-caja", ["Adornos/SM_BoxC/SM_BoxE/SM_CoverBoxE"], 3)
+	_each(sec, "caja", ["Adornos/SM_BoxC/SM_BoxE"], 4)
+	# La caja y la tapa son piezas; la tapa va dentro del OR_: la caja no se abre sin ella.
 	var chest := _node(sec, "BaulJuguetes", Vector3.ZERO)
-	var box := _take("Adornos/SM_BoxC", chest)
-	var cover := box.get_node("SM_CoverBoxC") as Node3D
-	var body := Visuals.global_aabb(box)
+	var cover := _art.get_node("Adornos/SM_BoxC/SM_CoverBoxC") as Node3D
+	var body := Visuals.global_aabb(_art.get_node("Adornos/SM_BoxC") as Node3D)
 	var lid_box := Visuals.global_aabb(cover)
 	var lid := _node(chest, "OR_tapa_baul__x", Vector3(body.get_center().x, lid_box.position.y, body.position.z))
-	cover.reparent(lid, true)
+	_each(lid, "tapa_caja__after-caja", ["Adornos/SM_BoxC/SM_CoverBoxC"], 4)
+	_each(chest, "caja", ["Adornos/SM_BoxC"], 5)
 	var floor_y := body.position.y + 0.03
 	var blocks := _node(chest, "H_cubos", Vector3(body.get_center().x, floor_y, body.get_center().z + 0.04))
 	_blocks(blocks)
@@ -212,19 +278,27 @@ func _otter(otter: Node3D) -> void:
 func _teen(sec: Node3D) -> void:
 	_zone_light(sec, Vector3(-0.3, 2.8, -0.2))
 	_piece(sec, "P_alfombra_adolescencia", ["Adornos/SM_Rug"])
-	# El escritorio del kit y sus cajones (decorado: se ven aunque el escritorio aún sea silueta). En el
-	# de arriba, la inscripción a Bellas Artes.
+	# El escritorio del kit y sus cajones, que también hay que poner (después del escritorio: los dos de
+	# estrella son iguales, el del pomo va aparte). El de arriba se abre (OD_) y guarda la inscripción a
+	# Bellas Artes: su cajón-pieza va dentro del OD_, que no se abre hasta que está puesto.
 	var desk := _art.get_node("Muebles/SM_DeskA") as Node3D
 	var drawers := _node(sec, "Cajones", Vector3.ZERO)
 	var top_drawer := _node(drawers, "OD_cajon_escritorio", (desk.get_node("SM_DeskC") as Node3D).global_position)
-	_take("Muebles/SM_DeskA/SM_DeskC", top_drawer)
-	_take("Muebles/SM_DeskA/SM_DeskD", drawers, "Cajon1")
-	_take("Muebles/SM_DeskA/SM_DeskC2", drawers, "Cajon2")
-	var drawer_box := Visuals.global_aabb(top_drawer)
+	var drawer_box := Visuals.global_aabb(desk.get_node("SM_DeskC") as Node3D)
+	_piece(top_drawer, "P_cajon__after-escritorio", ["Muebles/SM_DeskA/SM_DeskC"])
+	_piece(drawers, "P_cajon_pomo__after-escritorio", ["Muebles/SM_DeskA/SM_DeskD"])
+	_piece(drawers, "P_cajon__after-escritorio_001", ["Muebles/SM_DeskA/SM_DeskC2"])
 	_application(_node(top_drawer, "H_solicitud", Vector3(drawer_box.get_center().x, drawer_box.end.y - 0.05, drawer_box.get_center().z) - top_drawer.global_position), true)
-	_piece(sec, "P_escritorio", ["Muebles/SM_DeskA", "Muebles/SM_CoverDesk", "Muebles/SM_Vase"])
+	# Lo de encima del escritorio, cada cosa su pieza: el tapete, el bote y sus lápices (iguales).
+	_each(sec, "lapiz__after-bote", ["Muebles/SM_Vase/SM_BrushA", "Muebles/SM_Vase/SM_BrushB", "Muebles/SM_Vase/SM_BrushC"])
+	_piece(sec, "P_bote__after-escritorio", ["Muebles/SM_Vase"])
+	_piece(sec, "P_tapete__after-escritorio", ["Muebles/SM_CoverDesk"])
+	_piece(sec, "P_escritorio", ["Muebles/SM_DeskA"])
 	var top := Visuals.global_aabb(desk).end.y
-	_piece(sec, "P_mp3__after-escritorio", ["Muebles/SM_MP3"])
+	# El MP3 viene en trozos: se monta en su banco (Z_, primer plano), en la alfombra, y entero se pone
+	# en el escritorio.
+	var mp3 := _piece(sec, "P_mp3__after-escritorio", ["Muebles/SM_MP3"])
+	_mp3_bench(sec, mp3.get_child(0) as Node3D, Vector3(-0.42, FLOOR + 0.025, 0.55))
 	_piece(sec, "P_fotos__after-mp3", ["Muebles/SM_Polaroid"])
 	var lamp := _piece(sec, "P_lampara__after-escritorio", ["Adornos/SM_Lamp"])
 	_lamp_light(lamp)
@@ -274,26 +348,29 @@ func _teen(sec: Node3D) -> void:
 	hole.rotation_degrees.x = 90.0
 	_box(guitar, "Mastil", Vector3(0, 0.62, 0), Vector3(0.05, 0.42, 0.025), WOOD_DARK)
 	_box(guitar, "Pala", Vector3(0, 0.86, 0), Vector3(0.07, 0.1, 0.025), WOOD_DARK)
-	# La cámara está guardada en una caja del kit con tapa (OR_, bisagra atrás), junto al escritorio.
+	# La cámara está guardada en una caja del kit con tapa (OR_, bisagra atrás), junto al escritorio; la
+	# caja y la tapa, piezas (la tapa dentro del OR_: sin ella, la caja no se abre).
 	var cam_box := _node(sec, "CajaCamara", Vector3.ZERO)
-	var box := _take("Adornos/SM_BoxB", cam_box)
-	var cover := box.get_node("SM_CoverBoxB") as Node3D
-	var body := Visuals.global_aabb(box)
+	var cover := _art.get_node("Adornos/SM_BoxB/SM_CoverBoxB") as Node3D
+	var body := Visuals.global_aabb(_art.get_node("Adornos/SM_BoxB") as Node3D)
 	var lid_box := Visuals.global_aabb(cover)
 	var lid := _node(cam_box, "OR_tapa_caja__x", Vector3(body.get_center().x, lid_box.position.y, body.position.z))
-	cover.reparent(lid, true)
+	_piece(lid, "P_tapa_camara__after-caja_camara", ["Adornos/SM_BoxB/SM_CoverBoxB"])   # (otros nombres que las de la
+	_piece(cam_box, "P_caja_camara", ["Adornos/SM_BoxB"])                               # infancia: after-x mira todo el desván)
 	_retro_camera(_node(cam_box, "H_camara", Vector3(body.get_center().x, body.position.y + 0.03, body.get_center().z)))
 
 
 # --- Sección 4: la adultez (el caballete y el entrante) ------------------------------------------
 
 func _adult(sec: Node3D) -> void:
-	var floor_lamp := _take("Muebles/SM_Lamp", sec, "LamparaEntrante")      # decorado, con la luz de la zona
+	# La lámpara de pie del entrante es una pieza con su luz (se enciende al ponerla); la de la zona, aparte.
+	var floor_lamp := _piece(sec, "P_lampara_pie", ["Muebles/SM_Lamp"])
 	var head := Visuals.global_aabb(floor_lamp)
-	_zone_light(floor_lamp, Vector3(head.get_center().x, head.end.y - 0.15, head.get_center().z) - floor_lamp.global_position)
-	_take("Muebles/SM_Stool", sec, "Taburete")
-	for k in ["A", "B", "C", "D"]:
-		_take("Adornos/SM_Polaroid" + k, sec)
+	_zone_light(sec, Vector3(head.get_center().x, head.end.y - 0.15, head.get_center().z))
+	_lamp_light(floor_lamp)
+	(floor_lamp.get_node("Luz") as SpotLight3D).spot_range = 1.9
+	_piece(sec, "P_taburete", ["Muebles/SM_Stool"])
+	_each(sec, "polaroid", ["A", "B", "C", "D"].map(func(k: String) -> String: return "Adornos/SM_Polaroid" + k))
 	_piece(sec, "P_alfombra_adultez", ["Muebles/SM_Rug"])
 	# Las llaves de la tienda, en la pared del entrante (de cara a la habitación).
 	var keys := _node(sec, "P_llaves", Vector3(0.905, 1.05, -2.05))
@@ -450,10 +527,17 @@ func _leftovers(model: Node3D) -> void:
 	var trastos := _node(model, "Trastos", Vector3.ZERO)
 	for group in ["Arquitectura", "Muebles", "Adornos"]:
 		for c in _art.get_node(group).get_children():
-			_take("%s/%s" % [group, c.name], trastos)
+			if not Visuals.meshes_under(c).is_empty():  # (los grupos que se quedaron vacíos, no)
+				_take("%s/%s" % [group, c.name], trastos)
 
 
 # --- Utilidades ------------------------------------------------------------------------------------
+
+## Lo que las artistas pusieron colgando de esa pieza (la tapa de una caja, las bombillas de una cuerda):
+## sus hijos del diorama, no los de dentro de su escena del tileset (su malla).
+func _added(path: String) -> Array:
+	return _art.get_node(path).get_children().filter(func(c: Node) -> bool: return c.owner == _art)
+
 
 ## Mueve un nodo del diorama de las artistas a `parent` (sin cambiar dónde está ni cómo gira).
 func _take(path: String, parent: Node3D, new_name := "") -> Node3D:
@@ -464,6 +548,132 @@ func _take(path: String, parent: Node3D, new_name := "") -> Node3D:
 	if new_name != "":
 		n.name = new_name
 	return n
+
+
+## Una pieza por cosa del kit, todas con el mismo nombre (iguales o del mismo tipo: al poner una se ponen
+## todas): P_<id_y_tokens>, P_<id_y_tokens>_001... `first` = el primer número (si ya hay otras con ese nombre).
+func _each(parent: Node3D, id_and_tokens: String, paths: Array, first := 0) -> void:
+	for k in paths.size():
+		var n := first + k
+		_piece(parent, "P_%s%s" % [id_and_tokens, "" if n == 0 else "_%03d" % n], [paths[k]])
+
+
+## El MP3 del kit es una malla con sus trozos juntos (en el paquete, Pack05, vienen sueltos pero puestos
+## para texturizar, no montados). Se parte en sus trozos sueltos (triángulos unidos), cada uno en su sitio
+## del montado, y se agrupan en tres piezas: la carcasa (con la pantalla y los botones, que no se podrían
+## coger de tan pequeños), la rueda y los auriculares (lo que queda fuera de la carcasa).
+func _mp3_bench(sec: Node3D, mp3: Node3D, at: Vector3) -> void:
+	var bench := _node(sec, "Z_montaje_mp3__reward-mp3__monta", at)
+	bench.global_basis = mp3.global_basis
+	var joined := Visuals.meshes_under(mp3)[0]
+	var mat := joined.get_active_material(0)
+	var in_piece := _rel(joined, mp3)              # (el montado va girado y escalado dentro de su pieza)
+	var arrays := joined.mesh.surface_get_arrays(0)
+	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array(range(verts.size()))
+	var faces := PackedVector3Array()
+	for i in idx:
+		faces.append(verts[i])
+	var comps := _components(faces)
+	comps.sort_custom(func(x: Dictionary, y: Dictionary) -> bool: return x.n > y.n)
+	# La carcasa: la parte de 5 × 8 cm (como un iPod); la rueda: la redonda de ~3 cm que va encima.
+	var body: Dictionary = {}
+	var wheel: Dictionary = {}
+	for c in comps:
+		var sz := (c.box as AABB).size
+		var dims := [sz.x, sz.y, sz.z]
+		dims.sort()
+		if body.is_empty() and dims[2] > 0.07 and dims[2] < 0.1 and dims[1] > 0.04:
+			body = c
+		elif wheel.is_empty() and absf(dims[2] - dims[1]) < 0.003 and dims[2] > 0.025 and dims[2] < 0.04:
+			wheel = c
+	assert(not body.is_empty() and not wheel.is_empty(), "no encuentro la carcasa o la rueda del MP3")
+	var shell := (body.box as AABB).grow(0.003)
+	var groups := {"carcasa_mp3": [], "rueda_mp3": [], "auriculares_mp3": []}
+	for c in comps:
+		var key := "rueda_mp3" if c == wheel else ("carcasa_mp3" if shell.has_point((c.box as AABB).get_center()) else "auriculares_mp3")
+		groups[key].append_array(c.tris)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(MESHES_OUT))
+	for key: String in groups:
+		var st := SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for t: int in groups[key]:
+			for k in 3:
+				var i := idx[t * 3 + k]
+				if arrays[Mesh.ARRAY_NORMAL] != null:
+					st.set_normal(arrays[Mesh.ARRAY_NORMAL][i])
+				if arrays[Mesh.ARRAY_TEX_UV] != null:
+					st.set_uv(arrays[Mesh.ARRAY_TEX_UV][i])
+				st.add_vertex(verts[i])
+		var part_mesh := st.commit()
+		var path := MESHES_OUT + key + ".res"
+		ResourceSaver.save(part_mesh, path)
+		var tokens := "" if key == "carcasa_mp3" else "__after-carcasa_mp3"
+		var piece := _node(bench, "P_%s%s" % [key, tokens], Vector3.ZERO)
+		var m := MeshInstance3D.new()
+		m.name = "Malla"
+		m.mesh = load(path)
+		m.transform = in_piece
+		m.set_surface_override_material(0, mat)
+		piece.add_child(m)
+		print("MP3 %s: %d triángulos" % [key, (groups[key] as Array).size()])
+
+
+## Los triángulos de una malla (en el espacio de `root`).
+func _faces(m: MeshInstance3D, root: Node) -> PackedVector3Array:
+	var xf := _rel(m, root)
+	var faces := m.mesh.get_faces()
+	for i in faces.size():
+		faces[i] = xf * faces[i]
+	return faces
+
+
+## Las partes sueltas de una malla (triángulos unidos por sus vértices): [{n, box: AABB, tris: [índices]}].
+func _components(faces: PackedVector3Array) -> Array:
+	var tris := faces.size() / 3
+	var up: Array[int] = []
+	up.resize(tris)
+	for t in tris:
+		up[t] = t
+	var find := func(x: int) -> int:
+		while up[x] != x:
+			up[x] = up[up[x]]
+			x = up[x]
+		return x
+	var seen := {}
+	for t in tris:
+		for k in 3:
+			var v := faces[t * 3 + k]
+			var key := Vector3i(roundi(v.x * 20000.0), roundi(v.y * 20000.0), roundi(v.z * 20000.0))
+			if seen.has(key):
+				var a: int = find.call(t)
+				var b: int = find.call(seen[key])
+				if a != b:
+					up[a] = b
+			else:
+				seen[key] = t
+	var groups := {}
+	for t in tris:
+		var r: int = find.call(t)
+		var tri_box := AABB(faces[t * 3], Vector3.ZERO).expand(faces[t * 3 + 1]).expand(faces[t * 3 + 2])
+		if groups.has(r):
+			groups[r].n += 1
+			groups[r].box = (groups[r].box as AABB).merge(tri_box)
+			groups[r].tris.append(t)
+		else:
+			groups[r] = {"n": 1, "box": tri_box, "tris": [t]}
+	return groups.values()
+
+
+## La transformación de `n` respecto a `root` (encadenando las locales: vale fuera del árbol).
+func _rel(n: Node, root: Node) -> Transform3D:
+	var xf := Transform3D.IDENTITY
+	var p := n
+	while p != root and p != null:
+		if p is Node3D:
+			xf = (p as Node3D).transform * xf
+		p = p.get_parent()
+	return xf
 
 
 ## Una pieza (P_...) hecha con esas cosas del kit; su origen, el de la primera (o `at`).

@@ -25,6 +25,7 @@ const FINAL_PAINT_TIME := 1.8               ## y la del diorama entero al comple
 const SECTION_PAINT_TIME := 1.4             ## y la de una sección completa
 const SECTION_PAUSE := 1.6                  ## pausa entre completar una sección y abrir la siguiente (s)
 const ACT_FADE := 0.5                        ## (cambio de acto) lo que tarda la voz en apagarse si el jugador sigue
+const COMPLETE_SOUND := "completar_puzzle"   ## al completar el puzle (Drive FXS, «COMPLETAR PUZZLE»)
 ## Al abrirse un capítulo (una sección con rótulo), primero el rótulo; sus cosas (muebles y siluetas)
 ## aparecen cuando se empieza a ir (Hud.show_chapter: a los 3,8 s), creciendo una tras otra con el
 ## sonido de Drive FXS «Cuando aparecen las cosas del capitulo» (aparecer_capitulo). Pedido del 18-oct.
@@ -37,7 +38,9 @@ const SWING_TIME := 2.4                     ## ...y se balancea en la cuerda has
 const GIVEN_DELAY := 0.7                    ## lo que espera el dibujo que viene con una pieza tras su momento (s)
 const TWIN_STEP := 0.07                     ## una pieza repetida se pone en todos sus huecos, uno tras otro (s)
 ## Piezas que suenan como otra al encajar (Sfx: colocar_<id>): la cumbrera es una viga más del techo.
-const SUENA_COMO := {&"cumbrera": "viga"}
+const SUENA_COMO := {&"cumbrera": "viga", &"pilar": "viga", &"poste": "viga", &"correa": "viga",
+	&"borde_suelo": "tablon", &"rodapie": "pared", &"moldura": "pared"}
+const WORKBENCH_WAIT := 0.8                  ## (Z_ __monta) lo que se ve montado antes de irse a la bandeja (s)
 
 @export var level_title := "Diorama"
 ## Modelo del diorama: un .glb (o escena) con la convención de nombres. Si el fichero existe, se
@@ -229,6 +232,12 @@ func _setup_sections() -> void:
 ##    del mueble (si fuera hijo, giraría con la puerta).
 ## Se busca hacia arriba; no se mira entre los hijos de una sección ni de la raíz (ahí todo es hermano).
 func _link_containers() -> void:
+	for it in interactables:                  # un mueble que lleva piezas suyas dentro (su cajón): no se abre sin ellas
+		if it.is_openable():
+			for s in slots:
+				if it.target.is_ancestor_of(s.node):
+					it.inside.append(s)
+			it.refresh_clickable()
 	for it in interactables:
 		if not it.is_hidden_item():
 			continue
@@ -507,6 +516,9 @@ func place(slot: PieceSlot) -> void:
 		t.filled = true                          # ya puesta para el juego; su silueta espera su turno
 		inventory.erase(t.id)
 	_show_placed(slot)
+	for it in interactables:                  # su mueble (el cajón ya puesto) se puede abrir
+		if it.inside.has(slot) or twins.any(func(t: PieceSlot) -> bool: return it.inside.has(t)):
+			it.refresh_clickable()
 	var sound := place_sound(slot.id)
 	for i in twins.size():                     # (los sonidos propios ya traen varios golpes: uno por gesto)
 		create_tween().tween_callback(_show_placed.bind(twins[i], sound == "colocar")).set_delay((i + 1) * TWIN_STEP)
@@ -590,6 +602,7 @@ func enter_focus(anchor: Interactable) -> void:
 	focus = anchor
 	anchor.set_clickable(false)
 	Sfx.play("zoom_in")
+	_refresh(true)                               # (dentro de un rincón, el rincón ya no llama)
 	Events.focus_changed.emit(anchor)
 	Events.inventory_changed.emit()
 
@@ -604,6 +617,7 @@ func exit_focus() -> void:
 	if focus != null:
 		focus.set_clickable(false)
 	Sfx.play("zoom_out")
+	_refresh(true)
 	Events.focus_changed.emit(focus)
 	Events.inventory_changed.emit()
 
@@ -673,6 +687,8 @@ func hint_target(preferred: StringName = &"") -> Dictionary:
 	for it in interactables:
 		if it.kind == NameRules.PICKUP and it.available and not it.collected and it.scope == focus:
 			if it.container != null and not it.container.is_open:
+				if not it.container.pieces_ready():
+					continue                     # primero hay que poner el cajón (su hueco ya salió arriba)
 				return {"node": it.container.target, "container": it.container, "pickup": it}
 			return {"node": it.target, "pickup": it}
 	for it in interactables:
@@ -692,11 +708,26 @@ func _check_scope(scope: Interactable) -> void:
 	scope.completed = true
 	if scope.reward != &"":
 		inventory.append(scope.reward)
+	if scope.workbench:                         # lo montado se va a la bandeja: se pone en su sitio del desván
+		scope.set_attention(false)
+		get_tree().create_timer(WORKBENCH_WAIT, false).timeout.connect(_send_to_tray.bind(scope))
 	Narrator.say_if_exists("sub_completo")
 	Events.inventory_changed.emit()
 	get_tree().create_timer(1.2).timeout.connect(func() -> void:
 		if focus == scope:
 			exit_focus())
+
+
+## (Z_ __monta) Lo montado en el banco se encoge donde estaba y su ficha vuela a la bandeja (como lo
+## que se encuentra guardado): ahora hay que ponerlo en su sitio del desván.
+func _send_to_tray(scope: Interactable) -> void:
+	if not is_inside_tree() or not is_instance_valid(scope.target) or not scope.target.visible:
+		return
+	Events.piece_collected.emit(scope.reward, scope.target)
+	Sfx.play("pickup")
+	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tw.tween_property(scope.target, "scale", Vector3.ONE * 0.01, 0.3)
+	tw.tween_callback(scope.target.hide)
 
 
 # --- Dibujos escondidos (C_) -----------------------------------------------------------
@@ -939,12 +970,16 @@ func _refresh(animate: bool) -> void:
 		it.set_attention(wanted and not hidden_inside)
 		if it.container != null:
 			calling[it.container] = calling.get(it.container, false) or (wanted and hidden_inside)
-		if wanted and hidden_inside:
+		if wanted and hidden_inside and it.container.pieces_ready():
 			_tip_once("consejo_muebles")
-		elif wanted and it.container != null:
+		elif wanted and it.container != null and not hidden_inside:   # (abierto: lo de dentro ya se puede coger)
 			_tip_once("consejo_dentro")
 	for c: Interactable in calling:
-		c.set_attention(calling[c])
+		c.set_attention(calling[c] and c.pieces_ready())   # el cajón sin poner aún no llama
+	# Un rincón (Z_) con piezas por montar llama la atención mientras no se está dentro.
+	for it in interactables:
+		if it.kind == NameRules.ZOOM and not it.completed:
+			it.set_attention(focus == null and (it.section == null or it.section.opened) and is_instance_valid(it.target) and it.target.visible)
 	# Los dibujos escondidos: están en cuanto se abre su zona (y su after-x está puesta); dentro de un
 	# mueble cerrado no se pueden coger. El que viene con una pieza espera a que acabe su momento.
 	for it in interactables:
@@ -976,7 +1011,8 @@ func _check_completed() -> void:
 	_add_paint(box.get_center(), box.size.length() * 0.75, FINAL_PAINT_TIME)
 	get_tree().create_timer(FINAL_PAINT_TIME + 0.1, false).timeout.connect(_finish_paint)
 	_play_animation("celebrar")
-	Sfx.play("complete")
+	if not fundido_final:                       # el cerdito del título; el desván acaba con la moneda
+		Sfx.jingle(COMPLETE_SOUND)
 	if outro_key != "":
 		Narrator.say(outro_key)
 	Events.level_completed.emit(self)
@@ -1014,13 +1050,16 @@ func _reveal_around(origin: Vector3) -> void:
 func _add_paint(origin: Vector3, radius: float, seconds: float) -> void:
 	if _clay_meshes.is_empty():
 		return
+	for old in _paint:                           # si otra mancha ya cubre esto, no hace falta otra (con todas las
+		if float(old.t) >= radius and (old.c as Vector3).distance_to(origin) <= float(old.t) - radius * 0.6:
+			return                                   # piezas del kit sueltas, se acababan las del shader)
 	if _paint.size() >= Visuals.MAX_PAINT:
 		push_warning("Diorama '%s': más de %d manchas de pintura; pinto de golpe" % [name, Visuals.MAX_PAINT])
 		for m in _clay_meshes:
 			if Visuals.global_aabb(m).get_center().distance_to(origin) <= radius:
 				m.material_overlay = null
 		return
-	var spot := {"c": origin, "r": 0.0}
+	var spot := {"c": origin, "r": 0.0, "t": radius}
 	_paint.append(spot)
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.tween_method(func(r: float) -> void:

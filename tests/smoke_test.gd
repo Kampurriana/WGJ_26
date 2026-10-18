@@ -598,6 +598,27 @@ func _test_story(main: Node) -> void:
 		for body in dec.find_children("Superficie", "StaticBody3D", true, false):
 			solid += 1 if (body as StaticBody3D).collision_layer != 0 else 0
 	check(solid == 0, "los muebles ocultos de una zona cerrada no chocan con la pieza en mano (%d chocan)" % solid)
+	# Arte oficial: cada pieza del kit, la suya (las iguales comparten nombre y se ponen juntas).
+	check(_slots_with(d, &"borde_suelo") == 12 and _slots_with(d, &"pilar") == 3 and _slots_with(d, &"bombilla") == 12
+		and _slots_with(d, &"guirnalda") == 4 and _slots_with(d, &"cajon_comoda") == 3 and _slots_with(d, &"polaroid") == 4
+		and _slots_with(d, &"lapiz") == 3 and _slots_with(d, &"pared_fondo") == 1,
+		"cada pieza del kit va suelta: 12 bordes del suelo, 3 pilares, 12 bombillas en 4 cuerdas, 3 cajones de la cómoda, 4 polaroids, 3 lápices")
+	# La hucha del kit viene en 12 trozos: se monta en su rincón (Z_ __monta), con primer plano.
+	var bench: Interactable = null
+	for it in d.interactables:
+		if it.kind == NameRules.ZOOM and it.reward == &"hucha":
+			bench = it
+	var bench_parts := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.scope == bench) if bench != null else []
+	check(bench != null and bench.workbench and bench_parts.size() == 12 and bench.attention and bench.is_clickable()
+		and not d.visible_inventory().has(&"cuerpo_hucha"),
+		"la hucha se monta en su rincón: 12 trozos que no salen en la bandeja hasta entrar, y el rincón llama la atención (%s)"
+		% [[bench.workbench, bench_parts.size(), bench.attention, bench.is_clickable(), d.visible_inventory().has(&"cuerpo_hucha"), d.lock_reason(&"hucha")] if bench != null else []])
+	if bench != null:
+		d.enter_focus(bench)
+		await get_tree().process_frame
+		check(d.visible_inventory().has(&"cuerpo_hucha") and not d.visible_inventory().has(&"tejado") and not bench.attention,
+			"al entrar en el rincón, la bandeja enseña solo sus trozos (y deja de llamar) (%s)" % [[d.visible_inventory().slice(0, 6), bench.attention]])
+		d.exit_focus()
 	var placed: Array[StringName] = []
 	var record := func(id: StringName, _n: Node3D) -> void: placed.append(id)
 	Events.piece_placed.connect(record)
@@ -619,12 +640,14 @@ func _test_story(main: Node) -> void:
 	while not s1.completed and steps < 80:
 		d.debug_solve_step()
 		steps += 1
-	check(_heard(heard_s1, "colocar_pared") == 3 and _heard(heard_s1, "colocar_tejado") >= 1 and _heard(heard_s1, "colocar_viga") >= 2
-		and _heard(heard_s1, "colocar_tablon") == 2 and _more(heard_s1, "colocar") and d.place_sound(&"cumbrera") == "colocar_viga",
-		"cada pieza del desván suena según su tipo: paredes, techo, vigas (y la cumbrera) y el resto del suelo; la hucha, con el de siempre (%s)"
+	check(_heard(heard_s1, "colocar_pared") == 5 and _heard(heard_s1, "colocar_tejado") >= 1 and _heard(heard_s1, "colocar_viga") >= 5
+		and _heard(heard_s1, "colocar_tablon") == 3 and _more(heard_s1, "colocar") and d.place_sound(&"cumbrera") == "colocar_viga",
+		"cada pieza del desván suena según su tipo: paredes (y rodapiés y molduras), techo, vigas (cumbrera, pilares, postes, correas) y el resto del suelo (con su borde); la hucha, con el de siempre (%s)"
 		% [[_heard(heard_s1, "colocar_pared"), _heard(heard_s1, "colocar_tejado"), _heard(heard_s1, "colocar_viga"), _heard(heard_s1, "colocar_tablon")]])
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
 		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
+	check(bench != null and bench.completed and placed.find(&"cuerpo_hucha") >= 0 and placed.find(&"cuerpo_hucha") < placed.find(&"hucha"),
+		"primero se monta la hucha en su rincón y luego, entera, se pone encima de su caja")
 	var cam_ctl := GameState.camera
 	var m: Momentos = main.momentos
 	check(m.active and m.target == _slot(d, &"hucha").node and cam_ctl.in_moment and GameState.hud.in_moment()
@@ -700,6 +723,7 @@ func _test_story(main: Node) -> void:
 		title_wait += 0.1
 	check(s2.opened and not d.act_waiting() and not GameState.hud.continue_button.visible and GameState.hud.chapter_text().contains("Infancia"),
 		"al pulsar «Continuar» sale el rótulo del capítulo y se abre la infancia")
+	check(bench != null and not bench.target.visible, "lo montado en el rincón se fue a la bandeja (no se queda repetido en el rincón)")
 	check(quiet_title and title_wait >= Diorama.CHAPTER_REVEAL - 0.15,
 		"al abrirse un capítulo, primero su rótulo: sus muebles y sus siluetas esperan a que se empiece a ir (%.1f s)" % title_wait)
 	check(_more(heard_chapter, "aparecer_capitulo") and Sfx.length("aparecer_capitulo") > 0.0,
@@ -754,6 +778,13 @@ func _test_story(main: Node) -> void:
 	var chest: Interactable = blocks.container if blocks != null else null
 	check(chest != null and chest.kind == NameRules.DOOR and not chest.target.is_ancestor_of(blocks.target),
 		"los cubos están guardados en el baúl, sin ser hijos de la tapa (si no, girarían con ella)")
+	# Su caja y su tapa son piezas del kit: hasta ponerlas, el baúl ni se abre ni brilla.
+	check(chest != null and not chest.inside.is_empty() and not chest.pieces_ready() and not chest.is_clickable() and not chest.attention,
+		"la caja de juguetes es una pieza y su tapa otra: sin ponerlas no se abre ni llama")
+	for kind in [&"caja", &"tapa_caja"]:
+		var first: PieceSlot = s2.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == kind and not sl.filled)[0]
+		d.place(first)
+	await get_tree().create_timer(Diorama.TWIN_STEP * 8.0 + Diorama.POP_TIME).timeout
 	check(chest != null and chest.attention and chest.glow_count() > 0 and main.effects.is_calling(chest),
 		"el baúl que guarda lo que toca encontrar brilla, se mueve y echa motas")
 	check(chest != null and chest.outline_count() > 0, "y lleva un contorno dorado (lo que se ve de lejos)")
@@ -799,7 +830,7 @@ func _test_story(main: Node) -> void:
 		chest.set_open(true)
 		await get_tree().process_frame
 		check(not chest.attention and blocks.attention and GameState.hud.tip_text() == Narrator.text("consejo_dentro"),
-			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo)")
+			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo) (%s · %s · %s)" % [chest.attention, blocks.attention, GameState.hud.tip_text()])
 		await get_tree().create_timer(0.5).timeout
 		var tip_at: Vector2 = GameState.hud._tip_box.get_global_rect().get_center()
 		_mouse_button(tip_at, true)
@@ -929,12 +960,21 @@ func _test_story(main: Node) -> void:
 	check(not lamp_lights.is_empty() and not lamp.filled and not (lamp_lights[0][0] as Light3D).visible,
 		"la luz de una pieza (la lámpara del escritorio) está apagada mientras es silueta")
 	_farol_energy = float(lamp_lights[0][1]) if not lamp_lights.is_empty() else 0.0
+	# Los cajones del escritorio también se ponen: dos iguales (estrella) y el del pomo, después del
+	# escritorio; el de arriba (el de la solicitud) no se abre ni brilla hasta que está puesto.
+	var drawer_slots := s3.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("cajon"))
+	var top_drawer: Interactable = application.container
+	check(drawer_slots.size() == 3 and _slots_with(d, &"cajon") == 2 and _slots_with(d, &"cajon_pomo") == 1
+		and drawer_slots.all(func(sl: PieceSlot) -> bool: return sl.prereqs.has(&"escritorio") and not sl.filled)
+		and top_drawer != null and top_drawer.inside.size() == 1 and not top_drawer.is_clickable() and not top_drawer.attention,
+		"los cajones del escritorio son piezas que hay que poner (después del escritorio) y el de arriba no se abre sin ponerlo")
 	steps = 0
 	while not _slot(d, &"mp3").filled and steps < 40:
 		d.debug_solve_step()
 		steps += 1
 	check(application.available and not camera_pick.available and application.container != null
-		and application.container.kind == NameRules.DRAWER and application.container.attention,
+		and application.container.kind == NameRules.DRAWER and application.container.attention
+		and application.container.pieces_ready() and application.container.is_clickable(),
 		"con el MP3 puesto toca encontrar la solicitud de Bellas Artes: el cajón brilla (la cámara aún no aparece)")
 	# El escritorio y sus cajones son los de las artistas (kit), con su material, y el cajón de la
 	# solicitud está en la columna del escritorio y sale hacia el jugador (+Z).
@@ -1144,7 +1184,7 @@ func _test_tray(d: Diorama, shown: Array[StringName]) -> void:
 	var hud: Hud = GameState.hud
 	var all_ids: Dictionary = {}
 	for sl in d.slots:
-		if not sl.offered:
+		if not sl.offered and sl.scope == null:   # (las de un rincón salen al entrar en él)
 			all_ids[sl.id] = true
 	check(hud.cards().size() == all_ids.size() and hud.cards(true).size() == shown.size(),
 		"la bandeja enseña todas las piezas del juego (%d), las que aún no van con candado (%d se pueden poner)" % [hud.cards().size(), hud.cards(true).size()])
@@ -1154,6 +1194,9 @@ func _test_tray(d: Diorama, shown: Array[StringName]) -> void:
 	check(d.lock_reason(&"tejado").contains(Narrator.piece_name(&"cumbrera")) and d.lock_reason(&"hucha").contains("última"),
 		"cada candado dice qué va antes: tejado (%s), hucha (%s)" % [d.lock_reason(&"tejado"), d.lock_reason(&"hucha")])
 	if otter != null:
+		hud._scroll.ensure_control_visible(otter)    # (con todas las piezas del kit, la bandeja es larga)
+		for i in 3:
+			await get_tree().process_frame
 		_click(otter.get_global_rect().get_center())
 		await get_tree().process_frame
 		check(not GameState.is_dragging and hud.info_text().begins_with("Todavía no se puede poner") and hud.info_text().contains(otter.reason),
@@ -1369,7 +1412,7 @@ func _test_title_menu(main: Node) -> bool:
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
-		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro"]
+		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle"]
 	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]
@@ -1388,6 +1431,8 @@ func _test_title_menu(main: Node) -> bool:
 		steps += 1
 		await get_tree().process_frame
 	check(t.completed, "el título se completa (%d pasos)" % steps)
+	check(_heard(heard, "completar_puzzle") == 1 and Sfx.jingle_playing() == "completar_puzzle",
+		"al completar el puzle del cerdito suena «COMPLETAR PUZZLE» (Drive FXS), una vez y entero")
 	check(int(Sfx.played.get("colocar", 0)) - int(heard.get("colocar", 0)) >= steps, "cada pieza que encaja suena al colocarla (las gemelas, después, al encajar cada una)")
 	await get_tree().process_frame
 	check(not (main.effects as Efectos).get_children().any(func(c: Node) -> bool: return c.name == "Luces" or c.name == "Destellos"),

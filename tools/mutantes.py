@@ -479,6 +479,17 @@ MUTANTES = [
 	("M145 las cosas del capítulo aparecen sin sonido", "core/diorama.gd",
 		"\t\tSfx.play(\"aparecer_capitulo\", 0.0)", "\t\tpass",
 		"y al aparecer sus cosas suena"),
+	# El desván con el arte oficial (18-oct): piezas sueltas, rincones de montaje
+	("M146 lo montado en el rincón no se va a la bandeja", "core/diorama.gd",
+		"\t\tget_tree().create_timer(WORKBENCH_WAIT, false).timeout.connect(_send_to_tray.bind(scope))", "\t\tpass",
+		"lo montado en el rincón se fue a la bandeja"),
+	("M147 el rincón no llama la atención", "core/diorama.gd",
+		"\t\t\tit.set_attention(focus == null and (it.section == null or it.section.opened) and is_instance_valid(it.target) and it.target.visible)",
+		"\t\t\tit.set_attention(false)",
+		"la hucha se monta en su rincón"),
+	("M148 el consejo de lo de dentro sale con el mueble cerrado", "core/diorama.gd",
+		"\t\telif wanted and it.container != null and not hidden_inside:", "\t\telif wanted and it.container != null:",
+		"al abrir el baúl, lo que brilla es lo de dentro"),
 ]
 
 solo = os.environ.get("SOLO")
