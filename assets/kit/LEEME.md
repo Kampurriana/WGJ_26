@@ -143,7 +143,7 @@ En `TexturasFinales/` se **ignoran** `CON_LINEART`, `Hat`, `Lights`, `LitterBox`
 | `T_Pack05` | SM_BrushA..C, el MP3, SM_Vase |
 | `T_Pack06` | SM_MusicBox, SM_PolaroidA..D (18-oct por la tarde; en Drive `Pack_06/T_Pack_06_*`, aquí `Pack06/T_Pack06_*`) |
 | `T_Pack07` | SM_Lights (y la cuerda y las bombillas), SM_LitterBox, la hucha (SM_PigA..L), SM_Polaroid (la cámara), pegatinas, el sombrero |
-| `T_Pack08` | SM_Caballete, SM_CatBed, SM_Mirror, SM_Rug (18-oct por la tarde; el espejo trae el reflejo pintado en la luna) |
+| `T_Pack08` | SM_Caballete, SM_CatBed, SM_Mirror, SM_Rug (18-oct por la tarde; el espejo trae el reflejo pintado en la luna). `T_Pack08_BC_02`: solo el espejo, con la luna vacía (`M_Pack08_02`, `VARIANTES` en `tools/piezas_kit.gd`): así está en la partida, y en su primer plano se funde en la `T_Pack08_BC` |
 | `T_Pack09` | SM_Keyholder, SM_Paper01, SM_PaperBroken, SM_PaperStack, SM_PaperUniversidad, SM_Peana (18-oct por la tarde) |
 
 Lo del 18-oct por la tarde (`modelos/Pack09/`, `Pack07.fbx` nuevo):

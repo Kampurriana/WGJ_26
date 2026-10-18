@@ -1190,7 +1190,7 @@ func debug_complete() -> void:
 	_check_completed()
 
 
-## (Atajo F8) Acaba de golpe el capítulo en curso, para probar cada uno suelto: sus piezas en su sitio
+## (Atajo C, de capítulo) Acaba de golpe el capítulo en curso, para probar cada uno suelto: sus piezas en su sitio
 ## (con su pintura), lo que guardaba ya puesto y sus dibujos en la cuerda, sin frases ni primeros planos.
 ## Luego sigue como si se hubiera acabado jugando (su logro, el «Continuar» del siguiente). Si el
 ## siguiente ya esperaba al «Continuar», lo abre sin rótulo de espera. Devuelve la sección que ha

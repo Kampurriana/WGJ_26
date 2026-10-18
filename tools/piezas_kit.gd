@@ -94,6 +94,10 @@ const CONJUNTOS := {
 ## Las que tienen que llamarse exactamente así (SM_Polaroid, la cámara, es de Pack07; SM_PolaroidA..D,
 ## las fotos, de Pack06: por el principio del nombre se confundirían).
 const EXACTAS := {"SM_Polaroid": "Pack07"}
+## Piezas que llevan otro color base de su conjunto (T_<x>_BC_<nn>: M_<x>_<nn>). El espejo, con la luna
+## vacía (T_Pack08_BC_02); en el primer plano del espejo pasa a la de su conjunto, con ella pintada en la
+## luna (Momentos: la marca ReflejoPintado de tools/build_kit_level.gd).
+const VARIANTES := {"SM_Mirror": "Pack08_02"}
 ## Grupo de color provisional según cómo empieza el nombre (el primero que encaja).
 const CATEGORIAS := [
 	["SM_CeilingSupport", "estructura"], ["CeilingSupport", "estructura"], ["SM_Ceiling", "techo"],
@@ -227,6 +231,8 @@ func _guardar_dibujo(nombre: String, imagen: String) -> Error:
 
 
 func _material(nombre: String, kit: Dictionary) -> Material:
+	if VARIANTES.has(nombre) and kit.has(VARIANTES[nombre]):
+		return kit[VARIANTES[nombre]]
 	if EXACTAS.has(nombre):
 		if kit.has(EXACTAS[nombre]):
 			return kit[EXACTAS[nombre]]

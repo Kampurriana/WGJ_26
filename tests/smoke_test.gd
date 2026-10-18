@@ -1102,6 +1102,11 @@ func _test_story(main: Node) -> void:
 	check(s4.completed and placed.find(&"caballete") < placed.find(&"lienzo") and placed.find(&"lienzo") < placed.find(&"espejo"),
 		"adultez en el orden del guion: el caballete, su lienzo y el espejo (clave) el último")
 	var mirror := _slot(d, &"espejo")
+	var glass_tex := func() -> String:               # (la textura del espejo: luna vacía o con ella pintada)
+		var mm := Visuals.meshes_under(mirror.node)
+		var mat := mm[0].get_surface_override_material(0) as BaseMaterial3D if not mm.is_empty() else null
+		return mat.albedo_texture.resource_path.get_file() if mat != null and mat.albedo_texture != null else ""
+	var glass_before: String = glass_tex.call()
 	var front := m._mirror_front(mirror.node)        # hacia donde mira su luna (la cara del kit es su -Z)
 	var want_yaw := rad_to_deg(atan2(front.x, front.z))
 	var glass_center := Visuals.global_aabb(mirror.node).get_center()
@@ -1123,6 +1128,10 @@ func _test_story(main: Node) -> void:
 		"espejo: todo lo demás a negro y en la luna aparece su reflejo")
 	check(m._painted_mark(mirror.node) != null and not is_instance_valid(m._figure),
 		"el espejo del kit trae su reflejo pintado (ella de mayor, Pack08): el momento no le pone silueta ni vaho encima")
+	var veils := m.reflection.find_children("LunaVacia*", "", false, false) if is_instance_valid(m.reflection) else []
+	check(glass_before == "T_Pack08_BC_02.png" and glass_tex.call() == "T_Pack08_BC.png" and veils.is_empty(),
+		"el espejo, con la luna vacía en la partida (T_Pack08_BC_02); en su primer plano se funde en la de ella pintada (T_Pack08_BC) (%s -> %s, %d velos)"
+		% [glass_before, glass_tex.call(), veils.size()])
 	d._open_when_free(s5)                        # lo que hace la pausa entre secciones al acabar
 	check(d.hold_sections and d.opening_section() == s5 and not s5.opening,
 		"mientras dura el espejo, el final espera: no se abre encima")
@@ -1788,7 +1797,7 @@ func _test_back_to_menu(main: Node) -> void:
 
 
 ## Los niveles de verdad (data/levels.json): cargan, cada pieza tiene su modelo, y se completan.
-## F8 (atajo de prueba) acaba el capítulo en curso; F9 monta el desván entero de golpe y se queda a la
+## C (atajo de prueba, de capítulo; no F8, que en el editor para el juego) acaba el capítulo en curso; F9 monta el desván entero de golpe y se queda a la
 ## vista, sin fundido.
 func _test_complete_shortcut(main: Node) -> void:
 	GameState.levels = PackedStringArray(["res://levels/level_01_desvan.tscn"])
@@ -1809,10 +1818,10 @@ func _test_complete_shortcut(main: Node) -> void:
 	check(reset_mat != null and reset.visible and reset_mat.render_priority == Material.RENDER_PRIORITY_MIN
 		and reset_mat.shader.code.contains("blend_mix"),
 		"la cámara lleva el cuadradito invisible que reinicia la mezcla (sin él, con el sol de la ventana lo aditivo sale cuadrado)")
-	# F8: el capítulo en curso, de uno en uno (para probar cada capítulo suelto).
+	# C: el capítulo en curso, de uno en uno (para probar cada capítulo suelto).
 	var f8 := func() -> void:
 		var k8 := InputEventKey.new()
-		k8.physical_keycode = KEY_F8
+		k8.physical_keycode = KEY_C
 		k8.pressed = true
 		get_viewport().push_input(k8, true)
 	var first := d.sections[0]
@@ -1822,11 +1831,11 @@ func _test_complete_shortcut(main: Node) -> void:
 		await get_tree().process_frame
 		tries += 1
 	check(first.completed and first.is_full() and not d.sections[1].opened and d.act_waiting() and not d.completed,
-		"F8 acaba solo el capítulo en curso (el primero): sus piezas puestas y el siguiente espera al «Continuar»")
+		"C acaba solo el capítulo en curso (el primero): sus piezas puestas y el siguiente espera al «Continuar»")
 	f8.call()
 	await get_tree().process_frame
 	var kid := d.sections[1]
-	check(kid.opened or kid.opening, "con el capítulo acabado, F8 abre el siguiente sin esperar")
+	check(kid.opened or kid.opening, "con el capítulo acabado, C abre el siguiente sin esperar")
 	await get_tree().create_timer(0.3).timeout
 	f8.call()
 	await get_tree().process_frame
@@ -1835,7 +1844,7 @@ func _test_complete_shortcut(main: Node) -> void:
 	check(kid.completed and kid.is_full() and not d.sections[2].opened and d.act_waiting()
 		and kid_things.all(func(it: Interactable) -> bool: return it.collected)
 		and d.collectibles_found() == kid_things.filter(func(it: Interactable) -> bool: return it.kind == NameRules.COLLECTIBLE).size(),
-		"y otra vez F8 acaba ese (%s) entero, con lo que guardaba y sus dibujos en la cuerda (%d); el resto, sin abrir" % [kid.name, d.collectibles_found()])
+		"y otra vez C acaba ese (%s) entero, con lo que guardaba y sus dibujos en la cuerda (%d); el resto, sin abrir" % [kid.name, d.collectibles_found()])
 	var ended := [false]
 	var on_end := func(_d: Node) -> void: ended[0] = true
 	Events.level_completed.connect(on_end)

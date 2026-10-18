@@ -5,6 +5,7 @@ extends SceneTree
 ##   T_<x>_ARM     empaquetada: R = oclusión (AO), G = rugosidad, B = metálico
 ##   T_<x>_Normal  normales (vienen en DirectX: se importa con el verde invertido)
 ##   T_<x>_E       emisión (opcional)
+##   T_<x>_BC_<nn> otro color base para alguna pieza (opcional): M_<carpeta>_<nn>, con el ARM y el Normal
 ## y deja la importación de esas texturas como debe (VRAM comprimida y mipmaps: van en 3D; la de
 ## normales, como normal map), con el estilo cozy del kit (tools/estilo_kit.gd). Después hay que
 ## reimportar: bash tools/check.sh lo hace.
@@ -38,10 +39,16 @@ func _init() -> void:
 				nombre += "_" + bc.get_file().get_basename().trim_prefix("T_").trim_suffix("_BC")
 			var err := _material(nombre, bc, tex)
 			print("MATERIALES: M_%s (%s) err=%d" % [nombre, ", ".join(PackedStringArray(tex.keys())), err])
+		# Otro color base para alguna pieza, con el ARM y el Normal del conjunto (T_Pack08_BC_02: el espejo
+		# con la luna vacía, 18-oct): M_<carpeta>_<nn> (M_Pack08_02).
+		for variante: String in tex.get("variantes", []):
+			var nombre := carpeta + "_" + variante.get_file().get_basename().get_slice("_BC_", 1)
+			var err := _material(nombre, variante, tex)
+			print("MATERIALES: M_%s (variante) err=%d" % [nombre, err])
 		for rol: String in tex:
-			if rol != "BCs":
+			if rol != "BCs" and rol != "variantes":
 				_importar_3d(tex[rol], rol == "Normal")
-		for bc: String in bcs:
+		for bc: String in bcs + tex.get("variantes", []):
 			_importar_3d(bc, false)
 		hechos += 1
 	print("MATERIALES OK (%d)" % hechos)
@@ -59,6 +66,8 @@ func _texturas(dir: String) -> Dictionary:
 			out[rol] = dir + "/" + f
 		if rol == "BC":
 			out.get_or_add("BCs", []).append(dir + "/" + f)
+		elif f.get_basename().contains("_BC_"):
+			out.get_or_add("variantes", []).append(dir + "/" + f)
 	return out
 
 

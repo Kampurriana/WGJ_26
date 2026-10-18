@@ -1,160 +1,161 @@
 [gd_scene format=4]
 
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/FloorPlanks015.scn" id="1_enur8"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/FloorPlanks013.scn" id="2_28ec8"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/FloorPlanks014.scn" id="3_vpfl7"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB020.scn" id="4_edlif"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB021.scn" id="5_vnbjh"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB022.scn" id="6_66g0h"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB023.scn" id="7_ep28n"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB024.scn" id="8_uphc8"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB025.scn" id="9_2b517"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB026.scn" id="10_bitfq"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB029.scn" id="11_halre"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB030.scn" id="12_tvcor"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB033.scn" id="13_uiukm"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB034.scn" id="14_w6cd8"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallA.scn" id="15_n0s73"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallB.scn" id="16_f4d5k"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallC.scn" id="17_we7nu"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Pillar.scn" id="18_01olc"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardI.scn" id="19_cusqw"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardJ.scn" id="20_swu6i"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardL.scn" id="21_3gy5x"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardTopA.scn" id="22_dt3en"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Window.scn" id="23_ir5qu"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport020.scn" id="24_064yr"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalA.scn" id="25_4lrua"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalB.scn" id="26_riy3m"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalC.scn" id="27_yg4o2"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalD.scn" id="28_yv2es"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport014.scn" id="29_rtaut"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport015.scn" id="30_o16sm"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport016.scn" id="31_ysi06"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport017.scn" id="32_2ejki"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport018.scn" id="33_gwsxv"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport021.scn" id="34_7604b"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Ceiling.scn" id="35_2m8a5"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Bombilla.scn" id="36_6ap0d"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Cuerda.scn" id="37_ionyr"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Pig.scn" id="38_4pwd0"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_a.res" id="39_mstxw"]
-[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack07.tres" id="40_ndskd"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_b.res" id="41_dw7sk"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_c.res" id="42_do2jc"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_e.res" id="43_f0uqf"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_f.res" id="44_r1hpv"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_h.res" id="45_4a1ox"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_j.res" id="46_x44wv"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_k.res" id="47_r2af7"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_d.res" id="48_hldjf"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_g.res" id="49_ne16m"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_i.res" id="50_4n4t0"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_l.res" id="51_t2ujg"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane001.res" id="52_65or3"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane002.res" id="53_e055e"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane003.res" id="54_ajt43"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane005.res" id="55_01gxa"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane006.res" id="56_oyp4u"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxB.scn" id="57_3oiw7"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxB.scn" id="58_orlb4"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_MusicBox.scn" id="59_gw47t"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaB.scn" id="60_2obva"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaC.scn" id="61_fbqlq"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaD.scn" id="62_ltib5"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaA.scn" id="63_7vpkh"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/Dibujo_t_draw_03.scn" id="64_un8xc"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_TV.scn" id="65_ltkd7"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CatBed.scn" id="66_fjr7g"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_LitterBox.scn" id="67_ogfwu"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxA.scn" id="68_uq0gq"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxE.scn" id="69_l0vfy"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxD.scn" id="70_x7r8p"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxD.scn" id="71_lscnm"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxA.scn" id="72_aeotu"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxE.scn" id="73_u80nw"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxC.scn" id="74_c4r3m"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxC.scn" id="75_ppyea"]
-[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/books/manga_01.glb" id="76_gjvap"]
-[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_00.jpg" id="77_4tym3"]
-[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_04.jpg" id="78_pf02g"]
-[ext_resource type="Material" path="res://assets/kit/materiales/M_Otter.tres" id="79_hhww5"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Rug.scn" id="80_2667d"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskC.scn" id="81_n3avl"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PaperUniversidad.scn" id="82_vb874"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskD.scn" id="83_ovwqp"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushA.scn" id="84_g1ijn"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushB.scn" id="85_4qh3j"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushC.scn" id="86_direk"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Vase.scn" id="87_yq7h2"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverDesk.scn" id="88_loidm"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskA.scn" id="89_lr7vf"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_MP3.scn" id="90_6bgwt"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/carcasa_mp3.res" id="91_y4und"]
-[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack_05.tres" id="92_nw23i"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/rueda_mp3.res" id="93_24n5a"]
-[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/auriculares_mp3.res" id="94_tm76t"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Polaroid.scn" id="95_1f103"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Lamp.scn" id="96_6thl1"]
-[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/furniture/chair_01.glb" id="97_d04q4"]
-[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/electronics/speaker_01.glb" id="98_ugnpm"]
-[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/books/book_01.glb" id="99_cjfwb"]
-[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_01.jpg" id="100_nawbf"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Stool.scn" id="101_lmtht"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidA.scn" id="102_t1dnx"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidB.scn" id="103_j8wc0"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidC.scn" id="104_gge3c"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidD.scn" id="105_f617m"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Caballete.scn" id="106_q4hwg"]
-[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_05.jpg" id="107_m2jqn"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Mirror.scn" id="108_0vkpb"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Burro.scn" id="109_su747"]
-[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Hat.scn" id="110_d0hwl"]
-[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/tableware/mug_01.glb" id="111_qietu"]
-[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/electronics/clock_01.glb" id="112_jneto"]
-[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_02.jpg" id="113_24rrn"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_igogf"]
-size = Vector3(6.44, 0.18, 4.44)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_4d78r"]
-size = Vector3(2.24, 0.18, 1)
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/FloorPlanks015.scn" id="1_28ec8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/FloorPlanks013.scn" id="2_vpfl7"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/FloorPlanks014.scn" id="3_edlif"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB020.scn" id="4_vnbjh"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB021.scn" id="5_66g0h"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB022.scn" id="6_ep28n"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB023.scn" id="7_uphc8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB024.scn" id="8_2b517"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB025.scn" id="9_bitfq"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB026.scn" id="10_halre"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB029.scn" id="11_tvcor"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB030.scn" id="12_uiukm"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB033.scn" id="13_w6cd8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SB034.scn" id="14_n0s73"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallA.scn" id="15_f4d5k"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallB.scn" id="16_we7nu"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallC.scn" id="17_01olc"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Pillar.scn" id="18_cusqw"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardI.scn" id="19_swu6i"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardJ.scn" id="20_3gy5x"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardL.scn" id="21_dt3en"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardTopA.scn" id="22_ir5qu"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Window.scn" id="23_064yr"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport020.scn" id="24_4lrua"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalA.scn" id="25_riy3m"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalB.scn" id="26_yg4o2"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalC.scn" id="27_yv2es"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalD.scn" id="28_rtaut"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport014.scn" id="29_o16sm"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport015.scn" id="30_ysi06"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport016.scn" id="31_2ejki"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport017.scn" id="32_gwsxv"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport018.scn" id="33_7604b"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport021.scn" id="34_2m8a5"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Ceiling.scn" id="35_6ap0d"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Bombilla.scn" id="36_ionyr"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Cuerda.scn" id="37_4pwd0"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Pig.scn" id="38_mstxw"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_a.res" id="39_ndskd"]
+[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack07.tres" id="40_dw7sk"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_b.res" id="41_do2jc"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_c.res" id="42_f0uqf"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_e.res" id="43_r1hpv"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_f.res" id="44_4a1ox"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_h.res" id="45_x44wv"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_j.res" id="46_r2af7"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_k.res" id="47_hldjf"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_d.res" id="48_ne16m"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_g.res" id="49_4n4t0"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_i.res" id="50_t2ujg"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_l.res" id="51_65or3"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane001.res" id="52_e055e"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane002.res" id="53_ajt43"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane003.res" id="54_01gxa"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane005.res" id="55_oyp4u"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/hucha_plane006.res" id="56_3oiw7"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxB.scn" id="57_orlb4"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxB.scn" id="58_gw47t"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_MusicBox.scn" id="59_2obva"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaB.scn" id="60_fbqlq"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaC.scn" id="61_ltib5"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaD.scn" id="62_7vpkh"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaA.scn" id="63_un8xc"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/Dibujo_t_draw_03.scn" id="64_ltkd7"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_TV.scn" id="65_fjr7g"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CatBed.scn" id="66_ogfwu"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_LitterBox.scn" id="67_uq0gq"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxA.scn" id="68_l0vfy"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxE.scn" id="69_x7r8p"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxD.scn" id="70_lscnm"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxD.scn" id="71_aeotu"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxA.scn" id="72_u80nw"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxE.scn" id="73_c4r3m"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxC.scn" id="74_ppyea"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxC.scn" id="75_gjvap"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/books/manga_01.glb" id="76_4tym3"]
+[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_00.jpg" id="77_pf02g"]
+[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_04.jpg" id="78_hhww5"]
+[ext_resource type="Material" path="res://assets/kit/materiales/M_Otter.tres" id="79_2667d"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Rug.scn" id="80_n3avl"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskC.scn" id="81_vb874"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PaperUniversidad.scn" id="82_ovwqp"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskD.scn" id="83_g1ijn"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushA.scn" id="84_4qh3j"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushB.scn" id="85_direk"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushC.scn" id="86_yq7h2"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Vase.scn" id="87_loidm"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverDesk.scn" id="88_lr7vf"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskA.scn" id="89_6bgwt"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_MP3.scn" id="90_y4und"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/carcasa_mp3.res" id="91_nw23i"]
+[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack_05.tres" id="92_24n5a"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/rueda_mp3.res" id="93_tm76t"]
+[ext_resource type="ArrayMesh" path="res://levels/desvan/mallas/auriculares_mp3.res" id="94_1f103"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Polaroid.scn" id="95_6thl1"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Lamp.scn" id="96_d04q4"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/furniture/chair_01.glb" id="97_ugnpm"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/electronics/speaker_01.glb" id="98_cjfwb"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/books/book_01.glb" id="99_nawbf"]
+[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_01.jpg" id="100_lmtht"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Stool.scn" id="101_t1dnx"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidA.scn" id="102_j8wc0"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidB.scn" id="103_gge3c"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidC.scn" id="104_f617m"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_PolaroidD.scn" id="105_q4hwg"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Caballete.scn" id="106_m2jqn"]
+[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_05.jpg" id="107_0vkpb"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Mirror.scn" id="108_su747"]
+[ext_resource type="Material" path="res://assets/kit/materiales/M_Pack08.tres" id="109_d0hwl"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Burro.scn" id="110_qietu"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Hat.scn" id="111_jneto"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/tableware/mug_01.glb" id="112_24rrn"]
+[ext_resource type="PackedScene" path="res://assets/modelos/ModernJapaneseHomePropsLite/addons/modern_japanese_home_props/models/electronics/clock_01.glb" id="113_igogf"]
+[ext_resource type="Texture2D" path="res://assets/kit/dibujos/t_draw_02.jpg" id="114_4d78r"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_m4jve"]
+size = Vector3(6.44, 0.18, 4.44)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uhqbx"]
+size = Vector3(2.24, 0.18, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3oeho"]
 size = Vector3(2.44, 0.18, 1.98)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uhqbx"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vs1dm"]
 albedo_color = Color(0.9282, 0.8878, 0.82500005, 1)
 metallic_specular = 0.3
 roughness = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_3oeho"]
-material = SubResource("StandardMaterial3D_uhqbx")
+[sub_resource type="BoxMesh" id="BoxMesh_88hbl"]
+material = SubResource("StandardMaterial3D_vs1dm")
 size = Vector3(0.23, 0.16194336, 0.004)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vs1dm"]
-albedo_texture = ExtResource("77_4tym3")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11aff"]
+albedo_texture = ExtResource("77_pf02g")
 roughness = 0.85
 
-[sub_resource type="QuadMesh" id="QuadMesh_88hbl"]
-material = SubResource("StandardMaterial3D_vs1dm")
+[sub_resource type="QuadMesh" id="QuadMesh_f2yoh"]
+material = SubResource("StandardMaterial3D_11aff")
 size = Vector2(0.222, 0.15394336)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11aff"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rc8ck"]
 albedo_color = Color(0.9282, 0.8878, 0.82500005, 1)
 metallic_specular = 0.3
 roughness = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_f2yoh"]
-material = SubResource("StandardMaterial3D_11aff")
+[sub_resource type="BoxMesh" id="BoxMesh_xi0jo"]
+material = SubResource("StandardMaterial3D_rc8ck")
 size = Vector3(0.15048829, 0.23, 0.004)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rc8ck"]
-albedo_texture = ExtResource("78_pf02g")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6dtj3"]
+albedo_texture = ExtResource("78_hhww5")
 roughness = 0.85
 
-[sub_resource type="QuadMesh" id="QuadMesh_xi0jo"]
-material = SubResource("StandardMaterial3D_rc8ck")
+[sub_resource type="QuadMesh" id="QuadMesh_pvgxa"]
+material = SubResource("StandardMaterial3D_6dtj3")
 size = Vector2(0.14248829, 0.222)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jfl05"]
@@ -191,953 +192,953 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_wyfg8")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6dtj3"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xinje"]
 albedo_color = Color(0.9282, 0.8878, 0.82500005, 1)
 metallic_specular = 0.3
 roughness = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_pvgxa"]
-material = SubResource("StandardMaterial3D_6dtj3")
+[sub_resource type="BoxMesh" id="BoxMesh_wpbqe"]
+material = SubResource("StandardMaterial3D_xinje")
 size = Vector3(0.16643554, 0.23, 0.004)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xinje"]
-albedo_texture = ExtResource("100_nawbf")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kivyd"]
+albedo_texture = ExtResource("100_lmtht")
 roughness = 0.85
 
-[sub_resource type="QuadMesh" id="QuadMesh_wpbqe"]
-material = SubResource("StandardMaterial3D_xinje")
+[sub_resource type="QuadMesh" id="QuadMesh_d8nkf"]
+material = SubResource("StandardMaterial3D_kivyd")
 size = Vector2(0.15843554, 0.222)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kivyd"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6lwu3"]
 albedo_color = Color(0.9282, 0.8878, 0.8312, 1)
 metallic_specular = 0.3
 roughness = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_d8nkf"]
-material = SubResource("StandardMaterial3D_kivyd")
+[sub_resource type="BoxMesh" id="BoxMesh_lv2he"]
+material = SubResource("StandardMaterial3D_6lwu3")
 size = Vector3(0.58, 0.72, 0.03)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6lwu3"]
-albedo_texture = ExtResource("107_m2jqn")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fcomh"]
+albedo_texture = ExtResource("107_0vkpb")
 roughness = 0.9
 
-[sub_resource type="QuadMesh" id="QuadMesh_lv2he"]
-material = SubResource("StandardMaterial3D_6lwu3")
+[sub_resource type="QuadMesh" id="QuadMesh_0goo8"]
+material = SubResource("StandardMaterial3D_fcomh")
 size = Vector2(0.55, 0.6793727)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fcomh"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ya52"]
 albedo_color = Color(0.9282, 0.8878, 0.82500005, 1)
 metallic_specular = 0.3
 roughness = 0.85
 
-[sub_resource type="BoxMesh" id="BoxMesh_0goo8"]
-material = SubResource("StandardMaterial3D_fcomh")
+[sub_resource type="BoxMesh" id="BoxMesh_stqg7"]
+material = SubResource("StandardMaterial3D_2ya52")
 size = Vector3(0.16823243, 0.23, 0.004)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ya52"]
-albedo_texture = ExtResource("113_24rrn")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5c27r"]
+albedo_texture = ExtResource("114_4d78r")
 roughness = 0.85
 
-[sub_resource type="QuadMesh" id="QuadMesh_stqg7"]
-material = SubResource("StandardMaterial3D_2ya52")
+[sub_resource type="QuadMesh" id="QuadMesh_g1e84"]
+material = SubResource("StandardMaterial3D_5c27r")
 size = Vector2(0.16023242, 0.222)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5c27r"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rmcyg"]
 albedo_color = Color(0.95, 0.76, 0.3, 1)
 metallic = 0.85
 roughness = 0.3
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_g1e84"]
-material = SubResource("StandardMaterial3D_5c27r")
+[sub_resource type="CylinderMesh" id="CylinderMesh_mlj64"]
+material = SubResource("StandardMaterial3D_rmcyg")
 top_radius = 0.045
 bottom_radius = 0.045
 height = 0.012
 
-[node name="DesvanOficial" type="Node3D" unique_id=1377690710]
+[node name="DesvanOficial" type="Node3D" unique_id=2060689215]
 
-[node name="ApoyoSuelo" type="StaticBody3D" parent="." unique_id=1685124642]
+[node name="ApoyoSuelo" type="StaticBody3D" parent="." unique_id=811420250]
 collision_layer = 2
 collision_mask = 0
 
-[node name="@CollisionShape3D@14" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=313126323]
+[node name="@CollisionShape3D@14" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=1449821108]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.09, 0.5)
-shape = SubResource("BoxShape3D_igogf")
-
-[node name="@CollisionShape3D@15" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=1355043107]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, -0.09, 3.2)
-shape = SubResource("BoxShape3D_4d78r")
-
-[node name="@CollisionShape3D@16" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=1214845079]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.09, -2.7)
 shape = SubResource("BoxShape3D_m4jve")
 
-[node name="S_1_desvan" type="Node3D" parent="." unique_id=1728423141]
+[node name="@CollisionShape3D@15" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=888896322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1, -0.09, 3.2)
+shape = SubResource("BoxShape3D_uhqbx")
 
-[node name="P_tablon_largo" type="Node3D" parent="S_1_desvan" unique_id=194691734]
+[node name="@CollisionShape3D@16" type="CollisionShape3D" parent="ApoyoSuelo" unique_id=230528619]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.09, -2.7)
+shape = SubResource("BoxShape3D_3oeho")
+
+[node name="S_1_desvan" type="Node3D" parent="." unique_id=1418550986]
+
+[node name="P_tablon_largo" type="Node3D" parent="S_1_desvan" unique_id=668737629]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2483872, 0.00014694035, -0.49077332)
 
-[node name="FloorPlanks015" type="Node3D" parent="S_1_desvan/P_tablon_largo" unique_id=1152032108 instance=ExtResource("1_enur8")]
+[node name="FloorPlanks015" type="Node3D" parent="S_1_desvan/P_tablon_largo" unique_id=1152032108 instance=ExtResource("1_28ec8")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_largo_001" type="Node3D" parent="S_1_desvan" unique_id=1399774427]
+[node name="P_tablon_largo_001" type="Node3D" parent="S_1_desvan" unique_id=1804991432]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7489806, 0.0010140017, -0.47103867)
 
-[node name="FloorPlanks015_2" type="Node3D" parent="S_1_desvan/P_tablon_largo_001" unique_id=1121370573 instance=ExtResource("1_enur8")]
+[node name="FloorPlanks015_2" type="Node3D" parent="S_1_desvan/P_tablon_largo_001" unique_id=1121370573 instance=ExtResource("1_28ec8")]
 
-[node name="P_tablon_largo_002" type="Node3D" parent="S_1_desvan" unique_id=776871254]
+[node name="P_tablon_largo_002" type="Node3D" parent="S_1_desvan" unique_id=977832158]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2462373, 0.00014694035, -0.49077338)
 
-[node name="FloorPlanks015_3" type="Node3D" parent="S_1_desvan/P_tablon_largo_002" unique_id=2017978932 instance=ExtResource("1_enur8")]
+[node name="FloorPlanks015_3" type="Node3D" parent="S_1_desvan/P_tablon_largo_002" unique_id=2017978932 instance=ExtResource("1_28ec8")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_largo_003" type="Node3D" parent="S_1_desvan" unique_id=2059775735]
+[node name="P_tablon_largo_003" type="Node3D" parent="S_1_desvan" unique_id=997879282]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7405179, 0.00014694035, -0.49077338)
 
-[node name="FloorPlanks015_4" type="Node3D" parent="S_1_desvan/P_tablon_largo_003" unique_id=471026962 instance=ExtResource("1_enur8")]
+[node name="FloorPlanks015_4" type="Node3D" parent="S_1_desvan/P_tablon_largo_003" unique_id=471026962 instance=ExtResource("1_28ec8")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio" type="Node3D" parent="S_1_desvan" unique_id=164844109]
+[node name="P_tablon_medio" type="Node3D" parent="S_1_desvan" unique_id=2025374422]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7398632, 0.0002944842, 0.9837521)
 
-[node name="FloorPlanks013" type="Node3D" parent="S_1_desvan/P_tablon_medio" unique_id=506820658 instance=ExtResource("2_28ec8")]
+[node name="FloorPlanks013" type="Node3D" parent="S_1_desvan/P_tablon_medio" unique_id=506820658 instance=ExtResource("2_vpfl7")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio_001" type="Node3D" parent="S_1_desvan" unique_id=623786813]
+[node name="P_tablon_medio_001" type="Node3D" parent="S_1_desvan" unique_id=1999657562]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2448475, -0.00011765957, 0.99033636)
 
-[node name="FloorPlanks013_2" type="Node3D" parent="S_1_desvan/P_tablon_medio_001" unique_id=1914609959 instance=ExtResource("2_28ec8")]
+[node name="FloorPlanks013_2" type="Node3D" parent="S_1_desvan/P_tablon_medio_001" unique_id=1914609959 instance=ExtResource("2_vpfl7")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio_002" type="Node3D" parent="S_1_desvan" unique_id=533134723]
+[node name="P_tablon_medio_002" type="Node3D" parent="S_1_desvan" unique_id=248713673]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7420148, 0.00031466782, 0.98375696)
 
-[node name="FloorPlanks013_3" type="Node3D" parent="S_1_desvan/P_tablon_medio_002" unique_id=641189856 instance=ExtResource("2_28ec8")]
+[node name="FloorPlanks013_3" type="Node3D" parent="S_1_desvan/P_tablon_medio_002" unique_id=641189856 instance=ExtResource("2_vpfl7")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_medio_003" type="Node3D" parent="S_1_desvan" unique_id=1680981445]
+[node name="P_tablon_medio_003" type="Node3D" parent="S_1_desvan" unique_id=339048509]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2469932, -0.0001378581, 0.99033463)
 
-[node name="FloorPlanks013_4" type="Node3D" parent="S_1_desvan/P_tablon_medio_003" unique_id=857895633 instance=ExtResource("2_28ec8")]
+[node name="FloorPlanks013_4" type="Node3D" parent="S_1_desvan/P_tablon_medio_003" unique_id=857895633 instance=ExtResource("2_vpfl7")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto" type="Node3D" parent="S_1_desvan" unique_id=973981841]
+[node name="P_tablon_corto" type="Node3D" parent="S_1_desvan" unique_id=1463199959]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7467092, -0.0006262362, 0.49947882)
 
-[node name="FloorPlanks014" type="Node3D" parent="S_1_desvan/P_tablon_corto" unique_id=814259523 instance=ExtResource("3_vpfl7")]
+[node name="FloorPlanks014" type="Node3D" parent="S_1_desvan/P_tablon_corto" unique_id=814259523 instance=ExtResource("3_edlif")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto_001" type="Node3D" parent="S_1_desvan" unique_id=20846186]
+[node name="P_tablon_corto_001" type="Node3D" parent="S_1_desvan" unique_id=1094214611]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.24598275, -0.0007411167, 0.50275636)
 
-[node name="FloorPlanks014_2" type="Node3D" parent="S_1_desvan/P_tablon_corto_001" unique_id=1596866125 instance=ExtResource("3_vpfl7")]
+[node name="FloorPlanks014_2" type="Node3D" parent="S_1_desvan/P_tablon_corto_001" unique_id=1596866125 instance=ExtResource("3_edlif")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto_002" type="Node3D" parent="S_1_desvan" unique_id=340289162]
+[node name="P_tablon_corto_002" type="Node3D" parent="S_1_desvan" unique_id=1701646066]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2511429, -0.0006463453, 0.49947625)
 
-[node name="FloorPlanks014_3" type="Node3D" parent="S_1_desvan/P_tablon_corto_002" unique_id=1720036866 instance=ExtResource("3_vpfl7")]
+[node name="FloorPlanks014_3" type="Node3D" parent="S_1_desvan/P_tablon_corto_002" unique_id=1720036866 instance=ExtResource("3_edlif")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tablon_corto_003" type="Node3D" parent="S_1_desvan" unique_id=593162513]
+[node name="P_tablon_corto_003" type="Node3D" parent="S_1_desvan" unique_id=1677449145]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7518685, -0.0007411167, 0.5027561)
 
-[node name="FloorPlanks014_4" type="Node3D" parent="S_1_desvan/P_tablon_corto_003" unique_id=1637761815 instance=ExtResource("3_vpfl7")]
+[node name="FloorPlanks014_4" type="Node3D" parent="S_1_desvan/P_tablon_corto_003" unique_id=1637761815 instance=ExtResource("3_edlif")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo" type="Node3D" parent="S_1_desvan" unique_id=1454104619]
+[node name="P_borde_suelo" type="Node3D" parent="S_1_desvan" unique_id=1492867015]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.090375, 0.00020637363, 3.5602176)
 
-[node name="SB020" type="Node3D" parent="S_1_desvan/P_borde_suelo" unique_id=1217831866 instance=ExtResource("4_edlif")]
+[node name="SB020" type="Node3D" parent="S_1_desvan/P_borde_suelo" unique_id=1217831866 instance=ExtResource("4_vnbjh")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_001" type="Node3D" parent="S_1_desvan" unique_id=1454787752]
+[node name="P_borde_suelo_001" type="Node3D" parent="S_1_desvan" unique_id=1767006684]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.963722, 0.00031523407, 2.5786796)
 
-[node name="SB021" type="Node3D" parent="S_1_desvan/P_borde_suelo_001" unique_id=1066202068 instance=ExtResource("5_vnbjh")]
+[node name="SB021" type="Node3D" parent="S_1_desvan/P_borde_suelo_001" unique_id=1066202068 instance=ExtResource("5_66g0h")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_002" type="Node3D" parent="S_1_desvan" unique_id=1610219669]
+[node name="P_borde_suelo_002" type="Node3D" parent="S_1_desvan" unique_id=1210903451]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.992006, -0.00013499707, -3.5501695)
 
-[node name="SB022" type="Node3D" parent="S_1_desvan/P_borde_suelo_002" unique_id=1683213327 instance=ExtResource("6_66g0h")]
+[node name="SB022" type="Node3D" parent="S_1_desvan/P_borde_suelo_002" unique_id=1683213327 instance=ExtResource("6_ep28n")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_003" type="Node3D" parent="S_1_desvan" unique_id=811172135]
+[node name="P_borde_suelo_003" type="Node3D" parent="S_1_desvan" unique_id=1650241133]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0904449, -0.00021761656, 3.0717535)
 
-[node name="SB023" type="Node3D" parent="S_1_desvan/P_borde_suelo_003" unique_id=627167417 instance=ExtResource("7_ep28n")]
+[node name="SB023" type="Node3D" parent="S_1_desvan/P_borde_suelo_003" unique_id=627167417 instance=ExtResource("7_uphc8")]
 
-[node name="P_borde_suelo_004" type="Node3D" parent="S_1_desvan" unique_id=1297764734]
+[node name="P_borde_suelo_004" type="Node3D" parent="S_1_desvan" unique_id=977839251]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0903618, 0.0005271882, 0.9774307)
 
-[node name="SB024" type="Node3D" parent="S_1_desvan/P_borde_suelo_004" unique_id=1424411483 instance=ExtResource("8_uphc8")]
+[node name="SB024" type="Node3D" parent="S_1_desvan/P_borde_suelo_004" unique_id=1424411483 instance=ExtResource("8_2b517")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_005" type="Node3D" parent="S_1_desvan" unique_id=828018996]
+[node name="P_borde_suelo_005" type="Node3D" parent="S_1_desvan" unique_id=1902678353]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0929326, 0.00069384277, -1.5932838)
 
-[node name="SB025" type="Node3D" parent="S_1_desvan/P_borde_suelo_005" unique_id=106456954 instance=ExtResource("9_2b517")]
+[node name="SB025" type="Node3D" parent="S_1_desvan/P_borde_suelo_005" unique_id=106456954 instance=ExtResource("9_bitfq")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_006" type="Node3D" parent="S_1_desvan" unique_id=320329533]
+[node name="P_borde_suelo_006" type="Node3D" parent="S_1_desvan" unique_id=876471612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8977991, -0.00024091452, -2.5830503)
 
-[node name="SB026" type="Node3D" parent="S_1_desvan/P_borde_suelo_006" unique_id=723160604 instance=ExtResource("10_bitfq")]
+[node name="SB026" type="Node3D" parent="S_1_desvan/P_borde_suelo_006" unique_id=723160604 instance=ExtResource("10_halre")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_007" type="Node3D" parent="S_1_desvan" unique_id=1859759691]
+[node name="P_borde_suelo_007" type="Node3D" parent="S_1_desvan" unique_id=1956845047]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1124843, 0.00017788261, 3.5336351)
 
-[node name="SB029" type="Node3D" parent="S_1_desvan/P_borde_suelo_007" unique_id=2124028262 instance=ExtResource("11_halre")]
+[node name="SB029" type="Node3D" parent="S_1_desvan/P_borde_suelo_007" unique_id=2124028262 instance=ExtResource("11_tvcor")]
 
-[node name="P_borde_suelo_008" type="Node3D" parent="S_1_desvan" unique_id=266716667]
+[node name="P_borde_suelo_008" type="Node3D" parent="S_1_desvan" unique_id=292215254]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0802575, 0.00017787516, 2.5948074)
 
-[node name="SB029_2" type="Node3D" parent="S_1_desvan/P_borde_suelo_008" unique_id=619034181 instance=ExtResource("11_halre")]
+[node name="SB029_2" type="Node3D" parent="S_1_desvan/P_borde_suelo_008" unique_id=619034181 instance=ExtResource("11_tvcor")]
 
-[node name="P_borde_suelo_009" type="Node3D" parent="S_1_desvan" unique_id=1192417374]
+[node name="P_borde_suelo_009" type="Node3D" parent="S_1_desvan" unique_id=126884014]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0687618, 0.00013937801, -0.4760022)
 
-[node name="SB030" type="Node3D" parent="S_1_desvan/P_borde_suelo_009" unique_id=466612634 instance=ExtResource("12_tvcor")]
+[node name="SB030" type="Node3D" parent="S_1_desvan/P_borde_suelo_009" unique_id=466612634 instance=ExtResource("12_uiukm")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_borde_suelo_010" type="Node3D" parent="S_1_desvan" unique_id=996981955]
+[node name="P_borde_suelo_010" type="Node3D" parent="S_1_desvan" unique_id=1213160155]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0705824, -0.00011342764, 3.5333989)
 
-[node name="SB033" type="Node3D" parent="S_1_desvan/P_borde_suelo_010" unique_id=945062105 instance=ExtResource("13_uiukm")]
+[node name="SB033" type="Node3D" parent="S_1_desvan/P_borde_suelo_010" unique_id=945062105 instance=ExtResource("13_w6cd8")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_borde_suelo_011" type="Node3D" parent="S_1_desvan" unique_id=786808704]
+[node name="P_borde_suelo_011" type="Node3D" parent="S_1_desvan" unique_id=2128242463]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0601687, 0.00017787516, 2.5735054)
 
-[node name="SB034" type="Node3D" parent="S_1_desvan/P_borde_suelo_011" unique_id=1127040828 instance=ExtResource("14_w6cd8")]
+[node name="SB034" type="Node3D" parent="S_1_desvan/P_borde_suelo_011" unique_id=1127040828 instance=ExtResource("14_n0s73")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1744020140]
+[node name="P_pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1636162362]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0697178, 0.000567317, -1.6546451)
 
-[node name="SM_WallA" type="Node3D" parent="S_1_desvan/P_pared_fondo" unique_id=1429552958 instance=ExtResource("15_n0s73")]
+[node name="SM_WallA" type="Node3D" parent="S_1_desvan/P_pared_fondo" unique_id=1429552958 instance=ExtResource("15_f4d5k")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=125596606]
+[node name="P_pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=710905029]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.84246767, 0.010786533, -2.577354)
 
-[node name="SM_WallB" type="Node3D" parent="S_1_desvan/P_pared_lateral" unique_id=1495189481 instance=ExtResource("16_f4d5k")]
+[node name="SM_WallB" type="Node3D" parent="S_1_desvan/P_pared_lateral" unique_id=1495189481 instance=ExtResource("16_we7nu")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pared_rincon" type="Node3D" parent="S_1_desvan" unique_id=1754697307]
+[node name="P_pared_rincon" type="Node3D" parent="S_1_desvan" unique_id=1688949456]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8736829, -0.009565115, -3.5857654)
 
-[node name="SM_WallC" type="Node3D" parent="S_1_desvan/P_pared_rincon" unique_id=457941888 instance=ExtResource("17_we7nu")]
+[node name="SM_WallC" type="Node3D" parent="S_1_desvan/P_pared_rincon" unique_id=457941888 instance=ExtResource("17_01olc")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pilar__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1341030392]
+[node name="P_pilar__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1086427013]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.94019055, 0.14849806, -1.5690848)
 
-[node name="SM_Pillar" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo" unique_id=967600117 instance=ExtResource("18_01olc")]
+[node name="SM_Pillar" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo" unique_id=967600117 instance=ExtResource("18_cusqw")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_pilar__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=1333921162]
+[node name="P_pilar__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=315902409]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.939572, 0.14791155, -3.4778476)
 
-[node name="SM_Pillar_2" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo_001" unique_id=1903942582 instance=ExtResource("18_01olc")]
+[node name="SM_Pillar_2" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo_001" unique_id=1903942582 instance=ExtResource("18_cusqw")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_pilar__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=373463387]
+[node name="P_pilar__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=130842326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9688332, 0.14691925, -3.4778214)
 
-[node name="SM_Pillar_3" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo_002" unique_id=821621470 instance=ExtResource("18_01olc")]
+[node name="SM_Pillar_3" type="Node3D" parent="S_1_desvan/P_pilar__after-pared_fondo_002" unique_id=821621470 instance=ExtResource("18_cusqw")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1580707460]
+[node name="P_rodapie__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=263118598]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.105432, 0.20135632, 0.8753265)
 
-[node name="SM_SkirtingBoardI" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo" unique_id=1658919876 instance=ExtResource("19_cusqw")]
+[node name="SM_SkirtingBoardI" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo" unique_id=1658919876 instance=ExtResource("19_swu6i")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=1074182893]
+[node name="P_rodapie__after-pared_fondo_001" type="Node3D" parent="S_1_desvan" unique_id=20637385]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.125122, 0.20026557, -1.6172308)
 
-[node name="SM_SkirtingBoardJ" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_001" unique_id=913875243 instance=ExtResource("20_swu6i")]
+[node name="SM_SkirtingBoardJ" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_001" unique_id=913875243 instance=ExtResource("20_3gy5x")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=492180014]
+[node name="P_rodapie__after-pared_fondo_002" type="Node3D" parent="S_1_desvan" unique_id=349788942]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.94072, 0.20003086, -3.5522869)
 
-[node name="SM_SkirtingBoardL" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_002" unique_id=167358633 instance=ExtResource("21_3gy5x")]
+[node name="SM_SkirtingBoardL" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_002" unique_id=167358633 instance=ExtResource("21_dt3en")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_rodapie__after-pared_fondo_003" type="Node3D" parent="S_1_desvan" unique_id=1704338557]
+[node name="P_rodapie__after-pared_fondo_003" type="Node3D" parent="S_1_desvan" unique_id=86908927]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8798929, 0.20150632, -2.5144923)
 
-[node name="SM_SkirtingBoardTopA" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_003" unique_id=19766292 instance=ExtResource("22_dt3en")]
+[node name="SM_SkirtingBoardTopA" type="Node3D" parent="S_1_desvan/P_rodapie__after-pared_fondo_003" unique_id=19766292 instance=ExtResource("22_ir5qu")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_moldura__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=304542487]
+[node name="P_moldura__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=688732147]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.87989235, 4.537537, -2.5144925)
 
-[node name="SM_SkirtingBoardTopA_2" type="Node3D" parent="S_1_desvan/P_moldura__after-pared_lateral" unique_id=373724103 instance=ExtResource("22_dt3en")]
+[node name="SM_SkirtingBoardTopA_2" type="Node3D" parent="S_1_desvan/P_moldura__after-pared_lateral" unique_id=373724103 instance=ExtResource("22_ir5qu")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_moldura__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=881844364]
+[node name="P_moldura__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=806888601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.911151, 4.5377097, -3.6002803)
 
-[node name="SM_SkirtingBoardTopA_3" type="Node3D" parent="S_1_desvan/P_moldura__after-pared_lateral_001" unique_id=628644665 instance=ExtResource("22_dt3en")]
+[node name="SM_SkirtingBoardTopA_3" type="Node3D" parent="S_1_desvan/P_moldura__after-pared_lateral_001" unique_id=628644665 instance=ExtResource("22_ir5qu")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_ventana__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1092853322]
+[node name="P_ventana__after-pared_fondo" type="Node3D" parent="S_1_desvan" unique_id=1482392260]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44045454, 1.1160216, -1.5310721)
 
-[node name="SM_Window" type="Node3D" parent="S_1_desvan/P_ventana__after-pared_fondo" unique_id=817106103 instance=ExtResource("23_ir5qu")]
+[node name="SM_Window" type="Node3D" parent="S_1_desvan/P_ventana__after-pared_fondo" unique_id=817106103 instance=ExtResource("23_064yr")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_cumbrera__after-pared_fondo__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=1790291676]
+[node name="P_cumbrera__after-pared_fondo__after-pared_lateral" type="Node3D" parent="S_1_desvan" unique_id=1868743072]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3207279, 4.5323234, 0.872412)
 
-[node name="CeilingSupport020_2" type="Node3D" parent="S_1_desvan/P_cumbrera__after-pared_fondo__after-pared_lateral" unique_id=633974243 instance=ExtResource("24_064yr")]
+[node name="CeilingSupport020_2" type="Node3D" parent="S_1_desvan/P_cumbrera__after-pared_fondo__after-pared_lateral" unique_id=633974243 instance=ExtResource("24_4lrua")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_cumbrera__after-pared_fondo__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=1088886977]
+[node name="P_cumbrera__after-pared_fondo__after-pared_lateral_001" type="Node3D" parent="S_1_desvan" unique_id=2006242495]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.028233, 0.4498615, 0.87241215)
 
-[node name="CeilingSupport020" type="Node3D" parent="S_1_desvan/P_cumbrera__after-pared_fondo__after-pared_lateral_001" unique_id=1451702841 instance=ExtResource("24_064yr")]
+[node name="CeilingSupport020" type="Node3D" parent="S_1_desvan/P_cumbrera__after-pared_fondo__after-pared_lateral_001" unique_id=1451702841 instance=ExtResource("24_4lrua")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=952339778]
+[node name="P_viga__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=483205576]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7327226, 0.6510503, 3.1338308)
 
-[node name="SM_CeilingSupportVerticalA" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera" unique_id=1942315800 instance=ExtResource("25_4lrua")]
+[node name="SM_CeilingSupportVerticalA" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera" unique_id=1942315800 instance=ExtResource("25_riy3m")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=2135461932]
+[node name="P_viga__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=566495981]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7328827, 0.6511202, 1.6361524)
 
-[node name="SM_CeilingSupportVerticalB" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_001" unique_id=375483299 instance=ExtResource("26_riy3m")]
+[node name="SM_CeilingSupportVerticalB" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_001" unique_id=375483299 instance=ExtResource("26_yg4o2")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=1802998663]
+[node name="P_viga__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=351651502]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7327535, 0.6510279, 0.13881104)
 
-[node name="SM_CeilingSupportVerticalC" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_002" unique_id=1755383544 instance=ExtResource("27_yg4o2")]
+[node name="SM_CeilingSupportVerticalC" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_002" unique_id=1755383544 instance=ExtResource("27_yv2es")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_viga__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=1608388729]
+[node name="P_viga__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=1715796949]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7328832, 0.6511202, -1.3588133)
 
-[node name="SM_CeilingSupportVerticalD" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_003" unique_id=220960952 instance=ExtResource("28_yv2es")]
+[node name="SM_CeilingSupportVerticalD" type="Node3D" parent="S_1_desvan/P_viga__after-cumbrera_003" unique_id=220960952 instance=ExtResource("28_rtaut")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=972428935]
+[node name="P_poste__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=48140190]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952245, 0.15124857, 3.1473727)
 
-[node name="CeilingSupport014" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera" unique_id=1021618526 instance=ExtResource("29_rtaut")]
+[node name="CeilingSupport014" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera" unique_id=1021618526 instance=ExtResource("29_o16sm")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=1761199156]
+[node name="P_poste__after-cumbrera_001" type="Node3D" parent="S_1_desvan" unique_id=1122015511]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952055, 0.15127909, 1.6470976)
 
-[node name="CeilingSupport015" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_001" unique_id=1620854712 instance=ExtResource("30_o16sm")]
+[node name="CeilingSupport015" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_001" unique_id=1620854712 instance=ExtResource("30_ysi06")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=843043560]
+[node name="P_poste__after-cumbrera_002" type="Node3D" parent="S_1_desvan" unique_id=861139810]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952198, 0.15125364, 0.15060392)
 
-[node name="CeilingSupport016" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_002" unique_id=1290985445 instance=ExtResource("31_ysi06")]
+[node name="CeilingSupport016" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_002" unique_id=1290985445 instance=ExtResource("31_2ejki")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_poste__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=673540763]
+[node name="P_poste__after-cumbrera_003" type="Node3D" parent="S_1_desvan" unique_id=436266524]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1952198, 0.15125364, -1.3426642)
 
-[node name="CeilingSupport017" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_003" unique_id=30324814 instance=ExtResource("32_2ejki")]
+[node name="CeilingSupport017" type="Node3D" parent="S_1_desvan/P_poste__after-cumbrera_003" unique_id=30324814 instance=ExtResource("32_gwsxv")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_correa__after-viga" type="Node3D" parent="S_1_desvan" unique_id=384185870]
+[node name="P_correa__after-viga" type="Node3D" parent="S_1_desvan" unique_id=1429601123]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2513945, 1.432858, 0.98894644)
 
-[node name="CeilingSupport018" type="Node3D" parent="S_1_desvan/P_correa__after-viga" unique_id=983765413 instance=ExtResource("33_gwsxv")]
+[node name="CeilingSupport018" type="Node3D" parent="S_1_desvan/P_correa__after-viga" unique_id=983765413 instance=ExtResource("33_7604b")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_correa__after-viga_001" type="Node3D" parent="S_1_desvan" unique_id=1793298317]
+[node name="P_correa__after-viga_001" type="Node3D" parent="S_1_desvan" unique_id=1285941396]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3234135, 2.7548141, 0.9877314)
 
-[node name="CeilingSupport021" type="Node3D" parent="S_1_desvan/P_correa__after-viga_001" unique_id=322199181 instance=ExtResource("34_7604b")]
+[node name="CeilingSupport021" type="Node3D" parent="S_1_desvan/P_correa__after-viga_001" unique_id=322199181 instance=ExtResource("34_2m8a5")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_tejado__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=629772229]
+[node name="P_tejado__after-cumbrera" type="Node3D" parent="S_1_desvan" unique_id=1896698680]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7366885, 0.66342866, 0.858822)
 
-[node name="SM_Ceiling" type="Node3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=2137199872 instance=ExtResource("35_2m8a5")]
+[node name="SM_Ceiling" type="Node3D" parent="S_1_desvan/P_tejado__after-cumbrera" unique_id=2137199872 instance=ExtResource("35_6ap0d")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda" type="Node3D" parent="S_1_desvan" unique_id=418572644]
+[node name="P_bombilla__after-guirnalda" type="Node3D" parent="S_1_desvan" unique_id=39897680]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194865, 2.1328251, 2.6371825)
 
-[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda" unique_id=163083676 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda" unique_id=163083676 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_001" type="Node3D" parent="S_1_desvan" unique_id=1272620085]
+[node name="P_bombilla__after-guirnalda_001" type="Node3D" parent="S_1_desvan" unique_id=1904734563]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194696, 1.95147, 2.2305384)
 
-[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_001" unique_id=1857527545 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_001" unique_id=1857527545 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_002" type="Node3D" parent="S_1_desvan" unique_id=43219356]
+[node name="P_bombilla__after-guirnalda_002" type="Node3D" parent="S_1_desvan" unique_id=1175536263]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194859, 2.1204257, 1.8238941)
 
-[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_002" unique_id=716973632 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_002" unique_id=716973632 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_003" type="Node3D" parent="S_1_desvan" unique_id=1106288819]
+[node name="P_bombilla__after-guirnalda_003" type="Node3D" parent="S_1_desvan" unique_id=1102853615]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194865, 2.1328251, 1.4172499)
 
-[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_003" unique_id=319106 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_003" unique_id=319106 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_004" type="Node3D" parent="S_1_desvan" unique_id=239618680]
+[node name="P_bombilla__after-guirnalda_004" type="Node3D" parent="S_1_desvan" unique_id=1695218271]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194696, 1.95147, 1.0106058)
 
-[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_004" unique_id=1143297234 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_004" unique_id=1143297234 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_005" type="Node3D" parent="S_1_desvan" unique_id=1333190548]
+[node name="P_bombilla__after-guirnalda_005" type="Node3D" parent="S_1_desvan" unique_id=2126186612]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194859, 2.1204257, 0.6039616)
 
-[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_005" unique_id=781389969 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_005" unique_id=781389969 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_006" type="Node3D" parent="S_1_desvan" unique_id=2024680462]
+[node name="P_bombilla__after-guirnalda_006" type="Node3D" parent="S_1_desvan" unique_id=1566740836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194865, 2.1328251, 0.19731739)
 
-[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_006" unique_id=572385446 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_006" unique_id=572385446 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_007" type="Node3D" parent="S_1_desvan" unique_id=244881135]
+[node name="P_bombilla__after-guirnalda_007" type="Node3D" parent="S_1_desvan" unique_id=920645849]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194696, 1.95147, -0.2093268)
 
-[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_007" unique_id=449384220 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_007" unique_id=449384220 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_008" type="Node3D" parent="S_1_desvan" unique_id=1466267078]
+[node name="P_bombilla__after-guirnalda_008" type="Node3D" parent="S_1_desvan" unique_id=449728023]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194859, 2.1204257, -0.61597097)
 
-[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_008" unique_id=70706563 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_008" unique_id=70706563 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_009" type="Node3D" parent="S_1_desvan" unique_id=1758049886]
+[node name="P_bombilla__after-guirnalda_009" type="Node3D" parent="S_1_desvan" unique_id=1736532921]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9575136, 2.187825, -2.1158175)
 
-[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_009" unique_id=307158038 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_009" unique_id=307158038 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_010" type="Node3D" parent="S_1_desvan" unique_id=4809818]
+[node name="P_bombilla__after-guirnalda_010" type="Node3D" parent="S_1_desvan" unique_id=1803900320]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9575306, 2.0064697, -2.5224617)
 
-[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_010" unique_id=1672125287 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla2" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_010" unique_id=1672125287 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_bombilla__after-guirnalda_011" type="Node3D" parent="S_1_desvan" unique_id=25019725]
+[node name="P_bombilla__after-guirnalda_011" type="Node3D" parent="S_1_desvan" unique_id=212433120]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95751417, 2.1754255, -2.929106)
 
-[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_011" unique_id=1281398833 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla3" type="Node3D" parent="S_1_desvan/P_bombilla__after-guirnalda_011" unique_id=1281398833 instance=ExtResource("36_ionyr")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado" type="Node3D" parent="S_1_desvan" unique_id=1452414308]
+[node name="P_guirnalda__after-tejado" type="Node3D" parent="S_1_desvan" unique_id=1673237573]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194954, 2.1522841, 2.2300336)
 
-[node name="SM_Cuerda" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado" unique_id=1755433613 instance=ExtResource("37_ionyr")]
+[node name="SM_Cuerda" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado" unique_id=1755433613 instance=ExtResource("37_4pwd0")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado_001" type="Node3D" parent="S_1_desvan" unique_id=1403890239]
+[node name="P_guirnalda__after-tejado_001" type="Node3D" parent="S_1_desvan" unique_id=177145177]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194954, 2.1522841, 1.0101011)
 
-[node name="SM_Cuerda2" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_001" unique_id=807509795 instance=ExtResource("37_ionyr")]
+[node name="SM_Cuerda2" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_001" unique_id=807509795 instance=ExtResource("37_4pwd0")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado_002" type="Node3D" parent="S_1_desvan" unique_id=278258648]
+[node name="P_guirnalda__after-tejado_002" type="Node3D" parent="S_1_desvan" unique_id=1297994881]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3194954, 2.1522841, -0.20983148)
 
-[node name="SM_Cuerda3" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_002" unique_id=1493958934 instance=ExtResource("37_ionyr")]
+[node name="SM_Cuerda3" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_002" unique_id=1493958934 instance=ExtResource("37_4pwd0")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_guirnalda__after-tejado_003" type="Node3D" parent="S_1_desvan" unique_id=1611504031]
+[node name="P_guirnalda__after-tejado_003" type="Node3D" parent="S_1_desvan" unique_id=1268148177]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9575047, 2.207284, -2.5229664)
 
-[node name="SM_Cuerda" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_003" unique_id=2024809543 instance=ExtResource("37_ionyr")]
+[node name="SM_Cuerda" type="Node3D" parent="S_1_desvan/P_guirnalda__after-tejado_003" unique_id=2024809543 instance=ExtResource("37_4pwd0")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="P_hucha__clave" type="Node3D" parent="S_1_desvan" unique_id=945696276]
+[node name="P_hucha__clave" type="Node3D" parent="S_1_desvan" unique_id=1549188180]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0.60060173, 1.72)
 
-[node name="SM_Pig" type="Node3D" parent="S_1_desvan/P_hucha__clave" unique_id=11663786 instance=ExtResource("38_4pwd0")]
+[node name="SM_Pig" type="Node3D" parent="S_1_desvan/P_hucha__clave" unique_id=11663786 instance=ExtResource("38_mstxw")]
 transform = Transform3D(-0.93969256, 0, -0.34202012, 0, 1, 0, 0.34202012, 0, -0.93969256, 0, 0, 0)
 
-[node name="Z_montaje_hucha__reward-hucha__monta" type="Node3D" parent="S_1_desvan" unique_id=1415936183]
+[node name="Z_montaje_hucha__reward-hucha__monta" type="Node3D" parent="S_1_desvan" unique_id=640899237]
 transform = Transform3D(-0.9396926, 0, -0.34202015, 0, 1, 0, 0.34202015, 0, -0.9396926, 0.45, 0.15, 2.33)
 
-[node name="P_pata_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=708836365]
+[node name="P_pata_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1104350923]
 
-[node name="SM_PigA" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha" unique_id=357309966]
+[node name="SM_PigA" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha" unique_id=1076923440]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.104, 0.05021268, -0.096932285)
-mesh = ExtResource("39_mstxw")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("39_ndskd")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pata_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1739940970]
+[node name="P_pata_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=119351404]
 
-[node name="SM_PigB" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_001" unique_id=487342798]
+[node name="SM_PigB" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_001" unique_id=2001458909]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.104, 0.05021268, -0.096932285)
-mesh = ExtResource("41_dw7sk")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("41_do2jc")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pata_hucha__after-cuerpo_hucha_002" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1798442472]
+[node name="P_pata_hucha__after-cuerpo_hucha_002" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1583209929]
 
-[node name="SM_PigC" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_002" unique_id=791009168]
+[node name="SM_PigC" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_002" unique_id=1076729591]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.104, 0.05021268, 0.08966772)
-mesh = ExtResource("42_do2jc")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("42_f0uqf")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=920113206]
+[node name="P_cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1229945934]
 
-[node name="SM_PigE" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cuerpo_hucha" unique_id=1262340747]
+[node name="SM_PigE" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cuerpo_hucha" unique_id=249337088]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.16801268, -0.006032288)
-mesh = ExtResource("43_f0uqf")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("43_r1hpv")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_oreja_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1859802593]
+[node name="P_oreja_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1295551206]
 
-[node name="SM_PigF" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha" unique_id=1345885398]
+[node name="SM_PigF" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha" unique_id=1724447555]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.11579999, 0.2575127, -0.07403229)
-mesh = ExtResource("44_r1hpv")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("44_4a1ox")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_hocico_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1959036352]
+[node name="P_hocico_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=653304104]
 
-[node name="SM_PigH" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_hocico_hucha__after-cuerpo_hucha" unique_id=723262715]
+[node name="SM_PigH" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_hocico_hucha__after-cuerpo_hucha" unique_id=1064168116]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.13951267, -0.1798323)
-mesh = ExtResource("45_4a1ox")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("45_x44wv")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_ojo_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=963019491]
+[node name="P_ojo_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1572319185]
 
-[node name="SM_PigJ" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha" unique_id=1603755410]
+[node name="SM_PigJ" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha" unique_id=196342324]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0621, 0.19281268, -0.1700323)
-mesh = ExtResource("46_x44wv")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("46_r2af7")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_corona_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=595135693]
+[node name="P_corona_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1232352530]
 
-[node name="SM_PigK" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_corona_hucha__after-cuerpo_hucha" unique_id=1517813844]
+[node name="SM_PigK" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_corona_hucha__after-cuerpo_hucha" unique_id=1630632422]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.3175127, -0.104032286)
-mesh = ExtResource("47_r2af7")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("47_hldjf")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pata_hucha__after-cuerpo_hucha_003" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=336764556]
+[node name="P_pata_hucha__after-cuerpo_hucha_003" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=133370682]
 
-[node name="SM_PigD" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_003" unique_id=438686773]
+[node name="SM_PigD" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pata_hucha__after-cuerpo_hucha_003" unique_id=34802476]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.104, 0.05021268, 0.08966772)
-mesh = ExtResource("48_hldjf")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("48_ne16m")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_oreja_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=2142027016]
+[node name="P_oreja_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1735263165]
 
-[node name="SM_PigG" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha_001" unique_id=201101103]
+[node name="SM_PigG" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_oreja_hucha__after-cuerpo_hucha_001" unique_id=2094285641]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.1158, 0.2575127, -0.07403229)
-mesh = ExtResource("49_ne16m")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("49_4n4t0")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_ojo_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=684443368]
+[node name="P_ojo_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1967398964]
 
-[node name="SM_PigI" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha_001" unique_id=395870068]
+[node name="SM_PigI" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_ojo_hucha__after-cuerpo_hucha_001" unique_id=918170008]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0621, 0.19281268, -0.1700323)
-mesh = ExtResource("50_4n4t0")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("50_t2ujg")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_cola_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1860442916]
+[node name="P_cola_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1038494587]
 
-[node name="SM_PigL" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cola_hucha__after-cuerpo_hucha" unique_id=2046043793]
+[node name="SM_PigL" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_cola_hucha__after-cuerpo_hucha" unique_id=1367450528]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.14281268, 0.18066771)
-mesh = ExtResource("51_t2ujg")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("51_65or3")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pegatina_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1063818459]
+[node name="P_pegatina_hucha__after-cuerpo_hucha" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1776437694]
 
-[node name="Plane001" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha" unique_id=1891367894]
+[node name="Plane001" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha" unique_id=30996790]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.1428237, 0.21979788, -0.013149798)
-mesh = ExtResource("52_65or3")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("52_e055e")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pegatina_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1751833513]
+[node name="P_pegatina_hucha__after-cuerpo_hucha_001" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=1549683035]
 
-[node name="Plane002" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_001" unique_id=1507520408]
+[node name="Plane002" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_001" unique_id=917565757]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.07308626, 0.26505554, 0.09834844)
-mesh = ExtResource("53_e055e")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("53_ajt43")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pegatina_hucha__after-cuerpo_hucha_002" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=600202105]
+[node name="P_pegatina_hucha__after-cuerpo_hucha_002" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=265901433]
 
-[node name="Plane003" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_002" unique_id=662560722]
+[node name="Plane003" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_002" unique_id=1177569160]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.055434227, 0.2153689, 0.14881569)
-mesh = ExtResource("54_ajt43")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("54_01gxa")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pegatina_hucha__after-cuerpo_hucha_003" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=58336030]
+[node name="P_pegatina_hucha__after-cuerpo_hucha_003" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=240533910]
 
-[node name="Plane005" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_003" unique_id=1150048017]
+[node name="Plane005" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_003" unique_id=962948640]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.1317792, 0.10539979, 0.019992054)
-mesh = ExtResource("55_01gxa")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("55_oyp4u")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="P_pegatina_hucha__after-cuerpo_hucha_004" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=735340945]
+[node name="P_pegatina_hucha__after-cuerpo_hucha_004" type="Node3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta" unique_id=189678893]
 
-[node name="Plane006" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_004" unique_id=1201589319]
+[node name="Plane006" type="MeshInstance3D" parent="S_1_desvan/Z_montaje_hucha__reward-hucha__monta/P_pegatina_hucha__after-cuerpo_hucha_004" unique_id=490271594]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.101225376, 0.2463949, -0.09820588)
-mesh = ExtResource("56_oyp4u")
-surface_material_override/0 = ExtResource("40_ndskd")
+mesh = ExtResource("56_3oiw7")
+surface_material_override/0 = ExtResource("40_dw7sk")
 
-[node name="BaulViejo" type="Node3D" parent="." unique_id=1261050810 instance=ExtResource("57_3oiw7")]
+[node name="BaulViejo" type="Node3D" parent="." unique_id=1261050810 instance=ExtResource("57_orlb4")]
 transform = Transform3D(0.99026805, 0, 0.1391731, 0, 1, 0, -0.1391731, 0, 0.99026805, 0.45, 0.15, 1.72)
 
-[node name="SM_CoverBoxB" type="Node3D" parent="BaulViejo" unique_id=8470688 instance=ExtResource("58_orlb4")]
+[node name="SM_CoverBoxB" type="Node3D" parent="BaulViejo" unique_id=8470688 instance=ExtResource("58_gw47t")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3303037, 0)
 
-[node name="S_2_infancia" type="Node3D" parent="." unique_id=1295013352]
+[node name="S_2_infancia" type="Node3D" parent="." unique_id=177369535]
 
-[node name="LuzZona" type="OmniLight3D" parent="S_2_infancia" unique_id=867579888]
+[node name="LuzZona" type="OmniLight3D" parent="S_2_infancia" unique_id=844351545]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 2.6, 1.6)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 0.8
 omni_range = 3.6
 omni_attenuation = 1.2
 
-[node name="P_caja_musica__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=2091156455]
+[node name="P_caja_musica__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=739546663]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.41021755, 0.97400576, 1.6934576)
 
-[node name="SM_MusicBox" type="Node3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1667266757 instance=ExtResource("59_gw47t")]
+[node name="SM_MusicBox" type="Node3D" parent="S_2_infancia/P_caja_musica__after-comoda_infantil" unique_id=1667266757 instance=ExtResource("59_2obva")]
 transform = Transform3D(-0.32556808, 0, -0.94551855, 0, 1, 0, 0.94551855, 0, -0.32556808, 0, 0, 0)
 
-[node name="OD_cajon_comoda_1__nz" type="Node3D" parent="S_2_infancia" unique_id=651707813]
+[node name="OD_cajon_comoda_1__nz" type="Node3D" parent="S_2_infancia" unique_id=1173391609]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, -0.53141993, 0.41541028, 1.9121125)
 
-[node name="P_cajon_comoda__after-comoda_infantil" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_1__nz" unique_id=961699186]
+[node name="P_cajon_comoda__after-comoda_infantil" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_1__nz" unique_id=1719787843]
 
-[node name="SM_ComodaB" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_1__nz/P_cajon_comoda__after-comoda_infantil" unique_id=716175507 instance=ExtResource("60_2obva")]
+[node name="SM_ComodaB" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_1__nz/P_cajon_comoda__after-comoda_infantil" unique_id=716175507 instance=ExtResource("60_fbqlq")]
 transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 1.1920929e-07, -0.1007449, -5.9604645e-08)
 
-[node name="OD_cajon_comoda_2__nz" type="Node3D" parent="S_2_infancia" unique_id=1773640220]
+[node name="OD_cajon_comoda_2__nz" type="Node3D" parent="S_2_infancia" unique_id=71119550]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, -0.53141993, 0.6087103, 1.9121126)
 
-[node name="P_cajon_comoda__after-comoda_infantil_001" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_2__nz" unique_id=1056771944]
+[node name="P_cajon_comoda__after-comoda_infantil_001" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_2__nz" unique_id=1043143973]
 
-[node name="SM_ComodaC" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_2__nz/P_cajon_comoda__after-comoda_infantil_001" unique_id=1403052313 instance=ExtResource("61_fbqlq")]
+[node name="SM_ComodaC" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_2__nz/P_cajon_comoda__after-comoda_infantil_001" unique_id=1403052313 instance=ExtResource("61_ltib5")]
 transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 0, -0.1007449, 0)
 
-[node name="OD_cajon_comoda_3__nz" type="Node3D" parent="S_2_infancia" unique_id=1679182720]
+[node name="OD_cajon_comoda_3__nz" type="Node3D" parent="S_2_infancia" unique_id=1862094205]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, -0.53141993, 0.8020103, 1.9121125)
 
-[node name="P_cajon_comoda__after-comoda_infantil_002" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_3__nz" unique_id=355716541]
+[node name="P_cajon_comoda__after-comoda_infantil_002" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_3__nz" unique_id=1583926749]
 
-[node name="SM_ComodaD" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_3__nz/P_cajon_comoda__after-comoda_infantil_002" unique_id=1995425993 instance=ExtResource("62_ltib5")]
+[node name="SM_ComodaD" type="Node3D" parent="S_2_infancia/OD_cajon_comoda_3__nz/P_cajon_comoda__after-comoda_infantil_002" unique_id=1995425993 instance=ExtResource("62_7vpkh")]
 transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 1.1920929e-07, -0.1007449, -5.9604645e-08)
 
-[node name="P_comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=400307381]
+[node name="P_comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=2068746389]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53141993, 0.14796537, 1.9121126)
 
-[node name="SM_ComodaA" type="Node3D" parent="S_2_infancia/P_comoda_infantil" unique_id=184999273 instance=ExtResource("63_7vpkh")]
+[node name="SM_ComodaA" type="Node3D" parent="S_2_infancia/P_comoda_infantil" unique_id=184999273 instance=ExtResource("63_un8xc")]
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, 0, 0, 0)
 
-[node name="P_dibujo__after-caja_musica" type="Node3D" parent="S_2_infancia" unique_id=1605813778]
+[node name="P_dibujo__after-caja_musica" type="Node3D" parent="S_2_infancia" unique_id=1792861800]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.82, 1.2, -1.583)
 
-[node name="Dibujo_t_draw_03" type="Node3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=29514261 instance=ExtResource("64_un8xc")]
+[node name="Dibujo_t_draw_03" type="Node3D" parent="S_2_infancia/P_dibujo__after-caja_musica" unique_id=29514261 instance=ExtResource("64_ltkd7")]
 
-[node name="P_tele" type="Node3D" parent="S_2_infancia" unique_id=1079272291]
+[node name="P_tele" type="Node3D" parent="S_2_infancia" unique_id=974720993]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3910263, 0.14710224, 2.5923252)
 
-[node name="SM_TV" type="Node3D" parent="S_2_infancia/P_tele" unique_id=241046827 instance=ExtResource("65_ltkd7")]
+[node name="SM_TV" type="Node3D" parent="S_2_infancia/P_tele" unique_id=241046827 instance=ExtResource("65_fjr7g")]
 transform = Transform3D(-0.81915206, 0, -0.57357645, 0, 1, 0, 0.57357645, 0, -0.81915206, 0, 0, 0)
 
-[node name="P_cama_gato" type="Node3D" parent="S_2_infancia" unique_id=725878227]
+[node name="P_cama_gato" type="Node3D" parent="S_2_infancia" unique_id=1918449655]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.565902, 0.12740253, -1.103141)
 
-[node name="SM_CatBed" type="Node3D" parent="S_2_infancia/P_cama_gato" unique_id=1214750148 instance=ExtResource("66_fjr7g")]
+[node name="SM_CatBed" type="Node3D" parent="S_2_infancia/P_cama_gato" unique_id=1214750148 instance=ExtResource("66_ogfwu")]
 transform = Transform3D(-0.81915206, 0, -0.57357645, 0, 1, 0, 0.57357645, 0, -0.81915206, 0, 0, 0)
 
-[node name="P_arenero" type="Node3D" parent="S_2_infancia" unique_id=288652589]
+[node name="P_arenero" type="Node3D" parent="S_2_infancia" unique_id=1178550440]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4318132, 0.12783308, 0.72330755)
 
-[node name="SM_LitterBox" type="Node3D" parent="S_2_infancia/P_arenero" unique_id=646184163 instance=ExtResource("67_ogfwu")]
+[node name="SM_LitterBox" type="Node3D" parent="S_2_infancia/P_arenero" unique_id=646184163 instance=ExtResource("67_uq0gq")]
 transform = Transform3D(0.35836798, 0, 0.9335804, 0, 1, 0, -0.9335804, 0, 0.35836798, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja" type="Node3D" parent="S_2_infancia" unique_id=1593900845]
+[node name="P_tapa_caja__after-caja" type="Node3D" parent="S_2_infancia" unique_id=1039166026]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4837835, 0.47689462, -1.0267427)
 
-[node name="SM_CoverBoxA" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja" unique_id=1549943990 instance=ExtResource("68_uq0gq")]
+[node name="SM_CoverBoxA" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja" unique_id=1549943990 instance=ExtResource("68_l0vfy")]
 transform = Transform3D(-0.42261833, 0, 0.90630776, 0, 1, 0, -0.90630776, 0, -0.42261833, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja_001" type="Node3D" parent="S_2_infancia" unique_id=508460945]
+[node name="P_tapa_caja__after-caja_001" type="Node3D" parent="S_2_infancia" unique_id=1953608330]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7631059, 0.30520535, -0.6971164)
 
-[node name="SM_CoverBoxE" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_001" unique_id=706436279 instance=ExtResource("69_l0vfy")]
+[node name="SM_CoverBoxE" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_001" unique_id=706436279 instance=ExtResource("69_x7r8p")]
 transform = Transform3D(-0.9396926, 0, 0.3420202, 0, 1, 0, -0.3420202, 0, -0.9396926, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja_002" type="Node3D" parent="S_2_infancia" unique_id=799033042]
+[node name="P_tapa_caja__after-caja_002" type="Node3D" parent="S_2_infancia" unique_id=1475804383]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.488407, 0.82351446, -1.1274493)
 
-[node name="SM_CoverBoxD" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_002" unique_id=476129678 instance=ExtResource("70_x7r8p")]
+[node name="SM_CoverBoxD" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_002" unique_id=476129678 instance=ExtResource("70_lscnm")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0, 0, 0)
 
-[node name="P_caja_encima__after-tapa_caja" type="Node3D" parent="S_2_infancia" unique_id=1874132611]
+[node name="P_caja_encima__after-tapa_caja" type="Node3D" parent="S_2_infancia" unique_id=565784179]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.488407, 0.58194214, -1.1274493)
 
-[node name="SM_BoxD_2" type="Node3D" parent="S_2_infancia/P_caja_encima__after-tapa_caja" unique_id=1388488078 instance=ExtResource("71_lscnm")]
+[node name="SM_BoxD_2" type="Node3D" parent="S_2_infancia/P_caja_encima__after-tapa_caja" unique_id=1388488078 instance=ExtResource("71_aeotu")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0, 0, 0)
 
-[node name="P_caja" type="Node3D" parent="S_2_infancia" unique_id=1447345976]
+[node name="P_caja" type="Node3D" parent="S_2_infancia" unique_id=639416018]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4837835, 0.14659081, -1.0267427)
 
-[node name="SM_BoxA" type="Node3D" parent="S_2_infancia/P_caja" unique_id=1750570662 instance=ExtResource("72_aeotu")]
+[node name="SM_BoxA" type="Node3D" parent="S_2_infancia/P_caja" unique_id=1750570662 instance=ExtResource("72_u80nw")]
 transform = Transform3D(-0.42261833, 0, 0.90630776, 0, 1, 0, -0.90630776, 0, -0.42261833, 0, 0, 0)
 
-[node name="P_caja_001" type="Node3D" parent="S_2_infancia" unique_id=843513213]
+[node name="P_caja_001" type="Node3D" parent="S_2_infancia" unique_id=734900697]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7631059, 0.14797667, -0.6971164)
 
-[node name="SM_BoxE" type="Node3D" parent="S_2_infancia/P_caja_001" unique_id=813211269 instance=ExtResource("73_u80nw")]
+[node name="SM_BoxE" type="Node3D" parent="S_2_infancia/P_caja_001" unique_id=813211269 instance=ExtResource("73_c4r3m")]
 transform = Transform3D(-0.9396926, 0, 0.3420202, 0, 1, 0, -0.3420202, 0, -0.9396926, 0, 0, 0)
 
-[node name="P_caja_002" type="Node3D" parent="S_2_infancia" unique_id=38013979]
+[node name="P_caja_002" type="Node3D" parent="S_2_infancia" unique_id=1662243005]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1757374, 0.1508331, -0.4879461)
 
-[node name="SM_BoxD" type="Node3D" parent="S_2_infancia/P_caja_002" unique_id=1431071284 instance=ExtResource("71_lscnm")]
+[node name="SM_BoxD" type="Node3D" parent="S_2_infancia/P_caja_002" unique_id=1431071284 instance=ExtResource("71_aeotu")]
 transform = Transform3D(-0.8660254, 0, 0.50000006, 0, 1, 0, -0.50000006, 0, -0.8660254, 0, 0, 0)
 
-[node name="P_caja_003" type="Node3D" parent="S_2_infancia" unique_id=1643302007]
+[node name="P_caja_003" type="Node3D" parent="S_2_infancia" unique_id=729497449]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.033589, 0.16209574, -0.79482657)
 
-[node name="SM_BoxD_3" type="Node3D" parent="S_2_infancia/P_caja_003" unique_id=699328653 instance=ExtResource("71_lscnm")]
+[node name="SM_BoxD_3" type="Node3D" parent="S_2_infancia/P_caja_003" unique_id=699328653 instance=ExtResource("71_aeotu")]
 transform = Transform3D(-0.30901703, 0, 0.9510565, 0, 1, 0, -0.9510565, 0, -0.30901703, 0, 0, 0)
 
-[node name="P_tapa_caja__after-caja_003" type="Node3D" parent="S_2_infancia" unique_id=1930157674]
+[node name="P_tapa_caja__after-caja_003" type="Node3D" parent="S_2_infancia" unique_id=879817153]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.72, 0.30722868, 3.28)
 
-[node name="SM_CoverBoxE" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_003" unique_id=1417456647 instance=ExtResource("69_l0vfy")]
+[node name="SM_CoverBoxE" type="Node3D" parent="S_2_infancia/P_tapa_caja__after-caja_003" unique_id=1417456647 instance=ExtResource("69_x7r8p")]
 transform = Transform3D(0.99619466, 0, -0.08715576, 0, 1, 0, 0.08715576, 0, 0.99619466, 0, 0, 0)
 
-[node name="P_caja_004" type="Node3D" parent="S_2_infancia" unique_id=1824671681]
+[node name="P_caja_004" type="Node3D" parent="S_2_infancia" unique_id=60818003]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.72, 0.15, 3.28)
 
-[node name="SM_BoxE" type="Node3D" parent="S_2_infancia/P_caja_004" unique_id=370961736 instance=ExtResource("73_u80nw")]
+[node name="SM_BoxE" type="Node3D" parent="S_2_infancia/P_caja_004" unique_id=370961736 instance=ExtResource("73_c4r3m")]
 transform = Transform3D(0.99619466, 0, -0.08715576, 0, 1, 0, 0.08715576, 0, 0.99619466, 0, 0, 0)
 
-[node name="BaulJuguetes" type="Node3D" parent="S_2_infancia" unique_id=97270748]
+[node name="BaulJuguetes" type="Node3D" parent="S_2_infancia" unique_id=23075144]
 
-[node name="OR_tapa_baul__x" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1241397673]
+[node name="OR_tapa_baul__x" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=126221752]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 0.39157236, 1.6868051)
 
-[node name="P_tapa_caja__after-caja_004" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=925984329]
+[node name="P_tapa_caja__after-caja_004" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x" unique_id=587831164]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 0.39157236, 1.92)
 
-[node name="SM_CoverBoxC" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x/P_tapa_caja__after-caja_004" unique_id=879774568 instance=ExtResource("74_c4r3m")]
+[node name="SM_CoverBoxC" type="Node3D" parent="S_2_infancia/BaulJuguetes/OR_tapa_baul__x/P_tapa_caja__after-caja_004" unique_id=879774568 instance=ExtResource("74_ppyea")]
 transform = Transform3D(0.9396926, 0, 0.34202015, 0, 1, 0, -0.34202015, 0, 0.9396926, 2.55, -0.39157236, -1.6868051)
 
-[node name="P_caja_005" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1056694476]
+[node name="P_caja_005" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=242446635]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.55, 0.15, 1.92)
 
-[node name="SM_BoxC" type="Node3D" parent="S_2_infancia/BaulJuguetes/P_caja_005" unique_id=991370047 instance=ExtResource("75_ppyea")]
+[node name="SM_BoxC" type="Node3D" parent="S_2_infancia/BaulJuguetes/P_caja_005" unique_id=991370047 instance=ExtResource("75_gjvap")]
 transform = Transform3D(0.9396926, 0, 0.34202015, 0, 1, 0, -0.34202015, 0, 0.9396926, 0, 0, 0)
 
-[node name="H_tebeo" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1942279735]
+[node name="H_tebeo" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1093515887]
 transform = Transform3D(0.9396926, 0, 0.34202012, 0, 1, 0, -0.34202012, 0, 0.9396926, -2.55, 0.19000001, 1.9799998)
 
-[node name="Modelo" parent="S_2_infancia/BaulJuguetes/H_tebeo" unique_id=968331662 instance=ExtResource("76_gjvap")]
+[node name="Modelo" parent="S_2_infancia/BaulJuguetes/H_tebeo" unique_id=968331662 instance=ExtResource("76_4tym3")]
 
-[node name="C_dibujo_casa" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=812635739]
+[node name="C_dibujo_casa" type="Node3D" parent="S_2_infancia/BaulJuguetes" unique_id=1408020500]
 transform = Transform3D(1, 0, 0, 0, 0.9396926, 0.34202012, 0, -0.34202012, 0.9396926, -2.55, 0.37157235, 1.7368051)
 metadata/color = Color(0.9059058, 0.5589696, 0.48752397, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=1947762136]
+[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=582926614]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08097168, 0)
-mesh = SubResource("BoxMesh_3oeho")
+mesh = SubResource("BoxMesh_88hbl")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=2078866131]
+[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/BaulJuguetes/C_dibujo_casa" unique_id=1362359147]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08097168, 0.0021)
-mesh = SubResource("QuadMesh_88hbl")
+mesh = SubResource("QuadMesh_f2yoh")
 
-[node name="C_dibujo_amigas__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=632588585]
+[node name="C_dibujo_amigas__after-comoda_infantil" type="Node3D" parent="S_2_infancia" unique_id=1153298988]
 transform = Transform3D(-0.9396926, -0.3420202, -1.4950178e-08, 0, -4.371139e-08, 1, -0.3420202, 0.9396926, 4.1075268e-08, -0.41142, 0.163, 2.362176)
 metadata/color = Color(0.8525677, 0.6557642, 0.2329578, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=1185406802]
+[node name="Papel" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=246110202]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
-mesh = SubResource("BoxMesh_f2yoh")
+mesh = SubResource("BoxMesh_xi0jo")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=1177548555]
+[node name="Dibujo" type="MeshInstance3D" parent="S_2_infancia/C_dibujo_amigas__after-comoda_infantil" unique_id=744841436]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.0021)
-mesh = SubResource("QuadMesh_xi0jo")
+mesh = SubResource("QuadMesh_pvgxa")
 
-[node name="P_peluche__clave" type="Node3D" parent="S_2_infancia" unique_id=1047172304]
+[node name="P_peluche__clave" type="Node3D" parent="S_2_infancia" unique_id=1433252788]
 transform = Transform3D(0.90630776, 0, 0.42261827, 0, 1, 0, -0.42261827, 0, 0.90630776, -1.45, 0.15, 2.3)
 
-[node name="Nutria" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=1652051321]
+[node name="Nutria" type="MeshInstance3D" parent="S_2_infancia/P_peluche__clave" unique_id=556842800]
 transform = Transform3D(0.393701, 0, 0, 0, 0, 0.393701, 0, -0.393701, 0, 0.029649734, 0.22137815, -0.012421608)
 mesh = SubResource("ArrayMesh_enfik")
-surface_material_override/0 = ExtResource("79_hhww5")
+surface_material_override/0 = ExtResource("79_2667d")
 
-[node name="P_tebeo" type="Node3D" parent="S_2_infancia" unique_id=1643660328]
+[node name="P_tebeo" type="Node3D" parent="S_2_infancia" unique_id=2134710094]
 transform = Transform3D(0.25881907, 0, 0.9659258, 0, 1, 0, -0.9659258, 0, 0.25881907, -1.19, 0.15, 2.12)
 
-[node name="Modelo" parent="S_2_infancia/P_tebeo" unique_id=1851219428 instance=ExtResource("76_gjvap")]
+[node name="Modelo" parent="S_2_infancia/P_tebeo" unique_id=2006709577 instance=ExtResource("76_4tym3")]
 
 [node name="T_dibujos" type="Node3D" parent="S_2_infancia" unique_id=1892349463]
 
-[node name="SM_Cuerda" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1696724823 instance=ExtResource("37_ionyr")]
+[node name="SM_Cuerda" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1696724823 instance=ExtResource("37_4pwd0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.955471, 2.707284, -3.47)
 
-[node name="SM_Bombilla" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=128993494 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=128993494 instance=ExtResource("36_ionyr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.40714887, -0.01945896, 8.889608e-06)
 
-[node name="SM_Bombilla2" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=958893178 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla2" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=958893178 instance=ExtResource("36_ionyr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005046725, -0.20081416, 2.5911124e-05)
 
-[node name="SM_Bombilla3" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=2009430347 instance=ExtResource("36_6ap0d")]
+[node name="SM_Bombilla3" type="Node3D" parent="S_2_infancia/T_dibujos/SM_Cuerda" unique_id=2009430347 instance=ExtResource("36_ionyr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.499267e-06)
 
-[node name="Pinza1" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=256840685]
+[node name="Pinza1" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1778907174]
 transform = Transform3D(0.9975641, 0.06975647, 0, -0.06975647, 0.9975641, 0, 0, 0, 1, 1.355471, 3.1819365, -3.4600143)
 
-[node name="Pinza2" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=2051492759]
+[node name="Pinza2" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=598000030]
 transform = Transform3D(0.9986295, -0.05233596, 0, 0.05233596, 0.9986295, 0, 0, 0, 1, 1.755471, 2.7409418, -3.4599755)
 
-[node name="Pinza3" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=50170247]
+[node name="Pinza3" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1233969612]
 transform = Transform3D(0.99939084, 0.034899496, 0, -0.034899496, 0.99939084, 0, 0, 0, 1, 2.155471, 2.7358942, -3.459975)
 
-[node name="Pinza4" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1516679559]
+[node name="Pinza4" type="Node3D" parent="S_2_infancia/T_dibujos" unique_id=1958085895]
 transform = Transform3D(0.9961947, -0.08715574, 0, 0.08715574, 0.9961947, 0, 0, 0, 1, 2.555471, 3.1867282, -3.4600146)
 
-[node name="S_3_adolescencia" type="Node3D" parent="." unique_id=127867039]
+[node name="S_3_adolescencia" type="Node3D" parent="." unique_id=1843143080]
 
-[node name="LuzZona" type="OmniLight3D" parent="S_3_adolescencia" unique_id=1020738629]
+[node name="LuzZona" type="OmniLight3D" parent="S_3_adolescencia" unique_id=1498711388]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 2.8, -0.2)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 0.8
 omni_range = 3.6
 omni_attenuation = 1.2
 
-[node name="P_alfombra_adolescencia" type="Node3D" parent="S_3_adolescencia" unique_id=1974220882]
+[node name="P_alfombra_adolescencia" type="Node3D" parent="S_3_adolescencia" unique_id=583762825]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.15, 0.55)
 
-[node name="SM_Rug" type="Node3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=319582618 instance=ExtResource("80_2667d")]
+[node name="SM_Rug" type="Node3D" parent="S_3_adolescencia/P_alfombra_adolescencia" unique_id=319582618 instance=ExtResource("80_n3avl")]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0, 0, 0)
 
-[node name="Cajones" type="Node3D" parent="S_3_adolescencia" unique_id=1292406855]
+[node name="Cajones" type="Node3D" parent="S_3_adolescencia" unique_id=1986524095]
 
-[node name="OD_cajon_escritorio" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=408434593]
+[node name="OD_cajon_escritorio" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1946914667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.6000761, -1.1421558)
 
-[node name="P_cajon__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=201872167]
+[node name="P_cajon__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=865263541]
 
-[node name="SM_DeskC" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/P_cajon__after-escritorio" unique_id=1392942947 instance=ExtResource("81_n3avl")]
+[node name="SM_DeskC" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/P_cajon__after-escritorio" unique_id=1392942947 instance=ExtResource("81_vb874")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="H_solicitud" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=977889864]
+[node name="H_solicitud" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio" unique_id=533238455]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15838021, 0)
 
-[node name="Folio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud" unique_id=2049353766 instance=ExtResource("82_vb874")]
+[node name="Folio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio/H_solicitud" unique_id=765330472 instance=ExtResource("82_ovwqp")]
 transform = Transform3D(0.9975641, 0, 0.06975647, 0, 1, 0, -0.06975647, 0, 0.9975641, 0, 0, 0)
 
-[node name="OD_cajon_escritorio_pomo" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=2031210804]
+[node name="OD_cajon_escritorio_pomo" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1833221782]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.3886761, -1.1421558)
 
-[node name="P_cajon_pomo__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_pomo" unique_id=541235066]
+[node name="P_cajon_pomo__after-escritorio" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_pomo" unique_id=1704022363]
 
-[node name="SM_DeskD" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_pomo/P_cajon_pomo__after-escritorio" unique_id=908548972 instance=ExtResource("83_ovwqp")]
+[node name="SM_DeskD" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_pomo/P_cajon_pomo__after-escritorio" unique_id=908548972 instance=ExtResource("83_g1ijn")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="OD_cajon_escritorio_bajo" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1347310098]
+[node name="OD_cajon_escritorio_bajo" type="Node3D" parent="S_3_adolescencia/Cajones" unique_id=1275306731]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05668357, 0.17727609, -1.1421558)
 
-[node name="P_cajon__after-escritorio_001" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_bajo" unique_id=722111433]
+[node name="P_cajon__after-escritorio_001" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_bajo" unique_id=828634087]
 
-[node name="SM_DeskC2" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_bajo/P_cajon__after-escritorio_001" unique_id=463372444 instance=ExtResource("81_n3avl")]
+[node name="SM_DeskC2" type="Node3D" parent="S_3_adolescencia/Cajones/OD_cajon_escritorio_bajo/P_cajon__after-escritorio_001" unique_id=463372444 instance=ExtResource("81_vb874")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_lapiz__after-bote" type="Node3D" parent="S_3_adolescencia" unique_id=900570341]
+[node name="P_lapiz__after-bote" type="Node3D" parent="S_3_adolescencia" unique_id=2082740672]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07780294, 0.91394615, -1.2937421)
 
-[node name="SM_BrushA" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote" unique_id=551136974 instance=ExtResource("84_g1ijn")]
+[node name="SM_BrushA" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote" unique_id=551136974 instance=ExtResource("84_4qh3j")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_lapiz__after-bote_001" type="Node3D" parent="S_3_adolescencia" unique_id=214211187]
+[node name="P_lapiz__after-bote_001" type="Node3D" parent="S_3_adolescencia" unique_id=101321519]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07030294, 0.91394615, -1.3067324)
 
-[node name="SM_BrushB" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote_001" unique_id=313310690 instance=ExtResource("85_4qh3j")]
+[node name="SM_BrushB" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote_001" unique_id=313310690 instance=ExtResource("85_direk")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_lapiz__after-bote_002" type="Node3D" parent="S_3_adolescencia" unique_id=1933661706]
+[node name="P_lapiz__after-bote_002" type="Node3D" parent="S_3_adolescencia" unique_id=1243753570]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06280294, 0.91394615, -1.3197228)
 
-[node name="SM_BrushC" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote_002" unique_id=655048336 instance=ExtResource("86_direk")]
+[node name="SM_BrushC" type="Node3D" parent="S_3_adolescencia/P_lapiz__after-bote_002" unique_id=655048336 instance=ExtResource("86_yq7h2")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_bote__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=219606682]
+[node name="P_bote__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=831179977]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07030294, 0.8939462, -1.3067324)
 
-[node name="SM_Vase" type="Node3D" parent="S_3_adolescencia/P_bote__after-escritorio" unique_id=713109129 instance=ExtResource("87_yq7h2")]
+[node name="SM_Vase" type="Node3D" parent="S_3_adolescencia/P_bote__after-escritorio" unique_id=713109129 instance=ExtResource("87_loidm")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_tapete__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1193229221]
+[node name="P_tapete__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=230389679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35693163, 0.89397955, -1.1553416)
 
-[node name="SM_CoverDesk" type="Node3D" parent="S_3_adolescencia/P_tapete__after-escritorio" unique_id=1270465722 instance=ExtResource("88_loidm")]
+[node name="SM_CoverDesk" type="Node3D" parent="S_3_adolescencia/P_tapete__after-escritorio" unique_id=1270465722 instance=ExtResource("88_lr7vf")]
 transform = Transform3D(0.17364822, 0, 0.9848077, 0, 1, 0, -0.9848077, 0, 0.17364822, 0, 0, 0)
 
-[node name="P_escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=520096957]
+[node name="P_escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=39438337]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44168356, 0.15147609, -1.2061558)
 
-[node name="SM_DeskA" type="Node3D" parent="S_3_adolescencia/P_escritorio" unique_id=1169492705 instance=ExtResource("89_lr7vf")]
+[node name="SM_DeskA" type="Node3D" parent="S_3_adolescencia/P_escritorio" unique_id=1169492705 instance=ExtResource("89_6bgwt")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_mp3__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=2136156337]
+[node name="P_mp3__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=741018803]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8523371, 0.8939389, -1.0956372)
 
-[node name="SM_MP3" type="Node3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1656440081 instance=ExtResource("90_6bgwt")]
+[node name="SM_MP3" type="Node3D" parent="S_3_adolescencia/P_mp3__after-escritorio" unique_id=1656440081 instance=ExtResource("90_y4und")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="Z_montaje_mp3__reward-mp3__monta" type="Node3D" parent="S_3_adolescencia" unique_id=2141798875]
+[node name="Z_montaje_mp3__reward-mp3__monta" type="Node3D" parent="S_3_adolescencia" unique_id=1076610629]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.42, 0.175, 0.55)
 
-[node name="P_carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1560535958]
+[node name="P_carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1616153664]
 
-[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_carcasa_mp3" unique_id=1029452177]
+[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_carcasa_mp3" unique_id=652659968]
 transform = Transform3D(-1.4494536, 0.8368426, 0, 0, 0, 1.673685, 0.8368426, 1.4494536, 0, 0.064995766, 0.01834619, -0.027768835)
-mesh = ExtResource("91_y4und")
-surface_material_override/0 = ExtResource("92_nw23i")
+mesh = ExtResource("91_nw23i")
+surface_material_override/0 = ExtResource("92_24n5a")
 
-[node name="P_rueda_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1402779882]
+[node name="P_rueda_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=2060078994]
 
-[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_rueda_mp3__after-carcasa_mp3" unique_id=1960951920]
+[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_rueda_mp3__after-carcasa_mp3" unique_id=2046491522]
 transform = Transform3D(-1.4494536, 0.8368426, 0, 0, 0, 1.673685, 0.8368426, 1.4494536, 0, 0.064995766, 0.01834619, -0.027768835)
-mesh = ExtResource("93_24n5a")
-surface_material_override/0 = ExtResource("92_nw23i")
+mesh = ExtResource("93_tm76t")
+surface_material_override/0 = ExtResource("92_24n5a")
 
-[node name="P_auriculares_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=941735156]
+[node name="P_auriculares_mp3__after-carcasa_mp3" type="Node3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta" unique_id=1226106362]
 
-[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_auriculares_mp3__after-carcasa_mp3" unique_id=1755065475]
+[node name="Malla" type="MeshInstance3D" parent="S_3_adolescencia/Z_montaje_mp3__reward-mp3__monta/P_auriculares_mp3__after-carcasa_mp3" unique_id=1995339082]
 transform = Transform3D(-1.4494536, 0.8368426, 0, 0, 0, 1.673685, 0.8368426, 1.4494536, 0, 0.064995766, 0.01834619, -0.027768835)
-mesh = ExtResource("94_tm76t")
-surface_material_override/0 = ExtResource("92_nw23i")
+mesh = ExtResource("94_1f103")
+surface_material_override/0 = ExtResource("92_24n5a")
 
-[node name="P_camara__clave__flash" type="Node3D" parent="S_3_adolescencia" unique_id=260868139]
+[node name="P_camara__clave__flash" type="Node3D" parent="S_3_adolescencia" unique_id=782760363]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05191944, 0.92448175, -1.1959541)
 
-[node name="SM_Polaroid" type="Node3D" parent="S_3_adolescencia/P_camara__clave__flash" unique_id=611804780 instance=ExtResource("95_1f103")]
+[node name="SM_Polaroid" type="Node3D" parent="S_3_adolescencia/P_camara__clave__flash" unique_id=611804780 instance=ExtResource("95_6thl1")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_lampara__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=353785623]
+[node name="P_lampara__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1247761632]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.43, 0.15, -1.15)
 
-[node name="SM_Lamp" type="Node3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1707324944 instance=ExtResource("96_6thl1")]
+[node name="SM_Lamp" type="Node3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1707324944 instance=ExtResource("96_d04q4")]
 transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0, 0, 0)
 
-[node name="Luz" type="SpotLight3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=215869636]
+[node name="Luz" type="SpotLight3D" parent="S_3_adolescencia/P_lampara__after-escritorio" unique_id=1607774918]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1.648895, 0)
 light_color = Color(1, 0.8, 0.55, 1)
 light_energy = 1.1
@@ -1145,75 +1146,75 @@ spot_range = 1.9
 spot_attenuation = 1.2
 spot_angle = 55.0
 
-[node name="P_silla" type="Node3D" parent="S_3_adolescencia" unique_id=1139704818]
+[node name="P_silla" type="Node3D" parent="S_3_adolescencia" unique_id=1919034825]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.61, 0.15, -0.55)
 
-[node name="Modelo" parent="S_3_adolescencia/P_silla" unique_id=1211579740 instance=ExtResource("97_d04q4")]
+[node name="Modelo" parent="S_3_adolescencia/P_silla" unique_id=1211579740 instance=ExtResource("97_ugnpm")]
 
-[node name="P_altavoz__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=810222078]
+[node name="P_altavoz__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=1135809410]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.8964579, -1.42)
 
-[node name="Modelo" parent="S_3_adolescencia/P_altavoz__after-escritorio" unique_id=151359624 instance=ExtResource("98_ugnpm")]
+[node name="Modelo" parent="S_3_adolescencia/P_altavoz__after-escritorio" unique_id=151359624 instance=ExtResource("98_cjfwb")]
 
-[node name="P_libro__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=903326741]
+[node name="P_libro__after-escritorio" type="Node3D" parent="S_3_adolescencia" unique_id=542151332]
 transform = Transform3D(0.9848077, 0, 0.17364818, 0, 1, 0, -0.17364818, 0, 0.9848077, -0.55, 0.8964579, -1.4)
 
-[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio" unique_id=1076077578 instance=ExtResource("99_cjfwb")]
+[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio" unique_id=1076077578 instance=ExtResource("99_nawbf")]
 
-[node name="P_libro__after-escritorio_001" type="Node3D" parent="S_3_adolescencia" unique_id=1016052511]
+[node name="P_libro__after-escritorio_001" type="Node3D" parent="S_3_adolescencia" unique_id=537379275]
 transform = Transform3D(0.9945219, 0, -0.104528464, 0, 1, 0, 0.104528464, 0, 0.9945219, -0.55, 0.93145794, -1.4)
 
-[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio_001" unique_id=969253755 instance=ExtResource("99_cjfwb")]
+[node name="Modelo" parent="S_3_adolescencia/P_libro__after-escritorio_001" unique_id=474427585 instance=ExtResource("99_nawbf")]
 
-[node name="P_solicitud__after-mp3" type="Node3D" parent="S_3_adolescencia" unique_id=682227212]
+[node name="P_solicitud__after-mp3" type="Node3D" parent="S_3_adolescencia" unique_id=322450601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 2.03, -1.54)
 
-[node name="Folio" type="Node3D" parent="S_3_adolescencia/P_solicitud__after-mp3" unique_id=350411325 instance=ExtResource("82_vb874")]
+[node name="Folio" type="Node3D" parent="S_3_adolescencia/P_solicitud__after-mp3" unique_id=909160458 instance=ExtResource("82_ovwqp")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 
-[node name="C_dibujo_monstruo__after-silla" type="Node3D" parent="S_3_adolescencia" unique_id=2110178122]
+[node name="C_dibujo_monstruo__after-silla" type="Node3D" parent="S_3_adolescencia" unique_id=1457413881]
 transform = Transform3D(0.9659258, -0.25881904, -1.131334e-08, 0, -4.371139e-08, 1, -0.25881904, -0.9659258, -4.222196e-08, -0.59000003, 0.18, -0.54162246)
 metadata/color = Color(0.039688006, 0.61007863, 0.70687944, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=181893692]
+[node name="Papel" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=751766052]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
-mesh = SubResource("BoxMesh_pvgxa")
+mesh = SubResource("BoxMesh_wpbqe")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=2011584892]
+[node name="Dibujo" type="MeshInstance3D" parent="S_3_adolescencia/C_dibujo_monstruo__after-silla" unique_id=31031715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.0021)
-mesh = SubResource("QuadMesh_wpbqe")
+mesh = SubResource("QuadMesh_d8nkf")
 
-[node name="CajaCamara" type="Node3D" parent="S_3_adolescencia" unique_id=1705126391]
+[node name="CajaCamara" type="Node3D" parent="S_3_adolescencia" unique_id=751841931]
 
-[node name="OR_tapa_caja__x" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=1539151822]
+[node name="OR_tapa_caja__x" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=120246955]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000012, 0.4803037, 0.42134604)
 
-[node name="P_tapa_camara__after-caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x" unique_id=1340007108]
+[node name="P_tapa_camara__after-caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x" unique_id=1637802136]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000018, 0.4803037, 0.71999997)
 
-[node name="SM_CoverBoxB" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x/P_tapa_camara__after-caja_camara" unique_id=1105069142 instance=ExtResource("58_orlb4")]
+[node name="SM_CoverBoxB" type="Node3D" parent="S_3_adolescencia/CajaCamara/OR_tapa_caja__x/P_tapa_camara__after-caja_camara" unique_id=1105069142 instance=ExtResource("58_gw47t")]
 transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, -0.37000012, -0.4803037, -0.421346)
 
-[node name="P_caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=676502886]
+[node name="P_caja_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=112038945]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000018, 0.15, 0.71999997)
 
-[node name="SM_BoxB" type="Node3D" parent="S_3_adolescencia/CajaCamara/P_caja_camara" unique_id=912088893 instance=ExtResource("57_3oiw7")]
+[node name="SM_BoxB" type="Node3D" parent="S_3_adolescencia/CajaCamara/P_caja_camara" unique_id=912088893 instance=ExtResource("57_orlb4")]
 transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 0, 0, 0)
 
-[node name="H_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=1901794937]
+[node name="H_camara" type="Node3D" parent="S_3_adolescencia/CajaCamara" unique_id=1213016773]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37000012, 0.18, 0.72)
 
-[node name="SM_Polaroid" type="Node3D" parent="S_3_adolescencia/CajaCamara/H_camara" unique_id=452421765 instance=ExtResource("95_1f103")]
+[node name="SM_Polaroid" type="Node3D" parent="S_3_adolescencia/CajaCamara/H_camara" unique_id=2012025002 instance=ExtResource("95_6thl1")]
 
-[node name="S_4_adultez" type="Node3D" parent="." unique_id=765140171]
+[node name="S_4_adultez" type="Node3D" parent="." unique_id=1685536742]
 
-[node name="P_lampara_pie" type="Node3D" parent="S_4_adultez" unique_id=1343618939]
+[node name="P_lampara_pie" type="Node3D" parent="S_4_adultez" unique_id=180288715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.489753, 0.15025853, -3.1717913)
 
-[node name="SM_Lamp" type="Node3D" parent="S_4_adultez/P_lampara_pie" unique_id=1737861739 instance=ExtResource("96_6thl1")]
+[node name="SM_Lamp" type="Node3D" parent="S_4_adultez/P_lampara_pie" unique_id=1737861739 instance=ExtResource("96_d04q4")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="Luz" type="SpotLight3D" parent="S_4_adultez/P_lampara_pie" unique_id=610212946]
+[node name="Luz" type="SpotLight3D" parent="S_4_adultez/P_lampara_pie" unique_id=1718792961]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 1.648895, 0)
 light_color = Color(1, 0.8, 0.55, 1)
 light_energy = 1.1
@@ -1221,134 +1222,135 @@ spot_range = 1.9
 spot_attenuation = 1.2
 spot_angle = 55.0
 
-[node name="LuzZona" type="OmniLight3D" parent="S_4_adultez" unique_id=589264630]
+[node name="LuzZona" type="OmniLight3D" parent="S_4_adultez" unique_id=665680117]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.489753, 1.6891536, -3.1717913)
 light_color = Color(1, 0.76, 0.48, 1)
 light_energy = 0.8
 omni_range = 3.6
 omni_attenuation = 1.2
 
-[node name="P_taburete" type="Node3D" parent="S_4_adultez" unique_id=1474083588]
+[node name="P_taburete" type="Node3D" parent="S_4_adultez" unique_id=1006678181]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6209472, 0.14458477, -2.225303)
 
-[node name="SM_Stool" type="Node3D" parent="S_4_adultez/P_taburete" unique_id=1980574688 instance=ExtResource("101_lmtht")]
+[node name="SM_Stool" type="Node3D" parent="S_4_adultez/P_taburete" unique_id=1980574688 instance=ExtResource("101_t1dnx")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_polaroid" type="Node3D" parent="S_4_adultez" unique_id=1947026801]
+[node name="P_polaroid" type="Node3D" parent="S_4_adultez" unique_id=1591369372]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.6, -2.05)
 
-[node name="SM_PolaroidA" type="Node3D" parent="S_4_adultez/P_polaroid" unique_id=1496484025 instance=ExtResource("102_t1dnx")]
+[node name="SM_PolaroidA" type="Node3D" parent="S_4_adultez/P_polaroid" unique_id=1496484025 instance=ExtResource("102_j8wc0")]
 transform = Transform3D(-4.3471935e-08, 4.5690842e-09, 1, 0.104528464, 0.9945219, 0, -0.9945219, 0.104528464, -4.371139e-08, 0, 0, 0)
 
-[node name="P_polaroid_001" type="Node3D" parent="S_4_adultez" unique_id=1885670860]
+[node name="P_polaroid_001" type="Node3D" parent="S_4_adultez" unique_id=1653162668]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.64, -2.33)
 
-[node name="SM_PolaroidB" type="Node3D" parent="S_4_adultez/P_polaroid_001" unique_id=35493595 instance=ExtResource("103_j8wc0")]
+[node name="SM_PolaroidB" type="Node3D" parent="S_4_adultez/P_polaroid_001" unique_id=35493595 instance=ExtResource("103_gge3c")]
 transform = Transform3D(-4.360491e-08, -3.0491523e-09, 1, -0.06975647, 0.9975641, 0, -0.9975641, -0.06975647, -4.371139e-08, 0, 0, 0)
 
-[node name="P_polaroid_002" type="Node3D" parent="S_4_adultez" unique_id=1587870806]
+[node name="P_polaroid_002" type="Node3D" parent="S_4_adultez" unique_id=59893649]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.3, -2.12)
 
-[node name="SM_PolaroidC" type="Node3D" parent="S_4_adultez/P_polaroid_002" unique_id=2102471252 instance=ExtResource("104_gge3c")]
+[node name="SM_PolaroidC" type="Node3D" parent="S_4_adultez/P_polaroid_002" unique_id=2102471252 instance=ExtResource("104_f617m")]
 transform = Transform3D(-4.338557e-08, -5.327079e-09, 1, -0.121869355, 0.99254614, 0, -0.99254614, -0.121869355, -4.371139e-08, 0, 0, 0)
 
-[node name="P_polaroid_003" type="Node3D" parent="S_4_adultez" unique_id=1714239396]
+[node name="P_polaroid_003" type="Node3D" parent="S_4_adultez" unique_id=532783458]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.895, 1.34, -2.41)
 
-[node name="SM_PolaroidD" type="Node3D" parent="S_4_adultez/P_polaroid_003" unique_id=1697732016 instance=ExtResource("105_f617m")]
+[node name="SM_PolaroidD" type="Node3D" parent="S_4_adultez/P_polaroid_003" unique_id=1697732016 instance=ExtResource("105_q4hwg")]
 transform = Transform3D(-4.3651482e-08, 2.2876774e-09, 1, 0.05233596, 0.9986295, 0, -0.9986295, 0.05233596, -4.371139e-08, 0, 0, 0)
 
-[node name="P_alfombra_adultez" type="Node3D" parent="S_4_adultez" unique_id=1890695054]
+[node name="P_alfombra_adultez" type="Node3D" parent="S_4_adultez" unique_id=2018888329]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9207481, 0.16625883, -1.2169718)
 
-[node name="SM_Rug" type="Node3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=1098753880 instance=ExtResource("80_2667d")]
+[node name="SM_Rug" type="Node3D" parent="S_4_adultez/P_alfombra_adultez" unique_id=1098753880 instance=ExtResource("80_n3avl")]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="P_caballete" type="Node3D" parent="S_4_adultez" unique_id=101690906]
+[node name="P_caballete" type="Node3D" parent="S_4_adultez" unique_id=1441099148]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4613631, 0.170394, 0.38075197)
 
-[node name="SM_Caballete" type="Node3D" parent="S_4_adultez/P_caballete" unique_id=1055951671 instance=ExtResource("106_q4hwg")]
+[node name="SM_Caballete" type="Node3D" parent="S_4_adultez/P_caballete" unique_id=1055951671 instance=ExtResource("106_m2jqn")]
 transform = Transform3D(-0.42261833, 0, -0.90630776, 0, 1, 0, 0.90630776, 0, -0.42261833, 0, 0, 0)
 
-[node name="P_lienzo__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=1513285181]
+[node name="P_lienzo__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=1592094913]
 transform = Transform3D(0.42261836, -0.12613367, 0.89748764, 0, 0.99026805, 0.1391731, -0.90630776, -0.05881711, 0.41850546, -1.097118, 0.9448478, 0.5506023)
 
-[node name="Lienzo" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=1148981601]
+[node name="Lienzo" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=158428024]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
-mesh = SubResource("BoxMesh_d8nkf")
+mesh = SubResource("BoxMesh_lv2he")
 
-[node name="Cara" type="Node3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=1393311879]
+[node name="Cara" type="Node3D" parent="S_4_adultez/P_lienzo__after-caballete" unique_id=2025554672]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
 
-[node name="Cuadro" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete/Cara" unique_id=1243522433]
+[node name="Cuadro" type="MeshInstance3D" parent="S_4_adultez/P_lienzo__after-caballete/Cara" unique_id=565695854]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0155)
-mesh = SubResource("QuadMesh_lv2he")
+mesh = SubResource("QuadMesh_0goo8")
 
-[node name="P_pinceles__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=369151427]
+[node name="P_pinceles__after-caballete" type="Node3D" parent="S_4_adultez" unique_id=739818017]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.98, 0.601, -0.43)
 
-[node name="SM_Vase" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete" unique_id=836237881 instance=ExtResource("87_yq7h2")]
+[node name="SM_Vase" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete" unique_id=836237881 instance=ExtResource("87_loidm")]
 transform = Transform3D(0.76604444, 0, 0.64278764, 0, 1, 0, -0.64278764, 0, 0.76604444, 0.26, -0.451, 1.4300001)
 
-[node name="SM_BrushA" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1349055140 instance=ExtResource("84_g1ijn")]
+[node name="SM_BrushA" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1349055140 instance=ExtResource("84_4qh3j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015, 0.02, 0)
 
-[node name="SM_BrushB" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1516489763 instance=ExtResource("85_4qh3j")]
+[node name="SM_BrushB" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1516489763 instance=ExtResource("85_direk")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 
-[node name="SM_BrushC" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1116973005 instance=ExtResource("86_direk")]
+[node name="SM_BrushC" type="Node3D" parent="S_4_adultez/P_pinceles__after-caballete/SM_Vase" unique_id=1116973005 instance=ExtResource("86_yq7h2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015, 0.02, 0)
 
-[node name="P_espejo__clave__reflejo" type="Node3D" parent="S_4_adultez" unique_id=777872427]
+[node name="P_espejo__clave__reflejo" type="Node3D" parent="S_4_adultez" unique_id=1084486788]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5230659, 0.209913, -2.988389)
 
-[node name="SM_Mirror" type="Node3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=2109135176 instance=ExtResource("108_0vkpb")]
+[node name="SM_Mirror" type="Node3D" parent="S_4_adultez/P_espejo__clave__reflejo" unique_id=2109135176 instance=ExtResource("108_su747")]
 transform = Transform3D(-0.83867055, 0, -0.54463905, 0, 1, 0, 0.54463905, 0, -0.83867055, 0, 0, 0)
 
-[node name="ReflejoPintado" type="Node3D" parent="S_4_adultez/P_espejo__clave__reflejo/SM_Mirror" unique_id=448740048]
+[node name="ReflejoPintado" type="Node3D" parent="S_4_adultez/P_espejo__clave__reflejo/SM_Mirror" unique_id=1422546970]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -5.9604645e-08, 0.96934295, -0.4261973)
+metadata/material_pintado = ExtResource("109_d0hwl")
 
-[node name="P_perchero" type="Node3D" parent="S_4_adultez" unique_id=2068481618]
+[node name="P_perchero" type="Node3D" parent="S_4_adultez" unique_id=764948390]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8628409, 0.1500687, 1.6757607)
 
-[node name="SM_Burro" type="Node3D" parent="S_4_adultez/P_perchero" unique_id=1663708558 instance=ExtResource("109_su747")]
+[node name="SM_Burro" type="Node3D" parent="S_4_adultez/P_perchero" unique_id=1663708558 instance=ExtResource("110_qietu")]
 transform = Transform3D(0.49999997, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, 0.49999997, 0, 0, 0)
 
-[node name="P_sombrero__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=1388309143]
+[node name="P_sombrero__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=1012925639]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4200075, 1.1784141, 1.3624085)
 
-[node name="SM_Hat" type="Node3D" parent="S_4_adultez/P_sombrero__after-perchero" unique_id=2032936995 instance=ExtResource("110_d0hwl")]
+[node name="SM_Hat" type="Node3D" parent="S_4_adultez/P_sombrero__after-perchero" unique_id=2032936995 instance=ExtResource("111_jneto")]
 transform = Transform3D(-0.79493785, 0.6066907, 0.00028430996, 0.60669076, 0.7949379, 4.894695e-15, -0.0002260088, 0.00017248827, -0.99999994, 0, 0, 0)
 
-[node name="P_taza" type="Node3D" parent="S_4_adultez" unique_id=575173884]
+[node name="P_taza" type="Node3D" parent="S_4_adultez" unique_id=433315860]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5509472, 0.5181373, -2.175303)
 
-[node name="Modelo" parent="S_4_adultez/P_taza" unique_id=495550459 instance=ExtResource("111_qietu")]
+[node name="Modelo" parent="S_4_adultez/P_taza" unique_id=495550459 instance=ExtResource("112_24rrn")]
 
-[node name="P_reloj" type="Node3D" parent="S_4_adultez" unique_id=149077036]
+[node name="P_reloj" type="Node3D" parent="S_4_adultez" unique_id=518367515]
 transform = Transform3D(0.8660254, 0, -0.5, 0, 1, 0, 0.5, 0, 0.8660254, 1.6909473, 0.5181373, -2.265303)
 
-[node name="Modelo" parent="S_4_adultez/P_reloj" unique_id=1217854778 instance=ExtResource("112_jneto")]
+[node name="Modelo" parent="S_4_adultez/P_reloj" unique_id=1217854778 instance=ExtResource("113_igogf")]
 
-[node name="C_dibujo_gato__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=1982305191]
+[node name="C_dibujo_gato__after-perchero" type="Node3D" parent="S_4_adultez" unique_id=773477101]
 transform = Transform3D(0.9848077, -0.17364818, -7.590403e-09, 0, -4.371139e-08, 1, -0.17364818, -0.9848077, -4.304731e-08, 1.8628409, 0.163, 1.5757607)
 metadata/color = Color(0.82362163, 0.73271346, 0.43388787, 1)
 
-[node name="Papel" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=1309364118]
+[node name="Papel" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=2000994027]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0)
-mesh = SubResource("BoxMesh_0goo8")
+mesh = SubResource("BoxMesh_stqg7")
 
-[node name="Dibujo" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=154708650]
+[node name="Dibujo" type="MeshInstance3D" parent="S_4_adultez/C_dibujo_gato__after-perchero" unique_id=1814281936]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.0021)
-mesh = SubResource("QuadMesh_stqg7")
+mesh = SubResource("QuadMesh_g1e84")
 
-[node name="S_5_epilogo" type="Node3D" parent="." unique_id=1907944502]
+[node name="S_5_epilogo" type="Node3D" parent="." unique_id=1355327919]
 
-[node name="P_moneda__ofrecida" type="Node3D" parent="S_5_epilogo" unique_id=1867733951]
+[node name="P_moneda__ofrecida" type="Node3D" parent="S_5_epilogo" unique_id=1122187126]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45429283, 0.9486331, 1.7256684)
 
-[node name="Moneda" type="MeshInstance3D" parent="S_5_epilogo/P_moneda__ofrecida" unique_id=14852303]
+[node name="Moneda" type="MeshInstance3D" parent="S_5_epilogo/P_moneda__ofrecida" unique_id=2025973881]
 transform = Transform3D(-4.1075268e-08, -0.9396926, 0.34202012, 1, -4.371139e-08, 0, 1.4950174e-08, 0.34202012, 0.9396926, 0, 0, 0)
-mesh = SubResource("CylinderMesh_g1e84")
+mesh = SubResource("CylinderMesh_mlj64")
 
-[node name="Trastos" type="Node3D" parent="." unique_id=551660618]
+[node name="Trastos" type="Node3D" parent="." unique_id=41855456]

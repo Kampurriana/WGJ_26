@@ -266,7 +266,7 @@ func _open_first_chapter() -> void:
 	d.continue_act()                         # como si pulsara «Continuar»
 
 
-## (--espejo) Acaba de golpe los capítulos de antes (como F8), monta la adultez hasta que solo falta el
+## (--espejo) Acaba de golpe los capítulos de antes (como la tecla C), monta la adultez hasta que solo falta el
 ## espejo y lo pone: su plano, como en la partida.
 func _place_mirror() -> void:
 	var d := GameState.diorama

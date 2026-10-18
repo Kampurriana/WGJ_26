@@ -35,6 +35,7 @@ const ROOF_B := Vector2(-0.16, 5.05)         ## ...a aquí
 const ZONE_LIGHT := 0.8                      ## las luces de zona (sin bombilla: las del kit van apagadas)
 const ZONE_RANGE := 3.6
 const TILESET := "res://assets/kit/piezas/"
+const MIRROR_PAINTED := "res://assets/kit/materiales/M_Pack08.tres"   ## el espejo con ella en la luna (Pack08)
 const KIT_OTTER := "res://assets/kit/modelos/Otter/SM_otter.fbx"
 const KIT_OTTER_MAT := "res://assets/kit/materiales/M_Otter.tres"
 const OTTER_AT := Vector3(-1.45, FLOOR, 2.3)   ## la nutria, en el suelo del rincón de la infancia
@@ -448,6 +449,8 @@ func _easel_rest(easel: Node3D) -> Transform3D:
 ## El espejo del kit (Pack08, 18-oct) trae el reflejo pintado en la luna (ella de mayor): no lleva luna
 ## aparte. Solo una marca sin malla, "ReflejoPintado", en el centro de la luna y con su +Z hacia donde
 ## mira (la -Z del kit, como el caballete): Momentos la usa para ponerse de frente y no pinta encima.
+## Durante la partida la luna está vacía (el tileset le pone M_Pack08_02, T_Pack08_BC_02); la marca
+## lleva el material con ella pintada (M_Pack08), al que pasa en el primer plano.
 func _mirror_glass(piece: Node3D) -> void:
 	var mirror := piece.get_child(0) as Node3D
 	var local := Visuals.local_aabb(mirror)
@@ -455,6 +458,7 @@ func _mirror_glass(piece: Node3D) -> void:
 	mark.name = "ReflejoPintado"
 	mark.position = Vector3(local.get_center().x, local.position.y + local.size.y * 0.56, local.position.z)
 	mark.rotation_degrees.y = 180.0
+	mark.set_meta("material_pintado", load(MIRROR_PAINTED))
 	mirror.add_child(mark)
 
 

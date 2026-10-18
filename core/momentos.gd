@@ -37,6 +37,8 @@ const MIRROR_TIME := 2.6                     ## (espejo) el zoom hasta tenerlo d
 const MIRROR_SMOOTH := 1.1                   ## (espejo) un zoom blando, sin tirón
 const MIRROR_MARGIN := 1.3                   ## (espejo) el espejo entero, con su marco, llena así la pantalla
 const MIRROR_GROW := 1.06                    ## (espejo) el hueco del negro, ceñido al espejo entero (lo de alrededor se va)
+const MIRROR_REVEAL := 2.0                   ## (espejo) la luna vacía se funde en la de ella pintada (s)
+const MIRROR_REVEAL_DELAY := 0.3             ## (espejo) un momento con la luna vacía antes de empezar
 const COIN_GRAB_PX := 70.0                   ## lo cerca que hay que coger la moneda
 const COIN_SNAP_PX := 80.0                   ## y lo cerca de la ranura que hay que soltarla
 const HIDE_TIME := 0.35                      ## lo que tarda en desvanecerse lo que tapa el plano
@@ -583,6 +585,9 @@ func _make_reflection(node: Node3D) -> void:
 	reflection.global_position = node.global_transform * lb.get_center() + front * 0.012
 	if painted != null:
 		reflection.global_transform = painted.global_transform.orthonormalized()
+		var after := painted.get_meta("material_pintado", null) as Material
+		if after != null:
+			_reveal_painted(node, after)
 	# Si el espejo trae el reflejo pintado (el del kit, Pack08: ella de mayor), ni vaho ni silueta encima:
 	# solo su luz.
 	if painted == null:
@@ -604,6 +609,40 @@ func _make_reflection(node: Node3D) -> void:
 	spot.look_at(reflection.global_position, Vector3.UP)
 	if not _isolated.is_empty():
 		_isolate([reflection])
+
+
+## La luna vacía del espejo se funde en la de ella pintada (18-oct: «durante el gameplay T_Pack08_BC_02,
+## en el closeup que transicione a T_Pack08_BC»). El espejo pasa ya al material pintado y encima una copia
+## con el de antes, transparente, se desvanece (dentro del reflejo: si el momento se corta, se va con él y
+## el espejo se queda pintado). En Compatibility la copia, a la misma profundidad, se pinta encima.
+func _reveal_painted(node: Node3D, after: Material) -> void:
+	var fades: Array[StandardMaterial3D] = []
+	for m in Visuals.meshes_under(node):
+		var veil := MeshInstance3D.new()
+		veil.name = "LunaVacia"
+		veil.mesh = m.mesh
+		veil.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		for s in m.mesh.get_surface_count():
+			var before := m.get_surface_override_material(s) as StandardMaterial3D   # (el suyo, no el que lleve encima)
+			if before == null:
+				before = m.mesh.surface_get_material(s) as StandardMaterial3D
+			if before == null:
+				continue
+			var fade := before.duplicate() as StandardMaterial3D
+			fade.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			fades.append(fade)
+			veil.set_surface_override_material(s, fade)
+			m.set_surface_override_material(s, after)
+		reflection.add_child(veil)
+		veil.global_transform = m.global_transform
+	var tw := reflection.create_tween().set_parallel()
+	for fade in fades:
+		tw.tween_property(fade, "albedo_color:a", 0.0, MIRROR_REVEAL).set_delay(MIRROR_REVEAL_DELAY) \
+			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.chain().tween_callback(func() -> void:
+		for c in reflection.get_children():
+			if c.name.begins_with("LunaVacia"):
+				c.queue_free())
 
 
 func _sprite(tex: Texture2D, size: Vector3, color: Color) -> Sprite3D:
