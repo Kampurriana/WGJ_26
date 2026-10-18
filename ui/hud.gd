@@ -31,6 +31,8 @@ const GAP := 6.0
 const PANEL_WIDTH := COLUMNS * InventoryItem.SIZE.x + (COLUMNS - 1) * GAP + 2 * 10.0 + 14.0
 const MARGIN := 10.0                         ## la bandeja flota: separada del borde de la pantalla
 const LIP := 26.0                            ## lo que se ve de ella mientras se arrastra una pieza
+const ENTRANCE_TRAY := 1.8                   ## inicio del cerdito: cuándo entra la bandeja (s)...
+const ENTRANCE_BUTTONS := 2.8                ## ...y cuándo los botones de Menú y Pista
 const SLIDE_TIME := 0.22
 const FLY_TIME := 0.8                        ## lo que tarda en volar a la bandeja lo que se recoge (s)
 const TASK_WIDTH := 230.0                    ## ancho de la tarjeta de tarea (pequeña: no llama la atención)
@@ -92,6 +94,7 @@ var _done: PanelContainer
 var _done_button: Button
 var _controls: VBoxContainer
 var _game_ui := true
+var _entrance: Tween                         ## la entrada escalonada del cerdito (stage_entrance)
 var _charge := 1.0
 var _idle := 0.0
 var _subtitle_left := 0.0
@@ -715,13 +718,51 @@ func _show_done() -> void:
 ## (los subtítulos no: el narrador puede hablar encima del menú).
 func set_game_ui_visible(on: bool) -> void:
 	_game_ui = on
+	if _entrance != null:
+		_entrance.kill()
 	_panel.visible = on
-	_task.visible = on
-	stars.set_bar_visible(on)
+	_task.visible = on and _full_ui()
+	stars.set_bar_visible(on and _full_ui())
 	_controls.visible = on
 	_back_button.visible = on and GameState.diorama != null and GameState.diorama.focus != null
 	if not on:
 		_done.hide()
+
+
+## La tarjeta de tarea y la fila de estrellas de los logros son del juego (el desván): en el puzle del
+## cerdito no salen, que el inicio no cuente lo que se enseña más adelante.
+func _full_ui() -> bool:
+	return GameState.mode == GameState.Mode.PLAYING
+
+
+## Inicio del cerdito, ordenado: primero el cerdito solo (lo trae el fundido y la cámara); luego entra la
+## bandeja con las piezas para vestirlo; por último, los botones de Menú y Pista.
+func stage_entrance() -> void:
+	if _entrance != null:
+		_entrance.kill()
+	_panel.hide()
+	_controls.hide()
+	var off := (PANEL_WIDTH + 3.0 * MARGIN) / (PANEL_WIDTH - LIP + MARGIN)   # la bandeja, del todo fuera
+	_entrance = create_tween()
+	_entrance.tween_interval(ENTRANCE_TRAY)
+	_entrance.tween_callback(func() -> void:
+		_set_slide(off)
+		_panel.modulate.a = 0.0
+		_panel.show())
+	_entrance.tween_method(func(v: float) -> void:
+		_set_slide(v * off)
+		_panel.modulate.a = minf(1.0, (1.0 - v) * 2.5), 1.0, 0.0, 0.7).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_entrance.tween_interval(maxf(ENTRANCE_BUTTONS - ENTRANCE_TRAY - 0.7, 0.0))
+	_entrance.tween_callback(func() -> void:
+		_controls.show()
+		for c in _controls.get_children():
+			Juice.pop_in(c as Control, 0.12 * c.get_index(), 0.6, 0.4))
+
+
+## (Tests) ¿Qué se ve ya del inicio del cerdito? {bandeja, botones, tarea, estrellas}
+func entrance_state() -> Dictionary:
+	return {"bandeja": _panel.visible and _panel.modulate.a > 0.5 and _slide < 0.05, "botones": _controls.visible,
+		"tarea": _task.visible, "estrellas": stars.bar.visible}
 
 
 ## Durante un momento de la historia (core/momentos.gd) la bandeja, los botones y el título se
@@ -730,7 +771,7 @@ func set_moment(on: bool) -> void:
 	if on == _moment:
 		return
 	_moment = on
-	stars.set_bar_visible(_game_ui and not on)    # en el primer plano, fuera (se asoma si llega una estrella)
+	stars.set_bar_visible(_game_ui and not on and _full_ui())   # en el primer plano, fuera (se asoma si llega una estrella)
 	_hide_info()
 	if on:
 		_tip_box.hide()                          # el consejo no tapa el primer plano
@@ -786,7 +827,8 @@ func _on_level_started() -> void:
 	for c: Control in [_panel, _controls, _task]:
 		c.modulate.a = 1.0
 	stars.refresh()
-	stars.set_bar_visible(_game_ui)
+	stars.set_bar_visible(_game_ui and _full_ui())
+	_task.visible = _game_ui and _full_ui()
 	for f in _flights:
 		if is_instance_valid(f):
 			f.queue_free()

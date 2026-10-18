@@ -55,7 +55,6 @@ func _initialize() -> void:
 	level.set("level_title", "")
 	level.set("modelo", ART_MODEL)
 	level.set("modelo_provisional", MODEL_OUT)
-	level.set("intro_key", "intro_cerdito")
 	level.set("outro_key", "fin_menu")
 	level.set("color_radius", 0.55)
 	level.set("camera_distance", 4.6)

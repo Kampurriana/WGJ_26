@@ -11,6 +11,8 @@ signal finished
 
 const CREDITS_PATH := "res://data/creditos_es.txt"
 const SPEED := 46.0                          ## lo que sube, en px por segundo (a 720 de alto)
+const START := 0.55                          ## dónde empieza el nombre del juego (fracción del alto): a la vista
+                                             ## en cuanto acaba el fundido, no por debajo de la pantalla
 const HOLD := 3.0                            ## lo que se queda el último renglón en el centro (s)
 const FADE := 1.2                            ## fundido a negro de salida (s)
 const INK := Color(0.29, 0.2, 0.13)          ## texto (sobre el pastel)
@@ -122,13 +124,21 @@ func play(drawings: Array, total: int) -> void:
 	show()
 	rolling = true
 	_roll.position = Vector2(0, 100000)          # fuera de la vista hasta que se maquete (trampa 3)
+	# A lo ancho de la pantalla ANTES de medir: con ancho 0 cada renglón se partía letra a letra, el
+	# texto "medía" 5000 px, empezaba muy abajo (pantalla vacía) y seguía subiendo en blanco minuto y medio.
+	_roll.custom_minimum_size = Vector2(_root.size.x, 0)
 	await get_tree().process_frame
 	await get_tree().process_frame
+	if not rolling:
+		return
 	var screen := _root.size
-	_roll.size = Vector2(screen.x, 0)
+	_roll.custom_minimum_size.x = screen.x
 	_roll.reset_size()
-	_roll.size.x = screen.x
-	_y = screen.y + 20.0
+	await get_tree().process_frame               # ya partidos a su ancho: ahora las medidas valen
+	if not rolling:
+		return
+	_roll.reset_size()
+	_y = screen.y * START
 	var last := _roll.get_child(_roll.get_child_count() - 1) as Control
 	_end_y = screen.y * 0.5 - (last.position.y + last.size.y * 0.5)
 	_roll.position = Vector2(0, _y)
@@ -177,6 +187,16 @@ func _input(e: InputEvent) -> void:
 		get_viewport().set_input_as_handled()    # nada de lo de debajo recibe clics mientras pasan
 	if press and _age > 1.0:
 		end()
+
+
+## (Tests) Segundos que tarda en subir hasta dejar el último renglón en el centro.
+func roll_seconds() -> float:
+	return (_y - _end_y) / (SPEED * _root.size.y / 720.0)
+
+
+## (Tests) Dónde está ahora el nombre del juego (arriba del primer renglón), en px de pantalla.
+func title_y() -> float:
+	return _roll.position.y + (_roll.get_child(0) as Control).position.y
 
 
 ## (Tests) Lo que dicen los créditos, renglón a renglón.

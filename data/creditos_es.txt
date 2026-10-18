@@ -1,16 +1,23 @@
 Hecho en 48 horas para la WGJ 2026
 
-ARTE
-(nombres de las artistas)
+3D MODELLING & TEXTURES
+Eva Fernandez Valero
+Inés Jackson Martín
 
-DISEÑO
-(nombres)
+CONCEPT ART & 2D ART
+Carmen Esteban Fernandez-Vicenti
 
-PROGRAMACIÓN
-Claude (Anthropic)
+CONCEPT ART & TEXTURE ARTIST
+Sandra
 
-MÚSICA Y SONIDO
-(nombres / fuentes y licencias)
+PROGRAMMING & DESIGN
+Ana Climent Sapena
+
+SOUND DESIGNER & VOICE ACTRESS
+Anaïs Soriano
+
+La programación del juego se ha desarrollado con la ayuda de la IA,
+pero el juego está hecho íntegramente por artistas.
 
 Inspirado en Woodo, de Tiny Monks Tales
 

@@ -189,6 +189,16 @@ carpeta. Si no, parar y preguntar.
   tiempo de aprender»: puesto «estoy». La frase del principio del cerdito se llama ahora
   `intro_cerdito` (antes `intro_menu`, que en `e69eb8e` llevó por error la voz de «¡Ha quedado como
   nueva!»): así un `intro_menu.ogg` viejo que se quede en algún PC no vuelve a sonar al empezar.
+- **18-oct, créditos:** el equipo (Eva Fernandez Valero y Inés Jackson Martín, 3D Modelling & Textures;
+  Carmen Esteban Fernandez-Vicenti, Concept Art & 2D art; Sandra, Concept Art & Texture Artist; Ana
+  Climent Sapena, Programming & Design; Anaïs Soriano, Sound Designer & Voice Actress) y la mención
+  pedida: «La programación del juego se ha desarrollado con la ayuda de la IA, pero el juego está hecho
+  íntegramente por artistas.» **Faltan los apellidos de Sandra y el segundo de Anaïs** (llegaron como
+  «xxxx»). Los créditos del final estaban rotos: medían el texto con ancho 0 (empezaban con 6 s de
+  pantalla vacía y seguían subiendo en blanco minuto y medio); arreglado y con test.
+- **18-oct, inicio del cerdito:** sin frase al empezar; entra ordenado (el cerdito → la bandeja para
+  vestirlo → los botones de Menú y Pista) y sin la tarjeta de tarea ni las estrellas de logros, que son
+  de más adelante (`Hud.stage_entrance`, `Hud._full_ui`).
 - **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
   Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de
   prueba es una escena de instancias (`preview/diorama_kit.tscn`) que las artistas mueven en el editor.

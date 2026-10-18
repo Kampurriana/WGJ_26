@@ -7,7 +7,6 @@ script = ExtResource("1_th1n8")
 level_title = ""
 modelo = "res://assets/modelos/menu/menu.glb"
 modelo_provisional = "res://levels/provisional/menu_provisional.glb"
-intro_key = "intro_cerdito"
 outro_key = "fin_menu"
 color_radius = 0.55
 camera_distance = 4.6

@@ -252,8 +252,8 @@ func _test_voices() -> void:
 			for m: Variant in marks:
 				new_marks_ok = new_marks_ok and float(m) > prev and float(m) < length
 				prev = float(m)
-	check(nuevas == 9 and new_marks_ok and Narrator._voice("intro_cerdito") == "" and not lines.has("intro_menu"),
-		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas; el cerdito empieza sin voz (%d de 9)" % nuevas)
+	check(nuevas == 9 and new_marks_ok and not lines.has("intro_cerdito") and not lines.has("intro_menu"),
+		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas; el cerdito empieza sin frase (%d de 9)" % nuevas)
 	got.clear()
 	Narrator._lines["_prueba_solo_voz"] = {"frases": [], "voz": "dibujo_encontrado_2"}
 	Narrator.say("_prueba_solo_voz")
@@ -977,6 +977,20 @@ func _test_title_menu(main: Node) -> bool:
 	if t == null:
 		return false
 	check(GameState.mode == GameState.Mode.MENU and not main.menu.is_open(), "el menú empieza cerrado: hay que resolver el puzle")
+	# El inicio, ordenado: el cerdito solo y sin frase; luego la bandeja para vestirlo; luego los botones.
+	# La tarjeta de tarea y las estrellas de logros no salen (son de más adelante).
+	var hud_t: Hud = GameState.hud
+	var st := hud_t.entrance_state()
+	check(t.intro_key == "" and Narrator.remaining() <= 0.0 and not hud_t._subtitle_box.visible
+		and not st.bandeja and not st.botones and not st.tarea and not st.estrellas,
+		"el cerdito empieza solo: sin frase, sin bandeja, sin botones, sin tarjeta de tarea ni estrellas de logros")
+	await get_tree().create_timer(Hud.ENTRANCE_TRAY + 0.8).timeout
+	st = hud_t.entrance_state()
+	check(st.bandeja and not st.botones and not st.tarea, "luego entra la bandeja con las piezas para vestirlo (aún sin botones)")
+	await get_tree().create_timer(Hud.ENTRANCE_BUTTONS - Hud.ENTRANCE_TRAY).timeout
+	st = hud_t.entrance_state()
+	check(st.bandeja and st.botones and not st.tarea and not st.estrellas,
+		"y por último los botones de Menú y Pista; la tarjeta de tarea y las estrellas siguen sin salir")
 	check(t.model_path.get_extension() == "glb" and t.get_node_or_null("Modelo") != null,
 		"el diorama del título es un asset: se carga de un .glb (%s)" % t.model_path.get_file())
 	check(t.slots.size() >= 18 and t.interactables.is_empty(), "el título son muchas piezas pequeñas, sin cajones ni escondidos (%d)" % t.slots.size())
@@ -1145,6 +1159,16 @@ func _test_back_to_menu(main: Node) -> void:
 	var y0 := credits._roll.position.y
 	await get_tree().create_timer(0.5).timeout
 	check(credits._roll.position.y < y0 - 5.0, "los créditos suben despacio (%.0f px en medio segundo)" % (y0 - credits._roll.position.y))
+	var screen_h := credits._root.size.y
+	check(credits.title_y() > 0.0 and credits.title_y() < screen_h * 0.8 and credits.roll_seconds() < 45.0,
+		"los créditos empiezan con el nombre del juego ya a la vista y no siguen subiendo en blanco (a %.0f px, %.0f s en total)"
+		% [credits.title_y(), credits.roll_seconds()])
+	var who := Array(credits.lines())
+	check(["Eva Fernandez Valero", "Carmen Esteban Fernandez-Vicenti", "Inés Jackson Martín", "Sandra", "Ana Climent Sapena",
+			"Anaïs Soriano"].all(func(n: String) -> bool: return who.has(n))
+		and who.any(func(l: String) -> bool: return l.contains("ayuda de la IA"))
+		and not who.any(func(l: String) -> bool: return l.contains("(nombres") or l.contains("Claude")),
+		"en los créditos, las seis del equipo y que la programación se hizo con ayuda de la IA (sin huecos por rellenar)")
 	_click(Vector2(640, 360))                      # un clic los acaba
 	await get_tree().create_timer(Creditos.FADE + 0.4).timeout
 	var t := GameState.diorama

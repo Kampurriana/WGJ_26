@@ -273,6 +273,7 @@ func show_title() -> void:
 	else:
 		GameState.camera.set_menu_view(false)
 		GameState.hud.set_game_ui_visible(true)
+		GameState.hud.stage_entrance()           # el cerdito; luego la bandeja; luego los botones
 
 
 ## Desde el menú (Jugar, Continuar o un diorama elegido): la pantalla se va a negro con el menú
