@@ -4,12 +4,15 @@
 // (0 = la ventana, 1 = el suelo). Cada píxel recorre el rayo de la cámara dentro del prisma (10 pasos)
 // y suma cuánta luz atraviesa: así se ve como un volumen (más denso donde se cruza más aire), con
 // bordes suaves, que se apaga hacia el suelo y con rayos lentos, como la luz entre las hojas de una
-// tarde de verano.
+// tarde de verano. Sin borde: la luz cae en campana desde el centro y nunca se ve la forma del prisma.
+// Y sin niebla (fog_disabled): la niebla de la luz de la tarde se sumaba entera sobre la caja y se veía
+// un rectángulo de bordes rectos contra la pared («cuadrado»). La profundidad de la escena no se puede
+// leer aquí (en Compatibility llega a 1,0 en esta pasada; medido), así que no se recorta con ella.
 shader_type spatial;
-render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled;
+render_mode unshaded, blend_add, cull_disabled, depth_draw_never, shadows_disabled, fog_disabled;
 
 uniform vec4 color : source_color = vec4(1.0, 0.76, 0.48, 1.0);
-uniform float fuerza = 0.16;            // luz que suma cada metro de haz atravesado
+uniform float fuerza = 1.6;             // luz que suma cada metro de haz atravesado
 uniform float aparicion = 1.0;          // 0 = apagado (sin la ventana puesta)
 
 uniform vec3 camara = vec3(0.0, 0.0, -3.0);   // la cámara en coordenadas del cubo (la pone el nodo)
@@ -21,17 +24,34 @@ void vertex() {
 	local = VERTEX;
 }
 
+// Ruido de valor 3D (suave): el aire no es igual de denso en todo el haz.
+float hash3(vec3 p) {
+	return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453);
+}
+
+float ruido(vec3 p) {
+	vec3 i = floor(p);
+	vec3 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(mix(hash3(i), hash3(i + vec3(1, 0, 0)), f.x), mix(hash3(i + vec3(0, 1, 0)), hash3(i + vec3(1, 1, 0)), f.x), f.y),
+		mix(mix(hash3(i + vec3(0, 0, 1)), hash3(i + vec3(1, 0, 1)), f.x), mix(hash3(i + vec3(0, 1, 1)), hash3(i + vec3(1, 1, 1)), f.x), f.y), f.z);
+}
+
 float densidad(vec3 q) {
-	// El hueco es redondo (el ojo de buey del desván): sección circular, de borde suave.
+	// El hueco es redondo (el ojo de buey del desván). Sin borde: la luz cae como una campana desde el
+	// centro y llega a 0 antes del prisma, así nunca se ve su forma.
 	vec2 c = (q.xy - 0.5) * 2.0;
-	float edge = 1.0 - smoothstep(0.62, 0.98, length(c));
-	// La cruz del marco deja dos franjas de sombra a lo largo del haz.
-	float cruz = mix(0.45, 1.0, smoothstep(0.02, 0.07, abs(c.x))) * mix(0.45, 1.0, smoothstep(0.02, 0.07, abs(c.y)));
-	float along = smoothstep(0.0, 0.06, q.z) * (1.0 - smoothstep(0.3, 1.0, q.z));
-	// Rayos: franjas a lo largo de la luz que se mecen despacio.
-	float w = sin(q.y * 6.0 + TIME * 0.21) * 1.3;
-	float rays = 0.55 + 0.45 * sin(q.x * 21.0 + w + TIME * 0.13) * sin(q.x * 9.0 - q.y * 11.0 - TIME * 0.09);
-	return edge * cruz * along * rays;
+	float r2 = dot(c, c);
+	float edge = exp(-2.6 * r2) * (1.0 - smoothstep(0.55, 1.0, r2));
+	// La cruz del marco deja dos franjas de sombra suaves a lo largo del haz.
+	float cruz = mix(0.62, 1.0, smoothstep(0.02, 0.1, abs(c.x))) * mix(0.62, 1.0, smoothstep(0.02, 0.1, abs(c.y)));
+	// Más fuerte junto a la ventana; entra despacio (el grueso de la pared no hace de borde) y se
+	// apaga mucho antes del suelo.
+	float along = smoothstep(0.0, 0.18, q.z) * (1.0 - smoothstep(0.08, 0.95, q.z));
+	// Aire que se mueve: bultos lentos de polvo y unos rayos suaves que se mecen.
+	float aire = 0.45 + 0.75 * ruido(vec3(q.x * 5.0, q.y * 5.0, q.z * 3.0) + vec3(TIME * 0.05, TIME * 0.03, -TIME * 0.04));
+	float rays = 0.75 + 0.25 * sin(q.x * 17.0 + sin(q.y * 5.0 + TIME * 0.2) * 1.4 + TIME * 0.11);
+	return edge * cruz * along * aire * rays;
 }
 
 void fragment() {

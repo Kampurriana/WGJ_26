@@ -1056,6 +1056,7 @@ func _particles(n: String, amount: int, tex: String, glow: bool) -> CPUParticles
 	mat.vertex_color_use_as_albedo = true
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD if glow else BaseMaterial3D.BLEND_MODE_MIX
+	mat.disable_fog = true                   # la niebla teñía el cuadrado entero de cada mota
 	if not _textures.has(tex):
 		_textures[tex] = Efectos._draw(tex)
 	mat.albedo_texture = _textures[tex]

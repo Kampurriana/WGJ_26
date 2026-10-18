@@ -499,6 +499,16 @@ MUTANTES = [
 	("M151 una herramienta hereda de un script que ya no existe", "tools/build_attic_level.gd",
 		'extends "res://tools/pack_props.gd"', 'extends "res://tools/build_room_level.gd"',
 		"las herramientas de tools/ compilan"),
+	("M152 el serrín sale solo del centro de la pieza", "core/efectos.gd",
+		"\tvar edge := _rect_points(base, foot * 0.5 + Vector2.ONE * 0.04 * _unit, 0.06 * _unit)",
+		"\tvar edge := _rect_points(base, Vector2.ONE * 0.05 * _unit, 0.06 * _unit)",
+		"el serrín de un tablón sale a todo lo largo"),
+	("M153 la niebla tiñe las partículas", "core/efectos.gd",
+		"\tmat.disable_fog = true                   # la niebla de la luz (desvan_tarde) teñía el cuadrado entero", "",
+		"ni las partículas ni el aro reciben niebla"),
+	("M154 los créditos del final sin su canción", "scenes/main.gd",
+		"\tSfx.music(\"creditos\", MUSIC_CREDITS_DB, 1.2)  # su canción entra con los créditos (sale el menú)", "",
+		"con los créditos del final suena su canción"),
 ]
 
 solo = os.environ.get("SOLO")

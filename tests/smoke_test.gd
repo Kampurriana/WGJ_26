@@ -113,6 +113,7 @@ func _run() -> void:
 		"la mesa colocada pasa a ser superficie (lo de encima se apoya en ella, no la atraviesa)")
 	check(fx.bursts > bursts_before and fx.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Serrin")),
 		"al encajar una pieza salen serrín y chispas")
+	_test_place_burst(fx)
 	if mesa != null:
 		var far := mesa.center() + Vector3(d.color_radius * 1.6, 0.0, 0.0)
 		check(not painted_at_once, "(control) justo al encajar la pintura aún no ha llegado: crece poco a poco")
@@ -1217,12 +1218,14 @@ func _test_story(main: Node) -> void:
 		wait_credits += 0.25
 	check(credits.rolling and credits.lines().has("DIBUJOS ENCONTRADOS") and credits.lines().has("2 de 4"),
 		"tras el fundido pasan los créditos, con los dibujos encontrados (2 de 4)")
+	check(Sfx.track == "creditos" and _has_music("creditos"), "con los créditos del final suena su canción (musica/creditos)")
 	await get_tree().create_timer(1.2).timeout
 	_click(Vector2(640, 360))
 	await get_tree().create_timer(Creditos.FADE + 0.4).timeout
 	check(not credits.visible and GameState.diorama.scene_file_path == GameState.MENU_LEVEL
 		and main.menu.is_open() == GameState.menu_unlocked,
 		"y después de los créditos, el menú (con el cerdito)")
+	check(Sfx.track == "menu", "y al volver al menú, vuelve su canción")
 
 
 ## La bandeja enseña todas las piezas (las que aún no van, con candado y el porqué), se aparta al
@@ -1368,6 +1371,53 @@ func _test_tools_compile() -> void:
 		if script == null or not script.can_instantiate():
 			broken.append(f)
 	check(tools >= 8 and broken.is_empty(), "las herramientas de tools/ compilan (%d; rotas: %s)" % [tools, ", ".join(broken)])
+
+
+## La ráfaga de encaje sigue la planta de la pieza y no la tiñe la niebla: un tablón largo suelta serrín
+## a todo lo largo (no en un punto de su centro) y sin aro (asomaba por fuera del suelo); un mueble lleva
+## su aro con la forma de su planta; ninguna partícula ni el aro reciben niebla (la de la luz de la tarde
+## teñía el cuadrado entero de cada una: se veían cuadrados).
+func _test_place_burst(fx: Efectos) -> void:
+	for c in fx.get_children():
+		if c.name.begins_with("Serrin") or c.name.begins_with("Chispas") or c.name.begins_with("Anillo"):
+			c.free()
+	var u: float = fx._unit
+	var plank := AABB(Vector3(0, 0, 0), Vector3(0.4, 0.12, 5.0) * u)
+	fx.placed_at(plank)
+	var saw: CPUParticles3D = null
+	var rings := 0
+	for c in fx.get_children():
+		if c.name.begins_with("Serrin"):
+			saw = c
+		elif c.name.begins_with("Anillo"):
+			rings += 1
+	var span := 0.0
+	if saw != null:
+		var zs := Array(saw.emission_points).map(func(p: Vector3) -> float: return p.z)
+		span = zs.max() - zs.min()
+	check(saw != null and span > plank.size.z * 0.9 and rings == 0,
+		"el serrín de un tablón sale a todo lo largo (%.2f de %.2f) y sin aro (%d)" % [span, plank.size.z, rings])
+	var chair := AABB(Vector3(2, 0, 2) * u, Vector3(0.5, 0.9, 0.7) * u)
+	fx.placed_at(chair)
+	var ring: MeshInstance3D = null
+	for c in fx.get_children():
+		if c.name.begins_with("Anillo"):
+			ring = c
+	var tam: Vector2 = (ring.material_override as ShaderMaterial).get_shader_parameter("tam") if ring != null else Vector2.ZERO
+	check(ring != null and tam.x >= chair.size.x and tam.y >= chair.size.z and tam.y > tam.x,
+		"un mueble lleva su aro, con la forma de su planta (%s)" % str(tam))
+	var fogged := 0
+	for c in fx.get_children():
+		if c is CPUParticles3D and not ((c as CPUParticles3D).mesh.surface_get_material(0) as BaseMaterial3D).disable_fog:
+			fogged += 1
+	var ring_fog := (_ring_has_fog_disabled())
+	check(fogged == 0 and ring_fog, "ni las partículas ni el aro reciben niebla (%d con niebla)" % fogged)
+
+
+func _ring_has_fog_disabled() -> bool:
+	var code := (load("res://shaders/anillo.gdshader") as Shader).code
+	var haz := (load("res://shaders/haz_luz.gdshader") as Shader).code
+	return code.contains("fog_disabled") and haz.contains("fog_disabled")
 
 
 func _test_kit() -> void:
@@ -1646,7 +1696,8 @@ func _test_title_menu(main: Node) -> bool:
 	check(not main.menu.buttons.has("elegir") and not main.menu._pages.has("elegir"),
 		"el menú no tiene selector de nivel: el juego es un solo diorama")
 	main.menu.show_page("creditos")
-	check(main.menu.page == "creditos", "la página de créditos se abre")
+	check(main.menu.page == "creditos" and Sfx.track == "creditos" and _has_music("creditos"),
+		"la página de créditos se abre, con la canción de los créditos (musica/creditos, de Drive)")
 	main.menu.show_page("principal")
 	for i in 2:                                      # el menú se maqueta un fotograma después
 		await get_tree().process_frame

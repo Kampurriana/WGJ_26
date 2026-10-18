@@ -34,6 +34,7 @@ var _calling: Dictionary = {}                ## Interactable -> sus motas (mient
 var _ring_shader := preload("res://shaders/anillo.gdshader")
 var _glint_t := 0.0
 var _glint_i := 0
+var _unit := 1.0                             ## escala del nivel (1 = un diorama de unos 8 m de diagonal)
 
 
 func _ready() -> void:
@@ -57,6 +58,7 @@ func _on_level_started(d: Node) -> void:
 	bursts = 0
 	glints = 0
 	var box := Visuals.global_aabb(d as Node3D)
+	_unit = clampf(box.size.length() / 8.0, 0.1, 2.5)
 	dust = _dust(box)
 
 
@@ -89,60 +91,91 @@ func _dust(box: AABB) -> CPUParticles3D:
 
 # --- Encaje: serrín, chispas y anillo ----------------------------------------------------------
 
-## Ráfaga de encaje para una pieza cuya caja es `box` (público: lo usan también las capturas).
+## Ráfaga de encaje para una pieza cuya caja es `box` (público: lo usan también las capturas). Sigue la
+## planta de la pieza (un tablón de 7 m suelta serrín a todo lo largo, no en un punto de su centro) y
+## va a la escala del nivel (`_unit`: el desván oficial es el doble que el prototipo con el que se
+## ajustó, y todo salía enano).
 func placed_at(box: AABB) -> void:
 	bursts += 1
-	var s := clampf(box.size.length(), 0.15, 1.6)
-	var base := Vector3(box.get_center().x, box.position.y + 0.02, box.get_center().z)
-	var saw := _particles("Serrin", 18, _texture("viruta"), false)
-	saw.position = base
+	var foot := Vector2(maxf(box.size.x, 0.02), maxf(box.size.z, 0.02))
+	var s := clampf(box.size.length(), 0.15 * _unit, 1.1 * _unit)   # cuánto salta y cuánto mide cada cosa
+	var dot := clampf(s, 0.35 * _unit, 1.1 * _unit)                 # tamaño de las motas: nunca enanas
+	var base := Vector3(box.get_center().x, box.position.y + 0.01 * _unit, box.get_center().z)
+	# Serrín: salta hacia fuera desde todo el borde de la pieza, donde toca lo de debajo.
+	var edge := _rect_points(base, foot * 0.5 + Vector2.ONE * 0.04 * _unit, 0.06 * _unit)
+	var saw := _particles("Serrin", clampi(int(edge[0].size() * 0.45), 14, 56), _texture("viruta"), false)
 	saw.one_shot = true
-	saw.explosiveness = 0.95
-	saw.lifetime = 0.9
-	saw.emission_shape = CPUParticles3D.EMISSION_SHAPE_RING
-	saw.emission_ring_axis = Vector3.UP
-	saw.emission_ring_radius = s * 0.35
-	saw.emission_ring_inner_radius = s * 0.2
-	saw.emission_ring_height = 0.0
-	saw.direction = Vector3.UP
-	saw.spread = 60.0
-	saw.initial_velocity_min = 0.9 * s
-	saw.initial_velocity_max = 1.7 * s
-	saw.gravity = Vector3(0.0, -5.0 * s, 0.0)
+	saw.explosiveness = 0.92
+	saw.lifetime = 0.95
+	saw.emission_shape = CPUParticles3D.EMISSION_SHAPE_DIRECTED_POINTS
+	saw.emission_points = edge[0]
+	saw.emission_normals = edge[1]
+	saw.direction = Vector3(1.0, 1.6, 0.0)                       # hacia fuera (la normal) y arriba
+	saw.spread = 28.0
+	saw.initial_velocity_min = 0.9 * dot
+	saw.initial_velocity_max = 1.8 * dot
+	saw.gravity = Vector3(0.0, -6.0 * dot, 0.0)
+	saw.damping_min = 0.4 * dot
+	saw.damping_max = 0.9 * dot
 	saw.angle_min = 0.0
 	saw.angle_max = 360.0
-	saw.angular_velocity_min = -360.0
-	saw.angular_velocity_max = 360.0
-	saw.scale_amount_min = 0.025 * s
-	saw.scale_amount_max = 0.055 * s
+	saw.angular_velocity_min = -420.0
+	saw.angular_velocity_max = 420.0
+	saw.scale_amount_min = 0.035 * dot
+	saw.scale_amount_max = 0.075 * dot
 	saw.color = SAWDUST_COLOR
-	saw.color_ramp = _fade(0.0, 0.6)
+	saw.color_ramp = _fade(0.0, 0.62)
 	saw.emitting = true
 	_free_later(saw)
-	var sparks := _particles("Chispas", 12, _texture("chispa"), true)
-	sparks.position = base + Vector3.UP * box.size.y * 0.4
+	# Chispas: suben despacio desde toda la pieza.
+	var sparks := _particles("Chispas", clampi(int(10 + foot.x * foot.y / (_unit * _unit) * 6.0), 10, 32), _texture("chispa"), true)
+	sparks.position = box.get_center()
 	sparks.one_shot = true
-	sparks.explosiveness = 0.8
+	sparks.explosiveness = 0.75
 	sparks.lifetime = 1.3
-	sparks.emission_shape = CPUParticles3D.EMISSION_SHAPE_SPHERE
-	sparks.emission_sphere_radius = s * 0.4
+	sparks.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	sparks.emission_box_extents = box.size * 0.5
 	sparks.direction = Vector3.UP
-	sparks.spread = 35.0
-	sparks.initial_velocity_min = 0.2 * s
-	sparks.initial_velocity_max = 0.6 * s
-	sparks.gravity = Vector3(0.0, 0.25 * s, 0.0)
+	sparks.spread = 30.0
+	sparks.initial_velocity_min = 0.2 * dot
+	sparks.initial_velocity_max = 0.55 * dot
+	sparks.gravity = Vector3(0.0, 0.25 * dot, 0.0)
 	sparks.damping_min = 0.3
 	sparks.damping_max = 0.6
-	sparks.scale_amount_min = 0.05 * s * STAR
-	sparks.scale_amount_max = 0.11 * s * STAR
+	sparks.scale_amount_min = 0.07 * dot * STAR
+	sparks.scale_amount_max = 0.14 * dot * STAR
 	sparks.color = SPARK_COLOR
 	sparks.color_ramp = _fade(0.05, 0.5)
 	sparks.emitting = true
 	_free_later(sparks)
-	_ring(base, s)
+	# El aro, solo en piezas de tamaño mueble: en un tablón o una pared asomaba por fuera del suelo.
+	if maxf(foot.x, foot.y) <= 2.2 * _unit:
+		_ring(base, foot, dot)
 
 
-func _ring(at: Vector3, s: float) -> void:
+## Puntos a lo largo del borde de un rectángulo en el suelo (centro `at`, semilados `half`) y la normal
+## hacia fuera de cada uno: [puntos, normales].
+func _rect_points(at: Vector3, half: Vector2, step: float) -> Array:
+	var points := PackedVector3Array()
+	var normals := PackedVector3Array()
+	var sides := [[Vector2(-half.x, -half.y), Vector2(half.x, -half.y), Vector3.FORWARD],
+		[Vector2(half.x, -half.y), Vector2(half.x, half.y), Vector3.RIGHT],
+		[Vector2(half.x, half.y), Vector2(-half.x, half.y), Vector3.BACK],
+		[Vector2(-half.x, half.y), Vector2(-half.x, -half.y), Vector3.LEFT]]
+	for side: Array in sides:
+		var a: Vector2 = side[0]
+		var b: Vector2 = side[1]
+		var n := maxi(int(a.distance_to(b) / maxf(step, 0.001)), 2)
+		for i in n:
+			var p := a.lerp(b, (i + 0.5) / n)
+			points.append(at + Vector3(p.x, 0.0, p.y))
+			normals.append(side[2])
+	return [points, normals]
+
+
+## Un aro que se abre en el suelo con la forma de la planta de la pieza (un rectángulo de esquinas
+## redondas: un tablón da un aro alargado, no un círculo en su centro), de grosor fijo en metros.
+func _ring(at: Vector3, foot: Vector2, dot: float) -> void:
 	var ring := MeshInstance3D.new()
 	ring.name = "Anillo"
 	var plane := PlaneMesh.new()
@@ -150,15 +183,26 @@ func _ring(at: Vector3, s: float) -> void:
 	ring.mesh = plane
 	var mat := ShaderMaterial.new()
 	mat.shader = _ring_shader
+	mat.set_shader_parameter("fuerza", 1.0)
+	mat.set_shader_parameter("grosor", 0.05 * dot)
 	ring.material_override = mat
 	ring.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	ring.position = at
-	ring.scale = Vector3.ONE * s * 0.3
 	add_child(ring)
-	var tw := ring.create_tween().set_parallel().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(ring, "scale", Vector3.ONE * s * 1.15, 0.55)
-	tw.tween_method(func(f: float) -> void: mat.set_shader_parameter("fuerza", f), 1.0, 0.0, 0.55)
-	tw.chain().tween_callback(ring.queue_free)
+	var size := foot + Vector2.ONE * 0.12 * dot
+	var id := ring.get_instance_id()             # no capturar el nodo: puede irse antes (trampa 40)
+	var grow := func(f: float) -> void:
+		var r := instance_from_id(id) as MeshInstance3D
+		if r == null:
+			return
+		var t := size + Vector2.ONE * dot * 0.3 * f
+		r.scale = Vector3(t.x, 1.0, t.y)
+		(r.material_override as ShaderMaterial).set_shader_parameter("tam", t)
+		(r.material_override as ShaderMaterial).set_shader_parameter("fuerza", 1.0 - f)
+	grow.call(0.0)
+	var tw := ring.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_method(grow, 0.0, 1.0, 0.6)
+	tw.tween_callback(ring.queue_free)
 
 
 # --- Recoger, pista y final --------------------------------------------------------------------
@@ -203,9 +247,11 @@ func _hint(box: AABB) -> void:
 	p.color = Color(1.0, 0.95, 0.75)
 	p.color_ramp = _fade(0.2, 0.6)
 	p.emitting = true
+	var pid := p.get_instance_id()               # no capturar el nodo: se va si cambia el nivel (trampa 40)
 	get_tree().create_timer(2.5, false).timeout.connect(func() -> void:
-		if is_instance_valid(p):
-			p.emitting = false)
+		var sparks := instance_from_id(pid) as CPUParticles3D
+		if sparks != null:
+			sparks.emitting = false)
 	_free_later(p, 4.0)
 
 
@@ -358,6 +404,7 @@ func _particles(n: String, amount: int, tex: Texture2D, glow: bool) -> CPUPartic
 	mat.vertex_color_use_as_albedo = true
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD if glow else BaseMaterial3D.BLEND_MODE_MIX
+	mat.disable_fog = true                   # la niebla de la luz (desvan_tarde) teñía el cuadrado entero
 	mat.albedo_texture = tex
 	mat.disable_receive_shadows = true
 	quad.material = mat

@@ -13,7 +13,7 @@ extends Node3D
 @export var color := Color(1.0, 0.74, 0.46)               ## la tarde de verano
 @export var energia := 7.0
 @export var largo := 3.6                                 ## del cristal al suelo, a lo largo del haz
-@export var fuerza_haz := 0.16                           ## luz que suma cada metro de haz (shaders/haz_luz)
+@export var fuerza_haz := 1.6                            ## luz que suma cada metro de haz (shaders/haz_luz)
 @export var pieza := &"ventana"                          ## la que la enciende
 @export_range(0.1, 10.0) var segundos_encender := 2.2
 
@@ -43,9 +43,9 @@ func _build() -> void:
 	sol.spot_attenuation = 0.35
 	sol.spot_angle_attenuation = 0.6
 	sol.shadow_enabled = true
-	sol.shadow_bias = 0.04
-	sol.shadow_normal_bias = 1.2
-	sol.shadow_blur = 1.6
+	sol.shadow_bias = 0.015                              # sombras ajustadas: con más, la luz se colaba
+	sol.shadow_normal_bias = 0.4                         # por los cantos de las paredes (finas)
+	sol.shadow_blur = 2.2
 	sol.light_specular = 0.6
 	add_child(sol)
 	# El haz: el prisma que dibuja el hueco de la ventana al avanzar la luz (un cubo deformado: X e Y
@@ -96,6 +96,7 @@ func _build() -> void:
 	dot.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	dot.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	dot.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	dot.disable_fog = true
 	dot.billboard_mode = BaseMaterial3D.BILLBOARD_PARTICLES
 	dot.billboard_keep_scale = true                      # sin esto, cada mota mide 1 m (un borrón blanco)
 	dot.disable_receive_shadows = true

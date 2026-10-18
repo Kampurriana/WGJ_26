@@ -11,6 +11,7 @@ extends CanvasLayer
 ## Teclado: flechas + Intro. Esc vuelve a la página principal.
 
 signal play_requested(index: int)
+signal page_shown(page: String)                ## (main: la página de créditos lleva su canción)
 
 const WIDTH := 430.0
 const PAGE_MAX_HEIGHT := 440.0
@@ -94,6 +95,7 @@ func show_page(p: String) -> void:
 	elif p == "logros":
 		_logros.refresh()
 	Juice.stagger(_pages[p])                     # y lo de la página, uno tras otro
+	page_shown.emit(p)
 	_focus_first(_pages[p])
 
 

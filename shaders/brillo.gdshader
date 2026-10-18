@@ -1,7 +1,7 @@
 // Brillo de "aquí hay algo": un borde cálido que late sobre un mueble que guarda el siguiente objeto
 // (o sobre el objeto, si ya se ve). Va en una copia de cada malla, encima, sumando luz.
 shader_type spatial;
-render_mode unshaded, blend_add, depth_draw_never, cull_back;
+render_mode unshaded, blend_add, depth_draw_never, cull_back, fog_disabled;
 
 uniform vec4 color : source_color = vec4(1.0, 0.76, 0.38, 1.0);
 uniform float fuerza = 1.0;

@@ -43,6 +43,7 @@ const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 # la partida ~5 LU por debajo, de fondo ("volumen moderado"), sin que ninguna llegue a recortar.
 const MUSIC_MENU_DB := 13.0                  ## Ankui (musica/menu): puzle del título y menú
 const MUSIC_GAME_DB := 3.5                   ## Loft (musica/juego): en bucle durante la partida
+const MUSIC_CREDITS_DB := 0.0                ## «Canción créditos» (musica/creditos): los créditos del final y su página del menú (medido: suena entre la del menú y la de la partida)
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var splash: Presentacion                     ## la presentación del principio, mientras está (ui/presentacion.gd)
@@ -158,6 +159,11 @@ func _ready() -> void:
 			GameState.camera.frame_box((sec as Section).box()))
 	hud.pause_requested.connect(open_pause)
 	menu.play_requested.connect(blackout_to_level)
+	menu.page_shown.connect(func(p: String) -> void:   # la página de créditos, con su canción
+		if p == "creditos":
+			Sfx.music("creditos", MUSIC_CREDITS_DB)
+		elif Sfx.track == "creditos":
+			Sfx.music("menu", MUSIC_MENU_DB))
 	pause.main_menu_requested.connect(show_title)
 	Events.level_completed.connect(_on_level_completed)
 	Settings.changed.connect(func(key: String) -> void:
@@ -452,6 +458,7 @@ func roll_credits() -> void:
 	momentos.reset()
 	GameState.drag.cancel()
 	GameState.hud.set_game_ui_visible(false)
+	Sfx.music("creditos", MUSIC_CREDITS_DB, 1.2)  # su canción entra con los créditos (sale el menú)
 	credits.play(found, total)
 	if _fade_tween != null:
 		_fade_tween.kill()
