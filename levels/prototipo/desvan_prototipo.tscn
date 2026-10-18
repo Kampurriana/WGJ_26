@@ -1,11 +1,10 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://core/diorama.gd" id="1_6c44a"]
+[ext_resource type="Script" path="res://core/diorama.gd" id="1_asnul"]
 
-[node name="DesvanPrototipo" type="Node3D" unique_id=866884299]
-script = ExtResource("1_6c44a")
+[node name="DesvanPrototipo" type="Node3D" unique_id=1953567620]
+script = ExtResource("1_asnul")
 level_title = "El desván (prototipo)"
-modelo = ""
 modelo_provisional = "res://levels/provisional/desvan_provisional.tscn"
 intro_key = "intro_desvan"
 color_radius = 0.7

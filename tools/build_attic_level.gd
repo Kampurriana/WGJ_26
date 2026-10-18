@@ -1,4 +1,4 @@
-extends "res://tools/build_room_level.gd"
+extends "res://tools/pack_props.gd"
 ## EL PROTOTIPO (16-18 oct): el desván de la historia con figuras provisionales, con el que se iteró
 ## la jugabilidad. Se conserva aparte (levels/prototipo/; se juega con levels/prototipo/jugar_prototipo.tscn
 ## o `--prototipo`). El desván que se juega es el del arte oficial: tools/build_kit_level.gd, con las
