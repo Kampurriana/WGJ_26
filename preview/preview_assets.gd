@@ -11,29 +11,19 @@ extends Node3D
 ##  - el mismo enfoque de cine (Enfoque) y HDR 2D.
 ## Disposición: delante, los muebles y las cajas (donde mira la cámara), en filas del ancho del
 ## desván; detrás, los dibujos 2D de pie; y al fondo la estructura (suelo, paredes, techo, vigas...).
-## Las piezas se cogen de cada .fbx/.glb: primero las sueltas (modelos/) y luego las de los paquetes
-## (paquetes/) que no estén ya. Texturas: una pieza cuyo nombre contiene el de una carpeta de
-## assets/kit/texturas/ (SM_DeskA -> Desk) lleva el material assets/kit/materiales/M_<carpeta>.tres.
-## Dos vistas (Tab cambia): el CATÁLOGO de piezas y el DIORAMA de prueba (preview/diorama_kit.gd: un
-## rincón del desván montado solo con el kit, con la arquitectura de la referencia de las artistas).
+## Las piezas son el "tileset" del kit (assets/kit/piezas/*.scn, lo hace tools/piezas_kit.gd: cada
+## una con la transformación de su .fbx y su material del kit o provisional).
+## Dos vistas (Tab cambia): el CATÁLOGO de piezas y el DIORAMA de prueba (preview/diorama_kit.tscn:
+## un rincón del desván montado con esas piezas siguiendo la referencia de las artistas, para
+## editarlo a mano en el editor; lo hizo tools/build_diorama_kit.gd).
 ## Abrir en el editor y F6, o:  godot --path . res://preview/preview_assets.tscn
 ## Captura:  godot --path . --resolution 1280x720 res://preview/preview_assets.tscn -- --capture=build/preview.png
 ##           [--vista=diorama] [--capture-after=S] [--yaw=G] [--pitch=G] [--zoom=F] [--luz=inicio]
 
 const NIVEL := "res://levels/level_01_desvan.tscn"   ## de aquí salen la luz y los ajustes de cámara
 const KIT := "res://assets/kit"
-const MODEL_EXT := ["fbx", "glb", "gltf"]
+const DIORAMA := "res://preview/diorama_kit.tscn"
 const IMAGE_EXT := ["png", "jpg", "jpeg", "webp"]
-## Piezas de los paquetes que también llegan sueltas con su nombre bueno (las cajas de Boxes.fbx son
-## SM_BoxA..E; la tele de Pack04, SM_TV): no se montan dos veces. Las de nombre SM_ repetido se
-## descartan solas. Comoda.fbx (la cómoda fundida en una sola malla) no se trae: están sus piezas.
-const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV05"]
-const EXCLUIDOS := ["Comoda.fbx"]
-## Nombres buenos para las piezas que llegan con el nombre por defecto de 3ds Max.
-const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "SM_Vase",
-	"Cylinder025": "SM_BrushA", "Cylinder026": "SM_BrushB", "Cylinder027": "SM_BrushC"}
-## Piezas que llegan en trozos colocados entre sí (prefijo -> una sola pieza): el MP3 con su cable.
-const GRUPOS := {"MP3": "SM_MP3"}
 ## Qué va delante (la cámara mira ahí): muebles y cajas. Lo demás es estructura y va detrás.
 const PROPS := ["Desk", "Lamp", "Stool", "Box", "Object", "Comoda", "TV", "Burro", "CoverDesk", "Vase", "Brush", "MP3"]
 const HUECO := 0.3                           ## separación entre piezas del catálogo (m)
@@ -64,10 +54,8 @@ func _ready() -> void:
 	contenido.name = "Contenido"
 	add_child(contenido)
 	_montar_catalogo()
-	diorama = preload("res://preview/diorama_kit.gd").new()
-	diorama.name = "Diorama"
+	diorama = (load(DIORAMA) as PackedScene).instantiate()
 	add_child(diorama)
-	diorama.montar(_materiales())
 	cam = DioramaCamera.new()
 	cam.name = "Camara"
 	add_child(cam)
@@ -166,59 +154,14 @@ func _fila(fila: Array[Node3D], z: float) -> float:
 	return fondo
 
 
-## Cada malla de cada modelo, en su propio nodo (con la transformación que traía), sin repetir.
+## Una instancia de cada pieza del tileset del kit (assets/kit/piezas/).
 func _cargar_piezas() -> Array[Node3D]:
-	var materiales := _materiales()
 	var out: Array[Node3D] = []
-	for carpeta in ["modelos", "paquetes"]:
-		for path in _ficheros(KIT + "/" + carpeta, MODEL_EXT):
-			if path.get_file() in EXCLUIDOS:
-				continue
-			var escena := load(path) as PackedScene
-			if escena == null:
-				push_error("Preview: no se carga %s" % path)
-				continue
-			var modelo := escena.instantiate() as Node3D
-			modelo.name = "_fbx_" + path.get_file()  # (si se llamara como su pieza, la pieza se renombraría)
-			contenido.add_child(modelo)
-			for m in _mallas(modelo):
-				var nombre := String(ALIAS.get(String(m.name), String(m.name)))
-				for prefijo: String in GRUPOS:
-					if nombre.begins_with(prefijo):
-						nombre = GRUPOS[prefijo]
-				var pieza := contenido.get_node_or_null(nombre) as Node3D if nombre in GRUPOS.values() else null
-				if pieza == null and (nombre in piezas or nombre in REPETIDAS):
-					continue
-				for clave: String in materiales:
-					if nombre.contains(clave):
-						m.material_override = materiales[clave]
-				if pieza == null:
-					piezas.append(nombre)
-					pieza = Node3D.new()
-					pieza.name = nombre
-					contenido.add_child(pieza)
-					out.append(pieza)
-				var xf := m.global_transform
-				m.get_parent().remove_child(m)
-				pieza.add_child(m)
-				m.global_transform = xf
-				m.owner = null
-			modelo.queue_free()
-	return out
-
-
-## {"Desk": M_Desk.tres, ...}: un material por carpeta de texturas que tenga el suyo.
-func _materiales() -> Dictionary:
-	var out := {}
-	var d := DirAccess.open(KIT + "/texturas")
-	if d == null:
-		return out
-	for carpeta in d.get_directories():
-		var path := "%s/materiales/M_%s.tres" % [KIT, carpeta]
-		if ResourceLoader.exists(path):
-			out[carpeta] = load(path)
-		else:
-			push_warning("Preview: hay texturas en texturas/%s pero no el material %s" % [carpeta, path])
+	for path in _ficheros(KIT + "/piezas", ["scn", "tscn"]):
+		var pieza := (load(path) as PackedScene).instantiate() as Node3D
+		contenido.add_child(pieza)
+		piezas.append(String(pieza.name))
+		out.append(pieza)
 	return out
 
 
@@ -361,13 +304,4 @@ func _ficheros(dir: String, exts: Array) -> PackedStringArray:
 	for f in d.get_files():
 		if f.get_extension().to_lower() in exts:
 			out.append(dir + "/" + f)
-	return out
-
-
-func _mallas(n: Node) -> Array[MeshInstance3D]:
-	var out: Array[MeshInstance3D] = []
-	if n is MeshInstance3D:
-		out.append(n)
-	for c in n.get_children():
-		out.append_array(_mallas(c))
 	return out

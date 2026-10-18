@@ -1,0 +1,217 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Floor.scn" id="1_o7fjv"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_SkirtingBoardBottom.scn" id="2_yuey8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Ceiling.scn" id="3_e55bi"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalA.scn" id="4_fpm28"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalB.scn" id="5_wymny"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalC.scn" id="6_tlcxx"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CeilingSupportVerticalD.scn" id="7_0xsg7"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport020.scn" id="8_a3ub2"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport018.scn" id="9_l0ivn"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport021.scn" id="10_wodl1"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport014.scn" id="11_7atbr"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport015.scn" id="12_28w5s"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/CeilingSupport016.scn" id="13_idw3y"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallA.scn" id="14_xiqf4"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Window.scn" id="15_xdr60"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallC.scn" id="16_7nqai"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_WallB.scn" id="17_etfnm"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Pillar.scn" id="18_2smui"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskA.scn" id="19_rhcum"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskC.scn" id="20_jy3y4"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_DeskD.scn" id="21_rf7ae"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_MP3.scn" id="22_nntbi"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Lamp.scn" id="23_d1ngo"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaA.scn" id="24_ynfow"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaB.scn" id="25_jnp0u"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_ComodaD.scn" id="26_ub8ss"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Vase.scn" id="27_0dsmt"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushA.scn" id="28_st4mp"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushB.scn" id="29_0g34d"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BrushC.scn" id="30_3dqvy"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Stool.scn" id="31_kffup"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxA.scn" id="32_1631r"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxA.scn" id="33_g8nfk"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxB.scn" id="34_2v2sa"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxB.scn" id="35_jh2r8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxC.scn" id="36_3f35j"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxC.scn" id="37_li8o8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxD.scn" id="38_4tw70"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxD.scn" id="39_1q52w"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_BoxE.scn" id="40_5ovu8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverBoxE.scn" id="41_8e0nn"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_TV.scn" id="42_cfjs8"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_CoverDesk.scn" id="43_7idud"]
+[ext_resource type="PackedScene" path="res://assets/kit/piezas/SM_Burro.scn" id="44_tn0ji"]
+
+[node name="DioramaKit" type="Node3D" unique_id=2110786460]
+
+[node name="Arquitectura" type="Node3D" parent="." unique_id=1808949335]
+
+[node name="Suelo" parent="Arquitectura" unique_id=15826353 instance=ExtResource("1_o7fjv")]
+
+[node name="Zocalo" parent="Arquitectura" unique_id=689020609 instance=ExtResource("2_yuey8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+
+[node name="Techo" parent="Arquitectura" unique_id=1427614686 instance=ExtResource("3_e55bi")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.8593776, 0.67, -0.03)
+
+[node name="CabioA" parent="Arquitectura" unique_id=1821164975 instance=ExtResource("4_fpm28")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.5877889, 0.65, -2.25)
+
+[node name="CabioB" parent="Arquitectura" unique_id=2002685629 instance=ExtResource("5_wymny")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.5877889, 0.65, -0.77)
+
+[node name="CabioC" parent="Arquitectura" unique_id=1870551739 instance=ExtResource("6_tlcxx")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.5877889, 0.65, 0.71)
+
+[node name="CabioD" parent="Arquitectura" unique_id=996285049 instance=ExtResource("7_0xsg7")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.5877889, 0.65, 2.19)
+
+[node name="VigaBase" parent="Arquitectura" unique_id=1361803155 instance=ExtResource("8_a3ub2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8560696, 0.45, -0.03)
+
+[node name="CorreaBaja" parent="Arquitectura" unique_id=2013237905 instance=ExtResource("9_l0ivn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1346772, 1.4266369, -0.030000238)
+
+[node name="CorreaAlta" parent="Arquitectura" unique_id=2008262609 instance=ExtResource("10_wodl1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1752235, 2.7566369, -0.030000238)
+
+[node name="Poste0" parent="Arquitectura" unique_id=1184623576 instance=ExtResource("11_7atbr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1346767, 0.15000002, -1.3)
+
+[node name="Poste1" parent="Arquitectura" unique_id=474980624 instance=ExtResource("12_28w5s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1346767, 0.15000002, 0.37)
+
+[node name="Poste2" parent="Arquitectura" unique_id=1022130901 instance=ExtResource("13_idw3y")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1346767, 0.15000002, 2.04)
+
+[node name="Hastial" parent="Arquitectura" unique_id=2063452851 instance=ExtResource("14_xiqf4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.2805269, 0, -2.6)
+
+[node name="Ventana" parent="Arquitectura" unique_id=38186378 instance=ExtResource("15_xdr60")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.6435269, 1.1141042, -2.6)
+
+[node name="ParedFondo" parent="Arquitectura" unique_id=894302194 instance=ExtResource("16_7nqai")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8126025, 0, -3.56)
+
+[node name="ParedEscalon" parent="Arquitectura" unique_id=1115192171 instance=ExtResource("17_etfnm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.78981745, 0, -3.512127)
+
+[node name="ParedLado" parent="Arquitectura" unique_id=191388812 instance=ExtResource("17_etfnm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8798175, 0, -2.647873)
+
+[node name="Pilar0" parent="Arquitectura" unique_id=1688555616 instance=ExtResource("18_2smui")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.78981715, 0.15000002, -2.6)
+
+[node name="Pilar1" parent="Arquitectura" unique_id=1932733965 instance=ExtResource("18_2smui")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8798172, 0.15000002, -3.56)
+
+[node name="Pilar2" parent="Arquitectura" unique_id=313030677 instance=ExtResource("18_2smui")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8798172, 0.15000002, -1.74)
+
+[node name="Muebles" type="Node3D" parent="." unique_id=260345176]
+
+[node name="Escritorio" parent="Muebles" unique_id=397387481 instance=ExtResource("19_rhcum")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.25, 0.15, -2.224)
+
+[node name="CajonEscritorio0" parent="Muebles" unique_id=1633462843 instance=ExtResource("20_jy3y4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.135, 0.5986, -2.16)
+
+[node name="CajonEscritorio1" parent="Muebles" unique_id=50004007 instance=ExtResource("21_rf7ae")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.13500002, 0.3872, -2.16)
+
+[node name="CajonEscritorio2" parent="Muebles" unique_id=267613916 instance=ExtResource("20_jy3y4")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.135, 0.1758, -2.16)
+
+[node name="MP3" parent="Muebles" unique_id=2077526796 instance=ExtResource("22_nntbi")]
+transform = Transform3D(0.9396926, 0, -0.34202012, 0, 1, 0, 0.34202012, 0, 0.9396926, -0.46874765, 0.895, -2.196951)
+
+[node name="Lampara" parent="Muebles" unique_id=1036102797 instance=ExtResource("23_d1ngo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.68, 0.15, -2.15)
+
+[node name="Comoda" type="Node3D" parent="Muebles" unique_id=1510456442]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.15, -3.26)
+
+[node name="SM_ComodaA" parent="Muebles/Comoda" unique_id=572222720 instance=ExtResource("24_ynfow")]
+
+[node name="Cajon0" parent="Muebles/Comoda" unique_id=1783280505 instance=ExtResource("25_jnp0u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1667, 0)
+
+[node name="Cajon1" parent="Muebles/Comoda" unique_id=1338770236 instance=ExtResource("25_jnp0u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
+
+[node name="Cajon2" parent="Muebles/Comoda" unique_id=1189850311 instance=ExtResource("26_ub8ss")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5533, 0)
+
+[node name="Pinceles" type="Node3D" parent="Muebles" unique_id=154809537]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.97, -3.26)
+
+[node name="SM_Vase" parent="Muebles/Pinceles" unique_id=1158166503 instance=ExtResource("27_0dsmt")]
+
+[node name="SM_BrushA" parent="Muebles/Pinceles" unique_id=756045272 instance=ExtResource("28_st4mp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015, 0.02, 0)
+
+[node name="SM_BrushB" parent="Muebles/Pinceles" unique_id=1885097650 instance=ExtResource("29_0g34d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+
+[node name="SM_BrushC" parent="Muebles/Pinceles" unique_id=193879051 instance=ExtResource("30_3dqvy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.015, 0.02, 0)
+
+[node name="Taburete" parent="Muebles" unique_id=1183120759 instance=ExtResource("31_kffup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.55, 0.15, -2.51)
+
+[node name="CajaA" type="Node3D" parent="Muebles" unique_id=265995496]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.45, 0.15, -1.95)
+
+[node name="SM_BoxA" parent="Muebles/CajaA" unique_id=55520386 instance=ExtResource("32_1631r")]
+
+[node name="SM_CoverBoxA" parent="Muebles/CajaA" unique_id=700337120 instance=ExtResource("33_g8nfk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33060172, 0)
+
+[node name="CajaB" type="Node3D" parent="Muebles" unique_id=1482542911]
+transform = Transform3D(0.17364822, 0, 0.9848077, 0, 1, 0, -0.9848077, 0, 0.17364822, -2.45, 0.6, -1.9500002)
+
+[node name="SM_BoxB" parent="Muebles/CajaB" unique_id=1614568434 instance=ExtResource("34_2v2sa")]
+
+[node name="SM_CoverBoxB" parent="Muebles/CajaB" unique_id=1048542918 instance=ExtResource("35_jh2r8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33060172, 0)
+
+[node name="CajaC" type="Node3D" parent="Muebles" unique_id=1765471732]
+transform = Transform3D(0.9848077, 0, 0.17364818, 0, 1, 0, -0.17364818, 0, 0.9848077, -2.5, 0.15, -1.2)
+
+[node name="SM_BoxC" parent="Muebles/CajaC" unique_id=703498970 instance=ExtResource("36_3f35j")]
+
+[node name="SM_CoverBoxC" parent="Muebles/CajaC" unique_id=2045834677 instance=ExtResource("37_li8o8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.20830488, 0)
+
+[node name="CajaD" type="Node3D" parent="Muebles" unique_id=961417902]
+transform = Transform3D(0.9659258, 0, -0.25881904, 0, 1, 0, 0.25881904, 0, 0.9659258, -2.15, 0.15, -0.54999995)
+
+[node name="SM_BoxD" parent="Muebles/CajaD" unique_id=1059598493 instance=ExtResource("38_4tw70")]
+
+[node name="SM_CoverBoxD" parent="Muebles/CajaD" unique_id=1778826157 instance=ExtResource("39_1q52w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.20830488, 0)
+
+[node name="CajaE" type="Node3D" parent="Muebles" unique_id=316117005]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -2.5, 0.46, -1.1999999)
+
+[node name="SM_BoxE" parent="Muebles/CajaE" unique_id=1110851427 instance=ExtResource("40_5ovu8")]
+
+[node name="SM_CoverBoxE" parent="Muebles/CajaE" unique_id=773999089 instance=ExtResource("41_8e0nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16307184, 0)
+
+[node name="Tele" parent="Muebles" unique_id=871174839 instance=ExtResource("42_cfjs8")]
+transform = Transform3D(0.81915206, 0, 0.57357645, 0, 1, 0, -0.57357645, 0, 0.81915206, -2.15, 0.15, 1.2)
+
+[node name="CajonSuelto" type="Node3D" parent="Muebles" unique_id=556717108]
+transform = Transform3D(0.90630776, 0, 0.42261827, 0, 1, 0, -0.42261827, 0, 0.90630776, -1.25, 0.15, -0.4)
+
+[node name="SM_DeskC" parent="Muebles/CajonSuelto" unique_id=1721390935 instance=ExtResource("20_jy3y4")]
+
+[node name="SM_CoverDesk" parent="Muebles/CajonSuelto" unique_id=1833302989 instance=ExtResource("43_7idud")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+
+[node name="Burro" parent="Muebles" unique_id=245556920 instance=ExtResource("44_tn0ji")]
+transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, 0.6, 0.15, 0.75)

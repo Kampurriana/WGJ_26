@@ -43,7 +43,7 @@ allí, para que sea fácil poner al día:
   repiten `SM_ComodaB` y `SM_DeskC`.
 - `Pack04.fbx` y `Pack05.fbx` traen nombres de 3ds Max: `Box072` = burro, `TV05`/`TV01` = la tele
   (está suelta como `SM_TV`), `CoverDesk`, `Vase001` = jarrón, `Cylinder025-027` = pinceles,
-  `MP301...` = el MP3 en trozos (la preview los junta en `SM_MP3`).
+  `MP301...` = el MP3 en trozos (el tileset los junta en `SM_MP3`).
 
 ## En uso en el juego
 
@@ -60,5 +60,18 @@ Para traerlo todo con sus nombres: un `.zip` de la carpeta en Drive (se baja ent
   triángulos, UV y material; y las texturas.
 - `godot --path . res://preview/preview_assets.tscn` (o F6 en el editor): la **preview** aparte, con
   la luz, la cámara y el postproceso del desván. Tab cambia entre el catálogo y el **diorama de
-  prueba** (`preview/diorama_kit.gd`, la arquitectura de la referencia de las artistas montada con
+  prueba** (`preview/diorama_kit.tscn`, la arquitectura de la referencia de las artistas montada con
   sus piezas, sin redimensionar ninguna).
+
+## Montar a mano (el tileset)
+
+- `piezas/<Pieza>.scn`: una escena por pieza (66), hecha por `tools/piezas_kit.gd`. Raíz con escala 1 y
+  el pivote abajo en el centro (se apoya en el suelo); dentro, la malla con la transformación de su
+  `.fbx`. Las de nombre de 3ds Max se renombran (`Box072` = `SM_Burro`, `Object006..010` =
+  `SM_CoverBoxA..E`, `Cylinder025..027` = `SM_BrushA..C`, `Vase001` = `SM_Vase`) y el MP3 y el pilar,
+  que vienen en trozos, son una pieza.
+- Material: el del kit (`materiales/M_<conjunto>.tres`) si la pieza tiene texturas; si no, un color
+  provisional por grupo (`materiales/provisional/*.tres`), compartido: retocarlo cambia todas.
+- `preview/diorama_kit.tscn` se abre en el editor y se monta arrastrando piezas desde
+  `assets/kit/piezas/` (mover, girar, duplicar con Ctrl+D; **nunca escalar**). Para empezar de cero:
+  `tools/build_diorama_kit.gd -- --forzar` (sin `--forzar` no pisa lo hecho a mano).

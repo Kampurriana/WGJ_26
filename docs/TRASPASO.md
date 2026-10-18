@@ -174,6 +174,10 @@ carpeta. Si no, parar y preguntar.
   un diorama de prueba con la arquitectura de la referencia de 3ds Max de las artistas. Pedido: **no
   redimensionar ningún asset** (se montan con las medidas con que se importan). Faltan las texturas
   `T_Pack_01` (demasiado grandes para el conector) y `SM_ComodaC`, `SM_DeskB`.
+- **18-oct, el diorama editable:** pedido «la escena para editar y reposicionar los assets a mano».
+  Hay un tileset (`assets/kit/piezas/`, una escena por pieza, `tools/piezas_kit.gd`) y el diorama de
+  prueba es una escena de instancias (`preview/diorama_kit.tscn`) que las artistas mueven en el editor.
+  `tools/build_diorama_kit.gd` no la pisa sin `-- --forzar`.
 - **17-oct, cuarto dibujo:** `t_draw_04` (Ana y Lurdes, dos niñas con una carta de corazones) es
   coleccionable, debajo de la cama (`C_dibujo_amigas__after-cama_infantil`): ya son 4.
 - **17-oct, el escritorio del kit:** el escritorio de la adolescencia es el de las artistas (`SM_DeskA`)

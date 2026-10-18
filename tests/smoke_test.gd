@@ -899,13 +899,23 @@ func _test_kit() -> void:
 		and desk.roughness_texture == desk.ao_texture and desk.ao_texture != null,
 		"el material del escritorio lleva su color, sus normales y la textura ARM (oclusión, rugosidad, metálico)")
 	check(load("res://preview/preview_assets.tscn") is PackedScene, "la escena de preview de assets (aparte del juego) carga")
-	# El diorama de prueba de la preview se monta con las piezas del kit (si falta una, no se monta).
-	var diorama: Node3D = load("res://preview/diorama_kit.gd").new()
-	diorama.montar({})
-	var nombres := diorama.find_children("*", "MeshInstance3D", true, false).map(func(m: Node) -> String: return String(m.name))
-	check(nombres.size() >= 50 and nombres.has("SM_WallA") and nombres.has("SM_Window") and nombres.has("SM_Ceiling")
-		and nombres.has("SM_ComodaA") and nombres.has("SM_TV") and nombres.has("Box072"),
-		"el diorama de prueba de la preview se monta con el kit: suelo, faldón, hastial con su ventana, cómoda, tele... (%d piezas)" % nombres.size())
+	# El tileset del kit: una escena por pieza, con escala 1 y alguna malla; y el diorama de prueba
+	# (para editar a mano) hecho de instancias de esas piezas, ninguna redimensionada.
+	var tileset := Array(DirAccess.get_files_at("res://assets/kit/piezas")).filter(func(f: String) -> bool: return f.get_extension() == "scn")
+	var malas := tileset.filter(func(f: String) -> bool:
+		var p := (load("res://assets/kit/piezas/" + f) as PackedScene).instantiate() as Node3D
+		var mal := not p.scale.is_equal_approx(Vector3.ONE) or p.find_children("*", "MeshInstance3D", true, false).is_empty()
+		p.free()
+		return mal)
+	check(tileset.size() >= 60 and malas.is_empty(), "el tileset del kit: %d piezas con escala 1 y su malla (mal: %s)" % [tileset.size(), malas])
+	var diorama := (load("res://preview/diorama_kit.tscn") as PackedScene).instantiate() as Node3D
+	var instancias := diorama.find_children("*", "Node3D", true, false).filter(func(n: Node) -> bool: return n.scene_file_path != "")
+	var del_kit := instancias.filter(func(n: Node) -> bool: return n.scene_file_path.begins_with("res://assets/kit/piezas/"))
+	var escaladas := instancias.filter(func(n: Node3D) -> bool: return not n.scale.is_equal_approx(Vector3.ONE))
+	var nombres := instancias.map(func(n: Node) -> String: return n.scene_file_path.get_file().get_basename())
+	check(instancias.size() >= 45 and del_kit.size() == instancias.size() and escaladas.is_empty()
+		and nombres.has("SM_WallA") and nombres.has("SM_Window") and nombres.has("SM_Ceiling") and nombres.has("SM_ComodaA") and nombres.has("SM_TV"),
+		"el diorama de prueba (preview/diorama_kit.tscn) son piezas del tileset sin redimensionar: hastial, ventana, faldón, cómoda, tele... (%d)" % instancias.size())
 	diorama.free()
 
 
