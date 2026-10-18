@@ -26,7 +26,10 @@ const MENU_SWAY_SPEED := 0.35
 const MENU_SHIFT := 0.22                     ## y se corre a la derecha para dejar sitio al panel del menú
 const INTRO_TIME := 2.2                      ## entrada al nivel: segundos de movimiento de cine
 const INTRO_SMOOTH := 0.65                   ## y su suavidad (más = más lento y blando)
-const CINE_SMOOTH := 0.55                    ## suavidad de pista, rincones y secciones
+const CINE_SMOOTH := 0.55                    ## suavidad de pista y rincones
+const FRAME_TIME := 3.5                      ## al aparecer las cosas de un capítulo, la cámara se desliza a su zona...
+const FRAME_SMOOTH := 1.3                    ## ...despacio (muelle blando: sin el salto de antes)
+const FRAME_MARGIN := 1.05                   ## y la zona entera cabe en pantalla
 const INERTIA_DAMP := 4.0                    ## lo que frena el giro tras soltar (más = frena antes)
 const MAX_SPIN := 300.0                      ## impulso máximo al soltar (grados/s)
 const NUDGE := 0.04                          ## al colocar, la cámara se acerca un 4 %...
@@ -261,20 +264,22 @@ func frame_box(box: AABB) -> void:
 	var c := home_center()
 	var flat := box.get_center() - c
 	flat.y = 0.0
-	if flat.length() > 0.05:
-		yaw = clampf(rad_to_deg(atan2(flat.x, flat.z)) * 0.35 + float(_home.get("yaw", yaw)) * 0.65, yaw_min, yaw_max)
+	if flat.length() > 0.05:                   # gira poco hacia la zona: el diorama se sigue leyendo igual
+		yaw = clampf(rad_to_deg(atan2(flat.x, flat.z)) * 0.25 + float(_home.get("yaw", yaw)) * 0.75, yaw_min, yaw_max)
 	var home_d := float(_home.get("distance", distance))
-	distance = clampf(box.size.length() * 1.6, lerpf(home_d, min_distance, 0.6), home_d)
-	pitch = clampf(float(_home.get("pitch", pitch)) + 8.0, pitch_min, pitch_max)   # un poco más desde arriba
-	center = home_center().lerp(box.get_center(), 0.6)
-	_cine(2.0, 0.8)
+	var radius := box.size.length() * 0.5         # que quepa entera (la esfera que la envuelve)
+	distance = clampf(radius / sin(deg_to_rad(cam.fov * 0.5)) * FRAME_MARGIN, lerpf(home_d, min_distance, 0.5), home_d)
+	pitch = clampf(float(_home.get("pitch", pitch)) + 6.0, pitch_min, pitch_max)   # un poco más desde arriba
+	center = home_center().lerp(box.get_center(), 0.5)
+	_cine(FRAME_TIME, FRAME_SMOOTH)
 
 
 ## Primer plano de un momento de la historia: se acerca despacio a `box` y se queda ahí; el jugador
 ## no la mueve. frontal = hacia dónde mira el objeto: la cámara se pone delante, a esa inclinación
 ## (el espejo, un dibujo en la pared); si no, avanza hacia él desde donde miraba el jugador (sin
 ## dar vueltas). Lo que se cruce por delante lo esconde Momentos.
-func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin := CLOSE_UP_MARGIN) -> void:
+func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin := CLOSE_UP_MARGIN,
+		seconds := CLOSE_UP_TIME, smooth := CLOSE_UP_SMOOTH) -> void:
 	if not in_moment:
 		_saved_view = {"yaw": yaw, "pitch": pitch, "distance": distance, "center": center}
 	in_moment = true
@@ -295,7 +300,7 @@ func close_up(box: AABB, frontal := Vector3.ZERO, frontal_pitch := 3.0, margin :
 		pitch = clampf(float(_saved_view.get("pitch", pitch)) - 4.0, 10.0, 60.0)
 		var far := float(_home.get("distance", distance)) * CLOSE_UP_MAX
 		distance = clampf(box.size.length() / fit * CLOSE_UP_FIT, minf(CLOSE_UP_MIN, far), far)
-	_cine(CLOSE_UP_TIME, CLOSE_UP_SMOOTH)
+	_cine(seconds, smooth)
 
 
 ## Dónde acabará la cámara con los objetivos de ahora (para saber qué tapará el plano antes de llegar).

@@ -33,6 +33,10 @@ const ZENITH := 38.0                         ## (ofrecida) inclinación del prim
 const ENDING_YAW := 22.0                     ## (ofrecida) giro sobre la vista del nivel: tres cuartos, se le ve la cara
 const ENDING_MARGIN := 3.2                   ## (ofrecida) la hucha y su sitio (la moneda y su fantasma alrededor)
 const ISOLATE_LAYER := 20                    ## capa de render de lo aislado (el resto no se ve)
+const MIRROR_TIME := 2.6                     ## (espejo) el zoom hasta tenerlo de frente y el fundido a negro de lo demás (s)
+const MIRROR_SMOOTH := 1.1                   ## (espejo) un zoom blando, sin tirón
+const MIRROR_MARGIN := 1.3                   ## (espejo) el espejo entero, con su marco, llena así la pantalla
+const MIRROR_GROW := 1.06                    ## (espejo) el hueco del negro, ceñido al espejo entero (lo de alrededor se va)
 const COIN_GRAB_PX := 70.0                   ## lo cerca que hay que coger la moneda
 const COIN_SNAP_PX := 80.0                   ## y lo cerca de la ranura que hay que soltarla
 const HIDE_TIME := 0.35                      ## lo que tarda en desvanecerse lo que tapa el plano
@@ -266,11 +270,14 @@ func start(node: Node3D, p_kind: String, _id: String) -> void:
 	var box := Visuals.global_aabb(node)
 	match kind:
 		"reflejo":
-			cam.close_up(_glass_box(node), node.global_basis.z)
-			_frame_to(1.0, 0.0, 1.2)
-			_black.create_tween().tween_property(_black, "color:a", 1.0, 1.2)
+			# 18-oct: «un zoom in con un fade out a negro del resto del environment y la cámara centrada
+			# frontalmente al espejo»: se acerca despacio hasta tenerlo de frente y centrado (mirando hacia
+			# donde mira su luna) mientras todo lo demás se va a negro a la vez; al acabar, solo queda él.
+			cam.close_up(box, _mirror_front(node), 0.0, MIRROR_MARGIN, MIRROR_TIME, MIRROR_SMOOTH)
+			_frame_to(1.0, 0.0, MIRROR_TIME)
+			_black.create_tween().tween_property(_black, "color:a", 1.0, MIRROR_TIME)
 			var mirror_id := node.get_instance_id()      # (por id: si el nivel se va antes, el espejo ya no está; trampa 40)
-			get_tree().create_timer(1.3, false).timeout.connect(func() -> void:
+			get_tree().create_timer(MIRROR_TIME + 0.1, false).timeout.connect(func() -> void:
 				var mirror := instance_from_id(mirror_id) as Node3D
 				if active and kind == "reflejo" and mirror != null:
 					_isolate([mirror, reflection]))
@@ -287,6 +294,13 @@ func start(node: Node3D, p_kind: String, _id: String) -> void:
 			_frame_to(IRIS, BARS, FADE)
 	GameState.hud.set_moment(true)
 	Sfx.play("momento")
+
+
+## Hacia dónde mira el espejo: hacia donde mira su luna (la del kit tiene la cara en su -Z, no en la +Z
+## de la pieza); sin luna, la +Z de la pieza.
+func _mirror_front(node: Node3D) -> Vector3:
+	var glass := _glass_mesh(node)
+	return (glass.global_basis.z if glass != null else node.global_basis.z).normalized()
 
 
 ## Un objeto plano y de pie (un dibujo en la pared, un tablero de llaves) se ve mejor de frente:
@@ -465,7 +479,7 @@ func _follow_iris() -> void:
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		return
-	var box := _glass_box(target) if kind == "reflejo" else Visuals.global_aabb(target)
+	var box := Visuals.global_aabb(target)       # (el espejo, entero: con su marco)
 	if is_instance_valid(coin):
 		box = box.merge(Visuals.global_aabb(coin))   # el foco también alumbra la moneda
 	var lo := Vector2(INF, INF)
@@ -479,7 +493,7 @@ func _follow_iris() -> void:
 		hi = hi.max(s)
 	if lo.x == INF:
 		return
-	var grow := 1.3 if kind == "reflejo" else 1.35
+	var grow := MIRROR_GROW if kind == "reflejo" else 1.35
 	var r := ((hi - lo) * 0.5 * grow).max(Vector2(110, 110) if kind != "reflejo" else Vector2(40, 40))
 	_iris_mat.set_shader_parameter("centro", (lo + hi) * 0.5)
 	_iris_mat.set_shader_parameter("radio", r)
@@ -556,11 +570,11 @@ func _make_reflection(node: Node3D) -> void:
 	var glass := _glass_mesh(node)
 	var xf := node.global_transform.affine_inverse() * (glass.global_transform if glass != null else node.global_transform)
 	var lb: AABB = xf * glass.get_aabb() if glass != null else Visuals.local_aabb(node)
-	var front := node.global_basis.z.normalized()
+	var front := _mirror_front(node)
 	reflection = Node3D.new()
 	reflection.name = "Reflejo"
 	node.get_parent().add_child(reflection)
-	reflection.global_basis = node.global_basis.orthonormalized()
+	reflection.global_basis = (glass.global_basis if glass != null else node.global_basis).orthonormalized()
 	reflection.global_position = node.global_transform * lb.get_center() + front * 0.012
 	var mist := _sprite(_mist_texture(), lb.size, Color(0.72, 0.77, 0.84, 0.0))
 	reflection.add_child(mist)

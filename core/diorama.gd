@@ -943,6 +943,7 @@ func _reveal_pending(sec: Section) -> void:
 		Sfx.play("aparecer_capitulo", 0.0)
 	_refresh(true)
 	Events.inventory_changed.emit()
+	Events.section_revealed.emit(sec)
 
 
 ## Una sección con rótulo de capítulo (la infancia...; el epílogo no).
