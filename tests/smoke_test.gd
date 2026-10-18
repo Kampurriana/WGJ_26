@@ -843,8 +843,10 @@ func _test_story(main: Node) -> void:
 		_mouse_button(tip_at + Vector2(140, 0), false)
 		await get_tree().create_timer(0.4).timeout
 		check(GameState.hud.tip_text() == "", "el consejo es una notificación: deslizándolo fuera de la pantalla, se va")
+		var heard_store: Dictionary = Sfx.played.duplicate()
 		d.collect(blocks)
 		check(d.visible_inventory().has(&"cubos"), "los cubos encontrados pasan a la bandeja")
+		check(_heard(heard_store, "guardar_inventario") == 1, "al coger lo que va a la bandeja suena «GUARDAR OBJETO EN EL INVENTARIO» (Drive FXS)")
 		await get_tree().process_frame
 		await get_tree().process_frame
 		var flying := GameState.hud.flights()
@@ -1015,14 +1017,23 @@ func _test_story(main: Node) -> void:
 		var bulb: Light3D = lamp_lights[0][0]
 		check(bulb.visible and is_equal_approx(bulb.light_energy, float(lamp_lights[0][1])),
 			"al colocar la lámpara, su luz se enciende con un fundido (%.2f de %.2f)" % [bulb.light_energy, float(lamp_lights[0][1])])
-	check(pink != null and pink.comes_with == &"camara" and pink.available and pink.target.visible and not pink.collected and m.active,
-		"al poner la cámara aparece su dibujo, y espera quieto mientras dura su momento")
+	check(pink != null and pink.comes_with == &"" and not pink.collected and m.active,
+		"al poner la cámara no sale ningún dibujo: el del monstruo está en otro sitio (debajo del puf)")
 	Narrator.clear()
 	m.finish()
 	await get_tree().create_timer(Diorama.GIVEN_DELAY + 0.3).timeout
+	check(not pink.collected and found_events.size() == 1, "al acabar el momento de la cámara, el dibujo del monstruo sigue sin encontrar")
+	if not _slot(d, &"puf").filled:
+		d.place(_slot(d, &"puf"))
+	await get_tree().create_timer(Diorama.POP_TIME + 0.1).timeout
+	check(pink.available and pink.target.visible and pink.is_clickable(),
+		"con el puf puesto, el dibujo del monstruo asoma debajo y se puede coger (after-puf)")
+	pink.activate()
+	await get_tree().process_frame
+	await get_tree().process_frame
 	var look2: Inspeccion = main.inspeccion
 	check(pink.collected and found_events.size() == 2 and found_events[1][1] == 2 and look2.is_open() and look2.count_text() == "2 DE 4",
-		"al acabar el momento de la cámara, su dibujo se encuentra solo y sale su primer plano (2 de 4)")
+		"al cogerlo de debajo del puf sale su primer plano (2 de 4)")
 	await get_tree().create_timer(Inspeccion.BUTTON_DELAY + 0.05).timeout
 	_key(KEY_ESCAPE)
 	await get_tree().process_frame
@@ -1412,7 +1423,7 @@ func _test_title_menu(main: Node) -> bool:
 	check(main.get_viewport().use_hdr_2d, "el fondo se pinta con HDR 2D (sin él, el pastel se queda en un gris apagado)")
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
-		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle"]
+		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle", "guardar_inventario", "aparecer_capitulo"]
 	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]

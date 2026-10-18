@@ -11,7 +11,7 @@ Página de la jam: https://itch.io/jam/women-game-jam-2026
 | Subir el juego a itch.io con instrucciones para jugarlo | Builds listas (Web y Windows); el texto de la página, más abajo, con las instrucciones |
 | Todo el proyecto bajo **CC BY-SA 3.0** | `LICENSE` en el repo, línea en los créditos del juego y en la página |
 | Idealmente, compartir el código y los recursos | El repo es público: https://github.com/Kampurriana/WGJ_26 |
-| Solo recursos con derecho de uso | Arte, voces, música y efectos: del equipo. De terceros: Modern Japanese Home Props Lite (MIT), fuente Fredoka (OFL), Godot (MIT). Todo citado en los créditos y en `LICENSE` |
+| Solo recursos con derecho de uso | Arte, voces, música y efectos: del equipo. De terceros: Modern Japanese Home Props Lite (MIT), tipografías Mouldy Cheese y Wiggly Curves (Niskala Huruf), Godot (MIT). Todo citado en los créditos y en `LICENSE` |
 | Declarar el uso de IA en la página (qué herramienta, cómo y por qué) | Texto propuesto abajo: **revisarlo entre todas antes de publicar** |
 | Todo el equipo recibe crédito | Créditos del juego + añadir a cada una como admin en itch (paso 5) |
 | Portada mínimo 315×250 (recomendado 630×500) y capturas | `entrega/portada_630x500.png` y `entrega/capturas/` (6, subid 3–5) |
@@ -104,7 +104,7 @@ EN: A cozy diorama puzzle about everything you never said.
 > realidad es una nutria).
 >
 > Inspirado en *Woodo*, de Tiny Monks Tales. Hecho con Godot Engine.
-> Recursos de terceros: Modern Japanese Home Props Lite (MIT), fuente Fredoka (SIL OFL).
+> Recursos de terceros: Modern Japanese Home Props Lite (MIT), tipografías Mouldy Cheese y Wiggly Curves (Niskala Huruf).
 > Licencia: CC BY-SA 3.0. Código y recursos: https://github.com/Kampurriana/WGJ_26
 >
 > ---
@@ -132,7 +132,7 @@ EN: A cozy diorama puzzle about everything you never said.
 >   the art, the story and the sound.
 >
 > Inspired by *Woodo* by Tiny Monks Tales. Made with Godot Engine. Third-party assets: Modern
-> Japanese Home Props Lite (MIT), Fredoka font (SIL OFL). License: CC BY-SA 3.0.
+> Japanese Home Props Lite (MIT), Mouldy Cheese and Wiggly Curves typefaces (Niskala Huruf). License: CC BY-SA 3.0.
 
 ## Lo que tenéis que decidir o confirmar vosotras
 

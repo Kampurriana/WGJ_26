@@ -315,8 +315,6 @@ func _teen(sec: Node3D) -> void:
 		var photo := _box(cam_piece, "Foto%d" % k, Vector3(-0.16 + k * 0.02, 0.003 + k * 0.002, 0.06), Vector3(0.07, 0.003, 0.085), Color(0.97, 0.97, 0.95))
 		photo.rotation_degrees.y = -15.0 + k * 15.0
 		_box(photo, "Imagen", Vector3(0, 0.002, -0.006), Vector3(0.058, 0.002, 0.058), [Color(0.5, 0.7, 0.85), Color(0.9, 0.7, 0.5), Color(0.6, 0.8, 0.55)][k])
-	# Debajo de la cámara, entre las fotos: un dibujo suyo (se encuentra solo al ponerla).
-	_kid_drawing(_lying(sec, "C_dibujo_monstruo__con-camara", cam_at + Vector3(-0.1, 0.008, -0.1), -10.0), "monstruo")
 	# El corcho, a la derecha de la ventana; la solicitud va en él cuando se encuentra en el cajón.
 	var cork_at := Vector3(0.72, 2.05, -1.565)
 	var corkboard := _node(sec, "P_corcho", cork_at)
@@ -335,9 +333,12 @@ func _teen(sec: Node3D) -> void:
 	poster_b.rotation_degrees.z = _slope_deg()
 	_box(poster_b, "Poster", Vector3.ZERO, Vector3(0.52, 0.008, 0.4), Color(0.85, 0.35, 0.4))
 	_box(poster_b, "Banda", Vector3(0.08, -0.006, 0), Vector3(0.18, 0.004, 0.3), Color(0.2, 0.15, 0.2))
-	var puf := _node(sec, "P_puf", Vector3(0.35, FLOOR, 0.85))
+	var puf_at := Vector3(0.35, FLOOR, 0.85)
+	var puf := _node(sec, "P_puf", puf_at)
 	var bean := _sphere(puf, "Puf", Vector3(0, 0.16, 0), 0.26, TEEN_TEAL.lightened(0.1))
 	bean.scale = Vector3(1.0, 0.62, 1.0)
+	# Debajo del puf asoma un dibujo suyo, el monstruo (sobre la alfombra; está desde que el puf está puesto).
+	_kid_drawing(_lying(sec, "C_dibujo_monstruo__after-puf", puf_at + Vector3(-0.05, 0.024 + 0.02, -0.25), 15.0), "monstruo")
 	var guitar := _node(sec, "P_guitarra", Vector3(0.22, FLOOR, 1.9))   # apoyada en el costado de la cómoda
 	guitar.rotation_degrees = Vector3(-10, 90, 0)
 	var g1 := _sphere(guitar, "Caja", Vector3(0, 0.18, 0), 0.14, Color(0.85, 0.35, 0.22))
@@ -388,6 +389,11 @@ func _adult(sec: Node3D) -> void:
 	var canvas := _node(sec, "P_lienzo__after-caballete", canvas_at.origin)
 	canvas.basis = canvas_at.basis
 	_box(canvas, "Lienzo", Vector3(0, 0.36, 0), Vector3(0.58, 0.72, 0.03), Color(0.97, 0.96, 0.93))
+	var picture := Node3D.new()                  # (lo que pinta: el cuadro de las artistas, en la cara de delante)
+	picture.name = "Cara"
+	picture.position = Vector3(0, 0.36, 0)
+	canvas.add_child(picture)
+	_painting(picture, CUADRO_LIENZO, Vector2(0.55, 0.69), 0.0155)
 	var brushes := _piece(sec, "P_pinceles__after-caballete", ["Adornos/SM_Vase"])
 	(brushes.get_child(0) as Node3D).global_position = Vector3(-0.72, FLOOR, 1.0)
 	_piece(sec, "P_espejo__clave__reflejo", ["Muebles/SM_Mirror"])
