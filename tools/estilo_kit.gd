@@ -5,7 +5,7 @@ extends SceneTree
 ## detalle que mezcla su color con un tono cálido (materiales/estilo/tono.tres) en la proporción de
 ## materiales/estilo/mezcla.tres (el rojo de su color: 0 = nada, 1 = todo el tono). Eso baja a la vez la
 ## saturación y el contraste (lo oscuro sube, lo muy vivo se apaga) y suaviza sus normales en la misma
-## medida. Además, brillos más suaves (especular) y los colores provisionales de una paleta apagada (PALETA).
+## medida. Además, reflejos más suaves (especular) y los colores provisionales de una paleta apagada (PALETA).
 ## Para retocar el estilo de todo el kit de golpe: cambiar tono.tres y mezcla.tres en el editor (o TONO y
 ## MEZCLA aquí y volver a pasar este script). materiales_kit.gd y piezas_kit.gd lo aplican al crear.
 ##   godot --headless --path . --script res://tools/estilo_kit.gd
@@ -24,10 +24,8 @@ const PALETA := {
 	"tele": Color(0.66, 0.74, 0.8), "metal": Color(0.8, 0.78, 0.74), "madera": Color(0.8, 0.66, 0.5),
 	"blanco": Color(0.93, 0.91, 0.88), "jarron": Color(0.9, 0.79, 0.57), "naranja": Color(0.88, 0.65, 0.47),
 	"foto": Color(0.95, 0.93, 0.88), "rosa": Color(0.9, 0.7, 0.71), "tela": Color(0.8, 0.6, 0.54),
-	"luces": Color(0.98, 0.9, 0.7), "otro": Color(0.8, 0.78, 0.75),
+	"luces": Color(0.93, 0.9, 0.82), "otro": Color(0.8, 0.78, 0.75),
 }
-## Grupos provisionales que brillan: [color de su luz, intensidad] (la cuerda de bombillitas).
-const BRILLO := {"luces": [Color(1.0, 0.78, 0.48), 0.9]}
 
 
 func _init() -> void:
@@ -53,13 +51,13 @@ func _init() -> void:
 	quit(0)
 
 
-## El color provisional de un grupo (PALETA), y su brillo si lo tiene (BRILLO).
+## El color provisional de un grupo (PALETA). Ninguno brilla: las bombillas de la cuerda, apagadas
+## (pedido del 18-oct).
 static func pintar(m: BaseMaterial3D, grupo: String) -> void:
 	m.albedo_color = PALETA.get(grupo, PALETA["otro"])
-	m.emission_enabled = BRILLO.has(grupo)
-	if BRILLO.has(grupo):
-		m.emission = BRILLO[grupo][0]
-		m.emission_energy_multiplier = BRILLO[grupo][1]
+	m.emission_enabled = false
+	m.emission = Color.BLACK
+	m.emission_energy_multiplier = 1.0
 
 
 ## Pone el estilo del kit en un material (y crea tono.tres y mezcla.tres si aún no están).

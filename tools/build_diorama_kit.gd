@@ -70,8 +70,9 @@ const DENTRO := {
 ## hastial z = -1,585; del fondo del entrante z = -3,541 (entre pilares, x de 1,19 a 2,72); de su pared
 ## lateral x = 0,888 (entre pilares, z de -3,23 a -1,82); la correa alta del faldón, x = -1,32, por debajo
 ## a 2,755 m.
-## La cuerda de bombillitas: SM_Lights es UN tramo (la cuerda cae en curva con una bombilla en medio; sus
-## puntas, 0,794 m por encima de su pivote y a ±0,61 m): CUERDA pone tramos seguidos punta con punta.
+## La cuerda de bombillitas, con las dos mallas de las artistas (modelos/Cuerda/): SM_Cuerda es UN tramo
+## (la cuerda cae en curva entre sus dos puntas) y SM_Bombilla, una bombilla con su casquillo. CUERDAS pone
+## tramos seguidos, punta con punta, con bombillas colgando a lo largo (como su imagen de referencia).
 const ADORNOS := [
 	# encima de la cómoda: la caja de música de la abuela y la hucha
 	["SM_MusicBox", "SM_ComodaA", Vector3(-0.25, 0, 0), Vector3(0, 10, 0), false],
@@ -93,10 +94,11 @@ const ADORNOS := [
 	["SM_BoxB", "", Vector3(-0.95, 0.15, -0.45), Vector3(0, 15, 0), true],
 	["SM_Vase", "", Vector3(-0.98, 0.601, -0.43), Vector3(0, 40, 0), false],
 ]
-## Cuerdas de bombillitas: [nombre, primera punta, dirección (en planta), tramos]. Las puntas de cada
-## tramo, a la altura de la primera punta (contra la pared o bajo la viga donde se clava).
-const CUERDA_TRAMO := 1.219                 ## distancia entre las dos puntas de un tramo de SM_Lights
-const CUERDA_PUNTA := 0.794                 ## altura de sus puntas sobre su pivote (la bombilla, abajo)
+## Cuerdas de bombillitas, SIN LUZ: apagadas (pedido del 18-oct): [nombre, primera punta, dirección (en
+## planta), tramos]. Las puntas de cada tramo, a la altura de la primera (contra la pared o bajo la viga
+## donde se clava). Cada tramo lleva BOMBILLAS_POR_TRAMO bombillas, repartidas para que toda la cuerda
+## las tenga a la misma distancia (también de un tramo al siguiente), colgando rectas con el casquillo
+## abrazando la cuerda.
 const CUERDAS := [
 	# bajo la correa alta del faldón, a lo largo del tejado (una punta junto al caballete, que no lo toque)
 	["CuerdaFaldon", Vector3(-1.32, 2.745, 2.84), Vector3(0, 0, -1), 3],
@@ -105,8 +107,8 @@ const CUERDAS := [
 	# en la pared del fondo del entrante, alta y SIN NADA DEBAJO: el sitio para colgar los dibujos
 	["CuerdaDibujos", Vector3(1.345, 3.3, -3.47), Vector3(1, 0, 0), 1],
 ]
-## La luz de cada bombilla: color, energía y alcance (cálida y suave: que no queme la pared).
-const LUZ_BOMBILLA := [Color(1.0, 0.76, 0.46), 0.35, 1.1]
+const BOMBILLAS_POR_TRAMO := 3              ## como la referencia: una en el fondo y una a cada lado
+const BOMBILLA_SOLAPE := 0.02               ## lo que el casquillo abraza la cuerda (medido en SM_Lights)
 ## Piezas que van en Arquitectura (por cómo empieza su nombre); el resto, en Muebles.
 const ARQUITECTURA := ["FloorPlanks", "SM_Floor", "SB0", "SM_Skirting", "CeilingSupport", "SM_CeilingSupport",
 	"SM_Ceiling", "SM_Wall", "SM_Window", "SM_Pillar"]
@@ -684,24 +686,68 @@ func _nuevo_grupo(nombre: String, padre: Node3D = null) -> Node3D:
 	return g
 
 
-## Una cuerda de bombillitas: `tramos` SM_Lights seguidos, punta con punta, desde `punta` hacia `dir`
-## (cada tramo, girado para que su cuerda vaya en esa dirección y su cara mire fuera de la pared), con
-## una luz cálida en cada bombilla.
+## Una cuerda de bombillitas: `tramos` SM_Cuerda seguidos, punta con punta, desde `punta` hacia `dir`
+## (cada tramo girado para que su cuerda vaya en esa dirección) y en cada uno BOMBILLAS_POR_TRAMO
+## SM_Bombilla colgando de la cuerda, a un tramo/BOMBILLAS_POR_TRAMO una de otra (hijas del tramo: se
+## mueven con él).
 func _poner_cuerda(grupo: Node3D, punta: Vector3, dir: Vector3, tramos: int) -> void:
+	var cuerda := _nube_kit("SM_Cuerda", [])
+	assert(cuerda.caja().size.x > 0.5, "SM_Cuerda no parece una cuerda (¿has pasado tools/piezas_kit.gd?)")
+	var alto_bombilla := _nube_kit("SM_Bombilla", []).caja().size.y
 	var giro := Basis(Vector3.UP, atan2(-dir.z, dir.x))   # el eje x del tramo, a lo largo de dir
+	var izq := _punta_cuerda(cuerda, -1.0)
+	var der := _punta_cuerda(cuerda, 1.0)
+	var largo := der.x - izq.x
+	var paso := largo / BOMBILLAS_POR_TRAMO
 	for i in tramos:
-		var tramo := _instancia("SM_Lights")
-		tramo.name = "SM_Lights"
-		var centro := punta + dir * CUERDA_TRAMO * (i + 0.5)
-		tramo.transform = Transform3D(giro, centro - Vector3(0, CUERDA_PUNTA, 0))
+		var tramo := _instancia("SM_Cuerda")
+		tramo.name = "SM_Cuerda"
+		var centro := punta + dir * largo * (i + 0.5)
+		tramo.transform = Transform3D(giro, centro - Vector3((izq.x + der.x) * 0.5, der.y, 0))
 		grupo.add_child(tramo, true)
-		var luz := OmniLight3D.new()
-		luz.name = "Luz"
-		luz.light_color = LUZ_BOMBILLA[0]
-		luz.light_energy = LUZ_BOMBILLA[1]
-		luz.omni_range = LUZ_BOMBILLA[2]
-		luz.position = Vector3(0, 0.06, 0)
-		tramo.add_child(luz)
+		for k in BOMBILLAS_POR_TRAMO:
+			var x := (izq.x + der.x) * 0.5 + (k - (BOMBILLAS_POR_TRAMO - 1) * 0.5) * paso
+			var debajo := _bajo_cuerda(x)
+			var bombilla := _instancia("SM_Bombilla")
+			bombilla.name = "SM_Bombilla"
+			bombilla.position = Vector3(x, debajo.y + BOMBILLA_SOLAPE - alto_bombilla, debajo.z)
+			tramo.add_child(bombilla, true)
+
+
+## La punta de la cuerda de un lado (`lado` = 1 derecha, -1 izquierda): su vértice más alto.
+func _punta_cuerda(cuerda: Nube, lado: float) -> Vector3:
+	var out := Vector3(0, -INF, 0)
+	for p in cuerda.vertices:
+		if p.x * lado > 0 and p.y > out.y:
+			out = p
+	return out
+
+
+## El punto de abajo de la cuerda (SM_Cuerda) en x: corta sus triángulos con el plano de esa x y se queda
+## con lo más bajo del corte (la parte de abajo del tubo) y la z media del corte.
+func _bajo_cuerda(x: float) -> Vector3:
+	var y := INF
+	var z := 0.0
+	var n := 0
+	for par: Array in _mallas_kit["SM_Cuerda"]:
+		var mesh: Mesh = par[0]
+		var xf: Transform3D = par[1]
+		for s in mesh.get_surface_count():
+			var arr := mesh.surface_get_arrays(s)
+			var v: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+			var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX] if arr[Mesh.ARRAY_INDEX] != null else PackedInt32Array(range(v.size()))
+			for t in range(0, idx.size(), 3):
+				for k in 3:
+					var a := xf * v[idx[t + k]]
+					var b := xf * v[idx[t + (k + 1) % 3]]
+					if (a.x - x) * (b.x - x) > 0.0 or is_equal_approx(a.x, b.x):
+						continue
+					var corte := a.lerp(b, (x - a.x) / (b.x - a.x))
+					y = minf(y, corte.y)
+					z += corte.z
+					n += 1
+	assert(n > 0, "La cuerda no pasa por x = %.2f" % x)
+	return Vector3(x, y, z / n)
 
 
 func _xf(n: Node, hasta: Node) -> Transform3D:

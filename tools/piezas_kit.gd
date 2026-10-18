@@ -30,6 +30,9 @@ const Estilo := preload("res://tools/estilo_kit.gd")
 ## Duplicados de piezas que ya están sueltas (las cajas de Boxes.fbx = SM_BoxA..E; la tele de Pack04
 ## = SM_TV). Las de nombre SM_ repetido se descartan solas (la primera que se encuentra es la buena).
 const REPETIDAS := ["Box01", "Box073", "Box074", "Box075", "Box077", "TV01", "TV05"]
+## Ficheros de los que solo vale alguna malla: SM_bombilla.fbx trae la escena entera de 3ds Max (el
+## blocking y más) y de él solo es la bombilla. Con SM_cuerda.fbx, la guirnalda de bombillitas (18-oct).
+const SOLO := {"SM_bombilla.fbx": ["bombilla"]}
 ## Ficheros que no se usan (Comoda.fbx es la cómoda fundida en una malla: están sus piezas sueltas; la
 ## referencia es una escena entera: de ella solo se cogen las MONTADAS).
 const EXCLUIDOS := ["Comoda.fbx"]
@@ -39,6 +42,7 @@ const REFERENCIA := KIT + "referencia/Blocking3.fbx"   ## la misma que tools/bui
 const MONTADAS := ["MP3"]
 ## Nombres buenos para las piezas que llegan con el nombre por defecto de 3ds Max.
 const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "SM_Vase",
+	"SM_Lights001": "SM_Cuerda", "bombilla": "SM_Bombilla",
 	"Cylinder025": "SM_BrushA", "Cylinder026": "SM_BrushB", "Cylinder027": "SM_BrushC",
 	"Object006": "SM_CoverBoxA", "Object007": "SM_CoverBoxB", "Object008": "SM_CoverBoxC",
 	"Object009": "SM_CoverBoxD", "Object010": "SM_CoverBoxE"}
@@ -66,7 +70,8 @@ const CATEGORIAS := [
 	["SM_MP3", "blanco"], ["SM_Vase", "jarron"], ["SM_Brush", "madera"], ["SM_CoverDesk", "naranja"],
 	["SM_PolaroidA", "foto"], ["SM_PolaroidB", "foto"], ["SM_PolaroidC", "foto"], ["SM_PolaroidD", "foto"],
 	["SM_Polaroid", "tele"], ["SM_MusicBox", "rosa"], ["SM_Pig", "rosa"], ["SM_Hat", "naranja"],
-	["SM_Lights", "luces"], ["SM_LitterBox", "tele"], ["SM_Caballete", "madera"], ["SM_CatBed", "tela"],
+	["SM_Lights", "luces"], ["SM_Cuerda", "luces"], ["SM_Bombilla", "luces"],
+	["SM_LitterBox", "tele"], ["SM_Caballete", "madera"], ["SM_CatBed", "tela"],
 	["SM_Rug", "tela"], ["SM_Mirror", "madera"],
 ]
 
@@ -87,6 +92,8 @@ func _init() -> void:
 		var piezas := {}                     # nombre -> [MeshInstance3D...] de este fichero
 		for m: MeshInstance3D in escena.find_children("*", "MeshInstance3D", true, false):
 			if path == REFERENCIA and not String(m.name) in MONTADAS:
+				continue
+			if SOLO.has(path.get_file()) and not String(m.name) in SOLO[path.get_file()]:
 				continue
 			var nombre := String(ALIAS.get(String(m.name), String(m.name)))
 			for prefijo: String in GRUPOS:

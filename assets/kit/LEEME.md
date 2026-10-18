@@ -51,10 +51,15 @@ para que sea fácil poner al día:
   tamaños). Siguen sin textura `Pack03`, la cómoda, la tele, `Pack04`/`05` y lo nuevo de `Pack06`-`08`.
 - `SM_ComodaC` ya está (18-oct; se bajó entera). Falta `SM_DeskB`: en el escritorio se repite `SM_DeskC`.
 - Del 18-oct: `Pack06` (`SM_MusicBox`, `SM_PolaroidA..D`: las fotos), `Pack07` (`SN_Hat` = `SM_Hat`,
-  `SM_Polaroid` = la cámara, `SM_Lights` = **un tramo** de la cuerda de bombillitas, `SM_LitterBox` y la
+  `SM_Polaroid` = la cámara, `SM_Lights` = **un tramo** de la cuerda de bombillitas con una bombilla,
+  `SM_LitterBox` y la
   hucha en piezas `SM_PigA..L`, que el tileset monta en `SM_Pig`), `Pack08` (`SM_Caballete`, `SM_CatBed`,
   `SM_Mirror`, `SM_Rug`). Las piezas de menos de ~36 KB (cerdito, espejo, arenero) salen de los paquetes,
   que traen los nombres buenos.
+- `modelos/Cuerda/` (18-oct, pasadas por chat): `SM_cuerda.fbx` (un tramo de cuerda sola = pieza
+  `SM_Cuerda`) y `SM_bombilla.fbx` (una bombilla con su casquillo = `SM_Bombilla`). Ojo: `SM_bombilla.fbx`
+  trae la escena entera de 3ds Max (el blocking y más cosas); de él solo se coge la malla `bombilla`
+  (`SOLO` en `tools/piezas_kit.gd`). La carpeta no entra en la build (solo es para la preview).
 - El MP3 de `Pack05` viene despiezado (para texturizar): el tileset coge el **MP3 montado** de la
   referencia (`MONTADAS` en `tools/piezas_kit.gd`).
 - En el blocking hay un remate de 1,38 m arriba del hastial (`SB17`) que no está en el kit: no se pone.
@@ -100,10 +105,11 @@ Para traerlo todo con sus nombres: un `.zip` de la carpeta en Drive (se baja ent
   Lo que el blocking trae en trozos o con un modelo viejo se dice en `GRUPOS` / `A_MANO`. Después van los
   `ADORNOS` (más piezas del kit para llenar la escena: caja de música y hucha en la cómoda, polaroids,
   otra alfombra, otra lámpara, cajas, pinceles, el dibujo de la bailarina en el hastial) y las `CUERDAS`
-  de bombillitas: tramos de `SM_Lights` punta con punta (bajo la correa del faldón, en la pared lateral
-  del entrante y en la del fondo; **esa última, alta y sin nada debajo, es el sitio para colgar los
-  dibujos**), cada bombilla con una luz cálida. En el diorama, el blocking va girado 180° y centrado
-  (fondo hacia -z, como el desván del juego).
+  de bombillitas: tramos de `SM_Cuerda` punta con punta con 3 `SM_Bombilla` cada uno, a la misma
+  distancia a lo largo de toda la cuerda (como la imagen de referencia del equipo), **apagadas, sin
+  luces** (bajo la correa del faldón, en la pared lateral del entrante y en la del fondo; **esa última,
+  alta y sin nada debajo, es el sitio para colgar los dibujos**). En el diorama, el blocking va girado 180° y centrado (fondo hacia -z, como el
+  desván del juego).
 - Si llega otro blocking: dejarlo en `referencia/`, cambiar `REFERENCIA` en `tools/build_diorama_kit.gd` y
   `tools/piezas_kit.gd`, y mirar la tabla (`-- --analizar`): lo que salga en `SIN PIEZA` va en `A_MANO`.
 
@@ -114,6 +120,6 @@ de las artistas**: cada material del kit (los `M_*.tres` y los provisionales) ll
 mezcla su color con un tono cálido (`materiales/estilo/tono.tres`) en la proporción de
 `materiales/estilo/mezcla.tres` (su rojo: 0 = nada, 1 = todo el tono; ahora 0,38). Retocar esos dos
 recursos en el Inspector cambia todo el kit a la vez. Además: reflejos más suaves y los colores
-provisionales de una paleta apagada y cálida (`PALETA` en `tools/estilo_kit.gd`; las bombillas brillan).
+provisionales de una paleta apagada y cálida (`PALETA` en `tools/estilo_kit.gd`; nada brilla).
 `tools/materiales_kit.gd` y `tools/piezas_kit.gd` lo ponen al crear; `tools/estilo_kit.gd` lo vuelve a
 poner en todos (y deja `tono`/`mezcla` con sus valores de `TONO`/`MEZCLA`).
