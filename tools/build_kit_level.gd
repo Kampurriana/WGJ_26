@@ -559,114 +559,36 @@ func _each(parent: Node3D, id_and_tokens: String, paths: Array, first := 0) -> v
 		_piece(parent, "P_%s%s" % [id_and_tokens, "" if n == 0 else "_%03d" % n], [paths[k]])
 
 
-## El MP3 del kit es una malla con sus trozos juntos (en el paquete, Pack05, vienen sueltos pero puestos
-## para texturizar, no montados). Se parte en sus trozos sueltos (triángulos unidos), cada uno en su sitio
-## del montado, y se agrupan en tres piezas: la carcasa (con la pantalla y los botones, que no se podrían
-## coger de tan pequeños), la rueda y los auriculares (lo que queda fuera de la carcasa). Van juntas en
-## "MP3", donde estaba el del kit (encima del escritorio), cada una __de-mp3: puestas las tres, el MP3.
+## El MP3 del kit (el de Pack05, montado en el tileset: MP3_JUNTAR de tools/piezas_kit.gd) en tres piezas,
+## cada una con sus mallas: la carcasa (con sus botones de los lados), la rueda (con sus letras) y los
+## auriculares. Van juntas en "MP3", donde estaba el del kit (encima del escritorio), cada una __de-mp3:
+## puestas las tres, el MP3.
+const MP3_PARTES := {"MP301": "carcasa_mp3", "MP302": "carcasa_mp3", "MP304": "carcasa_mp3", "MP305": "carcasa_mp3",
+	"MP309": "rueda_mp3", "MP3011": "rueda_mp3", "MP3012": "rueda_mp3", "MP3013": "rueda_mp3", "MP3014": "rueda_mp3",
+	"MP307": "auriculares_mp3"}
+
 func _mp3_parts(sec: Node3D, kit_path: String) -> void:
-	var mp3 := _take(kit_path, sec)              # (el del kit se parte y sobra: se libera al acabar)
+	var mp3 := _take(kit_path, sec)              # (el del kit se reparte en sus piezas y sobra: se libera al acabar)
 	var bench := _node(sec, "MP3", Vector3.ZERO)
 	bench.global_transform = mp3.global_transform
-	var joined := Visuals.meshes_under(mp3)[0]
-	var mat := joined.get_active_material(0)
-	var in_piece := _rel(joined, mp3)              # (el montado va girado y escalado dentro de su pieza)
-	var arrays := joined.mesh.surface_get_arrays(0)
-	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array(range(verts.size()))
-	var faces := PackedVector3Array()
-	for i in idx:
-		faces.append(verts[i])
-	var comps := _components(faces)
-	comps.sort_custom(func(x: Dictionary, y: Dictionary) -> bool: return x.n > y.n)
-	# La carcasa: la parte de 5 × 8 cm (como un iPod); la rueda: la redonda de ~3 cm que va encima.
-	var body: Dictionary = {}
-	var wheel: Dictionary = {}
-	for c in comps:
-		var sz := (c.box as AABB).size
-		var dims := [sz.x, sz.y, sz.z]
-		dims.sort()
-		if body.is_empty() and dims[2] > 0.07 and dims[2] < 0.1 and dims[1] > 0.04:
-			body = c
-		elif wheel.is_empty() and absf(dims[2] - dims[1]) < 0.003 and dims[2] > 0.025 and dims[2] < 0.04:
-			wheel = c
-	assert(not body.is_empty() and not wheel.is_empty(), "no encuentro la carcasa o la rueda del MP3")
-	var shell := (body.box as AABB).grow(0.003)
-	var groups := {"carcasa_mp3": [], "rueda_mp3": [], "auriculares_mp3": []}
-	for c in comps:
-		var key := "rueda_mp3" if c == wheel else ("carcasa_mp3" if shell.has_point((c.box as AABB).get_center()) else "auriculares_mp3")
-		groups[key].append_array(c.tris)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(MESHES_OUT))
-	for key: String in groups:
-		var st := SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		for t: int in groups[key]:
-			for k in 3:
-				var i := idx[t * 3 + k]
-				if arrays[Mesh.ARRAY_NORMAL] != null:
-					st.set_normal(arrays[Mesh.ARRAY_NORMAL][i])
-				if arrays[Mesh.ARRAY_TEX_UV] != null:
-					st.set_uv(arrays[Mesh.ARRAY_TEX_UV][i])
-				st.add_vertex(verts[i])
-		var part_mesh := st.commit()
-		var path := MESHES_OUT + key + ".res"
-		ResourceSaver.save(part_mesh, path)
-		var tokens := ("__after-escritorio" if key == "carcasa_mp3" else "__after-carcasa_mp3") + "__de-mp3"
-		var piece := _node(bench, "P_%s%s" % [key, tokens], Vector3.ZERO)
-		var m := MeshInstance3D.new()
-		m.name = "Malla"
-		m.mesh = load(path)
-		m.transform = in_piece
-		m.set_surface_override_material(0, mat)
-		piece.add_child(m)
-		print("MP3 %s: %d triángulos" % [key, (groups[key] as Array).size()])
+	var pieces := {}
+	for m in Visuals.meshes_under(mp3):
+		var key: String = MP3_PARTES[String(m.name)]
+		if not pieces.has(key):
+			var tokens := ("__after-escritorio" if key == "carcasa_mp3" else "__after-carcasa_mp3") + "__de-mp3"
+			pieces[key] = _node(bench, "P_%s%s" % [key, tokens], Vector3.ZERO)
+		var copy := MeshInstance3D.new()
+		copy.name = m.name
+		var path := MESHES_OUT + "mp3_%s.res" % String(m.name).to_lower()
+		ResourceSaver.save(m.mesh.duplicate(), path)   # (su malla, en su fichero: la del kit es de su .fbx)
+		copy.mesh = load(path)
+		copy.transform = _rel(m, mp3)
+		for k in m.mesh.get_surface_count():
+			copy.set_surface_override_material(k, m.get_active_material(k))
+		(pieces[key] as Node3D).add_child(copy)
+	print("MP3 en %d piezas: %s" % [pieces.size(), pieces.keys()])
 	mp3.free()
-
-
-## Los triángulos de una malla (en el espacio de `root`).
-func _faces(m: MeshInstance3D, root: Node) -> PackedVector3Array:
-	var xf := _rel(m, root)
-	var faces := m.mesh.get_faces()
-	for i in faces.size():
-		faces[i] = xf * faces[i]
-	return faces
-
-
-## Las partes sueltas de una malla (triángulos unidos por sus vértices): [{n, box: AABB, tris: [índices]}].
-func _components(faces: PackedVector3Array) -> Array:
-	var tris := faces.size() / 3
-	var up: Array[int] = []
-	up.resize(tris)
-	for t in tris:
-		up[t] = t
-	var find := func(x: int) -> int:
-		while up[x] != x:
-			up[x] = up[up[x]]
-			x = up[x]
-		return x
-	var seen := {}
-	for t in tris:
-		for k in 3:
-			var v := faces[t * 3 + k]
-			var key := Vector3i(roundi(v.x * 20000.0), roundi(v.y * 20000.0), roundi(v.z * 20000.0))
-			if seen.has(key):
-				var a: int = find.call(t)
-				var b: int = find.call(seen[key])
-				if a != b:
-					up[a] = b
-			else:
-				seen[key] = t
-	var groups := {}
-	for t in tris:
-		var r: int = find.call(t)
-		var tri_box := AABB(faces[t * 3], Vector3.ZERO).expand(faces[t * 3 + 1]).expand(faces[t * 3 + 2])
-		if groups.has(r):
-			groups[r].n += 1
-			groups[r].box = (groups[r].box as AABB).merge(tri_box)
-			groups[r].tris.append(t)
-		else:
-			groups[r] = {"n": 1, "box": tri_box, "tris": [t]}
-	return groups.values()
 
 
 ## La transformación de `n` respecto a `root` (encadenando las locales: vale fuera del árbol).

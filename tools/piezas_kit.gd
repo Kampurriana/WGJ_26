@@ -12,8 +12,9 @@ extends SceneTree
 ## Las piezas se cogen de modelos/ (sueltas, con su nombre bueno) y de paquetes/ (varias por fichero;
 ## las que llegan con el nombre de 3ds Max se renombran: ALIAS; las que ya están sueltas no se
 ## repiten: REPETIDAS; las que vienen en trozos colocados entre sí, como el MP3, son una pieza: GRUPOS).
-## El MP3 de Pack05 viene despiezado (sus partes separadas, para texturizar): montado solo está en la
-## escena de referencia de las artistas (referencia/), y de ahí se coge (MONTADAS).
+## El MP3 es el de Pack05 (sus trozos, con las UV de T_Pack05); el MP3 montado de la escena de referencia
+## es otro modelo con otras UV (con T_Pack05 encima salía la textura rota, 18-oct). Pack05 trae algunos
+## trozos separados en Z para texturizar: MP3_JUNTAR los devuelve a su sitio.
 ## Y los dibujos 2D de las artistas (dibujos/), cada uno como un plano con su textura (Dibujo_<fichero>,
 ## DIBUJO_ANCHO de ancho, de pie, mirando a +z, con el pivote abajo en el centro): para ponerlos en una
 ## pared o colgarlos de la cuerda.
@@ -41,9 +42,17 @@ const POR_FICHERO := ["SM_Paper01.fbx", "SM_PaperBroken.fbx", "SM_PaperStack.fbx
 ## referencia es una escena entera: de ella solo se cogen las MONTADAS).
 const EXCLUIDOS := ["Comoda.fbx", "SM_otter.fbx"]   ## (la nutria la monta build_kit_level.gd con su malla entera)
 ## Mallas de la escena de referencia (el blocking de 3ds Max) que son una pieza montada que el kit solo
-## trae en trozos: van antes que esos trozos (con su nombre de GRUPOS) y los trozos ya no se usan.
+## trae en trozos: van antes que esos trozos (con su nombre de GRUPOS) y los trozos ya no se usan. Ninguna
+## ahora: el MP3 de la referencia no lleva las UV de su textura (se usa el de Pack05).
 const REFERENCIA := KIT + "referencia/Blocking3.fbx"   ## la misma que tools/build_diorama_kit.gd
-const MONTADAS := ["MP3"]
+const MONTADAS: Array[String] = []
+## Cuánto se mueve cada trozo del MP3 de Pack05 para volver a su sitio (medido en el fichero: la rueda y sus
+## letras, centradas en el cuerpo y hundidas en su hueco; las placas de los lados, a caballo de su cara; el
+## cable, con la clavija en el cuerpo, todo lo de ese lado separado lo mismo).
+const MP3_JUNTAR := {"MP309": Vector3(0, 0, -0.1304), "MP3011": Vector3(0, 0, -0.1304),
+	"MP3012": Vector3(0, 0, -0.1304), "MP3013": Vector3(0, 0, -0.1304), "MP3014": Vector3(0, 0, -0.1304),
+	"MP302": Vector3(0, 0, -0.1304), "MP307": Vector3(0, 0, -0.1304),
+	"MP304": Vector3(0, 0, 0.0672), "MP305": Vector3(0, 0, 0.0672)}
 ## Nombres buenos para las piezas que llegan con el nombre por defecto de 3ds Max.
 const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "SM_Vase",
 	"SM_Lights001": "SM_Cuerda", "bombilla": "SM_Bombilla",
@@ -181,6 +190,8 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 		m.name = src.name if mallas.size() > 1 else "Malla"
 		m.mesh = src.mesh
 		m.transform = hucha[src] if nombre == "SM_Pig" else _xf_en_fichero(src, escena)
+		if nombre == "SM_MP3":
+			m.transform.origin += MP3_JUNTAR.get(String(src.name), Vector3.ZERO) as Vector3
 		var mat := _material(nombre, kit)
 		for s in m.mesh.get_surface_count():
 			m.set_surface_override_material(s, mat)

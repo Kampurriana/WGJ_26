@@ -1035,6 +1035,18 @@ func _test_story(main: Node) -> void:
 			and c.z < desk_top.end.z and absf(c.y - desk_top.end.y) < 0.06 and sl.scope == null
 	check(mp3_parts.size() == 3 and _slot(d, &"mp3") == null and d.whole_node(&"mp3") != null and on_desk,
 		"el MP3 se monta en su sitio, encima del escritorio: carcasa, rueda y auriculares, sin rincón aparte (%d trozos)" % mp3_parts.size())
+	# Su textura se lee bien: es el MP3 de Pack05, con las UV de T_Pack05 (el montado de la referencia
+	# llevaba otras, de -1,75 a 2,75, y la textura salía rota).
+	var mp3_uv := true
+	var mp3_meshes := 0
+	for sl: PieceSlot in mp3_parts:
+		for mi in Visuals.meshes_under(sl.node):
+			mp3_meshes += 1
+			var mat := mi.get_surface_override_material(0)
+			mp3_uv = mp3_uv and mat != null and mat.resource_path == "res://assets/kit/materiales/M_Pack_05.tres"
+			for u: Vector2 in mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_TEX_UV]:
+				mp3_uv = mp3_uv and u.x > -0.01 and u.x < 1.01 and u.y > -0.01 and u.y < 1.01
+	check(mp3_uv and mp3_meshes == 10, "el MP3 es el de Pack05, con su textura bien puesta (M_Pack_05 y sus UV dentro de la imagen; %d mallas)" % mp3_meshes)
 	check(application.available and not camera_pick.available and application.container != null
 		and application.container.kind == NameRules.DRAWER and application.container.attention
 		and application.container.pieces_ready() and application.container.is_clickable(),

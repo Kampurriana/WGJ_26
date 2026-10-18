@@ -60,12 +60,13 @@ para que sea fácil poner al día:
   `SM_Cuerda`) y `SM_bombilla.fbx` (una bombilla con su casquillo = `SM_Bombilla`). Ojo: `SM_bombilla.fbx`
   trae la escena entera de 3ds Max (el blocking y más cosas); de él solo se coge la malla `bombilla`
   (`SOLO` en `tools/piezas_kit.gd`). La carpeta no entra en la build (solo es para la preview).
-- El MP3 de `Pack05` viene despiezado (para texturizar): el tileset coge el **MP3 montado** de la
-  referencia (`MONTADAS` en `tools/piezas_kit.gd`).
+- El MP3 es el de `Pack05` (el que lleva las UV de `T_Pack05`). Algunos trozos vienen separados en Z
+  (para texturizar): el tileset los devuelve a su sitio (`MP3_JUNTAR` en `tools/piezas_kit.gd`). El MP3
+  montado de la referencia es otro modelo con otras UV: con `T_Pack05` encima salía la textura rota.
 - En el blocking hay un remate de 1,38 m arriba del hastial (`SB17`) que no está en el kit: no se pone.
 - `Pack04.fbx` y `Pack05.fbx` traen nombres de 3ds Max: `Box072` = burro, `TV05`/`TV01` = la tele
   (está suelta como `SM_TV`), `CoverDesk`, `Vase001` = jarrón, `Cylinder025-027` = pinceles,
-  `MP301...` = el MP3 en trozos (el tileset los junta en `SM_MP3`).
+  `MP301...` = el MP3 en trozos (el tileset los junta en `SM_MP3`; en el desván, carcasa, rueda y auriculares).
 
 ## En uso en el juego
 
