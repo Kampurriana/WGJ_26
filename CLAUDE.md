@@ -315,10 +315,11 @@ Playwright + Chromium (`--use-angle=swiftshader`). Portada y capturas: `--sin-in
     en su sitio (cargar, modificar, guardar).
 
 49. **La niebla tiñe ENTERO cada material aditivo** (`blend_add`): con la niebla de `desvan_tarde.tscn`, el
-    haz de la ventana se veía como un rectángulo de bordes rectos contra la pared («cuadrado») y cada
-    chispa y el aro de los efectos al colocar, como un cuadrado tintado («han petado»). Lo aditivo va con
-    `render_mode ... fog_disabled` (shaders) o `disable_fog = true` (materiales de partículas). El test
-    lo comprueba en las partículas, el aro y el haz.
+    haz de la ventana se veía como un rectángulo de bordes rectos contra la pared («cuadrado»): con su
+    ALPHA = 1, la niebla le sumaba color en todo el volumen. Lo aditivo va con `render_mode ... fog_disabled`
+    (shaders) o `disable_fog = true` (materiales de partículas); el test lo comprueba en las partículas,
+    el aro y el haz. **Ojo:** los cuadrados de las chispas, las luces y el polvo («han petado») NO eran la
+    niebla, sino la trampa 50 (con la niebla apagada seguían igual).
 
 50. **Una luz con sombra que no es el sol deja lo aditivo cuadrado** (fallo de Godot 4.7, Compatibility,
     `rasterizer_scene_gles3.cpp`): sus pasadas aditivas sobre lo opaco ponen la mezcla en `GL_ONE, GL_ONE`
