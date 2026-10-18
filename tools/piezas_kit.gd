@@ -54,18 +54,14 @@ const ALIAS := {"Box072": "SM_Burro", "CoverDesk": "SM_CoverDesk", "Vase001": "S
 	"Plane001": "SM_PigPegatina1", "Plane002": "SM_PigPegatina2", "Plane003": "SM_PigPegatina3",
 	"Plane005": "SM_PigPegatina5", "Plane006": "SM_PigPegatina6"}
 ## Piezas en trozos (prefijo -> una sola pieza, con sus trozos colocados como en el fichero). La hucha
-## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, ojos, ranura, cola) va montada en una pieza.
+## (SM_PigA..L de Pack07: patas, cuerpo, orejas, hocico, corona, cola) va montada en una pieza (HUCHA_COMPO).
 const GRUPOS := {"MP3": "SM_MP3", "Pillar00": "SM_Pillar", "SM_Pig": "SM_Pig"}
 ## El Pack07 del 18-oct por la tarde trae la hucha "explotada" (los trozos separados del cuerpo, para
-## pintarla; mismas mallas y UV que la de la mañana, que venía montada) y sus pegatinas pegadas al cuerpo.
-## Cada trozo va donde estaba montado, respecto al cuerpo (SM_PigE; medido en la de la mañana); las
-## pegatinas, donde vienen.
-const HUCHA_MONTADA := {"SM_PigA": Vector3(-0.1040, -0.1178, -0.0909), "SM_PigB": Vector3(0.1040, -0.1178, -0.0909),
-	"SM_PigC": Vector3(-0.1040, -0.1178, 0.0957), "SM_PigD": Vector3(0.1040, -0.1178, 0.0957),
-	"SM_PigF": Vector3(0.1158, 0.0895, -0.0680), "SM_PigG": Vector3(-0.1158, 0.0895, -0.0680),
-	"SM_PigH": Vector3(0.0000, -0.0285, -0.1738), "SM_PigI": Vector3(0.0621, 0.0248, -0.1640),
-	"SM_PigJ": Vector3(-0.0621, 0.0248, -0.1640), "SM_PigK": Vector3(0.0000, 0.1495, -0.0980),
-	"SM_PigL": Vector3(0.0000, -0.0252, 0.1867)}
+## pintarla) y sus pegatinas pegadas al cuerpo. La montada es la de las artistas, SM_pig_compo.fbx (18-oct:
+## una sola malla con los trozos en su sitio, sin ojos ni pegatinas): cada trozo va donde casan sus
+## vértices con los de ella (al milímetro); los que no están en ella (los ojos) no van; las pegatinas, con
+## el cuerpo. Si llega otra montada, basta con dejarla en su sitio y rehacer el tileset.
+const HUCHA_COMPO := KIT + "referencia/SM_pig_compo.fbx"
 ## Qué piezas pinta cada conjunto de texturas (carpeta de assets/kit/texturas/ = de TexturasFinales):
 ## por cómo empieza su nombre. El reparto es el de Eva (18-oct): en TexturasFinales se ignoran
 ## CON_LINEART, Hat, Lights, LitterBox, Music_Box, Otter y POLAROIDS (lo suyo va ahora en los Pack).
@@ -170,25 +166,26 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 	var raiz := Node3D.new()
 	raiz.name = nombre
 	var caja := AABB()
-	var cuerpo := Vector3.ZERO                   # (la hucha: dónde está su cuerpo, para montar los trozos)
-	for src: MeshInstance3D in mallas:
-		if src.name == &"SM_PigE":
-			cuerpo = _xf_en_fichero(src, escena).origin
+	var hucha := _hucha_compo(mallas, escena) if nombre == "SM_Pig" else {}   # (cada trozo, a su sitio)
+	var primera := true
 	for i in mallas.size():
 		var src: MeshInstance3D = mallas[i]
+		if nombre == "SM_Pig" and hucha.get(src) == null:
+			continue                             # (no está en la montada: los ojos)
 		var m := MeshInstance3D.new()
 		m.name = src.name if mallas.size() > 1 else "Malla"
 		m.mesh = src.mesh
 		m.transform = _xf_en_fichero(src, escena)
-		if nombre == "SM_Pig" and HUCHA_MONTADA.has(String(src.name)):
-			m.transform.origin = cuerpo + HUCHA_MONTADA[String(src.name)]
+		if nombre == "SM_Pig":
+			m.transform.origin += hucha[src] as Vector3
 		var mat := _material(nombre, kit)
 		for s in m.mesh.get_surface_count():
 			m.set_surface_override_material(s, mat)
 		raiz.add_child(m)
 		m.owner = raiz
 		var b := m.transform * m.mesh.get_aabb()
-		caja = b if i == 0 else caja.merge(b)
+		caja = b if primera else caja.merge(b)
+		primera = false
 	var pivote := Vector3(caja.get_center().x, caja.position.y, caja.get_center().z)
 	for m in raiz.get_children():
 		(m as Node3D).position -= pivote
@@ -198,6 +195,61 @@ func _guardar(nombre: String, mallas: Array, escena: Node, kit: Dictionary) -> E
 		err = ResourceSaver.save(packed, SALIDA + nombre + ".scn")
 	raiz.free()
 	return err
+
+
+## Cuánto hay que mover cada trozo de la hucha (en su fichero) para que quede donde está en la montada de
+## las artistas (HUCHA_COMPO): la traslación con la que sus vértices caen sobre los de ella. null = no está
+## en ella (los ojos); las pegatinas, las del cuerpo (van pegadas a él).
+func _hucha_compo(mallas: Array, escena: Node) -> Dictionary:
+	var compo: Node = (load(HUCHA_COMPO) as PackedScene).instantiate()
+	var montada := compo.find_children("*", "MeshInstance3D", true, false)[0] as MeshInstance3D
+	var puntos := _vertices(montada, _xf_en_fichero(montada, compo))
+	compo.free()
+	var celdas := {}
+	for v in puntos:
+		celdas[_celda(v)] = true
+	var out := {}
+	var cuerpo: Variant = null
+	for src: MeshInstance3D in mallas:
+		if String(src.name).begins_with("SM_Pig"):
+			out[src] = _casar(_vertices(src, _xf_en_fichero(src, escena)), puntos, celdas)
+			if src.name == &"SM_PigE":
+				cuerpo = out[src]
+	for src: MeshInstance3D in mallas:
+		if not out.has(src):
+			out[src] = cuerpo
+	return out
+
+
+func _vertices(m: MeshInstance3D, xf: Transform3D) -> PackedVector3Array:
+	var out := PackedVector3Array()
+	for s in m.mesh.get_surface_count():
+		for v: Vector3 in m.mesh.surface_get_arrays(s)[Mesh.ARRAY_VERTEX]:
+			out.append(xf * v)
+	return out
+
+
+func _celda(v: Vector3) -> Vector3i:
+	return Vector3i(roundi(v.x * 500.0), roundi(v.y * 500.0), roundi(v.z * 500.0))   # (de 2 mm)
+
+
+## La traslación que lleva `trozo` sobre `puntos` (casi todos sus vértices sobre alguno de ellos); null si no.
+func _casar(trozo: PackedVector3Array, puntos: PackedVector3Array, celdas: Dictionary) -> Variant:
+	var muestra := trozo.slice(0, 40)
+	var mejor := 0
+	var t := Vector3.ZERO
+	for p in puntos:
+		var prueba := p - trozo[0]
+		var n := 0
+		for v in muestra:
+			n += 1 if celdas.has(_celda(v + prueba)) else 0
+		if n > mejor:
+			mejor = n
+			t = prueba
+	var casan := 0
+	for v in trozo:
+		casan += 1 if celdas.has(_celda(v + t)) else 0
+	return t if casan >= trozo.size() * 0.9 else null
 
 
 ## Un dibujo 2D como pieza: un plano de pie (mirando a +z) con su imagen, DIBUJO_ANCHO de ancho y el alto

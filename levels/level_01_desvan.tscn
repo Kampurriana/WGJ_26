@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://core/diorama.gd" id="1_7mf1y"]
 [ext_resource type="Script" path="res://core/luz_ventana.gd" id="2_s213x"]
 
-[node name="Nivel01Desvan" type="Node3D" unique_id=463279707]
+[node name="Nivel01Desvan" type="Node3D" unique_id=745951067]
 script = ExtResource("1_7mf1y")
 level_title = "El desván"
 modelo_provisional = "res://levels/desvan/desvan_oficial.tscn"
@@ -22,7 +22,7 @@ iluminacion = "res://iluminacion/desvan_tarde.tscn"
 fundido_final = true
 momentos = true
 
-[node name="LuzVentana" type="Node3D" parent="." unique_id=1308421082]
+[node name="LuzVentana" type="Node3D" parent="." unique_id=1428973460]
 script = ExtResource("2_s213x")
 ventana = Vector3(-0.44045448, 2.0834103, -1.625296)
 tam_ventana = Vector2(1.6730733, 1.6639082)

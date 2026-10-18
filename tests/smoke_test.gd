@@ -300,6 +300,17 @@ func _test_voices() -> void:
 				prev = float(m)
 	check(nuevas == 9 and new_marks_ok and not lines.has("intro_cerdito") and not lines.has("intro_menu"),
 		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas; el cerdito empieza sin frase (%d de 9)" % nuevas)
+	# El MP3 (Drive, 18-oct): una grabación con la voz, las canciones que salta y la voz otra vez, partida
+	# en sus trozos del guion (la música, como efecto: si no, al igualar la voz la música la tapaba).
+	var mp3_parts: Array = lines.get("pieza_mp3", []) if lines.get("pieza_mp3") is Array else []
+	var mp3_b: Dictionary = mp3_parts[2] if mp3_parts.size() == 3 and mp3_parts[2] is Dictionary else {}
+	var mp3_b_path := "res://assets/audio/voz/pieza_mp3_b.ogg"
+	var mp3_b_len := (load(mp3_b_path) as AudioStream).get_length() if ResourceLoader.exists(mp3_b_path) else 0.0
+	var mp3_marks: Array = mp3_b.get("marcas", [])
+	check(ResourceLoader.exists("res://assets/audio/voz/pieza_mp3_a.ogg") and mp3_b_len > 0.0 and Sfx.length("mp3_skip") > 5.0
+		and mp3_parts.size() == 3 and mp3_parts[1] == "sfx:mp3_skip" and mp3_marks.size() == 1
+		and float(mp3_marks[0]) > 1.0 and float(mp3_marks[0]) < mp3_b_len,
+		"el MP3 con su voz: «¡Ostras! Siempre compartía mi MP3…», las canciones que va saltando y el resto, con el subtítulo a tiempo")
 	got.clear()
 	Narrator._lines["_prueba_solo_voz"] = {"frases": [], "voz": "dibujo_encontrado_2"}
 	Narrator.say("_prueba_solo_voz")
@@ -609,15 +620,22 @@ func _test_story(main: Node) -> void:
 		and _slots_with(d, &"guirnalda") == 4 and _slots_with(d, &"cajon_comoda") == 3 and _slots_with(d, &"polaroid") == 4
 		and _slots_with(d, &"lapiz") == 3 and _slots_with(d, &"pared_fondo") == 1,
 		"cada pieza del kit va suelta: 12 bordes del suelo, 3 pilares, 12 bombillas en 4 cuerdas, 3 cajones de la cómoda, 4 polaroids, 3 lápices")
-	# La hucha del kit viene en 12 trozos y 5 pegatinas: se monta en su rincón (Z_ __monta), con primer plano.
+	# Los cajones de la cómoda, con el tirador hacia fuera (el del kit lo lleva en su +Z; la cómoda, delante en su -Z).
+	var dresser := _slot(d, &"comoda_infantil").node.get_child(0) as Node3D
+	var drawers_out := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"cajon_comoda").all(func(sl: PieceSlot) -> bool:
+		return (sl.node.get_child(0) as Node3D).global_basis.z.dot(dresser.global_basis.z) < -0.9)
+	check(_slots_with(d, &"cajon_comoda") == 3 and drawers_out, "los cajones de la cómoda miran hacia fuera: se les ven los tiradores")
+	var extras := ["foto_suelta", "papeles", "folio", "papel_arrugado", "llaves"].map(func(id: String) -> int: return _slots_with(d, StringName(id)))
+	check(extras == [3, 1, 2, 2, 1], "más cosas del kit en el desván: fotos sueltas, apuntes, folios, papeles arrugados y el llavero (%s)" % [extras])
+	# La hucha del kit viene en 10 trozos y 5 pegatinas: se monta en su rincón (Z_ __monta), con primer plano.
 	var bench: Interactable = null
 	for it in d.interactables:
 		if it.kind == NameRules.ZOOM and it.reward == &"hucha":
 			bench = it
 	var bench_parts := d.slots.filter(func(sl: PieceSlot) -> bool: return sl.scope == bench) if bench != null else []
-	check(bench != null and bench.workbench and bench_parts.size() == 17 and bench.attention and bench.is_clickable()
+	check(bench != null and bench.workbench and bench_parts.size() == 15 and bench.attention and bench.is_clickable()
 		and not d.visible_inventory().has(&"cuerpo_hucha"),
-		"la hucha se monta en su rincón: 12 trozos y 5 pegatinas que no salen en la bandeja hasta entrar, y el rincón llama la atención (%s)"
+		"la hucha se monta en su rincón: 10 trozos (los de la montada de las artistas) y 5 pegatinas que no salen en la bandeja hasta entrar, y el rincón llama la atención (%s)"
 		% [[bench.workbench, bench_parts.size(), bench.attention, bench.is_clickable(), d.visible_inventory().has(&"cuerpo_hucha"), d.lock_reason(&"hucha")] if bench != null else []])
 	if bench != null:
 		d.enter_focus(bench)
@@ -1099,8 +1117,9 @@ func _test_story(main: Node) -> void:
 	check(Logros.is_unlocked("infancia") and Logros.is_unlocked("adolescencia") and Logros.is_unlocked("adultez")
 		and not Logros.is_unlocked("dibujos"),
 		"logros: al completar cada acto se desbloquean sus recuerdos (infancia, adolescencia, adultez)")
-	check(s4.completed and placed.find(&"caballete") < placed.find(&"lienzo") and placed.find(&"lienzo") < placed.find(&"espejo"),
-		"adultez en el orden del guion: el caballete, su lienzo y el espejo (clave) el último")
+	check(s4.completed and placed.find(&"llaves") >= 0 and placed.find(&"llaves") < placed.find(&"caballete")
+		and placed.find(&"caballete") < placed.find(&"lienzo") and placed.find(&"lienzo") < placed.find(&"espejo"),
+		"adultez en el orden del guion: las llaves (el llavero del kit), el caballete, su lienzo y el espejo (clave) el último")
 	var mirror := _slot(d, &"espejo")
 	var glass_tex := func() -> String:               # (la textura del espejo: luna vacía o con ella pintada)
 		var mm := Visuals.meshes_under(mirror.node)
@@ -1482,11 +1501,30 @@ func _test_kit() -> void:
 	var diorama := (load("res://preview/diorama_kit.tscn") as PackedScene).instantiate() as Node3D
 	var instancias := diorama.find_children("*", "Node3D", true, false).filter(func(n: Node) -> bool: return n.scene_file_path != "")
 	var del_kit := instancias.filter(func(n: Node) -> bool: return n.scene_file_path.begins_with("res://assets/kit/piezas/"))
-	var escaladas := instancias.filter(func(n: Node3D) -> bool: return not n.scale.is_equal_approx(Vector3.ONE))
+	# (18-oct: las cuerdas del entrante llegan de pilar a pilar: su tramo se estira a lo largo y sus bombillas
+	# llevan la escala contraria, así que se ven como son; ninguna otra pieza se redimensiona)
+	var cuerda := func(n: Node3D) -> bool: return n.scene_file_path.ends_with("/SM_Cuerda.scn") \
+		and is_equal_approx(n.scale.y, 1.0) and is_equal_approx(n.scale.z, 1.0)
+	var escaladas := instancias.filter(func(n: Node3D) -> bool:
+		if cuerda.call(n):
+			return false
+		var sc := n.scale
+		var padre := n.get_parent() as Node3D
+		if padre != null and cuerda.call(padre):
+			sc = sc * padre.scale                      # (una bombilla de una cuerda estirada: tal cual en global)
+		return not sc.is_equal_approx(Vector3.ONE))
 	var nombres := instancias.map(func(n: Node) -> String: return n.scene_file_path.get_file().get_basename())
 	check(instancias.size() >= 45 and del_kit.size() == instancias.size() and escaladas.is_empty()
 		and nombres.has("SM_WallA") and nombres.has("SM_Window") and nombres.has("SM_Ceiling") and nombres.has("SM_ComodaA") and nombres.has("SM_TV"),
 		"el diorama de prueba (preview/diorama_kit.tscn) son piezas del tileset sin redimensionar: hastial, ventana, faldón, cómoda, tele... (%d)" % instancias.size())
+	var dibujos := diorama.get_node("Adornos/CuerdaDibujos/SM_Cuerda") as Node3D
+	var entrante := diorama.get_node("Adornos/CuerdaEntrante/SM_Cuerda") as Node3D
+	var tramo := (load("res://assets/kit/piezas/SM_Cuerda.scn") as PackedScene).instantiate() as Node3D
+	var media := Visuals.local_aabb(tramo).size.x * 0.5   # (medio tramo, sin estirar)
+	tramo.free()
+	check(absf(dibujos.position.x - media * dibujos.scale.x - 1.11) < 0.03 and absf(dibujos.position.x + media * dibujos.scale.x - 2.8) < 0.03
+		and absf(entrante.position.z + media * entrante.scale.x + 1.73) < 0.03 and absf(entrante.position.z - media * entrante.scale.x + 3.31) < 0.03,
+		"las cuerdas del entrante (la de los dibujos y la de las polaroids) llegan de pilar a pilar")
 	# 18-oct: el diorama de prueba copia el blocking de las artistas (assets/kit/referencia/Blocking3.fbx)
 	# con los assets nuevos (Pack06-08), se llena con adornos, cuerdas de bombillitas (una libre para los
 	# dibujos) y el dibujo de la bailarina; y todo el kit lleva el estilo cozy (misma capa de tono).
@@ -1558,12 +1596,13 @@ func _test_title_menu(main: Node) -> bool:
 	st = hud_t.entrance_state()
 	check(st.bandeja and st.botones and not st.tarea and not st.estrellas,
 		"y por último los botones de Menú y Pista; la tarjeta de tarea y las estrellas siguen sin salir")
-	check(t.model_path.get_extension() == "glb" and t.get_node_or_null("Modelo") != null,
-		"el diorama del título es un asset: se carga de un .glb (%s)" % t.model_path.get_file())
-	check(t.slots.size() >= 18 and t.interactables.is_empty(), "el título son muchas piezas pequeñas, sin cajones ni escondidos (%d)" % t.slots.size())
+	check(t.model_path == "res://levels/titulo/titulo_kit.tscn" and t.get_node_or_null("Modelo") != null
+		and t.find_child("Tocon", true, false) != null and _slot(t, &"corona") != null,
+		"el diorama del título es la hucha del kit (la montada de las artistas) sobre su tocón de madera (%s)" % t.model_path.get_file())
+	check(t.slots.size() >= 15 and t.interactables.is_empty(), "el título son muchas piezas pequeñas, sin cajones ni escondidos (%d)" % t.slots.size())
 	var stickers := t.slots.filter(func(sl: PieceSlot) -> bool: return String(sl.id).begins_with("pegatina_")).size()
-	check(_slot(t, &"cuerpo") != null and _slot(t, &"hocico") != null and stickers >= 6,
-		"el título es la hucha de cerdito, con pegatinas para decorarla (%d pegatinas)" % stickers)
+	check(_slot(t, &"cuerpo") != null and _slot(t, &"hocico") != null and stickers == 5,
+		"el título es la hucha de cerdito, con sus pegatinas para decorarla (%d pegatinas)" % stickers)
 	check(_slot(t, &"pegatina_nombre") == null and t.find_child("Cartel", true, false) == null,
 		"el cerdito no lleva cartel con el nombre (el nombre lo pone el logo del menú)")
 	check(t.count_of(&"pata") == 4 and _slots_with(t, &"pata") == 4, "las patas repetidas son la misma pieza: cuatro que valen en cualquier hueco de pata")

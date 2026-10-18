@@ -317,13 +317,13 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.92
 transform = Transform3D(-0.48480955, 0, -0.8746197, 0, 1, 0, 0.8746197, 0, -0.48480955, -0.53141993, 0.14796537, 1.9121126)
 
 [node name="SM_ComodaB" parent="Muebles/SM_ComodaA" unique_id=716175507 instance=ExtResource("60_m5q5u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1667, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.1667, 0)
 
 [node name="SM_ComodaC" parent="Muebles/SM_ComodaA" unique_id=1403052313 instance=ExtResource("61_roupx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.36, 0)
 
 [node name="SM_ComodaD" parent="Muebles/SM_ComodaA" unique_id=1995425993 instance=ExtResource("62_6567u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5533, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.5533, 0)
 
 [node name="SM_MusicBox" parent="Muebles/SM_ComodaA" unique_id=1667266757 instance=ExtResource("63_i2r0h")]
 transform = Transform3D(0.9848077, 0, 0.1736482, 0, 1, 0, -0.1736482, 0, 0.9848077, -0.25, 0.8260404, 0)
@@ -440,27 +440,27 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.49
 [node name="CuerdaEntrante" type="Node3D" parent="Adornos" unique_id=308256866]
 
 [node name="SM_Cuerda" parent="Adornos/CuerdaEntrante" unique_id=2024809543 instance=ExtResource("77_m1xoo")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.9575047, 2.207284, -2.5229664)
+transform = Transform3D(-5.4554523e-08, 0, 1, 0, 1, 0, -1.248062, 0, -4.371139e-08, 0.9575047, 2.207284, -2.5229664)
 
 [node name="SM_Bombilla" parent="Adornos/CuerdaEntrante/SM_Cuerda" unique_id=307158038 instance=ExtResource("78_f2tj3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.40714887, -0.01945896, 8.889608e-06)
+transform = Transform3D(0.80124223, 0, 0, 0, 1, 0, 0, 0, 1, -0.40714887, -0.01945896, 8.889608e-06)
 
 [node name="SM_Bombilla2" parent="Adornos/CuerdaEntrante/SM_Cuerda" unique_id=1672125287 instance=ExtResource("78_f2tj3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005046725, -0.20081416, 2.5911124e-05)
+transform = Transform3D(0.80124223, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005046725, -0.20081416, 2.5911124e-05)
 
 [node name="SM_Bombilla3" parent="Adornos/CuerdaEntrante/SM_Cuerda" unique_id=1281398833 instance=ExtResource("78_f2tj3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.499267e-06)
+transform = Transform3D(0.80124223, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.499267e-06)
 
 [node name="CuerdaDibujos" type="Node3D" parent="Adornos" unique_id=1892349463]
 
 [node name="SM_Cuerda" parent="Adornos/CuerdaDibujos" unique_id=1696724823 instance=ExtResource("77_m1xoo")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.955471, 2.707284, -3.47)
+transform = Transform3D(1.3333334, 0, 0, 0, 1, 0, 0, 0, 1, 1.955471, 2.707284, -3.47)
 
 [node name="SM_Bombilla" parent="Adornos/CuerdaDibujos/SM_Cuerda" unique_id=128993494 instance=ExtResource("78_f2tj3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.40714887, -0.01945896, 8.889608e-06)
+transform = Transform3D(0.75, 0, 0, 0, 1, 0, 0, 0, 1, -0.40714887, -0.01945896, 8.889608e-06)
 
 [node name="SM_Bombilla2" parent="Adornos/CuerdaDibujos/SM_Cuerda" unique_id=958893178 instance=ExtResource("78_f2tj3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005046725, -0.20081416, 2.5911124e-05)
+transform = Transform3D(0.75, 0, 0, 0, 1, 0, 0, 0, 1, -0.0005046725, -0.20081416, 2.5911124e-05)
 
 [node name="SM_Bombilla3" parent="Adornos/CuerdaDibujos/SM_Cuerda" unique_id=2009430347 instance=ExtResource("78_f2tj3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.499267e-06)
+transform = Transform3D(0.75, 0, 0, 0, 1, 0, 0, 0, 1, 0.40613952, -0.03185844, 9.499267e-06)

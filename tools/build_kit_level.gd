@@ -15,8 +15,9 @@ extends "res://tools/build_attic_level.gd"
 ##   S_3_adolescencia  centro, bajo la ventana: el escritorio del kit con sus cajones (la solicitud, en el
 ##                     de arriba), MP3 → solicitud → cámara (clave y flash: la polaroid del kit, en la caja
 ##                     con tapa, en la alfombra)
-##   S_4_adultez       el caballete (donde lo dejaron las artistas, a la izquierda) con su lienzo, y el
-##                     entrante: caballete → espejo (clave, reflejo); el burro con el sombrero, el taburete
+##   S_4_adultez       las llaves (el llavero del kit, en el pilar), el caballete (donde lo dejaron las
+##                     artistas, a la izquierda) con su lienzo, y el entrante: llaves → caballete → espejo
+##                     (clave, reflejo); el burro con el sombrero, el taburete, folios y papeles arrugados
 ##   S_5_epilogo       la moneda (ofrecida) junto a la hucha (provisional: la única figura hecha en código)
 ## Lo que no es de ninguna sección (el marco del suelo, las cajas del fondo, el arenero) se ve desde el
 ## principio; las cuerdas de bombillitas (apagadas) van con el tejado y la pared del entrante, y la del
@@ -36,6 +37,9 @@ const ZONE_LIGHT := 0.8                      ## las luces de zona (sin bombilla:
 const ZONE_RANGE := 3.6
 const TILESET := "res://assets/kit/piezas/"
 const MIRROR_PAINTED := "res://assets/kit/materiales/M_Pack08.tres"   ## el espejo con ella en la luna (Pack08)
+const RUG_TOP := 0.17                         ## la alfombra de la adolescencia (encima, lo que se tumba en ella)
+const ADULT_RUG_TOP := 0.19                   ## la de la adultez
+const KEYS_AT := Vector3(0.94, 1.15, -1.347)  ## el llavero, en la cara de delante del pilar (la columna acaba en z -1,40)
 const KIT_OTTER := "res://assets/kit/modelos/Otter/SM_otter.fbx"
 const KIT_OTTER_MAT := "res://assets/kit/materiales/M_Otter.tres"
 const OTTER_AT := Vector3(-1.45, FLOOR, 2.3)   ## la nutria, en el suelo del rincón de la infancia
@@ -172,7 +176,7 @@ func _structure(sec: Node3D) -> void:
 	_each(sec, "bombilla__after-guirnalda", bulbs)
 	_each(sec, "guirnalda__after-tejado", ropes)
 	# La hucha, en el centro sobre una caja del kit (el baúl viejo: lo que la sostiene en el final). El
-	# cerdito del kit viene en 12 trozos y 5 pegatinas: se montan en su rincón (Z_, primer plano), delante de la caja;
+	# cerdito del kit viene en 10 trozos (los de la montada de las artistas) y 5 pegatinas: se montan en su rincón (Z_, primer plano), delante de la caja;
 	# entero, va a la bandeja, y se pone el último encima de su caja.
 	var trunk := _take("Muebles/SM_BoxB", _root, "BaulViejo")
 	trunk.global_position = Vector3(0.45, FLOOR, 1.72)
@@ -186,8 +190,8 @@ func _structure(sec: Node3D) -> void:
 	_pig_bench(sec, kit_pig, Vector3(0.45, FLOOR, 2.33))
 
 
-## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 12 trozos y sus 5 pegatinas (Pack07 del 18-oct
-## por la tarde), cada uno su pieza (las patas, las orejas, los ojos y las pegatinas, iguales; arriba, su
+## El banco de la hucha (Z_ ... __reward-hucha__monta): sus 10 trozos y sus 5 pegatinas (Pack07 del 18-oct
+## por la tarde, montada como SM_pig_compo), cada uno su pieza (las patas, las orejas, los ojos y las pegatinas, iguales; arriba, su
 ## corona), montados donde van; primero el cuerpo.
 func _pig_bench(sec: Node3D, pig: Node3D, at: Vector3) -> void:
 	var bench := _node(sec, "Z_montaje_hucha__reward-hucha__monta", at)
@@ -374,6 +378,14 @@ func _teen(sec: Node3D) -> void:
 	_piece(cam_box, "P_caja_camara", ["Adornos/SM_BoxB"])                               # infancia: after-x mira todo el desván)
 	var stored := _node(cam_box, "H_camara", Vector3(body.get_center().x, body.position.y + 0.03, body.get_center().z))
 	stored.add_child((load(TILESET + "SM_Polaroid.scn") as PackedScene).instantiate())   # la misma polaroid
+	# Más cosas del kit (18-oct, «más assets de los que tenemos modelados, como fotos, folios»): fotos sueltas
+	# por la alfombra, junto a la caja de la cámara, y un montón de apuntes en el suelo, junto a la silla.
+	var photos := [["SM_PolaroidA", Vector3(0.25, 0.0, 1.18), 12.0], ["SM_PolaroidB", Vector3(0.6, 0.0, 1.22), -18.0],
+		["SM_PolaroidC", Vector3(-0.02, 0.0, 0.25), 25.0]]
+	for k in photos.size():
+		var at: Vector3 = photos[k][1] + Vector3(0, RUG_TOP + 0.011, 0.115)   # (tumbada, la foto queda delante de su pie)
+		_kit_piece(sec, "P_foto_suelta__after-caja_camara" + ("" if k == 0 else "_%03d" % k), photos[k][0], at, photos[k][2], -90.0)
+	_kit_piece(sec, "P_papeles__after-escritorio", "SM_PaperStack", Vector3(-1.02, FLOOR, -0.6), 20.0)
 
 
 ## La solicitud a Bellas Artes: el papel de las artistas (SM_PaperUniversidad, Pack09 del 18-oct; en el
@@ -399,9 +411,12 @@ func _adult(sec: Node3D) -> void:
 	_lamp_light(floor_lamp)
 	(floor_lamp.get_node("Luz") as SpotLight3D).spot_range = 1.9
 	_piece(sec, "P_taburete", ["Muebles/SM_Stool"])
+	# Las llaves de la tienda (el llavero del kit, Pack09): colgadas en la cara de delante del pilar entre la
+	# ventana y el entrante; son lo primero de la adultez, como en el guion (llaves, caballete, espejo).
+	_kit_piece(sec, "P_llaves", "SM_Keyholder", KEYS_AT)
 	_each(sec, "polaroid", ["A", "B", "C", "D"].map(func(k: String) -> String: return "Adornos/SM_Polaroid" + k))
 	_piece(sec, "P_alfombra_adultez", ["Muebles/SM_Rug"])
-	var easel := _piece(sec, "P_caballete", ["Muebles/SM_Caballete"])
+	var easel := _piece(sec, "P_caballete__after-llaves", ["Muebles/SM_Caballete"])
 	var canvas_at := _easel_rest(easel)
 	var canvas := _node(sec, "P_lienzo__after-caballete", canvas_at.origin)
 	canvas.basis = canvas_at.basis
@@ -416,6 +431,15 @@ func _adult(sec: Node3D) -> void:
 	_piece(sec, "P_espejo__clave__reflejo", ["Muebles/SM_Mirror"])
 	_mirror_glass(sec.get_node("P_espejo__clave__reflejo") as Node3D)
 	_piece(sec, "P_perchero", ["Muebles/SM_Burro"])
+	# Folios y papeles arrugados en su alfombra (los bocetos que no salieron).
+	var papers := [["folio", "SM_Paper01", Vector3(1.55, 0, -1.3), 20.0], ["folio", "SM_Paper01", Vector3(2.25, 0, -0.85), -40.0],
+		["papel_arrugado", "SM_PaperBroken", Vector3(1.95, 0, -1.55), 70.0], ["papel_arrugado", "SM_PaperBroken", Vector3(2.4, 0, -1.3), 10.0]]
+	var seen := {}
+	for paper: Array in papers:
+		var n: int = seen.get(paper[0], 0)
+		seen[paper[0]] = n + 1
+		_kit_piece(sec, "P_%s__after-caballete%s" % [paper[0], "" if n == 0 else "_%03d" % n], paper[1],
+			(paper[2] as Vector3) + Vector3(0, ADULT_RUG_TOP, 0), paper[3])
 	_piece(sec, "P_sombrero__after-perchero", ["Muebles/SM_Hat"])
 	# En el taburete del entrante, la taza y el reloj (del pack).
 	var stool := Visuals.global_aabb(sec.get_node("P_taburete") as Node3D)
@@ -680,6 +704,16 @@ func _piece(sec: Node3D, piece_name: String, paths: Array, at := Vector3.INF) ->
 	var p := _node(sec, piece_name, first.global_position if at == Vector3.INF else at)
 	for path: String in paths:
 		_take(path, p)
+	return p
+
+
+## Una pieza del tileset que no está en el diorama de las artistas (las que se añadieron después): P_ en
+## `at`, girada `yaw` grados y, con `tilt` = -90, tumbada boca arriba (las fotos, que son de pie).
+func _kit_piece(sec: Node3D, piece_name: String, kit: String, at: Vector3, yaw := 0.0, tilt := 0.0) -> Node3D:
+	var p := _node(sec, piece_name, at)
+	var inst := (load(TILESET + kit + ".scn") as PackedScene).instantiate() as Node3D
+	inst.rotation_degrees = Vector3(tilt, yaw, 0.0)
+	p.add_child(inst)
 	return p
 
 
