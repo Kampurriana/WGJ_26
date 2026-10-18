@@ -6,12 +6,14 @@ extends SceneTree
 ##   T_<x>_Normal  normales (vienen en DirectX: se importa con el verde invertido)
 ##   T_<x>_E       emisión (opcional)
 ## y deja la importación de esas texturas como debe (VRAM comprimida y mipmaps: van en 3D; la de
-## normales, como normal map). Después hay que reimportar: bash tools/check.sh lo hace.
+## normales, como normal map), con el estilo cozy del kit (tools/estilo_kit.gd). Después hay que
+## reimportar: bash tools/check.sh lo hace.
 ## Ejecutar:
 ##   godot --headless --path . --script res://tools/materiales_kit.gd
 
 const TEXTURAS := "res://assets/kit/texturas"
 const MATERIALES := "res://assets/kit/materiales"
+const Estilo := preload("res://tools/estilo_kit.gd")
 
 
 func _init() -> void:
@@ -47,6 +49,7 @@ func _init() -> void:
 		if tex.has("E"):
 			m.emission_enabled = true
 			m.emission_texture = load(tex.E)
+		Estilo.aplicar(m)
 		var out := "%s/M_%s.tres" % [MATERIALES, carpeta]
 		var err := ResourceSaver.save(m, out)
 		print("MATERIALES: %s (%s) err=%d" % [out, ", ".join(PackedStringArray(tex.keys())), err])

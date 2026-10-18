@@ -1,6 +1,13 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="1_yv7i6"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="2_0qttl"]
+
 [resource]
 resource_name = "Provisional_madera"
-albedo_color = Color(0.76, 0.6, 0.42, 1)
+albedo_color = Color(0.8, 0.66, 0.5, 1)
+metallic_specular = 0.3
 roughness = 0.85
+detail_enabled = true
+detail_mask = ExtResource("2_0qttl")
+detail_albedo = ExtResource("1_yv7i6")

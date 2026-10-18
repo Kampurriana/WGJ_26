@@ -25,7 +25,8 @@ const KIT := "res://assets/kit"
 const DIORAMA := "res://preview/diorama_kit.tscn"
 const IMAGE_EXT := ["png", "jpg", "jpeg", "webp"]
 ## Qué va delante (la cámara mira ahí): muebles y cajas. Lo demás es estructura y va detrás.
-const PROPS := ["Desk", "Lamp", "Stool", "Box", "Object", "Comoda", "TV", "Burro", "CoverDesk", "Vase", "Brush", "MP3"]
+const PROPS := ["Desk", "Lamp", "Stool", "Box", "Object", "Comoda", "TV", "Burro", "CoverDesk", "Vase", "Brush", "MP3",
+	"Caballete", "CatBed", "Hat", "Lights", "LitterBox", "Mirror", "MusicBox", "Pig", "Polaroid", "Rug"]
 const HUECO := 0.3                           ## separación entre piezas del catálogo (m)
 const FILA_MAX := 9.0                        ## ancho máximo de una fila de estructura (m)
 const FILA_PROPS := 5.0                      ## y de una de muebles: el ancho del desván (cabe en el encuadre)
@@ -158,6 +159,8 @@ func _fila(fila: Array[Node3D], z: float) -> float:
 func _cargar_piezas() -> Array[Node3D]:
 	var out: Array[Node3D] = []
 	for path in _ficheros(KIT + "/piezas", ["scn", "tscn"]):
+		if path.get_file().begins_with("Dibujo_"):
+			continue                         # los dibujos ya salen en su fila (_montar_dibujos)
 		var pieza := (load(path) as PackedScene).instantiate() as Node3D
 		contenido.add_child(pieza)
 		piezas.append(String(pieza.name))

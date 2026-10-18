@@ -1,6 +1,13 @@
 [gd_resource type="StandardMaterial3D" format=3]
 
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="1_pfsht"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="2_4pj6d"]
+
 [resource]
 resource_name = "Provisional_naranja"
-albedo_color = Color(0.95, 0.6, 0.3, 1)
+albedo_color = Color(0.88, 0.65, 0.47, 1)
+metallic_specular = 0.3
 roughness = 0.85
+detail_enabled = true
+detail_mask = ExtResource("2_4pj6d")
+detail_albedo = ExtResource("1_pfsht")

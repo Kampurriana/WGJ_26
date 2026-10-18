@@ -2,12 +2,15 @@
 
 [ext_resource type="Texture2D" path="res://assets/kit/texturas/LampStool/T_StoolLamp_BC.png" id="1_j1r77"]
 [ext_resource type="Texture2D" path="res://assets/kit/texturas/LampStool/T_StoolLamp_ARM.png" id="2_gjk3b"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/tono.tres" id="3_8h044"]
 [ext_resource type="Texture2D" path="res://assets/kit/texturas/LampStool/T_StoolLamp_Normal.png" id="3_l1aeu"]
+[ext_resource type="Texture2D" path="res://assets/kit/materiales/estilo/mezcla.tres" id="4_0kejn"]
 
 [resource]
 resource_name = "M_LampStool"
 albedo_texture = ExtResource("1_j1r77")
 metallic = 1.0
+metallic_specular = 0.3
 metallic_texture = ExtResource("2_gjk3b")
 metallic_texture_channel = 2
 roughness_texture = ExtResource("2_gjk3b")
@@ -16,3 +19,6 @@ normal_enabled = true
 normal_texture = ExtResource("3_l1aeu")
 ao_enabled = true
 ao_texture = ExtResource("2_gjk3b")
+detail_enabled = true
+detail_mask = ExtResource("4_0kejn")
+detail_albedo = ExtResource("3_8h044")
