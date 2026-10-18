@@ -741,14 +741,15 @@ func _full_ui() -> bool:
 
 ## Inicio del cerdito, ordenado: primero el cerdito solo (lo trae el fundido y la cámara); luego entra la
 ## bandeja con las piezas para vestirlo; por último, los botones de Menú y Pista.
-func stage_entrance() -> void:
+## delay: lo que tarda en verse la escena (la presentación del principio se abre en círculo).
+func stage_entrance(delay := 0.0) -> void:
 	if _entrance != null:
 		_entrance.kill()
 	_panel.hide()
 	_controls.hide()
 	var off := (PANEL_WIDTH + 3.0 * MARGIN) / (PANEL_WIDTH - LIP + MARGIN)   # la bandeja, del todo fuera
 	_entrance = create_tween()
-	_entrance.tween_interval(ENTRANCE_TRAY)
+	_entrance.tween_interval(delay + ENTRANCE_TRAY)
 	_entrance.tween_callback(func() -> void:
 		_set_slide(off)
 		_panel.modulate.a = 0.0

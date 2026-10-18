@@ -321,6 +321,46 @@ func _test_english() -> void:
 	await get_tree().process_frame
 
 
+## La presentación al abrir el juego (ui/presentacion.gd): sigue a la pantalla de carga sin que se
+## note (su fondo, el cerdito de icon.png a su tamaño en el centro), el cerdito se mueve, el título se
+## carga debajo cuando empieza a irse y se ve por un círculo que se abre; luego se va del todo.
+func _test_splash(main: Node) -> void:
+	var sp: Presentacion = main.splash
+	check(sp != null and GameState.diorama == null, "al abrir el juego sale la presentación, y todavía no hay diorama detrás")
+	if sp == null:
+		return
+	var view := get_viewport().get_visible_rect().size
+	var sprite := sp.pig().get_child(0) as Sprite2D
+	var shown := sprite.texture.get_size() * sprite.scale
+	check(sp.background() == ProjectSettings.get_setting("application/boot_splash/bg_color") and sprite.texture == load("res://icon.png")
+		and is_equal_approx(shown.x, 256.0) and sp.pig().position.distance_to(view * 0.5 + Vector2(0, 128)) < 1.0,
+		"la presentación sigue a la pantalla de carga: su fondo y el mismo cerdito, a su tamaño y en el centro")
+	var poses: Array[Vector3] = []
+	for i in 8:
+		await get_tree().create_timer(0.2).timeout
+		if is_instance_valid(sp) and not sp.is_opening():
+			poses.append(Vector3(sp.pig().position.y, sp.pig().scale.y, sp.pig().rotation))
+	var moved := poses.size() > 3 and poses.any(func(p: Vector3) -> bool: return not p.is_equal_approx(poses[0]))
+	var hopped := poses.any(func(p: Vector3) -> bool: return p.x < view.y * 0.5 + 128.0 - 10.0)
+	check(moved and hopped, "el cerdito de la presentación no es una imagen quieta: respira y da saltitos (%d poses)" % poses.size())
+	var waited := 0.0
+	while is_instance_valid(sp) and not sp.is_opening() and waited < 6.0:
+		await get_tree().process_frame
+		waited += get_process_delta_time()
+	await get_tree().process_frame
+	check(is_instance_valid(sp) and GameState.diorama != null and GameState.diorama.scene_file_path == GameState.MENU_LEVEL
+		and sp.iris_radius() < 0.2 and main._fade.color.a < 0.05,
+		"al irse, el puzle del cerdito ya está cargado debajo y se descubre por el círculo (sin fundido desde negro)")
+	var radii: Array[float] = []
+	while is_instance_valid(sp) and waited < 9.0:
+		radii.append(sp.iris_radius())
+		await get_tree().create_timer(0.1).timeout
+		waited += 0.1
+	check(not is_instance_valid(sp) and main.splash == null and radii.size() > 4 and radii[-1] > radii[0] + 0.5,
+		"el círculo se abre hasta dejar ver todo el juego y la presentación se va (%d pasos)" % radii.size())
+	await get_tree().process_frame
+
+
 ## El logo (ui/logo.gd), montado con las piezas de las artistas: cada una en su caja de la referencia
 ## de maquetación, moviéndose cada una a su aire y sin taparse nunca entre ellas. Aquí, con piezas de
 ## las piezas de verdad (assets/ui/logo/) o, si faltan, unas de prueba de las mismas proporciones.
@@ -1128,6 +1168,7 @@ func _has_music(song: String) -> bool:
 
 ## Devuelve false si no se puede seguir (sin título o sin menú, el resto no tiene sentido).
 func _test_title_menu(main: Node) -> bool:
+	await _test_splash(main)
 	var t := GameState.diorama
 	check(t != null and t.scene_file_path == GameState.MENU_LEVEL, "el juego arranca en el diorama del título")
 	if t == null:

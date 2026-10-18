@@ -18,6 +18,7 @@ extends Node3D
 ##   --zoom=K,X,Y         (capturas) K pasos de zoom hacia ese punto de la pantalla
 ##   --f9                 (capturas) pulsa F9 al segundo de empezar: el diorama entero de golpe
 ##   --sin-interfaz       (capturas) la captura sale sin la interfaz del juego (portada y capturas de itch.io)
+##   --presentacion       (capturas) con la presentación del principio (las capturas, si no, empiezan sin ella)
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
 ##   --inspeccion         (capturas) al segundo de empezar, el primer plano de un dibujo (como al encontrarlo)
 ##   --logro=ID           (capturas) al segundo de empezar, el aviso de ese logro y su estrella volando
@@ -38,6 +39,10 @@ const MUSIC_MENU_DB := 13.0                  ## Ankui (musica/menu): puzle del t
 const MUSIC_GAME_DB := 3.5                   ## Loft (musica/juego): en bucle durante la partida
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
+var splash: Presentacion                     ## la presentación del principio, mientras está (ui/presentacion.gd)
+var _force_splash := false
+var _entrance_delay := 0.0                   ## (presentación) el inicio del cerdito espera a que se abra
+var _skip_fade := false                      ## (presentación) el título aparece por su círculo, no desde negro
 var menu: MainMenu
 var pause: PauseMenu
 var credits: Creditos
@@ -137,7 +142,9 @@ func _ready() -> void:
 	Settings.changed.connect(func(key: String) -> void:
 		if key.begins_with("fondo_"):
 			_apply_background())
-	if start_in_menu:
+	if start_in_menu and (_capture_path == "" or _force_splash):
+		_start_with_splash()
+	elif start_in_menu:
 		show_title()
 	else:
 		load_level(GameState.level_index)
@@ -147,6 +154,21 @@ func _ready() -> void:
 		pass                                     # en _process, cuando ya han pasado F9 y compañía
 	elif _menu_page != "":
 		menu.pending_page = _menu_page
+
+
+## Al abrir el juego: la presentación (el cerdito de la pantalla de carga, vivo) y, cuando empieza a
+## irse, el título debajo, que se ve por el círculo que se abre (sin fundido desde negro); el inicio
+## del cerdito (bandeja, botones) espera a que se vea entero.
+func _start_with_splash() -> void:
+	splash = Presentacion.new()
+	splash.name = "Presentacion"
+	add_child(splash)
+	splash.opening.connect(func() -> void:
+		_skip_fade = true
+		_entrance_delay = Presentacion.REVEAL_TIME
+		show_title()
+		_entrance_delay = 0.0)
+	splash.finished.connect(func() -> void: splash = null)
 
 
 func _parse_args() -> void:
@@ -175,6 +197,8 @@ func _parse_args() -> void:
 			_only_background = true
 		elif a == "--f9":
 			_press_f9 = true
+		elif a == "--presentacion":
+			_force_splash = true
 		elif a == "--sin-interfaz":
 			_no_hud = true
 		elif a == "--creditos":
@@ -277,7 +301,7 @@ func show_title() -> void:
 	else:
 		GameState.camera.set_menu_view(false)
 		GameState.hud.set_game_ui_visible(true)
-		GameState.hud.stage_entrance()           # el cerdito; luego la bandeja; luego los botones
+		GameState.hud.stage_entrance(_entrance_delay)   # el cerdito; luego la bandeja; luego los botones
 
 
 ## Desde el menú (Jugar, Continuar o un diorama elegido): la pantalla se va a negro con el menú
@@ -399,7 +423,10 @@ func _load(path: String, silent := false) -> void:
 	_apply_lighting(own if own != "" else DEFAULT_LIGHTING)
 	GameState.camera.configure(GameState.diorama)
 	GameState.camera.intro()
-	_fade_in()
+	if _skip_fade:
+		_skip_fade = false
+	else:
+		_fade_in()
 	if _only_background:
 		_level.hide()
 		effects.hide()
