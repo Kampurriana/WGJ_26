@@ -4,7 +4,12 @@ extends Node
 ## Los de Anaïs (Drive FXS, 18-oct): boton_preseleccion (el puntero entra en algo pulsable) y
 ## boton_seleccion (se pulsa), los dos para todo botón (ui/juice.gd); pieza_preseleccion (el puntero
 ## entra en una ficha de la bandeja que se puede poner) y pieza_seleccion (se coge para colocarla);
-## colocar (la pieza encaja en el diorama).
+## colocar (la pieza encaja en el diorama). Y los del desván (Drive FXS, 18-oct), uno por tipo de pieza:
+## colocar_tablon («Colocar madera del suelo desvan»), colocar_pared («Colocar madera pared del desvan»),
+## colocar_tejado («Colocar techo del desvan») y colocar_viga («Colocar VIGA TECHO del desvan»; también la
+## cumbrera). Una pieza suena con colocar_<su id> o el de su primera parte (tablon_largo → colocar_tablon) si
+## está, y si no con colocar: para darle sonido propio a otra pieza basta con dejar su fichero aquí.
+## logro (Drive FXS, 18-oct; 4,9 s): la sintonía de un logro y de un dibujo encontrado, con jingle().
 ## Música (petición del equipo): musica/menu (Ankui) en el puzle del título y el menú; musica/juego
 ## (Loft) en bucle durante la partida, a volumen moderado. Siempre en bucle y con fundido cruzado.
 ## Suenan por los buses Efectos y Musica (los crea Settings), así les afectan las Opciones.
@@ -22,6 +27,8 @@ var _pool: Array[AudioStreamPlayer] = []
 var _next := 0
 var _cache: Dictionary = {}
 var _warned: Dictionary = {}
+var _jingle: AudioStreamPlayer               ## las sintonías (logro): aparte, para que los clics no las corten
+var _jingle_name := ""
 var _music: AudioStreamPlayer                ## la canción que suena (la otra se está yendo)
 var _music_old: AudioStreamPlayer
 var track := ""                               ## la canción pedida ("menu", "juego"; "" = ninguna)
@@ -39,6 +46,9 @@ func _ready() -> void:
 		p.bus = &"Efectos"
 		add_child(p)
 		_pool.append(p)
+	_jingle = AudioStreamPlayer.new()
+	_jingle.bus = &"Efectos"
+	add_child(_jingle)
 	for i in 2:
 		var m := AudioStreamPlayer.new()
 		m.bus = &"Musica"
@@ -61,7 +71,7 @@ func quit(code := 0) -> void:
 	if _quitting:
 		return
 	_quitting = true
-	for p: AudioStreamPlayer in [_music, _music_old] + _pool:
+	for p: AudioStreamPlayer in [_music, _music_old, _jingle] + _pool:
 		p.stop()
 		p.stream = null
 	Narrator.clear()                         # una voz sonando al salir también se queda colgada
@@ -85,6 +95,24 @@ func play(sound: String, pitch_jitter := 0.08) -> void:
 	p.pitch_scale = 1.0 + randf_range(-pitch_jitter, pitch_jitter)
 	p.play()
 	played[sound] = int(played.get(sound, 0)) + 1
+
+
+## Una sintonía (un efecto con melodía, como logro): sin cambiarle el tono (desafinaría) y en su
+## propio reproductor (los efectos cortos no la cortan). Si ya está sonando no vuelve a empezar: el
+## último dibujo se encuentra y gana su logro a la vez, y suena una sola.
+func jingle(sound: String) -> void:
+	var stream := _find("sfx", sound)
+	if stream == null or (_jingle.playing and _jingle.stream == stream):
+		return
+	_jingle.stream = stream
+	_jingle.play()
+	_jingle_name = sound
+	played[sound] = int(played.get(sound, 0)) + 1
+
+
+## (Tests) La sintonía que está sonando ("" si ninguna).
+func jingle_playing() -> String:
+	return _jingle_name if _jingle.playing else ""
 
 
 ## Pone una canción en bucle a `volume_db`, con fundido cruzado desde la que sonaba. Si ya suena,
@@ -133,6 +161,14 @@ func _fade(p: AudioStreamPlayer, to: float, seconds: float) -> void:
 	tw.tween_property(p, "volume_linear", to, maxf(seconds, 0.01)).set_trans(Tween.TRANS_SINE)
 	if to <= 0.0:
 		tw.tween_callback(p.stop)
+
+
+## Si hay fichero para ese efecto (sin avisar si no: para elegir entre varios).
+func has(sound: String) -> bool:
+	var key := "sfx/" + sound
+	if _cache.has(key):
+		return _cache[key] != null
+	return EXTENSIONS.any(func(ext: String) -> bool: return ResourceLoader.exists("res://assets/audio/sfx/%s.%s" % [sound, ext]))
 
 
 ## Lo que dura un efecto (0 si no hay fichero).

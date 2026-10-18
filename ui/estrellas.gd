@@ -135,7 +135,7 @@ func _next() -> void:
 	_banner_star.rotation = 0.0
 	banner.show()
 	banner.scale = Vector2.ONE
-	Sfx.play("logro")
+	Sfx.jingle("logro")
 	if not bar.visible:                          # en un primer plano: la fila se asoma para recibirla
 		bar.show()
 		bar.modulate.a = 0.0

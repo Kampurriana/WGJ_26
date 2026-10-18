@@ -31,6 +31,8 @@ const HANG_TIME := 1.3                      ## ...vuela en arco hasta su pinza..
 const SWING_TIME := 2.4                     ## ...y se balancea en la cuerda hasta quedarse quieto (s)
 const GIVEN_DELAY := 0.7                    ## lo que espera el dibujo que viene con una pieza tras su momento (s)
 const TWIN_STEP := 0.07                     ## una pieza repetida se pone en todos sus huecos, uno tras otro (s)
+## Piezas que suenan como otra al encajar (Sfx: colocar_<id>): la cumbrera es una viga más del techo.
+const SUENA_COMO := {&"cumbrera": "viga"}
 
 @export var level_title := "Diorama"
 ## Modelo del diorama: un .glb (o escena) con la convención de nombres. Si el fichero existe, se
@@ -499,8 +501,9 @@ func place(slot: PieceSlot) -> void:
 		t.filled = true                          # ya puesta para el juego; su silueta espera su turno
 		inventory.erase(t.id)
 	_show_placed(slot)
-	for i in twins.size():
-		create_tween().tween_callback(_show_placed.bind(twins[i])).set_delay((i + 1) * TWIN_STEP)
+	var sound := place_sound(slot.id)
+	for i in twins.size():                     # (los sonidos propios ya traen varios golpes: uno por gesto)
+		create_tween().tween_callback(_show_placed.bind(twins[i], sound == "colocar")).set_delay((i + 1) * TWIN_STEP)
 	Narrator.say_if_exists("pieza_" + String(slot.id))
 	if slot.flash:
 		Events.flash_requested.emit()
@@ -524,9 +527,20 @@ func twins_of(slot: PieceSlot) -> Array[PieceSlot]:
 	return out
 
 
+## El sonido de una pieza al encajar: colocar_<id>, o el de la primera parte de su id (tablon_largo →
+## colocar_tablon; pared_fondo → colocar_pared), o el de la pieza a la que suena (SUENA_COMO); si no hay,
+## colocar. Los del desván son de Drive FXS (18-oct).
+func place_sound(id: StringName) -> String:
+	var base := String(SUENA_COMO.get(id, id))
+	while not base.is_empty() and not Sfx.has("colocar_" + base):
+		base = base.left(maxi(base.rfind("_"), 0))
+	return "colocar_" + base if not base.is_empty() else "colocar"
+
+
 ## Lo que se ve al encajar una pieza: deja de ser silueta, salta, pinta alrededor y avisa (efectos,
-## cámara, momentos). En las gemelas llega un poco después que en la que soltó el jugador.
-func _show_placed(slot: PieceSlot) -> void:
+## cámara, momentos). En las gemelas llega un poco después que en la que soltó el jugador; suenan
+## también si su sonido es el corto de siempre (`sound`), no si es uno propio de varios golpes.
+func _show_placed(slot: PieceSlot, sound := true) -> void:
 	slot.fill()
 	for m in slot.meshes():
 		Visuals.add_surface(m)
@@ -534,7 +548,8 @@ func _show_placed(slot: PieceSlot) -> void:
 		_pop(slot.node)
 	_reveal_around(slot.center())
 	_play_animation(String(slot.id) + "_placed")
-	Sfx.play("colocar")
+	if sound:
+		Sfx.play(place_sound(slot.id))
 	Events.piece_placed.emit(slot.id, slot.node)
 
 
@@ -711,7 +726,7 @@ func find_collectible(it: Interactable) -> void:
 	it.set_clickable(false)
 	_given.erase(it)
 	var found := collectibles_found()
-	Sfx.play("logro")
+	Sfx.jingle("logro")
 	Events.collectible_found.emit(it, found, collectible_total())
 	if not _held.has(it):
 		_hang(it, found - 1, true)              # sin frase ni consejo: los encuentra el jugador (quinta nota)
