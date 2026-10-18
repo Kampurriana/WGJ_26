@@ -215,8 +215,15 @@ func _childhood(sec: Node3D) -> void:
 	_zone_light(sec, Vector3(-1.6, 2.6, 1.6))
 	# (lo que va encima o dentro de un mueble, antes de mover el mueble)
 	_piece(sec, "P_caja_musica__after-comoda_infantil", ["Muebles/SM_ComodaA/SM_MusicBox"])
-	_each(sec, "cajon_comoda__after-comoda_infantil", ["Muebles/SM_ComodaA/SM_ComodaB", "Muebles/SM_ComodaA/SM_ComodaC",
-		"Muebles/SM_ComodaA/SM_ComodaD"])
+	# Los cajones de la cómoda: piezas (iguales: al poner uno se ponen los tres) y, puestos, se abren (OD_;
+	# vacíos, pero suenan y se mueven: 18-oct, «que los cajones de los muebles se puedan hacer»). El OD_
+	# gira como la cómoda y el cajón sale por su -Z (la cara de los muebles del kit).
+	var dresser_yaw := (_art.get_node("Muebles/SM_ComodaA") as Node3D).global_rotation.y
+	for k in 3:
+		var path: String = "Muebles/SM_ComodaA/SM_Comoda" + ["B", "C", "D"][k]
+		var holder := _node(sec, "OD_cajon_comoda_%d__nz" % (k + 1), Visuals.global_aabb(_art.get_node(path) as Node3D).get_center())
+		holder.rotation.y = dresser_yaw
+		_piece(holder, "P_cajon_comoda__after-comoda_infantil%s" % ("" if k == 0 else "_%03d" % k), [path], Vector3.ZERO)
 	_piece(sec, "P_comoda_infantil", ["Muebles/SM_ComodaA"])
 	_piece(sec, "P_dibujo__after-caja_musica", ["Adornos/Dibujo_t_draw_03"])
 	_piece(sec, "P_tele", ["Muebles/SM_TV"])
@@ -318,9 +325,12 @@ func _teen(sec: Node3D) -> void:
 	var drawers := _node(sec, "Cajones", Vector3.ZERO)
 	var top_drawer := _node(drawers, "OD_cajon_escritorio", (desk.get_node("SM_DeskC") as Node3D).global_position)
 	var drawer_box := Visuals.global_aabb(desk.get_node("SM_DeskC") as Node3D)
-	_piece(top_drawer, "P_cajon__after-escritorio", ["Muebles/SM_DeskA/SM_DeskC"])
-	_piece(drawers, "P_cajon_pomo__after-escritorio", ["Muebles/SM_DeskA/SM_DeskD"])
-	_piece(drawers, "P_cajon__after-escritorio_001", ["Muebles/SM_DeskA/SM_DeskC2"])
+	_piece(top_drawer, "P_cajon__after-escritorio", ["Muebles/SM_DeskA/SM_DeskC"], Vector3.ZERO)
+	# Los otros dos también se abren (vacíos), como el de arriba: hacia delante del escritorio.
+	var knob := _node(drawers, "OD_cajon_escritorio_pomo", (desk.get_node("SM_DeskD") as Node3D).global_position)
+	_piece(knob, "P_cajon_pomo__after-escritorio", ["Muebles/SM_DeskA/SM_DeskD"], Vector3.ZERO)
+	var low := _node(drawers, "OD_cajon_escritorio_bajo", (desk.get_node("SM_DeskC2") as Node3D).global_position)
+	_piece(low, "P_cajon__after-escritorio_001", ["Muebles/SM_DeskA/SM_DeskC2"], Vector3.ZERO)
 	_application(_node(top_drawer, "H_solicitud", Vector3(drawer_box.get_center().x, drawer_box.end.y - 0.05, drawer_box.get_center().z) - top_drawer.global_position), true)
 	# Lo de encima del escritorio, cada cosa su pieza: el tapete, el bote y sus lápices (iguales).
 	_each(sec, "lapiz__after-bote", ["Muebles/SM_Vase/SM_BrushA", "Muebles/SM_Vase/SM_BrushB", "Muebles/SM_Vase/SM_BrushC"])
@@ -430,9 +440,9 @@ func _mirror_glass(piece: Node3D) -> void:
 	var quad := QuadMesh.new()
 	quad.size = Vector2(local.size.x * 0.62, local.size.y * 0.66)
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.82, 0.86, 0.9)
-	mat.metallic = 1.0
-	mat.roughness = 0.05
+	mat.albedo_color = Color(0.8, 0.86, 0.92)    # un cristal claro (metálico del todo salía negro: no hay nada que reflejar)
+	mat.metallic = 0.25
+	mat.roughness = 0.12
 	quad.material = mat
 	var glass := MeshInstance3D.new()
 	glass.name = "Luna"

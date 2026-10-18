@@ -836,6 +836,24 @@ func _test_story(main: Node) -> void:
 	check(friends.available and friends.target.visible and friends.is_clickable()
 		and Hud.drawing_texture(friends.target).resource_path == "res://assets/kit/dibujos/t_draw_04.jpg",
 		"con la cómoda puesta, asoma el de delante (Ana y Lurdes, t_draw_04) y se puede coger")
+	# Los cajones de la cómoda son piezas y, puestos, se abren hacia fuera (18-oct: «que los cajones de los
+	# muebles se puedan hacer»), con el sonido de Drive FXS.
+	var dresser_drawers := d.interactables.filter(func(it: Interactable) -> bool:
+		return it.kind == NameRules.DRAWER and String(it.target.name).begins_with("OD_cajon_comoda"))
+	var dresser_at := Visuals.global_aabb(_slot(d, &"comoda_infantil").node).get_center()
+	var dd: Interactable = dresser_drawers[0] if not dresser_drawers.is_empty() else null
+	var out_before := Visuals.global_aabb(dd.target).get_center().distance_to(dresser_at) if dd != null else 0.0
+	var heard_dd: Dictionary = Sfx.played.duplicate()
+	if dd != null:
+		dd.activate()
+	await get_tree().create_timer(Interactable.OPEN_TIME + 0.2).timeout
+	check(dresser_drawers.size() == 3 and dresser_drawers.all(func(it: Interactable) -> bool:
+			return it.inside.size() == 1 and it.inside[0].filled and it.is_clickable())
+		and dd != null and dd.is_open and Visuals.global_aabb(dd.target).get_center().distance_to(dresser_at) > out_before + 0.1
+		and _heard(heard_dd, "abrir_cajon") == 1,
+		"los cajones de la cómoda se ponen y, puestos, se abren hacia fuera (con el sonido del cajón)")
+	if dd != null:
+		dd.activate()                              # (y se vuelve a cerrar)
 	Narrator.clear()                           # sin primer plano encima: consejos y avisos esperan a que acabe
 	m.finish()
 	if chest != null:
