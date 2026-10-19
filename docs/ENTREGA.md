@@ -34,6 +34,12 @@ Gestionar plantillas de exportación > Descargar*). O por consola:
 Fuera de la build: pruebas, herramientas, la preview, los niveles que ya no se juegan y los 10
 modelos del pack que el desván no usa (la Web pesa ~56 MB de datos + 40 MB del motor).
 
+**Comprobar que la Web suena** (19-oct: no sonaba nada, trampa 51 de `CLAUDE.md`): servir la carpeta
+(`python3 -m http.server 8765 --bind 127.0.0.1` dentro de `build/export/web`) y
+`NODE_PATH=$(npm root -g) node tools/web/probar_audio.js <carpeta_capturas> http://127.0.0.1:8765/index.html`:
+engancha un analizador a la salida de audio del navegador y escribe el volumen cada ~1 s; con la música
+del título tiene que salir por encima de 0 desde los primeros segundos.
+
 ## Paso a paso en itch.io (manual, págs. 7–13)
 
 1. **Una sola** de vosotras registra el juego: itch.io → *Register* (marcad «I'm interested in

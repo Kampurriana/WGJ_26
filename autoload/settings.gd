@@ -1,7 +1,9 @@
 extends Node
 ## Ajustes del jugador (las Opciones del menú), guardados en user://ajustes.cfg.
-## Crea en código los buses de audio Musica, Efectos y Voz (colgando de Master) y aplica cada
-## ajuste en cuanto cambia. Con --capture en la línea de comandos no lee ni escribe disco:
+## Los buses de audio Musica, Efectos y Voz (colgando de Master) están en default_bus_layout.tres: en la
+## Web, el audio por muestras (el de Godot por defecto allí) solo conoce los buses del fichero; los creados
+## en código al arrancar no sonaban (18-oct, medido en Chromium). Si faltara alguno, se crea aquí. Aplica
+## cada ajuste en cuanto cambia. Con --capture en la línea de comandos no lee ni escribe disco:
 ## las capturas salen siempre con los valores por defecto.
 ## El idioma: el español es el original (los textos del código y la voz); el inglés va sin voz, con
 ## subtítulos (data/narracion_en.json) y la interfaz traducida desde data/ui_en.json.
@@ -38,6 +40,7 @@ var path := "user://ajustes.cfg"         ## "" = solo en memoria
 var _values: Dictionary = {}
 var _save_in := -1.0
 var _system_language := "es"
+var music_duck_db := 0.0                     ## lo que baja la música mientras habla una voz (Sfx.duck)
 
 
 func _ready() -> void:
@@ -179,12 +182,19 @@ func _coerce(key: String, value: Variant) -> Variant:
 	return clampf(float(value), 0.0, 2.0)
 
 
+## (Sfx.duck) La música, `db` por debajo de su volumen: va en el volumen del bus, no en un efecto (en la
+## Web, el audio por muestras no aplica los efectos de los buses).
+func set_music_duck(db: float) -> void:
+	music_duck_db = db
+	_apply("volumen_musica")
+
+
 func _apply(key: String) -> void:
 	var v: Variant = _values[key]
 	if VOLUME_BUS.has(key):
 		var i := AudioServer.get_bus_index(VOLUME_BUS[key])
 		AudioServer.set_bus_mute(i, float(v) <= 0.001)
-		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(float(v), 0.001)))
+		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(float(v), 0.001)) + (music_duck_db if key == "volumen_musica" else 0.0))
 	elif key == "idioma":
 		TranslationServer.set_locale(language())
 	elif key == "pantalla_completa" and DisplayServer.get_name() != "headless":

@@ -332,6 +332,13 @@ Playwright + Chromium (`--use-angle=swiftshader`). Portada y capturas: `--sin-in
     `blend_mix` con prioridad mínima delante de la cámara: el primero de lo transparente). Mirar siempre
     lo aditivo con la ventana puesta (`--f9`).
 
+51. **En la Web no sonaba NADA** (18-oct; medido en Chromium enganchando un analizador a la salida: RMS 0
+    un minuto entero). Godot usa allí por defecto el audio **por muestras** (`default_playback_type.web`), que
+    solo conoce los buses del fichero de buses: los que `Settings` creaba en código al arrancar no existían
+    para él y todo lo que iba a ellos se perdía. Los buses van en `default_bus_layout.tres`. Y ese audio no
+    aplica efectos de bus: la música baja con las voces en el **volumen del bus** (`Settings.set_music_duck`),
+    no con un `AudioEffectAmplify`. Probar el sonido de la Web: servir `build/export/web` y `NODE_PATH=$(npm root -g) node tools/web/probar_audio.js <carpeta> <url>` (volumen por segundo: tiene que salir > 0 desde los ~3 s).
+
 ## Pendiente de verificar con el juego real (ver GDD)
 
 Lo marcado como *supuesto* en `docs/GDD-WOODO.md` se ha deducido de reseñas, no visto. Si alguien

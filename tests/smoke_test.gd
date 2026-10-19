@@ -276,12 +276,27 @@ func _test_voices() -> void:
 	for i in 2:                                      # (process_frame llega antes del _process del Narrador)
 		await get_tree().process_frame
 	check(Sfx.ducked, "mientras habla una voz, la música baja (ducking)")
+	var music_bus := AudioServer.get_bus_index(&"Musica")
+	var music_db := linear_to_db(maxf(float(Settings.get_value("volumen_musica")), 0.001))
+	await get_tree().create_timer(Sfx.DUCK_IN + 0.1).timeout
+	var ducked_db := AudioServer.get_bus_volume_db(music_bus)
+	check(absf(ducked_db - (music_db + Sfx.DUCK_DB)) < 0.3 and AudioServer.get_bus_effect_count(music_bus) == 0,
+		"la música baja en el volumen de su bus, sin efectos (en la Web no se aplican): %.1f dB, quiere %.1f" % [ducked_db, music_db + Sfx.DUCK_DB])
 	Narrator.skip()
 	for i in 3:
 		await get_tree().process_frame
 	check(got.size() == 1 and Narrator.remaining() <= 0.0 and not Narrator.voice_playing(),
 		"pasar de frase se lleva el trozo grabado entero: no sale el resto del subtítulo sin su voz")
 	check(not Sfx.ducked, "al callarse, la música vuelve")
+	await get_tree().create_timer(Sfx.DUCK_OUT + 0.1).timeout
+	check(absf(AudioServer.get_bus_volume_db(music_bus) - music_db) < 0.1, "y su bus vuelve a su volumen")
+	# En la Web, el audio por muestras solo conoce los buses del fichero de buses: creados en código no sonaba nada.
+	var layout := load(String(ProjectSettings.get_setting("audio/buses/default_bus_layout"))) as AudioBusLayout
+	var layout_buses := []
+	if layout != null:
+		for k in range(1, 4):
+			layout_buses.append(String(layout.get("bus/%d/name" % k)))
+	check(layout_buses == ["Musica", "Efectos", "Voz"], "los buses de audio están en default_bus_layout.tres, no se crean en código (%s)" % [layout_buses])
 	var nuevas := 0                                  # las del 18-oct: entrar al desván, hucha, cerdito, dibujos, final
 	var new_marks_ok := true
 	for key: String in ["intro_desvan", "pieza_hucha", "fin_menu", "dibujo_encontrado_1", "dibujo_encontrado_2",

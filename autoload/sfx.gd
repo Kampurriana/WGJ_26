@@ -35,7 +35,6 @@ var _music: AudioStreamPlayer                ## la canción que suena (la otra s
 var _music_old: AudioStreamPlayer
 var track := ""                               ## la canción pedida ("menu", "juego"; "" = ninguna)
 var _quitting := false
-var _duck: AudioEffectAmplify                ## en el bus Musica: lo que baja con las voces
 var ducked := false
 var played: Dictionary = {}                  ## (tests) nombre -> veces que ha sonado
 
@@ -60,10 +59,6 @@ func _ready() -> void:
 		add_child(m)
 		_music_old = _music
 		_music = m
-	var bus := AudioServer.get_bus_index(&"Musica")   # (Settings crea los buses antes: va antes en autoload)
-	if bus >= 0:
-		_duck = AudioEffectAmplify.new()
-		AudioServer.add_bus_effect(bus, _duck)
 
 
 ## Salir del juego: antes se para el sonido y se le da un momento al servidor de audio para soltarlo
@@ -182,15 +177,14 @@ func length(sound: String) -> float:
 ## La música baja mientras habla una voz y vuelve despacio al callarse (lo llama el Narrador).
 func duck(on: bool) -> void:
 	ducked = on
-	if _duck == null:
-		return
 	if has_meta(&"duck"):
 		var old: Variant = get_meta(&"duck")
 		if old is Tween and (old as Tween).is_valid():
 			(old as Tween).kill()
 	var tw := create_tween()
 	set_meta(&"duck", tw)
-	tw.tween_property(_duck, "volume_db", DUCK_DB if on else 0.0, DUCK_IN if on else DUCK_OUT).set_trans(Tween.TRANS_SINE)
+	tw.tween_method(Settings.set_music_duck, Settings.music_duck_db, DUCK_DB if on else 0.0,
+		DUCK_IN if on else DUCK_OUT).set_trans(Tween.TRANS_SINE)   # (en el volumen del bus: en la Web no hay efectos)
 
 
 func _find(folder: String, sound: String) -> AudioStream:
