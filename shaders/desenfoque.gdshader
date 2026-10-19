@@ -25,6 +25,8 @@ const vec2 DISCO[12] = {
 	vec2(0.962, -0.195), vec2(0.473, -0.480), vec2(0.519, 0.767), vec2(0.185, -0.893),
 	vec2(0.507, 0.064), vec2(0.896, 0.412), vec2(-0.322, -0.933), vec2(-0.792, -0.598)
 };
+// En la zona de foco (cerca de media pantalla) el desenfoque es de medio píxel: con 4 muestras basta.
+const vec2 CRUZ[4] = { vec2(0.7, 0.7), vec2(-0.7, 0.7), vec2(0.7, -0.7), vec2(-0.7, -0.7) };
 
 void fragment() {
 	vec2 p = UV * tam;
@@ -32,15 +34,27 @@ void fragment() {
 	float r = mix(dentro, fuera, smoothstep(1.0, 1.0 + suave, d));
 	vec2 step_px = SCREEN_PIXEL_SIZE * r;
 	vec4 c = texture(pantalla, SCREEN_UV);
-	for (int i = 0; i < 12; i++) {
-		c += texture(pantalla, SCREEN_UV + DISCO[i] * step_px);
+	float muestras = 1.0;
+	if (r < 0.7) {                               // (19-oct: la build iba a tirones; 13 muestras en toda la pantalla)
+		for (int i = 0; i < 4; i++) {
+			c += texture(pantalla, SCREEN_UV + CRUZ[i] * step_px);
+		}
+		muestras = 5.0;
+	} else {
+		for (int i = 0; i < 12; i++) {
+			c += texture(pantalla, SCREEN_UV + DISCO[i] * step_px);
+		}
+		muestras = 13.0;
 	}
-	vec3 col = c.rgb / 13.0;
-	// Aberración: el rojo y el azul se separan un poco hacia fuera, solo lejos del centro.
+	vec3 col = c.rgb / muestras;
+	// Aberración: el rojo y el azul se separan un poco hacia fuera, solo lejos del centro (en el centro
+	// sería menos de una décima de píxel: no se lee la pantalla otra vez).
 	vec2 off = SCREEN_UV - 0.5;
-	vec2 ca = off * dot(off, off) * 4.0 * SCREEN_PIXEL_SIZE * aberracion * 2.0;
-	col.r = mix(col.r, texture(pantalla, SCREEN_UV + ca).r, 0.85);
-	col.b = mix(col.b, texture(pantalla, SCREEN_UV - ca).b, 0.85);
+	if (dot(off, off) > 0.04) {
+		vec2 ca = off * dot(off, off) * 4.0 * SCREEN_PIXEL_SIZE * aberracion * 2.0;
+		col.r = mix(col.r, texture(pantalla, SCREEN_UV + ca).r, 0.85);
+		col.b = mix(col.b, texture(pantalla, SCREEN_UV - ca).b, 0.85);
+	}
 	// Etalonaje: sombras algo frías, luces doradas (la tarde de verano), negros de película.
 	float l = dot(col, vec3(0.299, 0.587, 0.114));
 	col *= mix(tinte_sombras, tinte_luces, smoothstep(0.15, 0.85, l));

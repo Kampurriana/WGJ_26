@@ -41,6 +41,12 @@ const TWIN_STEP := 0.07                     ## una pieza repetida se pone en tod
 ## Piezas que suenan como otra al encajar (Sfx: colocar_<id>): la cumbrera es una viga más del techo.
 const SUENA_COMO := {&"cumbrera": "viga", &"pilar": "viga", &"poste": "viga", &"correa": "viga",
 	&"borde_suelo": "tablon", &"rodapie": "pared", &"moldura": "pared"}
+## Lo plano, lo muy pequeño y lo que forma el suelo no hace sombra (tablones, alfombras, papeles, fotos,
+## bombillas, pegatinas...): su sombra no se ve y la del sol redibuja cada objeto que la hace (19-oct: la
+## build iba a tirones). Las vigas de arriba sí: sus rayas se ven en el suelo.
+const SHADOW_FLAT := 0.05                    ## (m) menos alto que esto: plano
+const SHADOW_SMALL := 0.1                    ## (m) su lado más largo, menos que esto: pequeño
+const SHADOW_FLOOR := 0.1                    ## apoyado en el suelo y menos alto que esto por su largo: es suelo
 const WORKBENCH_WAIT := 0.8                  ## (Z_ __monta) lo que se ve montado antes de irse a la bandeja (s)
 
 @export var level_title := "Diorama"
@@ -114,6 +120,7 @@ func _ready() -> void:
 	_build_inventory()
 	_apply_clay()
 	_build_surfaces()
+	_trim_shadow_casters()
 	_setup_sections()
 	_link_containers()
 	_refresh(false)
@@ -304,6 +311,22 @@ func _apply_clay() -> void:
 
 ## Todo lo que se ve y no es un hueco pendiente ni algo escondido es "superficie": la pieza en
 ## mano no lo atraviesa. Las piezas pasan a serlo al colocarse (place / complete_silently).
+## Lo plano o pequeño, sin sombra (SHADOW_FLAT, SHADOW_SMALL): la sombra del sol dibuja otra vez cada
+## objeto que la hace, y estos no la dejan ver.
+func _trim_shadow_casters() -> void:
+	var meshes := Visuals.meshes_under(self)
+	var floor_y := INF
+	for m in meshes:
+		floor_y = minf(floor_y, Visuals.global_aabb(m).position.y)
+	for m in meshes:
+		var box := Visuals.global_aabb(m)
+		var size := box.size
+		var long := maxf(size.x, size.z)
+		var on_floor := box.position.y <= floor_y + 0.02 and size.y < long * SHADOW_FLOOR
+		if size.y < SHADOW_FLAT or maxf(long, size.y) < SHADOW_SMALL or on_floor:
+			m.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
 func _build_surfaces() -> void:
 	var skip: Dictionary = {}
 	for s in slots:

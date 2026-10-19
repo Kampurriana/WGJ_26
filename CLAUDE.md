@@ -30,6 +30,7 @@ game jam de 48 h. Claude escribe y prueba TODO el código; las artistas solo apo
 | Medir si la luz quema (sobre capturas 1280×720) | `bash tools/capture.sh build/fondo.png 0 0 --solo-fondo` y `python3 -I tools/medir_luz.py build/captura.png --fondo build/fondo.png` → `quemado` < 2 % (el fondo ya no es liso: sin `--fondo` no mide) |
 | Mirar el menú de inicio | `bash tools/capture.sh build/menu.png 30 menu --capture-after=12` (resuelve el título y abre el menú); páginas: `--menu-page=opciones\|logros\|creditos`; pausa: `bash tools/capture.sh build/pausa.png 0 0 --menu-page=pausa`; el álbum de dibujos: `bash tools/capture.sh build/album.png 0 0 --f9 --menu-page=dibujos --capture-after=3` (sin `--f9`, vacío) |
 | Mirar el desván entero (F9) | `bash tools/capture.sh build/f9.png 0 0 --f9 --capture-after=7` |
+| **Medir el rendimiento** (ms por fotograma; trampa 52) | `xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --path . --resolution 1280x720 -- --level=0 --solve=0 --f9 --capture-after=9 --medir=5` → `MEDIDA ... media=... ms`; `--sin=post,sombras,...` quita partes para ver cuánto cuestan |
 | Mirar el juego con el **tiro de la preview** (giro, caída en grados; distancia a la diagonal del diorama, como la vista del diorama de la preview) | `bash tools/capture.sh build/tiro.png 0 0 --f9 --sin-interfaz --tiro=40,30 --capture-after=8` (añadir `--prototipo` para el prototipo) |
 | Mirar el plano del espejo | `bash tools/capture.sh build/espejo.png 0 0 --espejo --capture-after=4.6` (acaba los capítulos de antes, monta la adultez y pone el espejo) |
 | Mirar los momentos del desván | `--solve=11 --capture-after=8` (hucha), `--solve=56 --capture-after=30` (espejo), `--solve=57 --capture-after=41.7` (la hucha del final: la moneda y su fantasma a medio gesto) |
@@ -249,8 +250,8 @@ Playwright + Chromium (`--use-angle=swiftshader`). Portada y capturas: `--sin-in
     `main.gd`, así que el `frame_box` de `main` pisaba el primer plano del epílogo. Ahora `main` no
     encuadra si la cámara está en un momento. Ojo al añadir otro oyente que mueva la cámara.
 29. **Con 50 fichas en la bandeja, cada una con su `SubViewport`:** las bloqueadas se dibujan una
-    sola vez (`UPDATE_ONCE`) y no giran; solo las disponibles (pocas) se actualizan. Medir FPS en
-    navegador (trampa 9).
+    sola vez (`UPDATE_ONCE`) y no giran; las disponibles, solo cuando su pieza gira de verdad
+    (`InventoryItem.REDRAW_DEG`). **Ojo (trampa 52):** sin `SubViewportContainer`.
 30. **Recorrer con tipo un diccionario o array que tiene nodos ya liberados revienta**
     (`for v: VisualInstance3D in dict:` → "Trying to assign invalid previously freed instance").
     Recorrer sin tipo y comprobar `is_instance_valid` antes de usar (`Momentos._unisolate`).
@@ -338,6 +339,19 @@ Playwright + Chromium (`--use-angle=swiftshader`). Portada y capturas: `--sin-in
     para él y todo lo que iba a ellos se perdía. Los buses van en `default_bus_layout.tres`. Y ese audio no
     aplica efectos de bus: la música baja con las voces en el **volumen del bus** (`Settings.set_music_duck`),
     no con un `AudioEffectAmplify`. Probar el sonido de la Web: servir `build/export/web` y `NODE_PATH=$(npm root -g) node tools/web/probar_audio.js <carpeta> <url>` (volumen por segundo: tiene que salir > 0 desde los ~3 s).
+
+52. **La build iba a tirones** (19-oct). Lo que pesaba, medido con `--medir` (abajo): (1) las **66 fichas
+    de la bandeja se dibujaban en cada fotograma** (66 escenas 3D más): un `SubViewportContainer` pone su
+    `SubViewport` a "dibujar siempre" cada vez que entra en el árbol o cambia de visibilidad, y pisaba el
+    `UPDATE_ONCE`. Las fichas van en un `SubViewport` suelto enseñado con un `TextureRect`. (2) El mapa
+    de sombras del sol era de **8192²** (67 M de píxeles por fotograma): ahora 4096 (Web 2048), el de la
+    ventana 2048, sin MSAA en la Web. (3) El 3D se dibujaba a la resolución nativa (pantalla completa,
+    pantallas de mucha densidad): techo `main.MAX_3D_PIXELS` (1600×900; `scaling_3d_scale`). (4) El
+    postproceso hacía 15 lecturas por píxel en toda la pantalla: 5 en la zona de foco. (5) Lo plano, lo
+    pequeño y el suelo no hacen sombra (`Diorama._trim_shadow_casters`). **Medir:** `--medir=S` (desde
+    `--capture-after`, S segundos de fotogramas: ms media y p95, llamadas de dibujo) y `--sin=a,b` para
+    quitar partes (lista en `scenes/main.gd`); aquí el render es por software (llvmpipe): sirve para
+    comparar, no para saber los FPS de un PC. Y `--headless` mide solo los scripts (1-3 ms por fotograma).
 
 ## Pendiente de verificar con el juego real (ver GDD)
 

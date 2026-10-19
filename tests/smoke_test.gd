@@ -646,6 +646,32 @@ func _test_story(main: Node) -> void:
 	check(d.slots.filter(func(sl: PieceSlot) -> bool: return sl.id == &"foto_camara").all(func(sl: PieceSlot) -> bool:
 		return cam_box.intersects(Visuals.global_aabb(sl.node))),
 		"las fotos de la cámara, encima del escritorio, junto a ella")
+	# Rendimiento (19-oct: la build iba a tirones). Las fichas de la bandeja no vuelven a dibujarse en cada
+	# fotograma al esconder y enseñar la bandeja (un SubViewportContainer las ponía a "siempre").
+	var tray_cards := GameState.hud.cards()
+	GameState.hud.visible = false
+	await get_tree().process_frame
+	GameState.hud.visible = true
+	await get_tree().process_frame
+	var always := tray_cards.filter(func(c: InventoryItem) -> bool:
+		return not c.find_children("*", "SubViewportContainer", true, false).is_empty() \
+			or c._viewport.render_target_update_mode in [SubViewport.UPDATE_ALWAYS, SubViewport.UPDATE_WHEN_VISIBLE])
+	check(tray_cards.size() > 10 and always.is_empty(),
+		"las fichas de la bandeja solo se dibujan cuando cambia su vista, no en cada fotograma (%d de %d siempre)" % [always.size(), tray_cards.size()])
+	# Lo plano o pequeño no hace sombra (la del sol vuelve a dibujar cada objeto que la hace); las paredes, sí.
+	var plank_meshes := Visuals.meshes_under(_slot(d, &"tablon_largo").node)
+	var wall_meshes := Visuals.meshes_under(_slot(d, &"pared_fondo").node) + Visuals.meshes_under(_slot(d, &"correa").node)
+	check(not plank_meshes.is_empty() and plank_meshes.all(func(m: MeshInstance3D) -> bool: return m.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF)
+		and wall_meshes.size() >= 2 and wall_meshes.all(func(m: MeshInstance3D) -> bool: return m.cast_shadow != GeometryInstance3D.SHADOW_CASTING_SETTING_OFF),
+		"los tablones del suelo no hacen sombra (no se vería) y las paredes y las vigas sí")
+	var sun_map := int(ProjectSettings.get_setting("rendering/lights_and_shadows/directional_shadow/size"))
+	var sun_map_web := int(ProjectSettings.get_setting("rendering/lights_and_shadows/directional_shadow/size.web"))
+	var window_px := Vector2(get_window().size)
+	var max_px: float = (main.get_script() as Script).get_script_constant_map()["MAX_3D_PIXELS"]
+	var want_scale := clampf(sqrt(max_px / maxf(window_px.x * window_px.y, 1.0)), 0.5, 1.0)
+	check(sun_map <= 4096 and sun_map_web <= 2048 and int(ProjectSettings.get_setting("rendering/anti_aliasing/quality/msaa_3d.web")) == 0
+		and is_equal_approx(get_viewport().scaling_3d_scale, want_scale),
+		"el render tiene techo: mapa de sombras del sol %d (Web %d), sin MSAA en la Web y el 3D a %.2f (como mucho %d px)" % [sun_map, sun_map_web, get_viewport().scaling_3d_scale, int(max_px)])
 	# La hucha del kit viene ya montada (18-oct: sin rincón de montaje): entera en la bandeja, con sus ojos
 	# y sus 5 pegatinas; al ponerla solo suena su frase (ninguna sin voz, como la del rincón acabado).
 	var pig_slot := _slot(d, &"hucha")

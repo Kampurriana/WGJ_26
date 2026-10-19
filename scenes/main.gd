@@ -30,6 +30,13 @@ extends Node3D
 ##   --creditos           (capturas) al segundo de empezar pasan los créditos del final
 ##   --inspeccion         (capturas) al segundo de empezar, el primer plano de un dibujo (como al encontrarlo)
 ##   --logro=ID           (capturas) al segundo de empezar, el aviso de ese logro y su estrella volando
+##   --medir=S            (rendimiento) desde --capture-after, mide S segundos de fotogramas y sale: ms por
+##                        fotograma (media y p95), llamadas de dibujo, objetos y tiempo de proceso
+##   --sin=a,b            (rendimiento) quita partes para medir cuánto cuestan: post (enfoque y acabado de
+##                        cine), madera (la capa de madera cruda), haz (la luz de la ventana en el aire), sombras,
+##                        sombra_sol, sombra_ventana, ventana, bandeja (la interfaz), vistas (las fichas 3D),
+##                        particulas, fondo, res75 (el 3D al 75 %), tope (sin el techo de resolución del 3D),
+##                        proc:<script> (sin el _process de ese script, p. ej. proc:hud)
 ##   --fondo=C,M          (capturas) el fondo con el color C y el motivo M (ui/fondos.gd)
 ##   --solo-fondo         (capturas) sin diorama ni partículas: el fondo solo, para medir la luz
 
@@ -43,6 +50,7 @@ const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 # Volumen de cada canción, medido (ffmpeg ebur128): Ankui está masterizada muy baja (-32 LUFS, pico
 # -15 dB) y Loft a -27,6 LUFS. Con el bus Musica al 0,7 de las Opciones, el menú queda en ~-22 LUFS y
 # la partida ~5 LU por debajo, de fondo ("volumen moderado"), sin que ninguna llegue a recortar.
+const MAX_3D_PIXELS := 1600.0 * 900.0       ## techo de píxeles del 3D (_cap_3d_resolution)
 const MUSIC_MENU_DB := 13.0                  ## Ankui (musica/menu): puzle del título y menú
 const MUSIC_GAME_DB := 3.5                   ## Loft (musica/juego): en bucle durante la partida
 const MUSIC_CREDITS_DB := 0.0                ## «Canción créditos» (musica/creditos): los créditos del final y su página del menú (medido: suena entre la del menú y la de la partida)
@@ -89,6 +97,10 @@ var _mirror := false                         ## (--espejo)
 var _solve_left := 0
 var _solve_timer := 0.0
 var _elapsed := 0.0
+var _measure := 0.0                          ## (--medir) segundos a medir; 0 = no se mide
+var _measure_off: PackedStringArray = []     ## (--sin) lo que se quita para medirlo
+var _frames: PackedFloat64Array = []
+var _last_tick := 0
 ## Si no está vacío, el juego tiene solo este nivel en vez de los de data/levels.json (el prototipo del
 ## desván se juega así: levels/prototipo/jugar_prototipo.tscn, o el argumento --prototipo).
 @export_file("*.tscn") var solo_nivel := ""
@@ -102,6 +114,8 @@ func _ready() -> void:
 	# El fondo pastel pasa por el tonemap del 3D: sin HDR en 2D, el lienzo se corta en 1,0 y no sale
 	# de un gris apagado (medido: tope 208/255). Con HDR sale el color calibrado (iluminacion/fondo.gdshader).
 	get_viewport().use_hdr_2d = true
+	get_viewport().size_changed.connect(_cap_3d_resolution)
+	_cap_3d_resolution()
 	_parse_args()
 	if solo_nivel != "":
 		GameState.levels = PackedStringArray([solo_nivel])
@@ -221,6 +235,10 @@ func _parse_args() -> void:
 			_solve_left = a.get_slice("=", 1).to_int()
 		elif a.begins_with("--capture="):
 			_capture_path = a.get_slice("=", 1)
+		elif a.begins_with("--medir="):
+			_measure = a.get_slice("=", 1).to_float()
+		elif a.begins_with("--sin="):
+			_measure_off = a.get_slice("=", 1).split(",")
 		elif a.begins_with("--capture-after="):
 			_capture_after = a.get_slice("=", 1).to_float()
 		elif a.begins_with("--capturas="):
@@ -564,8 +582,86 @@ func _load(path: String, silent := false) -> void:
 		effects.hide()
 
 
+## El 3D se dibuja como mucho a MAX_3D_PIXELS (19-oct: la build iba a tirones). En pantalla completa o en
+## pantallas de mucha densidad (la Web multiplica por la del navegador) eran 2-4 veces más píxeles, cada uno
+## con su sombra, su brillo y su desenfoque; la interfaz sigue a su tamaño, nítida. El enfoque de cine ya
+## difumina: a 1600×900 no se nota.
+func _cap_3d_resolution() -> void:
+	var px := get_viewport().get_visible_rect().size
+	var sz := Vector2(get_window().size) if get_window() != null else px
+	var pixels := maxf(sz.x * sz.y, 1.0)
+	get_viewport().scaling_3d_scale = clampf(sqrt(MAX_3D_PIXELS / pixels), 0.5, 1.0)
+
+
+## (--medir) Un fotograma más de la medida; al acabar, el resumen y fuera. Lo de --sin se quita al empezar.
+func _measure_frame() -> void:
+	var now := Time.get_ticks_usec()
+	if _last_tick == 0:
+		_strip_for_measure()
+	elif _last_tick > 0:
+		_frames.append((now - _last_tick) / 1000.0)
+	_last_tick = now
+	if _frames.size() < 2 or _frames[_frames.size() - 1] <= 0.0 or (_elapsed - _capture_after) < _measure:
+		return
+	var sorted := _frames.duplicate()
+	sorted.sort()
+	var total := 0.0
+	for f in _frames:
+		total += f
+	var avg := total / _frames.size()
+	print("MEDIDA sin=%s fotogramas=%d media=%.1f ms (%.0f fps) p95=%.1f ms dibujos=%d objetos=%d primitivas=%d proceso=%.1f ms" % [
+		",".join(_measure_off), _frames.size(), avg, 1000.0 / avg, sorted[int(sorted.size() * 0.95)],
+		Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
+		Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
+		Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),
+		Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0])
+	_measure = 0.0
+	Sfx.quit()
+
+
+func _strip_for_measure() -> void:
+	var d := GameState.diorama
+	if _measure_off.has("post"):
+		enfoque.visible = false
+	if _measure_off.has("bandeja") and GameState.hud != null:
+		GameState.hud.visible = false
+	if _measure_off.has("res75"):
+		get_viewport().scaling_3d_scale = 0.75
+	if _measure_off.has("tope"):                 # (sin el techo de resolución del 3D)
+		get_viewport().scaling_3d_scale = 1.0
+	if _measure_off.has("particulas"):
+		effects.visible = false
+		effects.process_mode = Node.PROCESS_MODE_DISABLED
+	for n in get_tree().root.find_children("*", "", true, false):
+		if _measure_off.has("madera") and n is GeometryInstance3D:
+			(n as GeometryInstance3D).material_overlay = null
+		if _measure_off.has("sombras") and n is Light3D:
+			(n as Light3D).shadow_enabled = false
+		if _measure_off.has("sombra_sol") and n is DirectionalLight3D:
+			(n as Light3D).shadow_enabled = false
+		if _measure_off.has("sombra_ventana") and n is SpotLight3D:
+			(n as Light3D).shadow_enabled = false
+		if _measure_off.has("ventana") and n is SpotLight3D and n.name == &"SolTarde":
+			(n as Light3D).visible = false
+		if _measure_off.has("haz") and n.name == &"Haz" and n is Node3D:
+			(n as Node3D).visible = false
+		if _measure_off.has("fondo") and n.name == &"Fondo" and n is CanvasItem:
+			(n as CanvasItem).visible = false
+		var script := n.get_script() as Script
+		if script != null and _measure_off.has("proc:" + script.resource_path.get_file().get_basename()):
+			n.set_process(false)                 # (--sin=proc:diorama: sin el _process de ese script)
+			n.set_physics_process(false)
+	if _measure_off.has("vistas"):              # (las vistas 3D de las fichas, quietas)
+		for v in get_tree().root.find_children("*", "SubViewport", true, false):
+			(v as SubViewport).render_target_update_mode = SubViewport.UPDATE_DISABLED
+	if d == null:
+		print("MEDIDA sin nivel")
+
+
 func _process(delta: float) -> void:
 	_elapsed += delta
+	if _measure > 0.0 and _elapsed >= _capture_after:
+		_measure_frame()
 	if _solve_left > 0:
 		_solve_timer -= delta
 		if _solve_timer <= 0.0:

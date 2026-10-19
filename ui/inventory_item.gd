@@ -12,6 +12,7 @@ signal locked_pressed(item: InventoryItem)
 const SIZE := Vector2(84, 84)
 const HOVER_SCALE := 1.18
 const LOCKED_TINT := Color(0.62, 0.6, 0.58, 0.75)
+const REDRAW_DEG := 0.4                      ## una ficha disponible se redibuja si su pieza gira más que esto
 
 var piece_id: StringName
 var locked := false
@@ -19,6 +20,7 @@ var reason := ""                             ## por qué está bloqueada ("" = n
 var _ref: Node3D                 ## nodo del hueco: su orientación es la que se copia
 var _pivot: Node3D
 var _viewport: SubViewport
+var _view: TextureRect                       ## lo que se ve de _viewport
 var _count: Label
 var _lock: Control
 var _hover := false
@@ -32,14 +34,22 @@ func setup(id: StringName, prototype: Node3D, ref: Node3D, count: int) -> void:
 	pivot_offset = SIZE * 0.5
 	theme_type_variation = &"Ficha"
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var holder := SubViewportContainer.new()
-	holder.stretch = true
-	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(holder)
+	# La vista 3D va en un SubViewport suelto y se enseña con un TextureRect: un SubViewportContainer
+	# lo vuelve a poner a "dibujar siempre" cada vez que entra en el árbol o cambia de visibilidad, y
+	# todas las fichas (también las bloqueadas, quietas) se dibujaban en cada fotograma (19-oct: la
+	# build iba a tirones; en el título eran 17 escenas 3D por fotograma). Cuándo se dibuja: _process.
 	_viewport = SubViewport.new()
 	_viewport.own_world_3d = true
 	_viewport.transparent_bg = true
-	holder.add_child(_viewport)
+	_viewport.size = Vector2i(SIZE)
+	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	add_child(_viewport)
+	_view = TextureRect.new()
+	_view.texture = _viewport.get_texture()
+	_view.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_view.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_view)
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
 	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
@@ -111,9 +121,9 @@ func set_locked(on: bool, why := "") -> void:
 	locked = on
 	_lock.visible = on
 	self_modulate = LOCKED_TINT if on else Color.WHITE
-	_viewport.get_parent().modulate = LOCKED_TINT if on else Color.WHITE
+	_view.modulate = LOCKED_TINT if on else Color.WHITE
 	_orient()
-	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE if on else SubViewport.UPDATE_WHEN_VISIBLE
+	_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE   # (disponible: se redibuja cuando gira, _process)
 	if was_locked and not on and is_inside_tree():
 		celebrate_unlock()
 
@@ -134,7 +144,16 @@ func _process(delta: float) -> void:
 	if locked:
 		return                                   # quieta: su vista se dibujó una vez
 	var grow := lerpf(_pivot.basis.get_scale().x, HOVER_SCALE if _hover else 1.0, 1.0 - exp(-12.0 * delta))
+	var before := _pivot.basis
 	_orient(grow)
+	# Solo se vuelve a dibujar si se nota (19-oct: cada ficha es una escena 3D aparte, y dibujarlas todas en
+	# cada fotograma, con la cámara siempre respirando, costaba en la Web).
+	var turned := rad_to_deg(before.orthonormalized().get_rotation_quaternion().angle_to(
+		_pivot.basis.orthonormalized().get_rotation_quaternion()))
+	if turned > REDRAW_DEG or absf(before.get_scale().x - _pivot.basis.get_scale().x) > 0.002:
+		_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	else:
+		_pivot.basis = before                    # (lo que se ve sigue siendo lo último dibujado)
 
 
 ## Orientación de la pieza vista desde la cámara principal = la que verá en su hueco.
