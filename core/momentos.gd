@@ -913,7 +913,7 @@ func _spawn_coin() -> void:
 	var tw := coin.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_property(coin, "scale", Vector3.ONE * COIN_SCALE, 0.45)
 	tw.tween_callback(_start_ghost)
-	Sfx.play("brillo")
+	Sfx.play("moneda_aparece", 0.0)
 
 
 ## La moneda fantasma: una copia translúcida que sale de la moneda, se endereza sobre la ranura y entra
@@ -1033,7 +1033,7 @@ func _release_coin(_pos: Vector2) -> void:
 ## La moneda entra: un golpe de luz cálida desde la ranura, chispas doradas que saltan, luces que
 ## suben despacio, y el fondo se aviva un momento.
 func _coin_in_fx(at: Vector3) -> void:
-	Sfx.play("moneda")
+	Sfx.play("moneda_hucha", 0.0)
 	var d := GameState.diorama
 	var flash := OmniLight3D.new()
 	flash.light_color = Color(1.0, 0.78, 0.4)

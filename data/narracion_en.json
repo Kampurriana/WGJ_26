@@ -45,20 +45,14 @@
 		]
 	},
 	"titulo_adolescencia": "II · Adolescence",
-	"pieza_mp3": [
-		{
-			"voz": "pieza_mp3_a",
-			"frases": "Oh wow! I always used to share my MP3…"
-		},
-		"sfx:mp3_skip",
-		{
-			"voz": "pieza_mp3_b",
-			"frases": [
-				"And there isn't a single song on it I like… Now that I think about it…",
-				"I dressed like them, watched those silly shows, listened to this rubbish to fit in… to be part of the group."
-			]
-		}
-	],
+	"pieza_mp3": {
+		"frases": [
+			"Oh wow! I always used to share my MP3…",
+			"sfx:mp3_skip",
+			"And there isn't a single song on it I like… Now that I think about it…",
+			"I dressed like them, watched those silly shows, listened to this rubbish to fit in… to be part of the group."
+		]
+	},
 	"pieza_camara": {
 		"frases": [
 			"I love photography! I took it on our trips, to birthdays, to the village festivals…",
@@ -83,7 +77,7 @@
 	},
 	"pieza_caballete": {
 		"frases": [
-			"I bought it with my first paycheck. It wasn't much, since almost all of it went into the family pot, but it was enough…",
+			"I bought it with my first paycheck, even though it wasn't much, since almost all of it went into the family pot, but it was enough…",
 			"I had the perfect plan: paint every Sunday…",
 			"Then the rent went up, and guess who works on Sundays."
 		]

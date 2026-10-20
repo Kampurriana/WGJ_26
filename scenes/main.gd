@@ -53,7 +53,7 @@ const DEFAULT_LIGHTING := "res://iluminacion/luz_por_defecto.tscn"
 const MAX_3D_PIXELS := 1600.0 * 900.0       ## techo de píxeles del 3D (_cap_3d_resolution)
 const MUSIC_MENU_DB := 13.0                  ## Ankui (musica/menu): puzle del título y menú
 const MUSIC_GAME_DB := 3.5                   ## Loft (musica/juego): en bucle durante la partida
-const MUSIC_CREDITS_DB := 0.0                ## «Canción créditos» (musica/creditos): los créditos del final y su página del menú (medido: suena entre la del menú y la de la partida)
+const MUSIC_CREDITS_DB := 0.0                ## «Little me» (musica/creditos, Drive 20-oct; el fichero, subido al nivel de la de antes: -23,6 LUFS): los créditos del final y su página del menú
 
 var start_in_menu := true                    ## los tests lo ponen a false para ir directos al nivel
 var splash: Presentacion                     ## la presentación del principio, mientras está (ui/presentacion.gd)

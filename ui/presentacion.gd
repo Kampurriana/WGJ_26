@@ -22,9 +22,12 @@ const POP_TIME := 0.4
 const IRIS_DELAY := 0.08
 const IRIS_TIME := 1.0
 const REVEAL_TIME := IRIS_DELAY + IRIS_TIME  ## desde opening hasta que se ve todo el juego
+const SOUND := "presentacion"                ## «Mortadela logo inicio» (Drive, 20-oct): tres golpes, el último el grande...
+const SOUND_HIT := 1.35                      ## ...a este segundo del fichero: cae justo en el «pop»
 
 var _t := 0.0
 var _opened := false
+var _sounded := false
 var _wait_frames := -1                       ## tras opening, fotogramas hasta irse (la carga del título da un tirón)
 var _curtain: ColorRect
 var _iris: ShaderMaterial
@@ -75,6 +78,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
+	if not _sounded and _t >= OPEN_AT - SOUND_HIT:   # (si se adelanta con un clic, empieza en el «pop»)
+		_sounded = true
+		Sfx.play(SOUND, 0.0)
 	if not _opened:
 		var pose := _pose(_t)
 		var h: float = pose[0]
@@ -135,7 +141,6 @@ func _pose(t: float) -> Array:
 
 ## El «pop» del cerdito y el círculo que se abre desde él hasta dejar ver toda la pantalla.
 func _leave() -> void:
-	Sfx.play("pieza_seleccion", 0.0)
 	_pig.position = _feet
 	_pig.rotation = 0.0
 	var view := get_viewport().get_visible_rect().size

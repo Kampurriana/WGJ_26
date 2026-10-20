@@ -38,9 +38,11 @@ const HANG_TIME := 1.3                      ## ...vuela en arco hasta su pinza..
 const SWING_TIME := 2.4                     ## ...y se balancea en la cuerda hasta quedarse quieto (s)
 const GIVEN_DELAY := 0.7                    ## lo que espera el dibujo que viene con una pieza tras su momento (s)
 const TWIN_STEP := 0.07                     ## una pieza repetida se pone en todos sus huecos, uno tras otro (s)
-## Piezas que suenan como otra al encajar (Sfx: colocar_<id>): la cumbrera es una viga más del techo.
-const SUENA_COMO := {&"cumbrera": "viga", &"pilar": "viga", &"poste": "viga", &"correa": "viga",
-	&"borde_suelo": "tablon", &"rodapie": "pared", &"moldura": "pared"}
+const MELODY_PREFIX := "melodia_"           ## una pieza con melodía (Sfx melodia_<id>, la caja de música): suena al ponerla...
+const MELODY_CLICK := 10.0                  ## ...y, ya puesta, al pulsarla suena esto (s) con fundido; pulsada mientras suena, se calla
+## Piezas que suenan como otra al encajar (Sfx: colocar_<id>): el borde del suelo, a tablón; rodapiés y
+## molduras, a pared. Viga, pilar, poste, correa y cumbrera tienen cada una el suyo (Drive, 20-oct).
+const SUENA_COMO := {&"borde_suelo": "tablon", &"rodapie": "pared", &"moldura": "pared"}
 ## Lo plano, lo muy pequeño y lo que forma el suelo no hace sombra (tablones, alfombras, papeles, fotos,
 ## bombillas, pegatinas...): su sombra no se ve y la del sol redibuja cada objeto que la hace (19-oct: la
 ## build iba a tirones). Las vigas de arriba sí: sus rayas se ven en el suelo.
@@ -123,12 +125,14 @@ func _ready() -> void:
 	_trim_shadow_casters()
 	_setup_sections()
 	_link_containers()
+	_add_melodies()
 	_refresh(false)
 	Events.world_clicked.connect(_on_world_clicked)
 	Events.piece_drag_started.connect(_pulse_slots_for)
 	Events.piece_drag_ended.connect(func(_id: StringName, _placed: bool) -> void: _pulse_slots_for(&""))
 	GameState.diorama = self
 	Narrator.clear()
+	Sfx.stop_melody(0.0)                         # (la caja de música del nivel de antes)
 	Events.level_started.emit(self)
 	if intro_key != "":
 		Narrator.say(intro_key)
@@ -234,6 +238,27 @@ func _setup_sections() -> void:
 		for it in sec.interactables:
 			if not it.is_hidden_item():
 				it.set_clickable(sec.opened)
+
+
+## Las piezas con melodía (Sfx melodia_<id>) se pueden pulsar una vez puestas: su pieza va en `inside`
+## (sin ella puesta, ni se pulsa ni pone la mano). No van en ninguna sección: no se abren ni brillan.
+func _add_melodies() -> void:
+	for s in slots:
+		if Sfx.has(MELODY_PREFIX + String(s.id)) and s.node.get_node_or_null("Interactable") == null:
+			var it := Interactable.new()
+			it.setup(self, s.node, {"kind": Interactable.MELODY, "id": s.id, "tokens": PackedStringArray()}, s.scope)
+			it.inside.append(s)
+			it.refresh_clickable()
+			interactables.append(it)
+
+
+## Una pieza con melodía pulsada: suena MELODY_CLICK s (si ya sonaba, se calla).
+func play_melody(id: StringName) -> void:
+	var sound := MELODY_PREFIX + String(id)
+	if Sfx.melody_playing() == sound:
+		Sfx.stop_melody()
+	else:
+		Sfx.melody(sound, MELODY_CLICK)
 
 
 ## Cada H_ sabe en qué mueble (OD_/OR_) está guardado:
@@ -610,8 +635,10 @@ func _show_placed(slot: PieceSlot, sound := true) -> void:
 		_pop(slot.node)
 	_reveal_around(slot.center())
 	_play_animation(String(slot.id) + "_placed")
-	if sound:
+	if sound and not slot.offered:              # (la moneda suena al entrar en la hucha: Momentos)
 		Sfx.play(place_sound(slot.id))
+		if Sfx.has(MELODY_PREFIX + String(slot.id)):  # la caja de música, entera bajo su frase
+			Sfx.melody(MELODY_PREFIX + String(slot.id))
 	Events.piece_placed.emit(slot.id, slot.node)
 
 
@@ -998,6 +1025,9 @@ func is_chapter(sec: Section) -> bool:
 ## cuáles ya se pueden poner (claras) y cuáles aún no (grises), los objetos escondidos que ya toca
 ## encontrar y qué mueble u objeto llama la atención.
 func _refresh(animate: bool) -> void:
+	for it in interactables:                    # (las de melodía se pulsan en cuanto su pieza está puesta, también con F9 o C)
+		if it.kind == Interactable.MELODY:
+			it.refresh_clickable()
 	for s in slots:
 		if not s.filled:
 			s.set_shown(s.section == null or s.section.opened, animate)

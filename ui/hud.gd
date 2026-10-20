@@ -98,6 +98,7 @@ var _entrance: Tween                         ## la entrada escalonada del cerdit
 var _charge := 1.0
 var _idle := 0.0
 var _subtitle_left := 0.0
+var _follow_voice := false                   ## el subtítulo de ahora se escribe al ritmo de su voz (Narrator.typed_ratio)
 var _hinted: PieceSlot
 var continue_button: Button                  ## (cambio de acto) «Continuar»: el capítulo siguiente sale al pulsarlo
 var _continue_t := 0.0
@@ -1091,10 +1092,14 @@ func _show_subtitle(text: String, seconds: float) -> void:
 	if _type_tween != null:                      # se escribe letra a letra (feedback: "efecto de escribir")
 		_type_tween.kill()
 	_subtitle.visible_ratio = 0.0
-	_type_tween = create_tween()
-	# Con voz, al ritmo de la grabación (se escribe mientras lo dice); sin voz, a su ritmo.
-	var type_time := Narrator.typing if Narrator.typing > 0.0 else minf(text.length() * TYPE_SPEED, seconds * 0.7)
-	_type_tween.tween_property(_subtitle, "visible_ratio", 1.0, type_time)
+	# Con voz, al ritmo de la grabación: se escribe mientras lo dice y espera en sus pausas (_process,
+	# Narrator.typed_ratio); sin voz, a su ritmo.
+	_follow_voice = Narrator.typed_ratio() >= 0.0
+	if _follow_voice:
+		_subtitle.visible_ratio = Narrator.typed_ratio()
+	else:
+		_type_tween = create_tween()
+		_type_tween.tween_property(_subtitle, "visible_ratio", 1.0, minf(text.length() * TYPE_SPEED, seconds * 0.7))
 
 
 func _process(delta: float) -> void:
@@ -1117,6 +1122,9 @@ func _process(delta: float) -> void:
 		var r := _subtitle_box.get_global_rect()
 		_tail.position = Vector2(r.get_center().x - _tail.size.x * 0.5, r.end.y - 3.0)
 		_tail.modulate.a = _subtitle_box.modulate.a
+	if _follow_voice and _subtitle_box.visible and Narrator.typed_ratio() >= 0.0:
+		_subtitle.visible_ratio = maxf(_subtitle.visible_ratio, Narrator.typed_ratio())
+		_subtitle_left = maxf(_subtitle_left, 0.2)   # mientras dura su frase (la voz manda), no se va
 	if _subtitle_left > 0.0:
 		_subtitle_left -= delta
 		if _subtitle_left <= 0.0:

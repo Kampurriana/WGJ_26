@@ -271,15 +271,36 @@ func _test_voices() -> void:
 	check(got.size() == 1 and got[0][0] == "¡Gatito! Ahora sé que eres una nutria…" and is_equal_approx(float(got[0][1]), 3.85)
 		and Narrator.voice_playing() and absf(left - (voice_len + Narrator.VOICE_TAIL + Narrator.GAP)) < 0.05,
 		"una frase grabada suena entera con su voz y su subtítulo sale por trozos: el primero, hasta su pausa (%.2f s)" % left)
-	check(is_equal_approx(Narrator.typing, 3.85 - Narrator.TYPE_LEAD),
-		"el texto se escribe al ritmo de la voz: el primer trozo tarda lo que tarda en decirlo (%.2f s)" % Narrator.typing)
+	# Al ritmo de la voz (20-oct): el texto se escribe mientras habla y espera en sus pausas (tramos medidos en
+	# data/voces_tiempos.json). «¡Gatito!» se dice en [0, 1,06]; pausa; el resto en [1,53, 3,36].
+	var first := "¡Gatito! Ahora sé que eres una nutria…"
+	var runs: Array = Narrator._timings.get("pieza_peluche", [])
+	var gatito := float("¡Gatito! ".length() - 1) / first.length()
+	var r_mid := Narrator.reveal(first, runs, 0.0, 3.85, 0.53)
+	var r_p1 := Narrator.reveal(first, runs, 0.0, 3.85, 1.15)
+	var r_p2 := Narrator.reveal(first, runs, 0.0, 3.85, 1.45)
+	var r_end := Narrator.reveal(first, runs, 0.0, 3.85, 3.4)
+	check(runs.size() >= 2 and r_mid > 0.0 and r_mid < gatito and is_equal_approx(r_p1, gatito) and is_equal_approx(r_p2, gatito)
+		and is_equal_approx(r_end, 1.0),
+		"el subtítulo se escribe al ritmo de la voz: «¡Gatito!» mientras lo dice, en la pausa espera, y acaba cuando acaba de decirlo (%.2f %.2f %.2f %.2f)" % [r_mid, r_p1, r_p2, r_end])
+	# La hucha: «Recuerdo que estuve mucho tiempo ahorrando. Para convertirme en una gran artista.» lo dice de un
+	# tirón (2,47-7,09) y luego respira (7,33-7,48): esa respiración no es «el segundo trozo».
+	var piggy: Dictionary = lines.get("pieza_hucha", {})
+	var piggy_line := String((piggy.get("frases", ["", ""]) as Array)[1])
+	var r_piggy := Narrator.reveal(piggy_line, Narrator._timings.get("pieza_hucha", []), 2.35, 7.85, 7.09)
+	check(r_piggy > 0.9, "una respiración cortita no cuenta como un trozo del texto: al acabar de decirlo, ya está casi escrito (%.2f)" % r_piggy)
+	var ratios: Array[float] = []
 	for i in 2:                                      # (process_frame llega antes del _process del Narrador)
 		await get_tree().process_frame
+	ratios.append(Narrator.typed_ratio())
 	check(Sfx.ducked, "mientras habla una voz, la música baja (ducking)")
 	var music_bus := AudioServer.get_bus_index(&"Musica")
 	var music_db := linear_to_db(maxf(float(Settings.get_value("volumen_musica")), 0.001))
 	await get_tree().create_timer(Sfx.DUCK_IN + 0.1).timeout
 	var ducked_db := AudioServer.get_bus_volume_db(music_bus)
+	ratios.append(Narrator.typed_ratio())
+	check(ratios[0] >= 0.0 and ratios[1] > ratios[0] and ratios[1] <= gatito + 0.01 and Narrator.clock() > 0.3,
+		"y en el juego el narrador da ese ritmo con el reloj del audio que suena (%s, %.2f s)" % [ratios, Narrator.clock()])
 	check(absf(ducked_db - (music_db + Sfx.DUCK_DB)) < 0.3 and AudioServer.get_bus_effect_count(music_bus) == 0,
 		"la música baja en el volumen de su bus, sin efectos (en la Web no se aplican): %.1f dB, quiere %.1f" % [ducked_db, music_db + Sfx.DUCK_DB])
 	Narrator.skip()
@@ -315,17 +336,44 @@ func _test_voices() -> void:
 				prev = float(m)
 	check(nuevas == 9 and new_marks_ok and not lines.has("intro_cerdito") and not lines.has("intro_menu"),
 		"las voces del 18-oct (desván, hucha, «¡Ha quedado como nueva!», una por dibujo, el final y la moneda) con su texto y sus pausas; el cerdito empieza sin frase (%d de 9)" % nuevas)
-	# El MP3 (Drive, 18-oct): una grabación con la voz, las canciones que salta y la voz otra vez, partida
-	# en sus trozos del guion (la música, como efecto: si no, al igualar la voz la música la tapaba).
-	var mp3_parts: Array = lines.get("pieza_mp3", []) if lines.get("pieza_mp3") is Array else []
-	var mp3_b: Dictionary = mp3_parts[2] if mp3_parts.size() == 3 and mp3_parts[2] is Dictionary else {}
-	var mp3_b_path := "res://assets/audio/voz/pieza_mp3_b.ogg"
-	var mp3_b_len := (load(mp3_b_path) as AudioStream).get_length() if ResourceLoader.exists(mp3_b_path) else 0.0
-	var mp3_marks: Array = mp3_b.get("marcas", [])
-	check(ResourceLoader.exists("res://assets/audio/voz/pieza_mp3_a.ogg") and mp3_b_len > 0.0 and Sfx.length("mp3_skip") > 5.0
-		and mp3_parts.size() == 3 and mp3_parts[1] == "sfx:mp3_skip" and mp3_marks.size() == 1
-		and float(mp3_marks[0]) > 1.0 and float(mp3_marks[0]) < mp3_b_len,
-		"el MP3 con su voz: «¡Ostras! Siempre compartía mi MP3…», las canciones que va saltando y el resto, con el subtítulo a tiempo")
+	# El MP3 (Drive, 20-oct, «MP3 MEJORADO»): UNA grabación con la voz, las canciones que salta y la voz otra
+	# vez (antes eran tres trozos y la canción era un efecto aparte: si se pasaba de frase seguía sonando).
+	# Mientras suenan las canciones, sin subtítulo.
+	var mp3: Dictionary = lines.get("pieza_mp3", {}) if lines.get("pieza_mp3") is Dictionary else {}
+	var mp3_path := "res://assets/audio/voz/pieza_mp3.ogg"
+	var mp3_len := (load(mp3_path) as AudioStream).get_length() if ResourceLoader.exists(mp3_path) else 0.0
+	var mp3_lines: Array = mp3.get("frases", [])
+	var mp3_marks: Array = mp3.get("marcas", [])
+	got.clear()
+	var mp3_probe := mp3.duplicate()                 # (con otra clave: que no entre en el historial de diálogos)
+	mp3_probe["voz"] = "pieza_mp3"
+	Narrator._lines["_prueba_mp3"] = mp3_probe
+	Narrator.say("_prueba_mp3")
+	Narrator._lines.erase("_prueba_mp3")
+	var mp3_queue := Narrator._queue.duplicate()
+	check(mp3_len > 20.0 and mp3_lines.size() == 4 and mp3_lines[1] == "sfx:mp3_skip" and mp3_marks.size() == 3 and float(mp3_marks[2]) < mp3_len
+		and not ResourceLoader.exists("res://assets/audio/voz/pieza_mp3_a.ogg") and got.size() == 1
+		and got[0][0] == "¡Ostras! Siempre compartía mi MP3…" and Narrator.voice_playing() and mp3_queue.size() == 3
+		and mp3_queue.all(func(e: Dictionary) -> bool: return String(e.voice) == "") and String(mp3_queue[0].text) == ""
+		and Narrator.text("pieza_mp3").begins_with("¡Ostras! Siempre compartía mi MP3… Y no hay"),
+		"el MP3 suena en una sola grabación (voz, canciones y voz) con sus frases a tiempo y sin subtítulo en las canciones")
+	Narrator.skip()
+	for i in 2:
+		await get_tree().process_frame
+	check(not Narrator.voice_playing() and Narrator.remaining() <= 0.0, "y si se pasa de frase se calla entero (no se quedan sonando las canciones)")
+	var timings_ok := true                       # una entrada por grabación (tools/tiempos_voces.py)
+	for f in DirAccess.get_files_at("res://assets/audio/voz"):
+		if f.get_extension() in ["ogg", "wav", "mp3"]:
+			timings_ok = timings_ok and (Narrator._timings.get(f.get_basename(), []) as Array).size() > 0
+	var easel: Dictionary = lines.get("pieza_caballete", {})
+	var easel_lines: Array[String] = []
+	for l: Variant in easel.get("frases", []):
+		easel_lines.append(String(l))
+	var auto := Narrator.auto_starts(easel_lines, Narrator._timings.get("pieza_caballete", []))
+	check(timings_ok and auto.size() == 2 and absf(auto[0] - 8.4) < 0.4 and absf(auto[1] - 13.1) < 0.4,
+		"cada voz tiene medido dónde habla; y sin marcas, las frases cambian en sus pausas: el caballete, como a mano (%s)" % [auto])
+	check(String(easel.get("frases", [""])[0]).begins_with("Lo compré con mi primer sueldo, aunque no me daban mucho"),
+		"el caballete dice su «aunque» como la voz")
 	got.clear()
 	Narrator._lines["_prueba_solo_voz"] = {"frases": [], "voz": "dibujo_encontrado_2"}
 	Narrator.say("_prueba_solo_voz")
@@ -368,6 +416,13 @@ func _test_english() -> void:
 	check(hud._subtitle_box.visible and hud._subtitle.text == "Kitty! Now I know you're an otter…" and not Narrator.voice_playing()
 		and Narrator.remaining() > 5.0,
 		"en inglés no suena ninguna voz y el subtítulo sale aunque estén apagados (%.1f s de lectura)" % Narrator.remaining())
+	Narrator.clear()
+	Narrator._lines["_prueba_mp3"] = Narrator._lines["pieza_mp3"]
+	Narrator.say("_prueba_mp3")
+	Narrator._lines.erase("_prueba_mp3")
+	check(hud._subtitle.text == "Oh wow! I always used to share my MP3…" and Narrator._queue.size() == 3
+		and String(Narrator._queue[0].get("sfx", "")) == "mp3_skip",
+		"en inglés (sin la grabación), el MP3 hace sonar sus canciones entre las frases")
 	var options := OptionsPanel.new(false)
 	add_child(options)
 	var subs := options.controls["subtitulos"] as CheckButton
@@ -426,6 +481,8 @@ func _test_splash(main: Node) -> void:
 		waited += 0.1
 	check(not is_instance_valid(sp) and main.splash == null and radii.size() > 4 and radii[-1] > radii[0] + 0.5,
 		"el círculo se abre hasta dejar ver todo el juego y la presentación se va (%d pasos)" % radii.size())
+	check(int(Sfx.played.get(Presentacion.SOUND, 0)) == 1 and Sfx.length(Presentacion.SOUND) > Presentacion.SOUND_HIT,
+		"la presentación suena una vez («Mortadela logo inicio»), con su golpe en el «pop»")
 	await get_tree().process_frame
 
 
@@ -545,7 +602,6 @@ func _test_story(main: Node) -> void:
 		"sin contador de dibujos: la bandeja empieza arriba; y la tarjeta de tarea es pequeña, que no llame la atención")
 	var screen_w := get_viewport().get_visible_rect().size.x
 	Narrator.clear()                               # que la frase de entrar al desván no salga encima de la de prueba
-	Narrator.typing = -1.0                         # sin voz (la de entrar al desván ya había marcado su ritmo)
 	hud_now._show_subtitle("Una frase de prueba, bastante larga, para ver cómo se escribe letra a letra.", 4.0)
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -554,15 +610,20 @@ func _test_story(main: Node) -> void:
 		"el diálogo es una burbuja centrada en la pantalla, con su piquito, que se escribe letra a letra (%.2f)" % typing)
 	await get_tree().create_timer(2.5).timeout
 	check(is_equal_approx(hud_now._subtitle.visible_ratio, 1.0), "y acaba de escribirse")
-	Narrator.typing = 3.0                          # con voz: al ritmo de la grabación, no al suyo
-	hud_now._show_subtitle("Una frase de prueba, bastante larga, para ver cómo se escribe letra a letra.", 4.0)
+	var plush: Dictionary = (Narrator._lines["pieza_peluche"] as Dictionary).duplicate()
+	plush["voz"] = "pieza_peluche"                 # (con otra clave: que no entre en el historial de diálogos)
+	Narrator._lines["_prueba_peluche"] = plush
+	Narrator.say("_prueba_peluche")                # con voz: al ritmo de la grabación, no al suyo
+	Narrator._lines.erase("_prueba_peluche")
 	await get_tree().create_timer(0.5).timeout
 	var early_h := hud_now._subtitle_box.size.y
 	await get_tree().create_timer(1.5).timeout
 	var voiced := hud_now._subtitle.visible_ratio
-	Narrator.typing = -1.0
-	check(voiced > 0.45 and voiced < 0.85, "con voz, la burbuja se escribe mientras lo dice (a los 2 s de 3, %.2f)" % voiced)
+	var voiced_should := Narrator.typed_ratio()
+	check(voiced > 0.2 and voiced < 0.85 and absf(voiced - voiced_should) < 0.1,
+		"con voz, la burbuja se escribe mientras lo dice (a los 2 s de 3,4, %.2f; la voz va por %.2f)" % [voiced, voiced_should])
 	await get_tree().create_timer(1.2).timeout
+	Narrator.clear()
 	check(is_equal_approx(hud_now._subtitle_box.size.y, early_h), "la burbuja tiene ya su tamaño final mientras se escribe (no crece)")
 	hud_now._subtitle_box.hide()
 	var stars: EstrellasLogros = hud_now.stars
@@ -701,10 +762,13 @@ func _test_story(main: Node) -> void:
 	while not s1.completed and steps < 80:
 		d.debug_solve_step()
 		steps += 1
-	check(_heard(heard_s1, "colocar_pared") == 5 and _heard(heard_s1, "colocar_tejado") >= 1 and _heard(heard_s1, "colocar_viga") >= 5
-		and _heard(heard_s1, "colocar_tablon") == 3 and _more(heard_s1, "colocar") and d.place_sound(&"cumbrera") == "colocar_viga",
-		"cada pieza del desván suena según su tipo: paredes (y rodapiés y molduras), techo, vigas (cumbrera, pilares, postes, correas) y el resto del suelo (con su borde); la hucha, con el de siempre (%s)"
-		% [[_heard(heard_s1, "colocar_pared"), _heard(heard_s1, "colocar_tejado"), _heard(heard_s1, "colocar_viga"), _heard(heard_s1, "colocar_tablon")]])
+	var beams := ["colocar_viga", "colocar_poste", "colocar_pilar", "colocar_correa", "colocar_cumbrera"]
+	check(_heard(heard_s1, "colocar_pared") == 5 and _heard(heard_s1, "colocar_tejado") >= 1
+		and beams.all(func(n: String) -> bool: return _heard(heard_s1, n) == 1)
+		and _heard(heard_s1, "colocar_tablon") == 3 and _more(heard_s1, "colocar") and d.place_sound(&"cumbrera") == "colocar_cumbrera"
+		and d.place_sound(&"pilar") == "colocar_pilar",
+		"cada pieza del desván suena según su tipo: paredes (y rodapiés y molduras), techo, viga, poste, pilar, correa y cumbrera (cada una el suyo, una vez por gesto) y el resto del suelo (con su borde); la hucha, con el de siempre (%s)"
+		% [[_heard(heard_s1, "colocar_pared"), _heard(heard_s1, "colocar_tejado"), beams.map(func(n: String) -> int: return _heard(heard_s1, n)), _heard(heard_s1, "colocar_tablon")]])
 	check(s1.completed and not placed.is_empty() and placed.back() == &"hucha",
 		"la estructura se monta entera y la hucha (clave) va la última (%s)" % [placed.back() if not placed.is_empty() else &""])
 	check(not placed.has(&"cuerpo_hucha") and _slot(d, &"hucha").filled and not GameState.dialogue_log.has("sub_completo"),
@@ -839,6 +903,10 @@ func _test_story(main: Node) -> void:
 	shown = d.visible_inventory()
 	check(shown.has(&"comoda_infantil") and not shown.has(&"caja_musica") and not shown.has(&"dibujo") and not shown.has(&"peluche"),
 		"infancia: la caja de música espera a su cómoda, el dibujo a la caja y la nutria (clave) a todo lo demás")
+	var music_box := _slot(d, &"caja_musica").node.get_node_or_null("Interactable") as Interactable
+	var heard_box: Dictionary = Sfx.played.duplicate()
+	check(music_box != null and music_box.kind == Interactable.MELODY and not music_box.is_clickable() and not d.interactables.is_empty(),
+		"la caja de música se podrá pulsar, pero no antes de ponerla")
 	var friends := _collectible(d, &"dibujo_amigas")
 	check(friends != null and not friends.available and not friends.target.visible and d.clothesline != null and d.clothesline.is_visible_in_tree(),
 		"al abrirse la infancia aparece la cuerda de los dibujos; el de delante de la cómoda aún no está (after-comoda_infantil)")
@@ -912,8 +980,11 @@ func _test_story(main: Node) -> void:
 		dd.activate()                              # (y se vuelve a cerrar)
 	Narrator.clear()                           # sin primer plano encima: consejos y avisos esperan a que acabe
 	m.finish()
+	var heard_lid: Dictionary = Sfx.played.duplicate()
 	if chest != null:
 		chest.set_open(true)
+		check(_heard(heard_lid, "abrir_caja") == 1 and not _more(heard_lid, "abrir_cajon"),
+			"al abrir la tapa de una caja suena «ABRIR CAJA CARTÓN» (Drive, 20-oct)")
 		await get_tree().process_frame
 		check(not chest.attention and blocks.attention and GameState.hud.tip_text() == Narrator.text("consejo_dentro"),
 			"al abrir el baúl, lo que brilla es lo de dentro (y sale el consejo de cogerlo) (%s · %s · %s)" % [chest.attention, blocks.attention, GameState.hud.tip_text()])
@@ -1013,6 +1084,21 @@ func _test_story(main: Node) -> void:
 	d.place(_slot(d, &"peluche"))
 	check(s2.completed and placed.find(&"caja_musica") < placed.find(&"dibujo") and placed.find(&"dibujo") < placed.find(&"peluche"),
 		"infancia completa en el orden del guion: caja de música, dibujo, nutria")
+	# La caja de música (Drive, 20-oct): al ponerla suena su melodía (recortada, con fundido); ya puesta, un
+	# clic la vuelve a tocar y otro la calla. Mientras suena, la música de la partida casi se calla.
+	var box_heard := _heard(heard_box, "melodia_caja_musica")
+	Sfx.stop_melody(0.0)
+	if music_box != null:
+		music_box.activate()
+	await get_tree().create_timer(Sfx.DUCK_IN + 0.15).timeout
+	var box_on := Sfx.melody_playing()
+	var box_duck := Settings.music_duck_db
+	if music_box != null:
+		music_box.activate()
+	await get_tree().create_timer(0.6).timeout
+	check(box_heard == 1 and music_box != null and music_box.is_clickable() and box_on == "melodia_caja_musica"
+		and box_duck < Sfx.DUCK_DB - 3.0 and Sfx.melody_playing() == "" and Sfx.length("melodia_caja_musica") < 20.0,
+		"la caja de música suena al ponerla y, ya puesta, un clic la toca (con la música bajada, %.1f dB) y otro la calla" % box_duck)
 	# Un clic en el primer plano mientras aún habla: la voz se apaga en un momento y sale el acto siguiente.
 	for i in 3:
 		await get_tree().process_frame
@@ -1246,10 +1332,12 @@ func _test_story(main: Node) -> void:
 		"la escena del final es acogedora: fondo cálido con luces desenfocadas, contraluz y motas en la luz")
 	await get_tree().create_timer(1.0).timeout
 	check(not is_instance_valid(m.coin) and Narrator.remaining() > 0.0, "primero el diálogo: mientras habla, aún no hay moneda")
+	var heard_coin: Dictionary = Sfx.played.duplicate()
 	Narrator.clear()                               # el jugador pasa las frases con clics: no hay que esperar
 	await get_tree().create_timer(0.3).timeout
-	check(s5.opened and _slot(d, &"moneda").available and is_instance_valid(m.coin) and m._coin_ready(),
-		"en cuanto se callan las frases, la moneda aparece junto a la hucha y ya se puede coger")
+	check(s5.opened and _slot(d, &"moneda").available and is_instance_valid(m.coin) and m._coin_ready()
+		and _heard(heard_coin, "moneda_aparece") == 1,
+		"en cuanto se callan las frases, la moneda aparece junto a la hucha (con su sonido) y ya se puede coger")
 	await get_tree().create_timer(0.6).timeout
 	var ghost_mesh: MeshInstance3D = Visuals.meshes_under(m.ghost)[0] if is_instance_valid(m.ghost) else null
 	check(ghost_mesh != null and m.is_in_isolation(ghost_mesh) and (ghost_mesh.material_override as ShaderMaterial).shader.resource_path.ends_with("fantasma.gdshader"),
@@ -1277,13 +1365,15 @@ func _test_story(main: Node) -> void:
 	check(not _slot(d, &"moneda").filled and is_instance_valid(m.coin) and m._coin_state == "" and is_instance_valid(m.ghost),
 		"soltar la moneda lejos de la ranura no la mete: vuelve a su sitio y la fantasma vuelve a enseñar el gesto")
 	main.logros._start_ms = maxi(0, Time.get_ticks_msec() - 90000)   # como si llevara (como mucho) 1,5 minutos
+	var heard_in: Dictionary = Sfx.played.duplicate()
 	_mouse_button(m.coin_screen_position(), true)
 	await get_tree().process_frame
 	_mouse_move(m.slot_screen_position())
 	await get_tree().process_frame
 	_mouse_button(m.slot_screen_position(), false)
 	await get_tree().create_timer(0.8).timeout
-	check(d.completed and _slot(d, &"moneda").filled, "arrastrar la moneda hasta la ranura la mete en la hucha y completa el desván")
+	check(d.completed and _slot(d, &"moneda").filled and _heard(heard_in, "moneda_hucha") == 1 and not _more(heard_in, "colocar"),
+		"arrastrar la moneda hasta la ranura la mete en la hucha (con su sonido, no el de colocar) y completa el desván")
 	var lista := LogrosLista.new()
 	add_child(lista)
 	lista.refresh()
@@ -1687,7 +1777,8 @@ func _test_title_menu(main: Node) -> bool:
 	check(GameState.hud._panel.visible and GameState.hud.cards(true).size() > 0, "durante el puzle del título se ve la bandeja de piezas")
 	var fxs := ["boton_preseleccion", "boton_seleccion", "pieza_preseleccion", "pieza_seleccion", "colocar",
 		"colocar_tablon", "colocar_pared", "colocar_tejado", "colocar_viga", "logro", "completar_puzzle", "guardar_inventario", "aparecer_capitulo",
-		"abrir_cajon", "cerrar_cajon", "transicion_desvan"]
+		"abrir_cajon", "cerrar_cajon", "transicion_desvan", "colocar_poste", "colocar_pilar", "colocar_correa", "colocar_cumbrera",
+		"abrir_caja", "cerrar_caja", "moneda_aparece", "moneda_hucha", "presentacion", "melodia_caja_musica", "mp3_skip"]
 	check(fxs.all(func(n: String) -> bool: return Sfx.length(n) > 0.0), "los sonidos de Drive (FXS) están: botones, fichas, colocar, los del desván y el logro")
 	var heard: Dictionary = Sfx.played.duplicate()
 	var free_card: InventoryItem = GameState.hud.cards(true)[0]

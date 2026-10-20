@@ -7,6 +7,7 @@ extends StaticBody3D
 ## (borde cálido que late) y cada poco se mueve un pelín (el cajón asoma, la puerta se entreabre)
 ## para que el jugador descubra que los muebles se abren. Lo decide el Diorama.
 
+const MELODY := "melodia"                    ## (no viene de un nombre) una pieza ya puesta que suena al pulsarla (la caja de música)
 const OPEN_TIME := 0.45
 const RATTLE_EVERY := 2.4                    ## cada cuánto se mueve un mueble que llama la atención (s)
 const GLOW_SHADER := preload("res://shaders/brillo.gdshader")
@@ -112,13 +113,17 @@ func activate() -> void:
 			diorama.find_collectible(self)
 		NameRules.ZOOM:
 			diorama.enter_focus(self)
+		MELODY:
+			diorama.play_melody(id)
 
 
 func set_open(value: bool, animate := true) -> void:
 	is_open = value
-	if animate:                                  # (los cajones, con los de Drive FXS; puertas y tapas, aún sin sonido)
+	if animate:                                  # (cajones y tapas de caja, con los de Drive; las puertas, aún sin sonido)
 		if kind == NameRules.DRAWER:
 			Sfx.play("abrir_cajon" if is_open else "cerrar_cajon", 0.04)
+		elif _hinge == Vector3.RIGHT:
+			Sfx.play("abrir_caja" if is_open else "cerrar_caja", 0.04)
 		else:
 			Sfx.play("open" if is_open else "close")
 	var goal := _open if is_open else _closed

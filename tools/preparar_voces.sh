@@ -7,8 +7,9 @@
 #   - con una ganancia fija hasta -16 LUFS y un limitador suave para que los picos no saturen
 #     (las grabaciones llegan a volúmenes muy distintos: de -36 a -28 LUFS);
 #   - mono, 48 kHz, Ogg Vorbis.
-# Después: bash tools/check.sh (importa) y, si la frase va en trozos, ajustar sus "marcas"
-# (ffmpeg -i assets/audio/voz/<clave>.ogg -af silencedetect=n=-45dB:d=0.25 -f null - dice las pausas).
+# Después: python3 -I tools/tiempos_voces.py (dónde habla cada voz: el subtítulo se escribe a su ritmo y,
+# sin "marcas", las frases cambian en sus pausas), bash tools/check.sh (importa) y, si la frase va en
+# trozos, mirar sus "marcas" (las pausas, en data/voces_tiempos.json).
 # Uso: bash tools/preparar_voces.sh carpeta_con_las_grabaciones
 set -euo pipefail
 IN="${1:?carpeta con las grabaciones}"

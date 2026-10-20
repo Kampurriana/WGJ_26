@@ -62,23 +62,19 @@
 		]
 	},
 	"titulo_adolescencia": "II · Adolescencia",
-	"pieza_mp3": [
-		{
-			"voz": "pieza_mp3_a",
-			"frases": "¡Ostras! Siempre compartía mi MP3…"
-		},
-		"sfx:mp3_skip",
-		{
-			"voz": "pieza_mp3_b",
-			"frases": [
-				"Y no hay ninguna canción que me guste… Ahora que lo pienso…",
-				"Vestía como ellos, veía esos programas absurdos, escuchaba esta basura para encajar… y ser parte del grupo."
-			],
-			"marcas": [
-				4.75
-			]
-		}
-	],
+	"pieza_mp3": {
+		"frases": [
+			"¡Ostras! Siempre compartía mi MP3…",
+			"sfx:mp3_skip",
+			"Y no hay ninguna canción que me guste… Ahora que lo pienso…",
+			"Vestía como ellos, veía esos programas absurdos, escuchaba esta basura para encajar… y ser parte del grupo."
+		],
+		"marcas": [
+			3.0,
+			13.3,
+			17.4
+		]
+	},
 	"pieza_camara": {
 		"frases": [
 			"¡Me encanta la fotografía! La usaba en nuestros viajes, en los cumpleaños, en las fiestas del pueblo…",
@@ -115,7 +111,7 @@
 	},
 	"pieza_caballete": {
 		"frases": [
-			"Lo compré con mi primer sueldo; no me daban mucho, porque casi todo iba para el bote familiar, aunque me dio para comprarlo…",
+			"Lo compré con mi primer sueldo, aunque no me daban mucho, porque casi todo iba para el bote familiar, aunque me dio para comprarlo…",
 			"Tenía el planazo perfecto: pintar todos los domingos…",
 			"Entonces subió el precio del alquiler, y adivina quién trabaja los domingos."
 		],
