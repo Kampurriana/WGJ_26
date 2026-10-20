@@ -206,11 +206,12 @@ func _ready() -> void:
 func _start_with_splash() -> void:
 	splash = Presentacion.new()
 	splash.name = "Presentacion"
+	splash.wait_for_input = OS.has_feature("web")   # en la Web, el primer clic desbloquea el audio
 	add_child(splash)
 	splash.opening.connect(func() -> void:
 		_skip_fade = true
 		_entrance_delay = Presentacion.REVEAL_TIME
-		show_title()
+		show_title(true)                         # al abrir el juego, siempre se monta el cerdito
 		_entrance_delay = 0.0)
 	splash.finished.connect(func() -> void: splash = null)
 
@@ -436,17 +437,21 @@ func load_level(index: int) -> void:
 	_load(GameState.levels[GameState.level_index])
 
 
-## El diorama del título. Si ya se resolvió alguna vez, sale montado y con el menú abierto.
-func show_title() -> void:
+## El diorama del título. Si ya se resolvió alguna vez, sale montado y con el menú abierto (al volver de
+## la partida o de los créditos); al abrir el juego (`again`), se vuelve a montar aunque el progreso
+## guardado diga que ya se hizo (20-oct: «la de Windows se abre directamente en el menú»).
+func show_title(again := false) -> void:
 	get_tree().paused = false
 	GameState.mode = GameState.Mode.MENU
 	Sfx.music("menu", MUSIC_MENU_DB)
-	var unlocked := GameState.menu_unlocked
+	var unlocked := GameState.menu_unlocked and not again
 	_load(GameState.MENU_LEVEL, unlocked)
 	if unlocked:
 		GameState.diorama.complete_silently()
 		_open_menu()
 	else:
+		if menu.is_open():
+			menu.close()
 		GameState.camera.set_menu_view(false)
 		GameState.hud.set_game_ui_visible(true)
 		GameState.hud.stage_entrance(_entrance_delay)   # el cerdito; luego la bandeja; luego los botones

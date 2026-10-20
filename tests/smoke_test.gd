@@ -1919,6 +1919,33 @@ func _test_title_menu(main: Node) -> bool:
 		await get_tree().process_frame
 	check(Sfx.track == "menu" and _has_music("menu") and Sfx.music_looping(),
 		"en el puzle del título y el menú suena su canción en bucle (musica/menu, Ankui)")
+	# Al abrir el juego otra vez (la build guarda el progreso), se vuelve a montar el cerdito: no salta al
+	# menú (20-oct: «la de Windows se abre directamente en el menú sin hacer el cerdito»).
+	main.show_title(true)
+	await get_tree().process_frame
+	var relaunch := GameState.diorama
+	check(GameState.menu_unlocked and relaunch != null and relaunch.scene_file_path == GameState.MENU_LEVEL
+		and not relaunch.completed and not main.menu.is_open(),
+		"al abrir el juego con el progreso guardado se vuelve a montar el cerdito (no salta al menú)")
+	main.show_title()                                # (como al volver de la partida: ya montado y con el menú)
+	for i in 2:
+		await get_tree().process_frame
+	check(main.menu.is_open() and GameState.diorama.completed, "y al volver al menú desde la partida no hay que montarlo otra vez")
+	# En la Web, el navegador no deja sonar nada hasta que el jugador toca la página: la presentación espera
+	# quieta, con «Haz clic para empezar», y el primer clic la empieza (con su sonido ya desbloqueado).
+	var waiting := Presentacion.new()
+	waiting.wait_for_input = true
+	add_child(waiting)
+	var sounded := int(Sfx.played.get(Presentacion.SOUND, 0))
+	await get_tree().create_timer(1.2).timeout
+	var still := is_zero_approx(waiting._t) and not waiting.is_opening() and waiting.prompt() != null and waiting.prompt().visible \
+		and waiting.prompt().text == "Haz clic para empezar" and int(Sfx.played.get(Presentacion.SOUND, 0)) == sounded
+	_click(get_viewport().get_visible_rect().size * 0.5)
+	await get_tree().create_timer(0.9).timeout
+	check(still and waiting._t > 0.5 and not waiting.prompt().visible and int(Sfx.played.get(Presentacion.SOUND, 0)) == sounded + 1,
+		"en la Web, la presentación espera al primer clic («Haz clic para empezar»: antes el navegador no deja sonar nada) y entonces empieza, con su sonido")
+	waiting.queue_free()
+	await get_tree().process_frame                   # (su cortina se va al acabar el fotograma)
 	var heard_play: Dictionary = Sfx.played.duplicate()
 	_click(main.menu.buttons.jugar.get_global_rect().get_center())
 	await get_tree().create_timer(main.BLACKOUT_TIME * 0.6).timeout

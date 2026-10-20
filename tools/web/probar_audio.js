@@ -1,9 +1,11 @@
 // Abre la build Web y mide si sale sonido: engancha un analizador a todo lo que llega a ctx.destination.
+// Como un navegador normal (itch.io), el audio no arranca hasta un gesto del jugador (Playwright lo deja
+// sonar siempre: aquí se simula la política). A los ~11 s, un clic (como el primero del jugador).
 const { chromium } = require('playwright');
 (async () => {
   const out = process.argv[2];
   const url = process.argv[3] || 'http://127.0.0.1:8765/index.html';
-  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
+  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, locale: 'es-ES' });
   await page.addInitScript(() => {
     window.__ctxs = [];
@@ -12,6 +14,15 @@ const { chromium } = require('playwright');
     window.AudioContext = function (...a) {
       const ctx = new Orig(...a);
       window.__ctxs.push(ctx);
+      // Como un navegador normal (itch.io): el audio empieza parado y solo arranca dentro de un gesto del jugador.
+      ctx.suspend();
+      const resume = ctx.resume.bind(ctx);
+      window.__resumes = [];
+      ctx.resume = function () {
+        const ok = !!(navigator.userActivation && navigator.userActivation.isActive);
+        window.__resumes.push(ok);
+        return ok ? resume() : Promise.resolve();
+      };
       const an = ctx.createAnalyser(); an.fftSize = 2048; window.__an.push(an);
       return ctx;
     };
@@ -37,7 +48,8 @@ const { chromium } = require('playwright');
   await page.goto(url);
   const samples = [];
   for (let t = 0; t < 70; t++) {
-    if (t === 12) await page.mouse.click(640, 360);     // (como un jugador: un clic, por si el navegador espera un gesto)
+    if (t === 12) await page.screenshot({ path: out + '/audio_antes_del_clic.png' }).catch(() => {});
+    if (t === 12) await page.mouse.click(640, 360);     // el primer clic del jugador (desbloquea el audio)
     await page.waitForTimeout(500);
     let peak = 0, st = '';
     for (let k = 0; k < 4; k++) {
@@ -49,6 +61,7 @@ const { chromium } = require('playwright');
   }
   await page.screenshot({ path: out + '/audio_fin.png' });
   console.log(samples.join('\n'));
+  console.log('resumes', JSON.stringify(await page.evaluate(() => window.__resumes)));
   console.log(logs.filter(l => !l.includes('[debug]')).slice(0, 40).join('\n'));
   await browser.close();
 })();

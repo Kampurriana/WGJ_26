@@ -6,6 +6,9 @@ extends CanvasLayer
 ## abre un círculo desde él que descubre el puzle del cerdito (con la cámara entrando).
 ## Un clic o una tecla la adelantan. Señales: opening (main carga el título debajo, sin fundido) y
 ## finished (se ha ido del todo). Lo que se mueve va en Node2D (trampa 46).
+## En la Web (wait_for_input), el cerdito respira quieto con «Haz clic para empezar» hasta el primer clic
+## o tecla: el navegador no deja sonar nada antes de que el jugador toque la página (y el clic de itch.io
+## para abrir el juego es de la página de fuera), así el sonido de la presentación y la música se oyen.
 
 signal opening
 signal finished
@@ -24,10 +27,14 @@ const IRIS_TIME := 1.0
 const REVEAL_TIME := IRIS_DELAY + IRIS_TIME  ## desde opening hasta que se ve todo el juego
 const SOUND := "presentacion"                ## «Mortadela logo inicio» (Drive, 20-oct): tres golpes, el último el grande...
 const SOUND_HIT := 1.35                      ## ...a este segundo del fichero: cae justo en el «pop»
+const START_TEXT := "Haz clic para empezar"
 
 var _t := 0.0
 var _opened := false
 var _sounded := false
+var wait_for_input := false                  ## (Web) espera al primer clic o tecla antes de empezar
+var _idle := 0.0                             ## lo que lleva esperando (respira mientras)
+var _prompt: Label
 var _wait_frames := -1                       ## tras opening, fotogramas hasta irse (la carga del título da un tirón)
 var _curtain: ColorRect
 var _iris: ShaderMaterial
@@ -74,9 +81,26 @@ func _ready() -> void:
 	sprite.scale = Vector2.ONE * SIZE / maxf(IMAGE.get_width(), 1.0)
 	sprite.position = Vector2(0, -SIZE * 0.5)
 	_pig.add_child(sprite)
+	if wait_for_input:
+		_prompt = Label.new()
+		_prompt.text = START_TEXT
+		_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_prompt.add_theme_font_override("font", UiTheme.FONT_BOLD)
+		_prompt.add_theme_font_size_override("font_size", 30)
+		_prompt.add_theme_color_override("font_color", UiTheme.BLUE_DEEP)
+		_prompt.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_prompt.offset_top = _feet.y + 40.0          # debajo del cerdito
+		_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(_prompt)
 
 
 func _process(delta: float) -> void:
+	if wait_for_input:                           # (Web) quieto, respirando, hasta que toque la página
+		_idle += delta
+		var breath := sin(_idle * 2.6) * 0.012
+		_pig.scale = Vector2(1.0 - breath, 1.0 + breath)
+		_prompt.modulate.a = 0.8 + 0.2 * sin(_idle * 3.0)
+		return
 	_t += delta
 	if not _sounded and _t >= OPEN_AT - SOUND_HIT:   # (si se adelanta con un clic, empieza en el «pop»)
 		_sounded = true
@@ -104,8 +128,13 @@ func _unhandled_input(e: InputEvent) -> void:
 		_skip()
 
 
-## Un clic o una tecla: se salta los saltitos y se va ya.
+## Un clic o una tecla: se salta los saltitos y se va ya. En la Web, el primero solo la empieza.
 func _skip() -> void:
+	if wait_for_input:
+		wait_for_input = false
+		_prompt.hide()
+		get_viewport().set_input_as_handled()
+		return
 	if not _opened:
 		_t = maxf(_t, OPEN_AT)
 		get_viewport().set_input_as_handled()
@@ -162,6 +191,10 @@ func _leave() -> void:
 
 func pig() -> Node2D:
 	return _pig
+
+
+func prompt() -> Label:
+	return _prompt
 
 
 func background() -> Color:
