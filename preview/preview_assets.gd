@@ -101,7 +101,8 @@ func _montar_luz(path: String) -> void:
 	_sol = _rig.get_node_or_null(_rig.get("luz_principal")) as DirectionalLight3D
 	var rect := _rig.get_node_or_null("Fondo/Degradado") as CanvasItem
 	if rect != null:
-		Fondos.apply(rect.material as ShaderMaterial, true, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))
+		var luz := (path if path != "" else "res://iluminacion/luz_por_defecto.tscn").get_file().get_basename()
+		Fondos.apply(rect.material as ShaderMaterial, luz, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))
 	var vineta := _rig.get_node_or_null("Vineta/Sombra") as CanvasItem
 	if vineta != null and vineta.material is ShaderMaterial:
 		(vineta.material as ShaderMaterial).set_shader_parameter("color", Fondos.dark(Settings.get_value("fondo_color")))

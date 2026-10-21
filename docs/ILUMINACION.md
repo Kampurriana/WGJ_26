@@ -97,9 +97,12 @@ Claude que se la asigne (propiedad `Iluminacion` del nivel).
 - **El fondo pasa por el tonemap**: un color sale distinto en el juego que en el selector (medido:
   0,17 se ve como 0,07). Y sin HDR en 2D el lienzo se corta en 1,0: el fondo no pasaba de un gris
   apagado (208/255). Por eso `main.gd` activa `use_hdr_2d` y los colores del fondo del 3D van
-  calculados (por encima de 1) con `tools/calibrar_fondo.gd`, que los busca midiendo píxeles:
-  `xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --path . --resolution 1280x720 --script res://tools/calibrar_fondo.gd`.
-  Repetirlo si cambian el tonemap o el resplandor del desván.
+  calculados (por encima de 1) con `tools/calibrar_fondo.gd`, que los busca midiendo píxeles con la luz
+  **y el postproceso de cine** (que dora las luces: sin contarlo, el azul salía gris y cálido), para cada
+  escena de luz con fondo, y los deja en `data/fondo_calibrado.json`:
+  `xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --path . --resolution 320x180 --script res://tools/calibrar_fondo.gd`.
+  Repetirlo si cambian el tonemap, el resplandor o los ajustes de una luz, el etalonaje de
+  `shaders/desenfoque.gdshader` o un color, o si se añade una escena de luz.
 - **Que no queme** (quinta nota): bombillas de zona a 0,8, lámpara del escritorio a 1,1, resplandor
   (*Glow*) a 0,4 y sol final del desván a 0,65; los focos de los momentos, a 1,2. Medido con recortes
   de las zonas calientes (techo sobre la bombilla: de 6 % a 0 % de píxeles al límite; mesa: de 11 %

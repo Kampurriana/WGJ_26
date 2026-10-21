@@ -402,7 +402,8 @@ func _apply_lighting(path: String) -> void:
 func _apply_background() -> void:
 	var rect := _lighting.get_node_or_null("Fondo/Degradado") as CanvasItem if _lighting != null else null
 	if rect != null:
-		Fondos.apply(rect.material as ShaderMaterial, true, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))
+		Fondos.apply(rect.material as ShaderMaterial, _lighting_path.get_file().get_basename(), Settings.get_value("fondo_color"),
+			Settings.get_value("fondo_motivo"))                # (calibrado para esta luz y el postproceso)
 	var vignette := _lighting.get_node_or_null("Vineta/Sombra") as CanvasItem if _lighting != null else null
 	if vignette != null and vignette.material is ShaderMaterial:
 		(vignette.material as ShaderMaterial).set_shader_parameter("color", Fondos.dark(Settings.get_value("fondo_color")))

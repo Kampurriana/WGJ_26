@@ -1879,8 +1879,9 @@ func _test_title_menu(main: Node) -> bool:
 	_click(swatch.get_global_rect().get_center())
 	await get_tree().process_frame
 	var bg := (main.get_node("Iluminacion/Fondo/Degradado") as CanvasItem).material as ShaderMaterial
-	check(int(Settings.get_value("fondo_color")) == 3 and bg.get_shader_parameter("color_centro") == Fondos.COLORES[3].centro_3d,
-		"en Opciones, tocar un color cambia el fondo al momento (%s)" % Fondos.COLORES[3].nombre)
+	check(int(Settings.get_value("fondo_color")) == 3 and main._lighting_path.ends_with("menu.tscn")
+		and bg.get_shader_parameter("color_centro") == Fondos.calibrated(3, "menu").centro,
+		"en Opciones, tocar un color cambia el fondo al momento (%s, calibrado para la luz del menú)" % Fondos.COLORES[3].nombre)
 	var vignette := (main.get_node("Iluminacion/Vineta/Sombra") as CanvasItem).material as ShaderMaterial
 	var vig_color: Color = vignette.get_shader_parameter("color")
 	check(vig_color.is_equal_approx(Fondos.dark(3)) and vig_color.v > 0.1 and absf(vig_color.h - Fondos.COLORES[3].borde.h) < 0.03,
@@ -2043,6 +2044,21 @@ func _test_complete_shortcut(main: Node) -> void:
 		and luz.sol.light_energy == 0.0 and not luz.haz.visible
 		and String(d.iluminacion).ends_with("desvan_tarde.tscn"),
 		"el desván lleva la luz de la tarde (desvan_tarde) y el sol de la ventana, con sombras, apagado hasta poner la ventana")
+	# El fondo del 3D pasa por la luz y por el postproceso de cine, que dora las luces: el pastel salía gris y
+	# cálido (21-oct). Cada escena de luz con fondo tiene su calibrado (tools/calibrar_fondo.gd) y se usa el suyo.
+	var bg_now := (main.get_node("Iluminacion/Fondo/Degradado") as CanvasItem).material as ShaderMaterial
+	var bg_i := int(Settings.get_value("fondo_color"))
+	var cal_ok := true
+	for f in DirAccess.get_files_at("res://iluminacion"):
+		if f.get_extension() == "tscn":
+			var inst := (load("res://iluminacion/" + f) as PackedScene).instantiate()
+			if inst.get_node_or_null("Fondo/Degradado") != null:
+				cal_ok = cal_ok and (Fondos._calibrated.get(f.get_basename(), []) as Array).size() == Fondos.COLORES.size()
+			inst.free()
+	check(cal_ok and main._lighting_path.ends_with("desvan_tarde.tscn")
+		and bg_now.get_shader_parameter("color_centro") == Fondos.calibrated(bg_i, "desvan_tarde").centro
+		and Fondos.calibrated(bg_i, "desvan_tarde").centro != Fondos.calibrated(bg_i, "menu").centro,
+		"el fondo del desván va calibrado para su luz de la tarde y el postproceso (cada luz con fondo tiene el suyo)")
 	# Fallo de Godot 4.7: tras una luz con sombra (la de la ventana), lo aditivo salía cuadrado (chispas,
 	# luces, polvo). La cámara lleva un cuadradito invisible que vuelve a poner bien la mezcla.
 	var reset := GameState.camera.cam.get_node_or_null("ReinicioMezcla") as MeshInstance3D

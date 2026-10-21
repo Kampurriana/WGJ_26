@@ -85,7 +85,7 @@ func play(drawings: Array, total: int) -> void:
 	for c in _roll.get_children():
 		_roll.remove_child(c)
 		c.queue_free()
-	Fondos.apply(_bg_mat, false, Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))   # los que eligió el jugador
+	Fondos.apply(_bg_mat, "", Settings.get_value("fondo_color"), Settings.get_value("fondo_motivo"))   # los que eligió el jugador
 	logo = Logo.new(560.0)                       # el logo de las artistas, con sus piezas moviéndose
 	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_roll.add_child(logo)
